@@ -14,6 +14,7 @@ venv/
 
 # 로컬 채점 결과·임베딩 캐시 (필요하면 경로를 정해 다시 열기)
 *.log
+experiments/.cache/
 
 # 편집기·OS
 .vscode/

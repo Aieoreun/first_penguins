@@ -13,6 +13,7 @@
 
 - [ ] **고정 문구 여섯 문장 다듬기.** `core/schema.py`의 `_REFUSE_JAILBREAK`, `_REFUSE_HARMFUL`, `_REDIRECT_HARMFUL`, `_REDIRECT_OFF_TOPIC`, `_ESCALATE`, `_CLARIFY`. 지금 문장은 초안이다. 서버에 들어가는 글이라 내 말로 직접 쓴다(규격 7절: 다른 LLM으로 만든 예시·자료는 서버에 넣을 수 없다). 고친 뒤 `python3 -m unittest tests.test_schema_state`를 돌린다.
 - [ ] **주최 측에 물어보기.** 아래 "물어볼 것" 참고. 답을 받으면 `02_설계.md` 결정 5에 날짜와 함께 적는다.
+- [ ] **검색 비교 실험 돌리기.** API 키가 있는 환경(런박스, 또는 `EMBEDDING_BASE_URL`·`EMBEDDING_MODEL`·`EMBEDDING_API_KEY`를 넣은 로컬)에서 `python3 experiments/search_compare.py --embed`. 낱말·임베딩·혼용 검색의 적중률 표와 임베딩 호출 시간이 나온다. 결과 표를 `02_설계.md` 3절에 옮기고 검색 방법을 정한다. 임베딩 경로는 가짜 서버로만 확인했고 실제 API로는 돌려 보지 않았다.
 - [ ] 런박스에서 gpt-5-nano 응답 시간 재기. 호출 예산을 정하는 데 필요하다. 측정 스크립트는 아직 없다.
 
 ## 물어볼 것 (주최 측)
