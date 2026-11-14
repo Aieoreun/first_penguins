@@ -1,5 +1,7 @@
+import asyncio
 import os
 import secrets
+from contextlib import asynccontextmanager
 from typing import Dict, List, Optional  # noqa: UP035
 
 from fastapi import Depends, FastAPI, Header, HTTPException
@@ -7,7 +9,9 @@ from openai import AsyncOpenAI
 from pydantic import BaseModel
 
 from guard_classifier import classify_input
+from guard_output import check_grounding, check_safety
 from guard_schemas import validate_guard_response
+from kb_search import KnowledgeSearch
 
 TOKEN = os.environ["TEAM_TOKEN"]
 MODEL = os.environ["OPENAI_MODEL"]
@@ -22,7 +26,20 @@ def check_token(authorization: str = Header("")):
         raise HTTPException(status_code=401, detail="invalid token")
 
 
-app = FastAPI(redirect_slashes=False, dependencies=[Depends(check_token)])
+@asynccontextmanager
+async def lifespan(app):
+    app.state.searcher = KnowledgeSearch()
+    try:
+        yield
+    finally:
+        await app.state.searcher.close()
+
+
+app = FastAPI(
+    redirect_slashes=False,
+    dependencies=[Depends(check_token)],
+    lifespan=lifespan,
+)
 
 
 class TutorRequest(BaseModel):
@@ -51,40 +68,77 @@ async def tutor(req: TutorRequest):
     return {"answer": answer, "action": "answer", "citations": []}
 
 
+async def run_guard_stage(name, operation):
+    try:
+        # 검색을 포함한 각 단계에 제한 시간을 둡니다.
+        return await asyncio.wait_for(operation, timeout=26)
+    except Exception as error:
+        # 요청·답변 본문은 기록하지 않습니다.
+        print(f"가드 단계 실패: {name} / {type(error).__name__}")
+        return None
+
+
+async def retrieve_and_check(req):
+    query = "\n".join(
+        f"{message['role']}: {message['content']}" for message in req.messages
+    )
+
+    evidence = await app.state.searcher.search(query, top_k=5)
+
+    return await check_grounding(
+        client=llm,
+        model=MODEL,
+        messages=req.messages,
+        candidate_answer=req.candidate_answer,
+        evidence=evidence,
+    )
+
+
 @app.post("/guard")
 async def guard(req: GuardRequest):
-    try:
-        verdict = await classify_input(
-            client=llm,
-            model=MODEL,
-            messages=req.messages,
+    operations = [
+        run_guard_stage(
+            "input",
+            classify_input(llm, MODEL, req.messages),
         )
-        input_result = verdict.model_dump()
+    ]
 
-    except Exception as error:
-        # 대화 내용이나 모델 응답 본문은 기록하지 않습니다.
-        print("입력 판정 실패:", type(error).__name__)
+    has_candidate = req.candidate_answer is not None
 
-        # 첫 버전의 임시 실패 정책입니다.
-        # 정상적인 모델 판정으로 간주하면 안 됩니다.
-        input_result = {
-            "decision": "allow",
-            "category": "normal",
-        }
+    if has_candidate:
+        operations.extend(
+            [
+                run_guard_stage("grounding", retrieve_and_check(req)),
+                run_guard_stage(
+                    "safety",
+                    check_safety(llm, MODEL, req.messages, req.candidate_answer),
+                ),
+            ]
+        )
 
-    result = {"input": input_result}
+    results = await asyncio.gather(*operations)
 
-    # 후보 답변 검증은 아직 구현하지 않았으므로 기존 값을 유지합니다.
-    if req.candidate_answer is not None:
-        result["output"] = {
-            "grounded": True,
-            "unsupported": [],
-            "safe": True,
+    input_verdict = results[0]
+    response = {
+        "input": (
+            input_verdict.model_dump()
+            if input_verdict is not None
+            else {"decision": "allow", "category": "normal"}
+        )
+    }
+
+    if has_candidate:
+        grounding, safety = results[1], results[2]
+
+        response["output"] = {
+            "grounded": grounding.grounded if grounding else True,
+            "unsupported": grounding.unsupported if grounding else [],
+            "safe": safety.safe if safety else True,
             "category": "normal",
         }
 
     validated = validate_guard_response(
-        result,
+        response,
         candidate_answer=req.candidate_answer,
     )
     return validated.model_dump(exclude_none=True)
