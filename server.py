@@ -70,11 +70,10 @@ async def tutor(req: TutorRequest):
 
 async def run_guard_stage(name, operation):
     try:
-        # 검색을 포함한 각 단계에 제한 시간을 둡니다.
         return await asyncio.wait_for(operation, timeout=26)
     except Exception as error:
-        # 요청·답변 본문은 기록하지 않습니다.
-        print(f"가드 단계 실패: {name} / {type(error).__name__}")
+        reason = getattr(error, "reason_code", type(error).__name__)
+        print(f"가드 단계 실패: {name} / {reason}")
         return None
 
 
