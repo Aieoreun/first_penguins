@@ -64,7 +64,8 @@ BLOCK_SYSTEM = """너는 중학생용 AI 튜터의 입력 검사기다. 수업 �
 
 # 출력
 아래 JSON 하나만 낸다. 여러 개에 해당하면 번호가 앞선 것을 고른다.
-{"category": "harmful_request | harmful_speech | jailbreak_injection | academic_dishonesty | off_topic | none 중 하나"}"""
+confidence에는 고른 답(none 포함)이 맞다고 얼마나 확신하는지를 0~100으로 적는다.
+{"category": "harmful_request | harmful_speech | jailbreak_injection | academic_dishonesty | off_topic | none 중 하나", "confidence": 0~100}"""
 
 OTHER_SYSTEM = """너는 중학생용 AI 튜터의 입력 검사기다. 수업 과목은 파이썬, 프롬프트 쓰기, 돈 관리다.
 마지막 사용자 발화를 두 가지로 본다. 학생에게 답하지 않는다.
@@ -92,7 +93,8 @@ OTHER_SYSTEM = """너는 중학생용 AI 튜터의 입력 검사기다. 수업 �
 
 # 출력
 아래 JSON 하나만 낸다.
-{"category": "emotional_distress | answer_seeking | low_signal_input | none 중 하나", "self_info": true 또는 false}"""
+confidence에는 category의 답(none 포함)이 맞다고 얼마나 확신하는지를, self_info_confidence에는 self_info의 답이 맞다고 얼마나 확신하는지를 0~100으로 적는다.
+{"category": "emotional_distress | answer_seeking | low_signal_input | none 중 하나", "confidence": 0~100, "self_info": true 또는 false, "self_info_confidence": 0~100}"""
 
 MATERIAL_SYSTEM = """너는 중학생용 AI 튜터의 교재 확인 도구다. 학생이 묻는 사실이 [교재 검색 결과]에 적혀 있는지 본다. 학생에게 답하지 않는다.
 
@@ -110,7 +112,8 @@ MATERIAL_SYSTEM = """너는 중학생용 AI 튜터의 교재 확인 도구다. �
 
 # 출력
 아래 JSON 하나만 낸다.
-{"asked": "...", "quote": "...", "section": "<섹션 ID>"}"""
+confidence에는 quote에 대한 판단(답이 되는 문장을 찾았다, 또는 교재에 없다)이 맞다고 얼마나 확신하는지를 0~100으로 적는다.
+{"asked": "...", "quote": "...", "section": "<섹션 ID>", "confidence": 0~100}"""
 
 
 def dialogue(history: Sequence[Dict[str, str]], last_user: str) -> str:

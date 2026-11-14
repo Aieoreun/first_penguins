@@ -81,7 +81,14 @@ class Pipeline(V1Pipeline):
         picked = picked.strip() if isinstance(picked, str) and picked.strip() in candidates else None
         top1 = state.chunks[0].section_id if state.chunks else None
         state.section = (picked or top1) if SECTION_SOURCE == "model" else (top1 or picked)
-        state.debug = {"flags": {k: v for k, v in flags.items() if v}, "model_section": picked}
+        state.debug = {
+            "flags": {k: v for k, v in flags.items() if v}, "model_section": picked,
+            # 확신 정도. 지금은 판정에 쓰지 않고 실험에서 들여다보기만 한다
+            "block": [block.get("category"), block.get("confidence")],
+            "other": [other.get("category"), other.get("confidence")],
+            "self_info": [other.get("self_info"), other.get("self_info_confidence")],
+            "material": [flags["out_of_material"], material.get("confidence")],
+        }
 
     async def prepare(self, state: State, extra: str = "") -> None:
         if REWRITE:
