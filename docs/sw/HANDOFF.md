@@ -2,7 +2,7 @@
 
 - 갱신: 2026-11-14
 - 브랜치: `experiment/seungwon` (`dev`에서 갈라짐, `dev`로 보내는 PR은 아직 없음)
-- 설계 기록은 `02_설계.md`, 분류 프롬프트 초안은 `03_분류_프롬프트_초안.md`
+- 설계 기록은 `02_설계.md`, 분류 프롬프트 초안은 `03_분류_프롬프트_초안.md`, 실험 기록은 `04_실험기록.md`
 
 ## 지금 상태
 
@@ -10,7 +10,8 @@
 - 확인 안 한 것: 출력 가드 프롬프트, 평가 방법, 실패했을 때의 동작, 만드는 순서는 추천안대로 진행한다. 이승원이 검토해 확정한 것이 아니다(`02_설계.md` 결정 15)
 - 서버: 전체가 도는 서버를 만들었다(2026-11-14). `server.py`가 `core/pipeline.py`를 부른다. 검색(`core/search.py`), 모델 호출(`core/llm.py`), 프롬프트(`core/prompts.py`), 구절 찾기(`core/spans.py`). 로컬 채점기 첫 점수는 총점 80.2(튜터 77.31, 가드 83.09)다(`02_설계.md` 3.7절). 프롬프트는 첫 판이다.
 - 흐름 두 개: `pipelines/v1`(입력 가드 호출 한 번)과 `pipelines/v2`(입력 가드를 셋으로 나눠 동시에 부름, 근거 섹션은 낱말 검색 1위). 환경변수 `PIPELINE=v1|v2`로 고르고 기본은 v1이다. 로컬 총점은 v1 80.2, v2 83.69다(`02_설계.md` 3.9절). 실제 제출은 v1만 했다(71.83, 71.72. `docs/submissions.md`).
-- 평가 스크립트: `experiments/eval_classify.py --pipeline v2`(분류 정확도), `experiments/eval_rewrite.py`(리라이터 검색어).
+- **v3 (2026-11-14, 이승원 미확인)**: `pipelines/v3`는 v2에 실험으로 검증한 설정을 고정한 흐름이다. 확인용 165문항 로컬 점수가 v2 83.5 → v3 86.5다. 무엇을 왜 바꿨는지, 확정된 결정과 어디가 다른지는 `04_실험기록.md`에 있다. 실제 제출로는 재지 않았다. `PIPELINE=v3`로 띄운다.
+- 평가 스크립트: `experiments/eval_full.py`(전체 채점과 항목별 점수), `experiments/eval_classify.py`(분류 정확도), `experiments/answer_check.py`(답변의 모양), `experiments/sim_merge.py`(합치는 규칙 계산), `experiments/eval_rewrite.py`(리라이터 검색어). 공개 문항은 `experiments/split.py`가 조정용 235개와 확인용 165개로 나눈다.
 - 확정된 결정과 지금 코드가 다른 곳: v2는 요청당 모델 호출이 네 번이고(결정 9는 두 번), 근거 섹션을 낱말 검색 1위로 쓴다(결정 14는 입력 가드가 고른다). 실험으로 만든 것이고 결정을 바꾼 것은 아니다. 이승원이 정해야 한다.
 - 띄우는 법: `set -a; source .env; set +a` 뒤 `uvicorn server:app --host 0.0.0.0 --port 8000`. v2로 띄우려면 앞에 `PIPELINE=v2`를 붙인다. 필요한 라이브러리는 `requirements.txt`(fastapi, uvicorn, openai). 처음 띄울 때 교재 임베딩을 만들어 `index/`에 저장한다(저장소에는 올리지 않는다).
 - 채점하는 법: 다른 터미널에서 `python3 harness/score_local.py --tutor-url http://localhost:8000/tutor --guard-url http://localhost:8000/guard --token "$TEAM_TOKEN" --public public --kb kb`.

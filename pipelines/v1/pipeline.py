@@ -55,6 +55,13 @@ def _json_object(text: str) -> Optional[dict]:
 
 
 class Pipeline:
+    # 다른 흐름이 바꿔 끼우는 것들
+    answer_systems = prompts.ANSWER_SYSTEMS
+    unsupported_system = prompts.UNSUPPORTED_SYSTEM
+    answer_effort = ANSWER_EFFORT
+    answer_max_tokens = 2000
+    safe_by_rule = False  # True면 차단된 입력의 후보 답변을 모델에 묻지 않고 안전하지 않다고 본다
+
     def __init__(self, searcher: Searcher, llm):
         self.searcher = searcher
         self.llm = llm
@@ -100,9 +107,9 @@ class Pipeline:
         material = self.searcher.section_text(state.section) if state.section else ""
         try:
             text = await self.llm.chat(
-                prompts.ANSWER_SYSTEMS[label],
+                self.answer_systems[label],
                 prompts.answer_user(material, state.history, state.last_user),
-                effort=ANSWER_EFFORT, max_tokens=2000, timeout=SECOND_TIMEOUT)
+                effort=self.answer_effort, max_tokens=self.answer_max_tokens, timeout=SECOND_TIMEOUT)
         except Exception as e:  # 답변 생성 실패 → 사과 문구, 인용 없음 (결정 15)
             state.errors.append(f"generate:{type(e).__name__}")
             text = ""
@@ -123,6 +130,9 @@ class Pipeline:
         if state.decision is Decision.BLOCK:
             # 차단된 입력: 후보 답변이 요청을 들어줬는지만 본다. 근거 검사는 하지 않는다 (결정 10)
             state.grounded, state.unsupported = True, []
+            if self.safe_by_rule:
+                state.safe = False
+                return
             try:
                 text = await self.llm.chat(
                     prompts.COMPLIED_SYSTEM,
@@ -144,7 +154,7 @@ class Pipeline:
             material = "\n\n".join(c.text for c in state.chunks[:FALLBACK_CHUNKS])
         try:
             text = await self.llm.chat(
-                prompts.UNSUPPORTED_SYSTEM, prompts.unsupported_user(material, candidate),
+                self.unsupported_system, prompts.unsupported_user(material, candidate),
                 effort=GUARD_EFFORT, max_tokens=1500, timeout=SECOND_TIMEOUT, json_mode=True)
             phrases = (_json_object(text) or {}).get("unsupported")
             if not isinstance(phrases, list):

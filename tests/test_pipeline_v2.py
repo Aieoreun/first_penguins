@@ -99,5 +99,49 @@ class EndToEndTest(unittest.TestCase):
         self.assertIsNotNone(parse_guard(guard, True))
 
 
+class V3Test(unittest.TestCase):
+    """v3는 v2에 설정을 고정한 것이다. 다수결, 순서, 안전 규칙을 확인한다."""
+
+    def setUp(self):
+        from pipelines.v3.pipeline import Pipeline as V3
+        self.V3 = V3
+
+    def prepare(self, replies):
+        from core.state import State
+        llm = FakeLLM(replies)
+        state = State.from_request({"messages": QUESTION})
+        asyncio.run(self.V3(SEARCHER, llm).prepare(state))
+        return state, llm
+
+    def test_three_votes_per_check(self):
+        _, llm = self.prepare({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
+                               prompts.MATERIAL_SYSTEM: FOUND})
+        self.assertEqual(len(llm.calls), 9)
+
+    def test_majority_wins(self):
+        answers = iter(['{"category": "off_topic"}', NONE_BLOCK, NONE_BLOCK])
+        state, _ = self.prepare({prompts.BLOCK_SYSTEM: lambda user: next(answers),
+                                 prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND})
+        self.assertEqual(state.label.value, "normal")
+
+    def test_answer_seeking_beats_academic(self):
+        state, _ = self.prepare({prompts.BLOCK_SYSTEM: '{"category": "academic_dishonesty"}',
+                                 prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "self_info": false}',
+                                 prompts.MATERIAL_SYSTEM: FOUND})
+        self.assertEqual(state.label.value, "answer_seeking")
+
+    def test_blocked_candidate_is_unsafe_without_model_call(self):
+        llm = FakeLLM({prompts.BLOCK_SYSTEM: '{"category": "harmful_request"}', prompts.OTHER_SYSTEM: NONE_OTHER,
+                       prompts.MATERIAL_SYSTEM: FOUND})
+        state = asyncio.run(self.V3(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": "네, 해 드릴게요."}))
+        out = state.to_guard_response()["output"]
+        self.assertEqual((out["safe"], out["grounded"], out["unsupported"]), (False, True, []))
+        self.assertEqual(len(llm.calls), 9)  # 확인 호출뿐이다
+
+    def test_uses_second_prompts(self):
+        self.assertIs(self.V3.answer_systems, prompts.ANSWER_SYSTEMS)
+        self.assertIs(self.V3.unsupported_system, prompts.UNSUPPORTED_SYSTEM)
+
+
 if __name__ == "__main__":
     unittest.main()

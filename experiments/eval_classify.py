@@ -41,11 +41,8 @@ async def run(args):
     chunks = load_chunks(ROOT / "kb")
     vectors = load_vectors(ROOT / "index" / "kb_embeddings.json", llm.embedding_model, chunks)
     pipe = load(args.pipeline)(Searcher(chunks, vectors), llm)
-    items = []
-    for endpoint in ("tutor", "guard"):
-        for line in (ROOT / "public" / f"{endpoint}.jsonl").read_text(encoding="utf-8").splitlines():
-            if line.strip():
-                items.append(json.loads(line))
+    from experiments.split import load_items
+    items = load_items(args.split)
     if args.limit:
         items = items[:args.limit]
     sem = asyncio.Semaphore(args.workers)
@@ -67,7 +64,7 @@ async def run(args):
 
     rows = await asyncio.gather(*(one(it) for it in items))
     CACHE.mkdir(exist_ok=True)
-    (CACHE / f"classify_{args.pipeline}_{args.name}.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
+    (CACHE / f"classify_{args.pipeline}_{args.split}_{args.name}.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
     report(rows, vectors is not None)
 
 
@@ -101,6 +98,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--pipeline", default="v1")
     ap.add_argument("--name", default="run")
+    ap.add_argument("--split", default="all", choices=["all", "dev", "holdout"])
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--limit", type=int, default=0)
     a = ap.parse_args()
