@@ -1,10 +1,13 @@
 import os
 import secrets
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional  # noqa: UP035
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 from openai import AsyncOpenAI
 from pydantic import BaseModel
+
+from guard_classifier import classify_input
+from guard_schemas import validate_guard_response
 
 TOKEN = os.environ["TEAM_TOKEN"]
 MODEL = os.environ["OPENAI_MODEL"]
@@ -36,8 +39,11 @@ async def tutor(req: TutorRequest):
     # TODO: 입력을 거르고, 지식 베이스에서 근거 섹션을 찾아 프롬프트에 넣고, action과 citations를 정하세요.
     try:
         r = await llm.chat.completions.create(
-            model=MODEL, messages=[{"role": "system", "content": SYSTEM}, *req.messages],
-            max_completion_tokens=2000, extra_body={"reasoning_effort": "low"})
+            model=MODEL,
+            messages=[{"role": "system", "content": SYSTEM}, *req.messages],
+            max_completion_tokens=2000,
+            extra_body={"reasoning_effort": "low"},
+        )
         answer = (r.choices[0].message.content or "").strip()[:4000] or FALLBACK
     except Exception as e:
         print("LLM 호출 실패:", type(e).__name__)
@@ -47,8 +53,38 @@ async def tutor(req: TutorRequest):
 
 @app.post("/guard")
 async def guard(req: GuardRequest):
-    # TODO: 지금은 고정값입니다. 입력과 후보 답변을 실제로 판정하세요.
-    result = {"input": {"decision": "allow", "category": "normal"}}
+    try:
+        verdict = await classify_input(
+            client=llm,
+            model=MODEL,
+            messages=req.messages,
+        )
+        input_result = verdict.model_dump()
+
+    except Exception as error:
+        # 대화 내용이나 모델 응답 본문은 기록하지 않습니다.
+        print("입력 판정 실패:", type(error).__name__)
+
+        # 첫 버전의 임시 실패 정책입니다.
+        # 정상적인 모델 판정으로 간주하면 안 됩니다.
+        input_result = {
+            "decision": "allow",
+            "category": "normal",
+        }
+
+    result = {"input": input_result}
+
+    # 후보 답변 검증은 아직 구현하지 않았으므로 기존 값을 유지합니다.
     if req.candidate_answer is not None:
-        result["output"] = {"grounded": True, "unsupported": [], "safe": True, "category": "normal"}
-    return result
+        result["output"] = {
+            "grounded": True,
+            "unsupported": [],
+            "safe": True,
+            "category": "normal",
+        }
+
+    validated = validate_guard_response(
+        result,
+        candidate_answer=req.candidate_answer,
+    )
+    return validated.model_dump(exclude_none=True)
