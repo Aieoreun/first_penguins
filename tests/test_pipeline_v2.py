@@ -1,0 +1,103 @@
+"""v2 흐름 검사: 세 확인의 답을 우선순위대로 합치는지, 실패했을 때 무엇으로 보는지. 모델은 가짜를 쓴다."""
+import asyncio
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from core.kb import load_chunks  # noqa: E402
+from core.search import Searcher  # noqa: E402
+from grader.scoring import parse_guard, parse_tutor  # noqa: E402
+from pipelines.v1 import prompts as v1_prompts  # noqa: E402
+from pipelines.v2 import prompts  # noqa: E402
+from pipelines.v2.pipeline import Pipeline  # noqa: E402
+from tests.test_pipeline import QUESTION, FakeLLM  # noqa: E402
+
+SEARCHER = Searcher(load_chunks(ROOT / "kb"))
+TOP1 = SEARCHER.search(QUESTION[0]["content"])[0].section_id
+NONE_BLOCK = '{"category": "none"}'
+NONE_OTHER = '{"category": "none", "self_info": false}'
+FOUND = '{"asked": "한도", "quote": "하루 이체 한도는 5만 원", "section": "%s"}' % TOP1
+MISSING = '{"asked": "한도", "quote": "", "section": "%s"}' % TOP1
+
+
+def classify(block=NONE_BLOCK, other=NONE_OTHER, material=FOUND, **more):
+    replies = {prompts.BLOCK_SYSTEM: block, prompts.OTHER_SYSTEM: other, prompts.MATERIAL_SYSTEM: material}
+    replies.update(more)
+    llm = FakeLLM(replies)
+    state = asyncio.run(_prepare(Pipeline(SEARCHER, llm)))
+    return state, llm
+
+
+async def _prepare(pipe):
+    from core.state import State
+    state = State.from_request({"messages": QUESTION})
+    await pipe.prepare(state)
+    return state
+
+
+class MergeTest(unittest.TestCase):
+    def label(self, **kw):
+        return classify(**kw)[0].label.value
+
+    def test_nothing_flagged_is_normal(self):
+        state, llm = classify()
+        self.assertEqual(state.label.value, "normal")
+        self.assertEqual(state.section, TOP1)
+        self.assertEqual(len(llm.calls), 3)  # 세 확인을 한 번씩 부른다
+
+    def test_block_beats_everything(self):
+        self.assertEqual(self.label(block='{"category": "jailbreak_injection"}',
+                                    other='{"category": "emotional_distress", "self_info": true}',
+                                    material=MISSING), "jailbreak_injection")
+
+    def test_distress_beats_academic(self):
+        self.assertEqual(self.label(block='{"category": "academic_dishonesty"}',
+                                    other='{"category": "emotional_distress", "self_info": false}'),
+                         "emotional_distress")
+
+    def test_academic_beats_answer_seeking(self):
+        self.assertEqual(self.label(block='{"category": "academic_dishonesty"}',
+                                    other='{"category": "answer_seeking", "self_info": false}'),
+                         "academic_dishonesty")
+
+    def test_out_of_material_beats_self_info(self):
+        self.assertEqual(self.label(other='{"category": "none", "self_info": true}', material=MISSING),
+                         "out_of_material")
+
+    def test_self_info_alone_is_pii(self):
+        self.assertEqual(self.label(other='{"category": "none", "self_info": true}'), "pii_disclosure")
+
+    def test_empty_quote_is_out_of_material(self):
+        self.assertEqual(self.label(material=MISSING), "out_of_material")
+
+
+class FailureTest(unittest.TestCase):
+    def test_failed_checks_fall_back_to_normal(self):
+        state, _ = classify(block=TimeoutError(), other="not json", material=RuntimeError())
+        self.assertEqual(state.label.value, "normal")  # 교재 확인이 실패하면 교재에 있는 것으로 본다
+        self.assertEqual(state.section, TOP1)
+        self.assertEqual(len(state.errors), 3)
+
+    def test_unknown_names_are_ignored(self):
+        state, _ = classify(block='{"category": "something_else"}', other='{"category": 3, "self_info": "yes"}')
+        self.assertEqual(state.label.value, "normal")
+
+
+class EndToEndTest(unittest.TestCase):
+    def test_tutor_and_guard_responses_are_valid(self):
+        replies = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+                   v1_prompts.ANSWER_SYSTEM: "하루 이체 한도는 5만 원이에요.",
+                   v1_prompts.UNSUPPORTED_SYSTEM: '{"unsupported": []}'}
+        pipe = Pipeline(SEARCHER, FakeLLM(replies))
+        tutor = asyncio.run(pipe.tutor({"messages": QUESTION})).to_tutor_response()
+        self.assertIsNotNone(parse_tutor(tutor))
+        self.assertEqual((tutor["action"], tutor["citations"]), ("answer", [TOP1]))
+        guard = asyncio.run(pipe.guard({"messages": QUESTION, "candidate_answer": "5만 원이에요."})).to_guard_response()
+        self.assertIsNotNone(parse_guard(guard, True))
+
+
+if __name__ == "__main__":
+    unittest.main()
