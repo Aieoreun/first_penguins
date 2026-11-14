@@ -9,12 +9,13 @@ from typing import Dict, List, Optional
 
 from .schema import (
     ANSWER_MAX_CHARS,
-    DEFAULT_CATEGORY,
+    DEFAULT_LABEL,
+    POLICY,
     Action,
     Category,
     Decision,
-    action_for,
-    decision_for,
+    Label,
+    Policy,
 )
 
 
@@ -35,11 +36,10 @@ class State:
     # 검색
     chunks: List[Chunk] = field(default_factory=list)
 
-    # 입력 가드
-    category: Optional[Category] = None
-    action_override: Optional[Action] = None  # 표의 기본 action을 바꿀 때만 채운다
+    # 입력 가드. 분류기가 고른 이름(11개)이다. 응답에는 여기서 나온 대회 범주(10개)만 나간다
+    label: Optional[Label] = None
 
-    # 답변 생성 (/tutor)
+    # 답변 생성 (/tutor). 고정 문구가 있는 분류에서는 쓰지 않는다
     answer: str = ""
     citations: List[str] = field(default_factory=list)
 
@@ -85,25 +85,36 @@ class State:
     def has_candidate(self) -> bool:
         return self.candidate_answer is not None
 
-    # --- 범주에서 나오는 값 ---
+    # --- 분류 이름에서 나오는 값 ---
 
     @property
-    def resolved_category(self) -> Category:
-        return self.category if self.category is not None else DEFAULT_CATEGORY
+    def policy(self) -> Policy:
+        return POLICY[self.label if self.label is not None else DEFAULT_LABEL]
+
+    @property
+    def category(self) -> Category:
+        return self.policy.category
 
     @property
     def decision(self) -> Decision:
-        return decision_for(self.resolved_category)
+        return self.policy.decision
 
     @property
     def action(self) -> Action:
-        if self.action_override is not None:
-            return self.action_override
-        return action_for(self.resolved_category)
+        return self.policy.action
+
+    @property
+    def needs_generation(self) -> bool:
+        """모델이 답변을 써야 하는가. 고정 문구가 있으면 쓰지 않는다."""
+        return self.policy.fixed_answer is None
 
     # --- 응답 ---
 
     def to_tutor_response(self) -> dict:
+        fixed = self.policy.fixed_answer
+        if fixed is not None:
+            # 고정 문구가 있는 분류는 모델이 쓴 글이 있어도 내보내지 않는다. 근거도 없다
+            return {"answer": fixed, "action": self.action.value, "citations": []}
         seen, citations = set(), []
         for c in self.citations:  # 인용은 중복을 빼고 센다
             if isinstance(c, str) and c and c not in seen:
@@ -116,7 +127,7 @@ class State:
         }
 
     def to_guard_response(self) -> dict:
-        category = self.resolved_category.value
+        category = self.category.value
         out = {"input": {"decision": self.decision.value, "category": category}}
         if self.has_candidate:
             out["output"] = {
