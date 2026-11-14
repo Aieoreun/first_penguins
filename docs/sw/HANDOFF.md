@@ -8,7 +8,10 @@
 
 - 된 것: 설계 결정 1~14(`02_설계.md`), 범주 정의 확정, 스키마와 요청별 state·교재 조각 읽기(`core/`), 그 테스트(`tests/`), 분류 프롬프트 초안, 검색 비교와 응답 시간 실험(`experiments/`)
 - 확인 안 한 것: 출력 가드 프롬프트, 평가 방법, 실패했을 때의 동작, 만드는 순서는 추천안대로 진행한다. 이승원이 검토해 확정한 것이 아니다(`02_설계.md` 결정 15)
-- 안 된 것: `server.py`는 주최 측 기본 그대로다. 분류기 호출, 검색(실험 스크립트만 있음), 답변 생성, 출력 가드는 서버 코드가 없다. 답변 생성과 출력 가드는 프롬프트도 없다. 제출 기록도 없다.
+- 서버: 전체가 도는 서버를 만들었다(2026-11-14). `server.py`가 `core/pipeline.py`를 부른다. 검색(`core/search.py`), 모델 호출(`core/llm.py`), 프롬프트(`core/prompts.py`), 구절 찾기(`core/spans.py`). 로컬 채점기 첫 점수는 총점 80.2(튜터 77.31, 가드 83.09)다(`02_설계.md` 3.7절). 프롬프트는 첫 판이다.
+- 안 된 것: 런박스에서 띄워 본 적이 없고 제출 기록도 없다. 부품별 평가 스크립트가 없다.
+- 띄우는 법: `set -a; source .env; set +a` 뒤 `uvicorn server:app --host 0.0.0.0 --port 8000`. 필요한 라이브러리는 `requirements.txt`(fastapi, uvicorn, openai). 처음 띄울 때 교재 임베딩을 만들어 `index/`에 저장한다(저장소에는 올리지 않는다).
+- 채점하는 법: 다른 터미널에서 `python3 harness/score_local.py --tutor-url http://localhost:8000/tutor --guard-url http://localhost:8000/guard --token "$TEAM_TOKEN" --public public --kb kb`.
 
 ## 내가 직접 할 일
 

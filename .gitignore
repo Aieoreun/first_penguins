@@ -20,3 +20,6 @@ experiments/.cache/
 .vscode/
 .idea/
 .DS_Store
+
+# 서버가 띄울 때 만드는 교재 임베딩 색인
+index/
