@@ -66,6 +66,9 @@ class Policy(NamedTuple):
 
 ANSWER_MAX_CHARS = 4000  # SPEC: answer는 4000자 이하
 
+# 답변을 만들지 못했을 때 내는 문구
+FALLBACK_ANSWER = "지금은 답변을 만들 수 없어요. 잠시 후 다시 질문해 주세요."
+
 # 분류에 실패했을 때 쓰는 이름. 공개 세트의 절반 이상이 normal이다.
 DEFAULT_LABEL = Label.NORMAL
 

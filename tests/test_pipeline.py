@@ -1,4 +1,4 @@
-"""검색, 구절 찾기, 요청 흐름 검사. 모델은 가짜를 쓴다(네트워크를 타지 않는다)."""
+"""검색, 구절 찾기, v1 요청 흐름 검사. 모델은 가짜를 쓴다(네트워크를 타지 않는다)."""
 import asyncio
 import sys
 import unittest
@@ -7,12 +7,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from core import prompts  # noqa: E402
 from core.kb import load_chunks  # noqa: E402
-from core.pipeline import FALLBACK_ANSWER, Pipeline  # noqa: E402
+from core.schema import FALLBACK_ANSWER  # noqa: E402
 from core.search import Searcher  # noqa: E402
 from core.spans import locate, locate_all  # noqa: E402
 from grader.scoring import parse_guard, parse_tutor  # noqa: E402
+from pipelines.v1 import prompts  # noqa: E402
+from pipelines.v1.pipeline import Pipeline  # noqa: E402
 
 CHUNKS = load_chunks(ROOT / "kb")
 SEARCHER = Searcher(CHUNKS)

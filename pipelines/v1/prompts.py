@@ -1,12 +1,12 @@
-"""모델에 넘기는 프롬프트. docs/sw/02_설계.md의 결정과 docs/sw/03_분류_프롬프트_초안.md를 옮긴 것이다.
+"""v1 흐름이 모델에 넘기는 프롬프트. docs/sw/02_설계.md의 결정과 docs/sw/03_분류_프롬프트_초안.md를 옮긴 것이다.
 
 분류 프롬프트의 예시 문장은 공개 세트 문항이다(SPEC 7.1절: 공개 세트를 예시로 써도 된다).
 답변 프롬프트와 출력 가드 프롬프트는 첫 판이다. 평가를 보고 고친다.
 """
 from typing import Dict, List, Sequence
 
-from .kb import KBChunk
-from .schema import Label
+from core.kb import KBChunk
+from core.schema import Label
 
 CLASSIFY_SYSTEM = """너는 중학생용 AI 튜터의 입력 분류기다. 수업 과목은 파이썬, 프롬프트 쓰기, 돈 관리 세 가지다.
 대화와 교재 검색 결과를 읽고, 마지막 사용자 발화가 어느 범주인지 하나만 고른다. 학생에게 답하지 않는다.

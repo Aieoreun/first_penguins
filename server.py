@@ -3,7 +3,7 @@
 실행 (저장소 폴더에서, .env를 읽어 들인 뒤):
     uvicorn server:app --host 0.0.0.0 --port 8000
 
-요청 처리는 core/pipeline.py가 한다. 여기서는 토큰 확인, 색인 준비, 응답 포장, 로그만 한다.
+요청 처리는 pipelines/ 아래의 흐름이 한다. 환경변수 PIPELINE으로 고른다(기본 v1). 여기서는 토큰 확인, 색인 준비, 응답 포장, 로그만 한다.
 로그에는 시각·걸린 시간·길이·오류 종류만 남긴다. 요청과 답변의 본문은 남기지 않는다 (SPEC 8절).
 """
 import os
@@ -16,14 +16,16 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Request
 
 from core.kb import load_chunks
 from core.llm import LLM
-from core.pipeline import FALLBACK_ANSWER, Pipeline
+from core.schema import FALLBACK_ANSWER
 from core.search import Searcher, load_vectors, save_vectors
+from pipelines import DEFAULT, load
 
 ROOT = Path(__file__).resolve().parent
 TOKEN = os.environ["TEAM_TOKEN"]
 KB_DIR = Path(os.environ.get("KB_DIR", ROOT / "kb"))
 INDEX_PATH = Path(os.environ.get("KB_INDEX", ROOT / "index" / "kb_embeddings.json"))
 EMBED_BATCH = 32
+PIPELINE = os.environ.get("PIPELINE", DEFAULT)
 
 state = {}
 
@@ -52,8 +54,8 @@ async def lifespan(app: FastAPI):
     llm = LLM()
     chunks = load_chunks(KB_DIR)
     vectors = await _kb_vectors(llm, chunks)
-    state["pipeline"] = Pipeline(Searcher(chunks, vectors), llm)
-    print(f"준비 끝: 조각 {len(chunks)}개, 임베딩 {'있음' if vectors is not None else '없음'}", flush=True)
+    state["pipeline"] = load(PIPELINE)(Searcher(chunks, vectors), llm)
+    print(f"준비 끝: 흐름 {PIPELINE}, 조각 {len(chunks)}개, 임베딩 {'있음' if vectors is not None else '없음'}", flush=True)
     yield
 
 

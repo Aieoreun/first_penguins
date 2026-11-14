@@ -41,6 +41,13 @@ class State:
     # 입력 가드가 고른 근거 섹션 ID. 검색 후보에 있는 것만 넣는다 (결정 14)
     section: Optional[str] = None
 
+    # 리라이터가 푼 요청과 검색어 (v2). 로그에 남기지 않는다
+    request: str = ""
+    query: str = ""
+
+    # 실험에서 들여다보는 값(판정 칸, 모델이 고른 섹션 등). 응답과 로그에 쓰지 않는다
+    debug: Dict[str, object] = field(default_factory=dict)
+
     # 답변 생성 (/tutor). 고정 문구가 있는 분류에서는 쓰지 않는다
     answer: str = ""
     citations: List[str] = field(default_factory=list)

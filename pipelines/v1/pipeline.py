@@ -1,4 +1,4 @@
-"""요청 하나를 처리하는 흐름. docs/sw/02_설계.md 결정 9·10·13·14·15.
+"""v1 흐름. docs/sw/02_설계.md 결정 9·10·13·14·15.
 
 /tutor: 검색 → 입력 가드(분류 + 근거 섹션) → 고정 문구 또는 답변 생성
 /guard: 검색 → 입력 가드 → (후보 답변이 있으면) 출력 가드
@@ -12,13 +12,12 @@ import os
 import re
 from typing import List, Optional
 
-from . import prompts
-from .schema import Decision, Label, parse_label
-from .search import Searcher
-from .spans import locate_all
-from .state import Chunk, State
+from core.schema import FALLBACK_ANSWER, Decision, Label, parse_label
+from core.search import Searcher
+from core.spans import locate_all
+from core.state import Chunk, State
 
-FALLBACK_ANSWER = "지금은 답변을 만들 수 없어요. 잠시 후 다시 질문해 주세요."
+from . import prompts
 
 # 요청당 30초 안에 끝나도록 단계마다 제한 시간을 둔다(초). 합이 30보다 작아야 한다
 EMBED_TIMEOUT = float(os.environ.get("EMBED_TIMEOUT", "3"))
@@ -159,18 +158,21 @@ class Pipeline:
 
     # ---------- 요청 ----------
 
+    async def prepare(self, state: State, extra: str = "") -> None:
+        """답변 생성·출력 가드 앞까지: 검색하고 범주와 근거 섹션을 정한다."""
+        await self._search(state, extra)
+        await self._classify(state)
+
     async def tutor(self, body) -> State:
         state = State.from_request(body)
-        await self._search(state)
-        await self._classify(state)
+        await self.prepare(state)
         if state.needs_generation:
             await self._generate(state)
         return state
 
     async def guard(self, body) -> State:
         state = State.from_request(body)
-        await self._search(state, extra=state.candidate_answer or "")
-        await self._classify(state)
+        await self.prepare(state, extra=state.candidate_answer or "")
         if state.has_candidate:
             await self._check_output(state)
         return state
