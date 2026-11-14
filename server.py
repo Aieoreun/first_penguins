@@ -118,6 +118,12 @@ async def guard(req: GuardRequest):
 
     results = await asyncio.gather(*operations)
 
+    if any(result is None for result in results):
+        raise HTTPException(
+            status_code=503,
+            detail="Guard evaluation failed",
+        )
+
     input_verdict = results[0]
     response = {
         "input": (
