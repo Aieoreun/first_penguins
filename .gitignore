@@ -22,3 +22,6 @@ venv/
 
 # OMX local runtime state
 .omx/
+
+# 로컬 실험 작업 파일
+work/
