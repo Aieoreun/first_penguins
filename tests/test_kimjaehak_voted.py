@@ -72,6 +72,17 @@ class VotedTests(unittest.TestCase):
         self.assertEqual(llm.calls.count(INTENT), 2)
         self.assertEqual(len(llm.calls), 7)
 
+    def test_reallocated_votes_keep_seven_calls_and_material_once(self):
+        from pipelines.kimjaehak.block5 import Pipeline as Block5
+        llm = FakeLLM({BLOCK_SYSTEM: '{"category":"none"}', prompts.OTHER_SYSTEM: NONE_OTHER,
+                       prompts.MATERIAL_SYSTEM: FOUND})
+        state = asyncio.run(Block5(SEARCHER, llm).guard({"messages": QUESTION}))
+        self.assertEqual(state.label, Label.NORMAL)
+        self.assertEqual(state.errors, [])
+        self.assertEqual(llm.calls.count(BLOCK_SYSTEM), 5)
+        self.assertEqual(llm.calls.count(prompts.OTHER_SYSTEM), 1)
+        self.assertEqual(llm.calls.count(prompts.MATERIAL_SYSTEM), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

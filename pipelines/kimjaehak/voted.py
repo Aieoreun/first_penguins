@@ -20,6 +20,7 @@ class Pipeline(Calibrated):
     request_slots = 32
     deadline = 26
     short_votes = 3
+    other_vote_count = None  # None preserves the same count as block votes.
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
@@ -33,16 +34,21 @@ class Pipeline(Calibrated):
             return await super()._classify(state)
         check = prompts.check_user(state.request, state.history, state.last_user)
         material = prompts.material_user(state.chunks, state.request, state.history, state.last_user)
-        calls = []
-        for index in range(self.short_votes):
-            calls.extend([
-                self._block_check(state, check, index),
-                self._ask(state, "other", prompts.OTHER_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
-            ])
+        calls, kinds = [], []
+        other_count = self.short_votes if self.other_vote_count is None else self.other_vote_count
+        for index in range(max(self.short_votes, other_count)):
+            if index < self.short_votes:
+                calls.append(self._block_check(state, check, index))
+                kinds.append("block")
+            if index < other_count:
+                calls.append(self._ask(state, "other", prompts.OTHER_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT))
+                kinds.append("other")
         calls.append(self._ask(state, "material", prompts.MATERIAL_SYSTEM, material,
                                CLASSIFY_EFFORT, CLASSIFY_TIMEOUT))
         answers = await asyncio.gather(*calls)
-        blocks, others, material = answers[:-1:2], answers[1:-1:2], answers[-1]
+        blocks = [answer for answer, kind in zip(answers[:-1], kinds) if kind == "block"]
+        others = [answer for answer, kind in zip(answers[:-1], kinds) if kind == "other"]
+        material = answers[-1]
         block_votes = [x["category"] for x in blocks
                        if isinstance(x.get("category"), str) and x["category"] in BLOCKS]
         other_votes = [x["category"] for x in others

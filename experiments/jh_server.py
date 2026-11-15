@@ -28,7 +28,7 @@ def main():
     pipeline = load(args.variant)
     fields = ("answer_effort", "answer_max_tokens", "votes", "seek_first", "safe_by_rule",
               "deadline", "prepare_limit", "peace_input", "peace_output",
-              "guided_input", "guided_output", "focus_input", "request_slots", "short_votes",
+              "guided_input", "guided_output", "focus_input", "request_slots", "short_votes", "other_vote_count",
               "short_effort", "short_max_tokens", "short_timeout", "answer_sections", "material_review_timeout")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
