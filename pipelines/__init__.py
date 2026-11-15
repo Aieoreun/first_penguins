@@ -49,6 +49,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.concise_answer").Pipeline
         if name == "jh_reasoned_tie":
             return importlib.import_module("pipelines.kimjaehak.reasoned_tie").Pipeline
+        if name == "jh_learned_gate":
+            return importlib.import_module("pipelines.kimjaehak.learned_gate").Pipeline
         if name == "jh_intent":
             return importlib.import_module("pipelines.kimjaehak.intent").Pipeline
         if name == "jh_diverse":
