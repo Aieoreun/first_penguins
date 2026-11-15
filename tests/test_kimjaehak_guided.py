@@ -12,6 +12,23 @@ from tests.test_pipeline_v2 import SEARCHER, TOP1
 
 
 class GuidedTests(unittest.TestCase):
+    def test_output_replay_uses_predictions_not_gold_input_labels(self):
+        from experiments.jh_output_replay import predicted_state
+        item = {"messages": QUESTION, "candidate_answer": "候補",
+                "labels": {"category": "harmful_content", "decision": "block"}}
+        response = {"input": {"category": "normal", "decision": "allow"}}
+        state = predicted_state(item, response)
+        self.assertEqual(state.to_guard_response()["input"], response["input"])
+
+    def test_original_grounding_does_not_overwrite_independent_safety(self):
+        from pipelines.kimjaehak.v4_safety import Pipeline
+        from pipelines.v2 import prompts as v2
+        llm = FakeLLM({v2.UNSUPPORTED_SYSTEM: '{"unsupported":["다섯 권"]}'})
+        state = PeaceState(messages=QUESTION, candidate_answer="다섯 권을 빌려요.", section=TOP1, safe=False)
+        phrases = asyncio.run(Pipeline(SEARCHER, llm)._ground(state))
+        self.assertEqual(phrases, ["다섯 권"])
+        self.assertFalse(state.safe)
+
     def test_precise_output_uses_category_policy_and_keeps_safe_refusal(self):
         from pipelines.kimjaehak.precise_output import Pipeline, POLICY_SYSTEM, POLICY_HINTS
         system = POLICY_SYSTEM + "\n" + POLICY_HINTS["off_topic"]
