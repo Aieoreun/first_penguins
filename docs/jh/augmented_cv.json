@@ -1,0 +1,330 @@
+{
+  "scope": "public_grouped_oof_gate_diagnostic",
+  "groups": 375,
+  "analysis_commit": "2c3f9811345be00769e005d75d340f1d366a195e",
+  "exclude_harmful": true,
+  "augmentation": {
+    "path": "experiments/.cache/jh_augment_public2_1/paraphrases.jsonl",
+    "sha256": "5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2",
+    "model": "openai/gpt-5-nano",
+    "examples": 753,
+    "raw_examples": 790,
+    "sample_weight": 0.5,
+    "excluded_categories": [
+      "low_signal_input"
+    ]
+  },
+  "baseline": {
+    "category_accuracy_non_normal": 0.9418604651162791,
+    "block_f1": 0.9,
+    "tutor_action_accuracy": 0.875
+  },
+  "source": "experiments/.cache/jh_batch_adaptive_s64/jh_adaptive_1/responses.jsonl",
+  "source_sha256": "5c6e9a38e7b02a82714db5c5fcdb8f3a64f994326a803ff70158f2d0648d089b",
+  "public_hashes": {
+    "tutor.jsonl": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+    "guard.jsonl": "4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426"
+  },
+  "reports": [
+    {
+      "C": 10,
+      "out_of_fold_accuracy": 0.715,
+      "training_accuracy": 0.9325,
+      "gates": {
+        "0.9": {
+          "oof_coverage": 10,
+          "oof_selected_accuracy": 0.9,
+          "guard_replacements": 1,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.8925619834710744,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 85,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9534883720930233,
+            "block_f1": 0.9090909090909091,
+            "tutor_action_accuracy": 0.885
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.95": {
+          "oof_coverage": 4,
+          "oof_selected_accuracy": 1.0,
+          "guard_replacements": 0,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 23,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.88
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.98": {
+          "oof_coverage": 2,
+          "oof_selected_accuracy": 1.0,
+          "guard_replacements": 0,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 9,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.995": {
+          "oof_coverage": 0,
+          "oof_selected_accuracy": null,
+          "guard_replacements": 0,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 0,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_selected_accuracy": null
+        }
+      }
+    },
+    {
+      "C": 100,
+      "out_of_fold_accuracy": 0.7275,
+      "training_accuracy": 0.995,
+      "gates": {
+        "0.9": {
+          "oof_coverage": 101,
+          "oof_selected_accuracy": 0.8910891089108911,
+          "guard_replacements": 8,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9186046511627907,
+            "block_f1": 0.8760330578512396,
+            "tutor_action_accuracy": 0.885
+          },
+          "training_coverage": 307,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 0.9491525423728814,
+            "tutor_action_accuracy": 0.98
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.95": {
+          "oof_coverage": 44,
+          "oof_selected_accuracy": 0.9545454545454546,
+          "guard_replacements": 3,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.8925619834710744,
+            "tutor_action_accuracy": 0.88
+          },
+          "training_coverage": 206,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 0.9256198347107438,
+            "tutor_action_accuracy": 0.945
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.98": {
+          "oof_coverage": 14,
+          "oof_selected_accuracy": 0.9285714285714286,
+          "guard_replacements": 1,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.8925619834710744,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 102,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9767441860465116,
+            "block_f1": 0.9180327868852459,
+            "tutor_action_accuracy": 0.895
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.995": {
+          "oof_coverage": 4,
+          "oof_selected_accuracy": 1.0,
+          "guard_replacements": 0,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 18,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.9,
+            "tutor_action_accuracy": 0.88
+          },
+          "training_selected_accuracy": 1.0
+        }
+      }
+    },
+    {
+      "C": 300,
+      "out_of_fold_accuracy": 0.725,
+      "training_accuracy": 0.9975,
+      "gates": {
+        "0.9": {
+          "oof_coverage": 156,
+          "oof_selected_accuracy": 0.8653846153846154,
+          "guard_replacements": 15,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.8488372093023255,
+            "block_f1": 0.847457627118644,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 340,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 0.9911504424778761,
+            "tutor_action_accuracy": 1.0
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.95": {
+          "oof_coverage": 102,
+          "oof_selected_accuracy": 0.9019607843137255,
+          "guard_replacements": 8,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9186046511627907,
+            "block_f1": 0.8760330578512396,
+            "tutor_action_accuracy": 0.885
+          },
+          "training_coverage": 321,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 0.9572649572649573,
+            "tutor_action_accuracy": 0.99
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.98": {
+          "oof_coverage": 42,
+          "oof_selected_accuracy": 0.9761904761904762,
+          "guard_replacements": 2,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.8925619834710744,
+            "tutor_action_accuracy": 0.88
+          },
+          "training_coverage": 215,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 0.9256198347107438,
+            "tutor_action_accuracy": 0.945
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.995": {
+          "oof_coverage": 10,
+          "oof_selected_accuracy": 0.9,
+          "guard_replacements": 1,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.8925619834710744,
+            "tutor_action_accuracy": 0.875
+          },
+          "training_coverage": 80,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9534883720930233,
+            "block_f1": 0.9090909090909091,
+            "tutor_action_accuracy": 0.88
+          },
+          "training_selected_accuracy": 1.0
+        }
+      }
+    },
+    {
+      "C": 1000,
+      "out_of_fold_accuracy": 0.725,
+      "training_accuracy": 1.0,
+      "gates": {
+        "0.9": {
+          "oof_coverage": 198,
+          "oof_selected_accuracy": 0.8383838383838383,
+          "guard_replacements": 19,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.8255813953488372,
+            "block_f1": 0.8275862068965517,
+            "tutor_action_accuracy": 0.86
+          },
+          "training_coverage": 349,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 1.0,
+            "tutor_action_accuracy": 1.0
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.95": {
+          "oof_coverage": 156,
+          "oof_selected_accuracy": 0.8397435897435898,
+          "guard_replacements": 15,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.8488372093023255,
+            "block_f1": 0.847457627118644,
+            "tutor_action_accuracy": 0.865
+          },
+          "training_coverage": 341,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 1.0,
+            "tutor_action_accuracy": 0.995
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.98": {
+          "oof_coverage": 97,
+          "oof_selected_accuracy": 0.9278350515463918,
+          "guard_replacements": 8,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9069767441860465,
+            "block_f1": 0.8833333333333333,
+            "tutor_action_accuracy": 0.88
+          },
+          "training_coverage": 312,
+          "training_combined": {
+            "category_accuracy_non_normal": 1.0,
+            "block_f1": 0.9739130434782609,
+            "tutor_action_accuracy": 0.98
+          },
+          "training_selected_accuracy": 1.0
+        },
+        "0.995": {
+          "oof_coverage": 43,
+          "oof_selected_accuracy": 0.9767441860465116,
+          "guard_replacements": 2,
+          "combined_guard_input": {
+            "category_accuracy_non_normal": 0.9418604651162791,
+            "block_f1": 0.8925619834710744,
+            "tutor_action_accuracy": 0.88
+          },
+          "training_coverage": 148,
+          "training_combined": {
+            "category_accuracy_non_normal": 0.9767441860465116,
+            "block_f1": 0.9333333333333333,
+            "tutor_action_accuracy": 0.915
+          },
+          "training_selected_accuracy": 1.0
+        }
+      }
+    }
+  ]
+}
