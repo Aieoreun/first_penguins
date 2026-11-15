@@ -23,12 +23,13 @@ from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import StratifiedGroupKFold
 from threadpoolctl import threadpool_limits
 from core.schema import POLICY, parse_label
+from pipelines.kimjaehak.gate_features import FEATURES, vectorizer as build_vectorizer
 
 BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off_topic"}
 
 
 def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weight=.5,
-        regularizations=(10, 100, 300, 1000)):
+        regularizations=(10, 100, 300, 1000), features="char"):
     paths = [ROOT / "public" / f"{e}.jsonl" for e in ("tutor", "guard")]
     rows = [p for path in paths for p in map(json.loads, path.read_text().splitlines())]
     texts = [next(m["content"] for m in reversed(p["messages"]) if m["role"] == "user") for p in rows]
@@ -105,8 +106,7 @@ def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weig
                 fit_texts.extend(additions)
                 fit_labels.extend([y[i]] * len(additions))
                 weights.extend([augmentation_weight] * len(additions))
-            vectorizer = TfidfVectorizer(analyzer="char", ngram_range=(2, 5), min_df=2,
-                                         max_features=60000, sublinear_tf=True)
+            vectorizer = build_vectorizer(features)
             x = vectorizer.fit_transform(fit_texts)
             model = LogisticRegression(C=c, max_iter=500, class_weight="balanced").fit(x, fit_labels, sample_weight=weights)
             return vectorizer, model
@@ -139,7 +139,7 @@ def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weig
         print(json.dumps(report), flush=True)
     return {"scope": "public_grouped_oof_gate_diagnostic", "groups": len(set(groups)),
             "analysis_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
-            "exclude_harmful": exclude_harmful,
+            "exclude_harmful": exclude_harmful, "features": features,
             "augmentation":augmentation_meta,
             "baseline": metrics(baseline), "source": str(source.relative_to(ROOT)),
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -153,6 +153,7 @@ if __name__ == "__main__":
     parser.add_argument("--augmentation", type=Path)
     parser.add_argument("--augmentation-weight", type=float, default=.5)
     parser.add_argument("--regularizations", type=float, nargs="+", default=[10, 100, 300, 1000])
+    parser.add_argument("--features", choices=FEATURES, default="char")
     parser.add_argument("--output", type=Path, default=ROOT / "experiments/.cache/jh_gate_cv")
     args = parser.parse_args()
     if not 0 < args.augmentation_weight <= 1:
@@ -166,7 +167,7 @@ if __name__ == "__main__":
     if augmentation and not augmentation.is_relative_to(ROOT / "experiments/.cache"):
         parser.error("Only recorded public augmentations are supported")
     with threadpool_limits(limits=1):
-        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight, args.regularizations)
+        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight, args.regularizations, args.features)
     dest = args.output
     dest.mkdir(exist_ok=True)
     (dest / "result.json").write_text(json.dumps(data, indent=2) + "\n")
