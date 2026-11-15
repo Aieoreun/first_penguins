@@ -18,7 +18,7 @@ JSON만 출력한다: {"supported":true 또는 false,"section":"제공된 sectio
 
 
 class Pipeline(Voted):
-    material_review_timeout = 4
+    material_review_timeout = 6  # Still bounded by the inherited 14s prepare budget.
 
     async def _classify(self, state):
         await super()._classify(state)
