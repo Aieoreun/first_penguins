@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 import re
@@ -138,9 +139,11 @@ def _format_messages_for_llm(messages: list[dict[str, str]], max_turns: int = 6)
 class GuardClassifier:
     """Two-stage input guardrail: fast CPU TF-IDF + rules, escalating grey-zone to gpt-5-nano."""
 
-    def __init__(self, settings: Settings, pool: ClientPool):
+    def __init__(self, settings: Settings, pool: ClientPool, kb_index: Any = None):
         self.settings = settings
         self.pool = pool
+        self.kb_index = kb_index
+        self.last_diagnostics: dict[str, Any] = {}
 
         self._train_examples: list[_TrainExample] = []
         self._vectorizer: Optional[FeatureUnion] = None
@@ -404,6 +407,44 @@ class GuardClassifier:
                 break
         return out
 
+    async def _retrieve_kb_summary(
+        self, query_text: str, top_k: int = 3
+    ) -> tuple[str, float, list[dict[str, Any]]]:
+        """Retrieve compact top-K KB snippets for out_of_material vs normal disambiguation."""
+        if self.kb_index is None or not query_text.strip():
+            return "", 0.0, []
+        results = None
+        for kwargs in ({"top_k_sections": top_k}, {"top_k": top_k}, {"k": top_k}, {}):
+            try:
+                results = self.kb_index.retrieve(query_text, **kwargs)
+                break
+            except TypeError:
+                continue
+        if inspect.isawaitable(results):
+            results = await results
+        if not results:
+            return "(일치하는 교재 섹션 없음)", 0.0, []
+
+        blocks: list[str] = []
+        secs_meta: list[dict[str, Any]] = []
+        max_bm25 = 0.0
+        for item in results[:top_k]:
+            if isinstance(item, dict):
+                sid = str(item.get("id") or item.get("section_id") or "")
+                title = str(item.get("title") or "")
+                score = float(item.get("bm25_score") or 0.0)
+                body = str(item.get("full_text") or item.get("content") or item.get("text") or "")
+            else:
+                sid = str(getattr(item, "section_id", getattr(item, "id", "")))
+                title = str(getattr(item, "title", ""))
+                score = float(getattr(item, "bm25_score", 0.0) or 0.0)
+                body = str(getattr(item, "full_text", getattr(item, "content", getattr(item, "text", ""))))
+            if score > max_bm25:
+                max_bm25 = score
+            secs_meta.append({"id": sid, "title": title, "bm25_score": score})
+            blocks.append(f"[{sid}] ({title}, bm25={score:.2f})\n{_head_tail(body, 650)}")
+        return "\n\n".join(blocks), max_bm25, secs_meta
+
     async def _llm_classify(
         self,
         messages: list[dict[str, str]],
@@ -411,6 +452,7 @@ class GuardClassifier:
         query_text: str,
         last_user: str = "",
         signals: Optional[dict[str, bool]] = None,
+        kb_summary: Optional[str] = None,
     ) -> Optional[tuple[str, str, float]]:
         if self.pool.chat_client is None:
             return None
@@ -446,7 +488,15 @@ class GuardClassifier:
             hint_notes.append(
                 "학습자 본인 이름·학교·연락처 자기소개가 포함되었습니다. 과제·수행평가 제출 대필이나 off_topic이 아니면 allow(pii_disclosure)로 판정하세요."
             )
+        if kb_summary is None and self.kb_index is not None:
+            kb_summary, _, _ = await self._retrieve_kb_summary(last_user or query_text, top_k=3)
+
         user_parts: list[str] = []
+        if kb_summary:
+            user_parts.append(
+                "[교재 검색 결과 (out_of_material 여부 판별 참고 — 세부 수치·규정이 본문에 없으면 out_of_material)]\n"
+                + kb_summary
+            )
         if ex_lines:
             user_parts.append("[유사 판정 예시]\n" + "\n".join(ex_lines))
         if hint_notes:
@@ -488,12 +538,12 @@ class GuardClassifier:
             logger.warning("GuardClassifier LLM fallback failed: %s", type(exc).__name__)
         return None
 
-    async def classify(
+    async def classify_with_diagnostics(
         self,
         messages: list[dict[str, str]],
         similar_examples: Optional[list[dict[str, Any]]] = None,
-    ) -> tuple[str, str, float]:
-        """Classify conversation input into (decision, category, confidence)."""
+    ) -> tuple[str, str, float, dict[str, Any]]:
+        """Classify conversation input and return (decision, category, confidence, diagnostics)."""
         if not self._loaded:
             self.load_or_train()
 
@@ -501,7 +551,22 @@ class GuardClassifier:
         signals = detect_deterministic_signals(last_user)
         immediate, jb_boost = self._apply_rules(last_user)
         if immediate is not None:
-            return immediate
+            diag = {
+                "deterministic": True,
+                "last_user": last_user,
+                "signals": signals,
+                "kb_summary": "",
+                "max_bm25": 0.0,
+                "p_block": 0.0,
+                "cpu_decision": immediate[0],
+                "cpu_category": immediate[1],
+                "top2_cats": [immediate[1]],
+                "cat_margin": 1.0,
+                "is_meta_normal": False,
+                "jb_boost": False,
+            }
+            self.last_diagnostics = diag
+            return immediate[0], immediate[1], immediate[2], diag
 
         query_text = _build_classifier_text(messages)
 
@@ -510,6 +575,7 @@ class GuardClassifier:
         top_cat = "normal"
         top_cat_prob = 0.50
         cat_margin = 0.0
+        top2_cats: list[str] = ["normal"]
 
         if self._vectorizer is not None and self._block_clf is not None and self._cat_clf is not None:
             X = self._vectorizer.transform([query_text])
@@ -522,6 +588,7 @@ class GuardClassifier:
             top_cat_prob = float(cat_probs[int(order[0])])
             second_prob = float(cat_probs[int(order[1])]) if len(order) > 1 else 0.0
             cat_margin = top_cat_prob - second_prob
+            top2_cats = [str(classes[int(i)]) for i in order[:2]]
 
         if jb_boost:
             p_block = max(p_block, 0.93)
@@ -532,7 +599,6 @@ class GuardClassifier:
         cpu_decision = "block" if p_block >= self._block_threshold else "allow"
         cpu_category = top_cat if top_cat in CATEGORIES else ("harmful_content" if cpu_decision == "block" else "normal")
 
-        # Reconcile CPU decision & category
         if cpu_decision == "block" and cpu_category not in BLOCK_CATEGORIES:
             cpu_category = "harmful_content"
         elif cpu_decision == "allow" and cpu_category in BLOCK_CATEGORIES:
@@ -548,6 +614,23 @@ class GuardClassifier:
             and not signals.get("has_hate_insult")
         )
 
+        kb_summary, max_bm25, _ = await self._retrieve_kb_summary(last_user or query_text, top_k=3)
+
+        diag: dict[str, Any] = {
+            "deterministic": False,
+            "last_user": last_user,
+            "signals": signals,
+            "kb_summary": kb_summary,
+            "max_bm25": max_bm25,
+            "p_block": p_block,
+            "cpu_decision": cpu_decision,
+            "cpu_category": cpu_category,
+            "top2_cats": top2_cats,
+            "cat_margin": cat_margin,
+            "is_meta_normal": is_meta_normal,
+            "jb_boost": jb_boost,
+        }
+
         if self.pool.chat_client is not None:
             llm_res = await self._llm_classify(
                 messages,
@@ -555,6 +638,7 @@ class GuardClassifier:
                 query_text,
                 last_user=last_user,
                 signals=signals,
+                kb_summary=kb_summary or None,
             )
             if llm_res is not None:
                 llm_dec, llm_cat, _ = llm_res
@@ -564,19 +648,33 @@ class GuardClassifier:
                     and _DIRECT_ATTACK_OVERRIDE_RE.search(last_user)
                     and not _META_DEFENSE_EDUCATIONAL_RE.search(last_user)
                 ):
-                    return "block", "jailbreak_injection", 0.96
+                    diag["deterministic"] = True
+                    self.last_diagnostics = diag
+                    return "block", "jailbreak_injection", 0.96, diag
                 if llm_dec == "block" and llm_cat == "jailbreak_injection" and is_meta_normal:
-                    return "allow", "normal", 0.90
+                    diag["deterministic"] = True
+                    self.last_diagnostics = diag
+                    return "allow", "normal", 0.90, diag
                 if llm_dec == "allow" and signals.get("has_self_pii") and llm_cat == "normal":
                     llm_cat = "pii_disclosure"
                 if llm_dec == "block":
-                    # Avoid inflating confidence on noisy OOF TF-IDF threshold (~0.35); require strong agreement
                     agreed = bool(jb_boost or (cpu_decision == "block" and p_block >= 0.70))
                     conf = 0.95 if agreed else 0.72
                 else:
                     conf = 0.92 if cpu_decision == "allow" else 0.78
-                return llm_dec, llm_cat, conf
+                self.last_diagnostics = diag
+                return llm_dec, llm_cat, conf, diag
 
         if cpu_decision == "allow" and signals.get("has_self_pii") and cpu_category == "normal":
             cpu_category = "pii_disclosure"
-        return cpu_decision, cpu_category, float(round(cpu_conf, 4))
+        self.last_diagnostics = diag
+        return cpu_decision, cpu_category, float(round(cpu_conf, 4)), diag
+
+    async def classify(
+        self,
+        messages: list[dict[str, str]],
+        similar_examples: Optional[list[dict[str, Any]]] = None,
+    ) -> tuple[str, str, float]:
+        """Classify conversation input into (decision, category, confidence)."""
+        dec, cat, conf, _ = await self.classify_with_diagnostics(messages, similar_examples)
+        return dec, cat, conf

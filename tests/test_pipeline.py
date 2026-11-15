@@ -772,7 +772,7 @@ class TestStep5Generalization:
             )
 
         pool.chat_client.chat.completions.create = AsyncMock(side_effect=_write_empty_then_abstain)
-        sup_abstain = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, guard_verifier=None)
+        sup_abstain = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, guard_verifier=None, enable_dual_critics=False)
         res_abstain = asyncio.run(
             sup_abstain.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금의 중도해지 수수료는 몇 %야?"}])
         )
@@ -826,7 +826,7 @@ class TestStep5Generalization:
             }
         )
         pool.chat_client.chat.completions.create = AsyncMock(side_effect=_write_fabricated_then_repaired)
-        sup_repair = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, guard_verifier=fake_verifier)
+        sup_repair = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, guard_verifier=fake_verifier, enable_dual_critics=False)
         res_repair = asyncio.run(
             sup_repair.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금 금리 알려줘"}])
         )
@@ -990,3 +990,418 @@ class TestStep5Generalization:
         assert out["grounded"] is True
         assert out["safe"] is True
         assert out["unsupported"] == []
+
+
+# ---------------------------------------------------------------------------
+# 8. Step 6 Dual-Supervisor tests (GuardSupervisor + TutorSupervisor v2)
+# ---------------------------------------------------------------------------
+
+class TestStep6DualSupervisor:
+    def test_guard_classifier_injects_kb_snippets(self):
+        import asyncio
+        from types import SimpleNamespace
+        from app.guard_classifier import GuardClassifier
+
+        settings = load_settings()
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+
+        kb_sec = SimpleNamespace(
+            section_id="FIN-03-01",
+            title="다람쥐 틴즈 체크카드",
+            bm25_score=2.8,
+            full_text="다람쥐 틴즈 체크카드는 만 14세 이상 발급 가능하며 교통카드 기능을 지원합니다.",
+        )
+        fake_kb = MagicMock()
+        fake_kb.retrieve = AsyncMock(return_value=[kb_sec])
+
+        captured_user_prompts: list[str] = []
+
+        async def _fake_create(**kwargs):
+            captured_user_prompts.append(kwargs["messages"][1]["content"])
+            msg = MagicMock()
+            msg.content = json.dumps(
+                {
+                    "final_turn_intent": "체크카드 재발급 수수료 문의",
+                    "category": "out_of_material",
+                    "decision": "allow",
+                },
+                ensure_ascii=False,
+            )
+            choice = MagicMock()
+            choice.message = msg
+            choice.finish_reason = "stop"
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_fake_create)
+        clf = GuardClassifier(settings, pool, kb_index=fake_kb)
+        clf._loaded = True
+
+        dec, cat, _ = asyncio.run(
+            clf.classify([{"role": "user", "content": "다람쥐 틴즈 체크카드 분실 재발급 수수료가 얼마야?"}])
+        )
+        assert (dec, cat) == ("allow", "out_of_material")
+        assert len(captured_user_prompts) == 1
+        assert "[교재 검색 결과" in captured_user_prompts[0]
+        assert "FIN-03-01" in captured_user_prompts[0]
+
+    def test_guard_supervisor_concurrent_tiebreaker_dual_output_and_judge(self):
+        import asyncio
+        from types import SimpleNamespace
+        from app.guard_classifier import GuardClassifier
+        from app.guard_supervisor import GuardSupervisor
+        from app.guard_verifier import GuardVerifier
+
+        settings = load_settings()
+        settings = settings.__class__(
+            **{**settings.__dict__, "openai_api_key": "dummy", "request_deadline_sec": 30.0}
+        )
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+
+        kb_sec = SimpleNamespace(
+            section_id="FIN-02-01",
+            title="다람쥐 꿈모으기 정기예금",
+            bm25_score=2.1,
+            full_text="다람쥐 꿈모으기 정기예금은 만기 1년 상품이며 약정 금리는 연 2.5%입니다.",
+        )
+        fake_kb = MagicMock()
+        fake_kb.retrieve = AsyncMock(return_value=[kb_sec])
+
+        clf = GuardClassifier(settings, pool, kb_index=fake_kb)
+        clf._loaded = True
+        ver = GuardVerifier(settings, pool, fake_kb)
+        sup = GuardSupervisor(settings, pool, fake_kb, clf, ver)
+
+        schema_calls: list[str] = []
+
+        def _make_resp(payload: dict):
+            msg = MagicMock()
+            msg.content = json.dumps(payload, ensure_ascii=False)
+            choice = MagicMock()
+            choice.message = msg
+            choice.finish_reason = "stop"
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        async def _dispatch_llm(**kwargs):
+            schema_name = kwargs["response_format"]["json_schema"]["name"]
+            schema_calls.append(schema_name)
+            if schema_name == "guard_input_response":
+                # Primary misclassifies OOM detail question as normal
+                return _make_resp(
+                    {"final_turn_intent": "정기예금 수수료 문의", "category": "normal", "decision": "allow"}
+                )
+            if schema_name == "guard_input_tiebreaker":
+                # 2nd-perspective tie-breaker resolves normal vs out_of_material using KB evidence
+                return _make_resp(
+                    {
+                        "evidence_note": "자료 본문에 중도해지 수수료율이 적혀 있지 않음",
+                        "category": "out_of_material",
+                        "decision": "allow",
+                    }
+                )
+            if schema_name == "guard_output_grounding":
+                # Perspective OA misses numeric claim "연 7.5%" initially -> triggers conflict with precheck
+                return _make_resp(
+                    {"fabricated_claims_check": "이상 없음", "unsupported": [], "grounded": True}
+                )
+            if schema_name == "guard_output_safety":
+                # Perspective OB checks safety independently
+                return _make_resp({"safety_check": "안전한 답변", "safe": True})
+            if schema_name == "guard_output_judge":
+                # Round-2 Judge catches unmatched precheck token and quotes candidate substring
+                return _make_resp(
+                    {
+                        "adjudication_note": "자료에는 연 2.5%만 있고 연 7.5%는 없음",
+                        "unsupported": ["금리는 연 7.5%"],
+                        "grounded": False,
+                    }
+                )
+            raise AssertionError(f"Unexpected schema: {schema_name}")
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_dispatch_llm)
+        out = asyncio.run(
+            sup.handle(
+                messages=[{"role": "user", "content": "다람쥐 꿈모으기 정기예금 중도해지 수수료가 얼마인가요?"}],
+                candidate_answer="다람쥐 꿈모으기 정기예금 금리는 연 7.5%예요.",
+            )
+        )
+        assert out["input"] == {"decision": "allow", "category": "out_of_material"}
+        assert out["output"]["safe"] is True
+        assert out["output"]["grounded"] is False
+        assert out["output"]["category"] == "out_of_material"
+        assert len(out["output"]["unsupported"]) == 1
+        assert "7.5%" in out["output"]["unsupported"][0]
+        assert out["output"]["unsupported"][0] in "다람쥐 꿈모으기 정기예금 금리는 연 7.5%예요."
+        assert set(schema_calls) == {
+            "guard_input_response",
+            "guard_input_tiebreaker",
+            "guard_output_grounding",
+            "guard_output_safety",
+            "guard_output_judge",
+        }
+
+    def test_tutor_supervisor_v2_zero_ms_swap_and_two_round_correction(self):
+        import asyncio
+        from types import SimpleNamespace
+        from app.supervisor_graph import SupervisorTutorPipeline
+
+        settings = load_settings()
+        settings = settings.__class__(
+            **{
+                **settings.__dict__,
+                "openai_api_key": "dummy",
+                "request_deadline_sec": 30.0,
+                "llm_timeout_sec": 10.0,
+                "enable_dual_critics": True,
+                "max_correction_rounds": 2,
+            }
+        )
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+
+        sec1 = SimpleNamespace(
+            section_id="PY-01-01",
+            title="변수 기초",
+            domain="python",
+            bm25_score=3.0,
+            dense_score=0.7,
+            rrf_score=0.05,
+            full_text="파이썬에서 변수에 값을 저장할 때는 = 기호를 사용합니다.",
+            is_table=False,
+        )
+        sec2 = SimpleNamespace(
+            section_id="PY-01-02",
+            title="반복문 기초",
+            domain="python",
+            bm25_score=2.9,
+            dense_score=0.68,
+            rrf_score=0.048,
+            full_text="for 반복문은 시퀀스의 요소를 차례대로 꺼내 반복 실행합니다.",
+            is_table=False,
+        )
+        fin_sec = SimpleNamespace(
+            section_id="FIN-02-01",
+            title="꿈모으기 정기예금",
+            domain="finance",
+            bm25_score=3.2,
+            dense_score=0.8,
+            rrf_score=0.05,
+            full_text="다람쥐 꿈모으기 정기예금은 만기 1년 상품이며 약정 금리는 연 2.5%입니다.",
+            is_table=False,
+        )
+        fake_kb = MagicMock()
+        fake_kb.build_toc.return_value = "PY-01-01 / PY-01-02 / FIN-02-01"
+        fake_kb.retrieve = AsyncMock(return_value=[sec1, sec2])
+
+        def _make_resp(payload: dict):
+            msg = MagicMock()
+            msg.content = json.dumps(payload, ensure_ascii=False)
+            choice = MagicMock()
+            choice.message = msg
+            choice.finish_reason = "stop"
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        # 1) 0-ms Citation Swap: Draft cites PY-01-01, FaithfulCritic pinpoints PY-01-02 -> NO Write repair needed!
+        write_calls_case1 = 0
+
+        async def _dispatch_swap(**kwargs):
+            nonlocal write_calls_case1
+            schema_name = kwargs["response_format"]["json_schema"]["name"]
+            if schema_name == "tutor_review_write_response":
+                write_calls_case1 += 1
+                return _make_resp(
+                    {
+                        "thought_category": "normal",
+                        "kb_quote_check": "차례대로 꺼내 반복 실행",
+                        "evidence_in_kb": True,
+                        "best_section_id": "PY-01-01",
+                        "action": "answer",
+                        "citations": ["PY-01-01"],
+                        "answer": "for 반복문은 시퀀스의 요소를 차례대로 꺼내 반복 실행합니다.",
+                    }
+                )
+            if schema_name == "tutor_action_critic":
+                return _make_resp(
+                    {
+                        "boundary_check": "교재 내용 정상 질문",
+                        "action_ok": True,
+                        "recommended_action": "answer",
+                        "issue": "none",
+                        "feedback": "없음",
+                    }
+                )
+            if schema_name == "tutor_faithful_critic":
+                return _make_resp(
+                    {
+                        "claim_audit": "내용은 PY-01-02 본문에 있음",
+                        "faithful": False,
+                        "recommended_citation": "PY-01-02",
+                        "hallucinated_clauses": [],
+                        "feedback": "PY-01-02로 인용 교체 필요",
+                    }
+                )
+            raise AssertionError(f"Unexpected schema: {schema_name}")
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_dispatch_swap)
+        sup = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None)
+        res_swap = asyncio.run(sup.handle([{"role": "user", "content": "for 반복문은 몇 회 실행하나요?"}]))
+        assert write_calls_case1 == 1
+        assert sup.last_telemetry["correction_rounds"] == 0
+        assert res_swap["action"] == "answer"
+        assert res_swap["citations"] == ["PY-01-02"]
+
+        # 2) Two-Round Iterative Correction Loop (Round 1 partial -> Round 2 verification -> Round 2 clean)
+        fake_kb.retrieve = AsyncMock(return_value=[fin_sec])
+        write_round = 0
+        write_prompts_case2: list[str] = []
+
+        async def _dispatch_two_rounds(**kwargs):
+            nonlocal write_round
+            schema_name = kwargs["response_format"]["json_schema"]["name"]
+            if schema_name == "tutor_review_write_response":
+                write_round += 1
+                write_prompts_case2.append(kwargs["messages"][1]["content"])
+                if write_round == 1:
+                    return _make_resp(
+                        {
+                            "thought_category": "normal",
+                            "kb_quote_check": "약정 금리",
+                            "evidence_in_kb": True,
+                            "best_section_id": "FIN-02-01",
+                            "action": "answer",
+                            "citations": ["FIN-02-01"],
+                            "answer": "약정 금리는 연 5.5%입니다.",
+                        }
+                    )
+                if write_round == 2:
+                    return _make_resp(
+                        {
+                            "thought_category": "normal",
+                            "kb_quote_check": "약정 금리",
+                            "evidence_in_kb": True,
+                            "best_section_id": "FIN-02-01",
+                            "action": "answer",
+                            "citations": ["FIN-02-01"],
+                            "answer": "약정 금리는 연 3.0%입니다.",
+                        }
+                    )
+                return _make_resp(
+                    {
+                        "thought_category": "normal",
+                        "kb_quote_check": "약정 금리는 연 2.5%",
+                        "evidence_in_kb": True,
+                        "best_section_id": "FIN-02-01",
+                        "action": "answer",
+                        "citations": ["FIN-02-01"],
+                        "answer": "다람쥐 꿈모으기 정기예금의 약정 금리는 연 2.5%입니다.",
+                    }
+                )
+            if schema_name == "tutor_action_critic":
+                return _make_resp(
+                    {
+                        "boundary_check": "교재 질문 정상",
+                        "action_ok": True,
+                        "recommended_action": "answer",
+                        "issue": "none",
+                        "feedback": "없음",
+                    }
+                )
+            if schema_name == "tutor_faithful_critic":
+                if write_round == 1:
+                    return _make_resp(
+                        {
+                            "claim_audit": "5.5% 미일치",
+                            "faithful": False,
+                            "recommended_citation": "FIN-02-01",
+                            "hallucinated_clauses": ["연 5.5%"],
+                            "feedback": "자료의 연 2.5%로 수정하세요",
+                        }
+                    )
+                return _make_resp(
+                    {
+                        "claim_audit": "3.0% 미일치",
+                        "faithful": False,
+                        "recommended_citation": "FIN-02-01",
+                        "hallucinated_clauses": ["연 3.0%"],
+                        "feedback": "자료의 연 2.5%로 수정하세요",
+                    }
+                )
+            raise AssertionError(f"Unexpected schema: {schema_name}")
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_dispatch_two_rounds)
+        res_2r = asyncio.run(sup.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금 금리 알려줘"}]))
+        assert write_round == 3
+        assert sup.last_telemetry["correction_rounds"] == 2
+        assert "[슈퍼바이저 교정 지시 (1차 다중 관점 검증 결과)]" in write_prompts_case2[1]
+        assert "[슈퍼바이저 교정 지시 (2차 다중 관점 검증 결과)]" in write_prompts_case2[2]
+        assert "2.5%" in res_2r["answer"]
+        assert res_2r["citations"] == ["FIN-02-01"]
+
+        # 3) Over-refusal Rescue: Action Critic overrules soft Guard high-conf off_topic block
+        fake_guard = MagicMock()
+        fake_guard.classify = AsyncMock(return_value=("block", "off_topic", 0.95))
+        over_refuse_round = 0
+
+        async def _dispatch_over_refusal(**kwargs):
+            nonlocal over_refuse_round
+            schema_name = kwargs["response_format"]["json_schema"]["name"]
+            if schema_name == "tutor_review_write_response":
+                over_refuse_round += 1
+                if over_refuse_round == 1:
+                    return _make_resp(
+                        {
+                            "thought_category": "off_topic",
+                            "kb_quote_check": "자료에 없음",
+                            "evidence_in_kb": False,
+                            "best_section_id": "",
+                            "action": "redirect",
+                            "citations": [],
+                            "answer": "수업과 관련된 질문을 해주세요.",
+                        }
+                    )
+                return _make_resp(
+                    {
+                        "thought_category": "normal",
+                        "kb_quote_check": "약정 금리는 연 2.5%",
+                        "evidence_in_kb": True,
+                        "best_section_id": "FIN-02-01",
+                        "action": "answer",
+                        "citations": ["FIN-02-01"],
+                        "answer": "다람쥐 꿈모으기 정기예금의 약정 금리는 연 2.5%입니다.",
+                    }
+                )
+            if schema_name == "tutor_action_critic":
+                return _make_resp(
+                    {
+                        "boundary_check": "정기예금 수업 질문",
+                        "action_ok": over_refuse_round > 1,
+                        "recommended_action": "answer",
+                        "issue": "none" if over_refuse_round > 1 else "over_refused_should_answer",
+                        "feedback": "없음" if over_refuse_round > 1 else "교재 금융 질문이므로 answer로 답하세요",
+                    }
+                )
+            if schema_name == "tutor_faithful_critic":
+                return _make_resp(
+                    {
+                        "claim_audit": "일치",
+                        "faithful": True,
+                        "recommended_citation": "FIN-02-01",
+                        "hallucinated_clauses": [],
+                        "feedback": "없음",
+                    }
+                )
+            raise AssertionError(f"Unexpected schema: {schema_name}")
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_dispatch_over_refusal)
+        sup_rescue = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=fake_guard)
+        res_rescue = asyncio.run(sup_rescue.handle([{"role": "user", "content": "꿈모으기 예금 금리 궁금해요"}]))
+        assert res_rescue["action"] == "answer"
+        assert res_rescue["citations"] == ["FIN-02-01"]
+        assert "2.5%" in res_rescue["answer"]
