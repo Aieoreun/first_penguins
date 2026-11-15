@@ -24,6 +24,9 @@ def needs_third(answers, *, other=False, unanimous=False):
 class Pipeline(Voted):
     adaptive_votes = True
 
+    async def _tie_vote(self, state, name, system, check, remaining):
+        return await self._ask(state, name, system, check, CLASSIFY_EFFORT, remaining)
+
     async def _vote_group(self, state, name, system, check):
         started = time.monotonic()
         pair = await asyncio.gather(*(self._ask(state, name, system, check,
@@ -31,7 +34,7 @@ class Pipeline(Voted):
         if needs_third(pair, other=name == "other", unanimous=self.block_min_votes == 3):
             left = CLASSIFY_TIMEOUT - (time.monotonic() - started)
             if left > .05:
-                pair.append(await self._ask(state, name, system, check, CLASSIFY_EFFORT, left))
+                pair.append(await self._tie_vote(state, name, system, check, left))
             else:
                 state.errors.append(f"{name}:tie_budget")
         return pair
