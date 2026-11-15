@@ -1,0 +1,110 @@
+"""Input-only transfer diagnostic on untrained, public-derived paraphrases.
+
+The labels are inherited from public sources and may contain generation noise.
+This is neither the official hidden evaluation nor independent new source data.
+Runtime requests contain only messages and random session IDs, never labels.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import unicodedata
+
+from jh_compare import ROOT, load_public, run_variant, score_rows
+from pipelines.kimjaehak.config import VARIANTS
+
+BLOCKED = {"academic_dishonesty","off_topic","harmful_content","jailbreak_injection"}
+
+
+def normalized(text):
+    return re.sub(r"[\W_]+","",unicodedata.normalize("NFKC",text).casefold())
+
+
+def build_items(source):
+    metadata = json.loads((source.parent / "manifest.json").read_text())
+    expected = {name:hashlib.sha256((ROOT / "public" / name).read_bytes()).hexdigest()
+                for name in ("tutor.jsonl","guard.jsonl")}
+    if metadata.get("scope") != "provided_llm_public_paraphrases" or metadata["public_hashes"] != expected:
+        raise ValueError("Public derivation provenance mismatch")
+    records = list(map(json.loads,source.read_text().splitlines()))
+    generated = {row["source_id"]:row for row in records}
+    if len(generated) != len(records) or set(generated) != set(metadata["source_ids"]):
+        raise ValueError("Incomplete or duplicate generated sources")
+    public = load_public()
+    originals = {normalized(item["messages"][-1]["content"]) for item in public}
+    items, seen = [], set()
+    for item in public:
+        row = generated.get(item["id"])
+        category = item["labels"]["category"]
+        if not row or row["error"] or category == "low_signal_input":
+            continue
+        if row["category"] != category:
+            raise ValueError("Generated category changed")
+        for index,text in enumerate(row["paraphrases"]):
+            if normalized(text) in originals:
+                continue
+            messages = [dict(m) for m in item["messages"]]
+            if messages[-1]["role"] != "user":
+                raise ValueError("Unexpected source conversation")
+            messages[-1]["content"] = text
+            key = json.dumps(messages,ensure_ascii=False,sort_keys=True)
+            if key in seen:
+                continue
+            seen.add(key)
+            items.append({"id":item["id"]+f"-p{index}","source_id":item["id"],
+                "endpoint":"guard","messages":messages,
+                "labels":{"category":category,"decision":"block" if category in BLOCKED else "allow"}})
+            break
+    return items, metadata
+
+
+def main():
+    from dotenv import load_dotenv
+    load_dotenv(ROOT / ".env",override=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source",type=Path,required=True)
+    parser.add_argument("--variant",choices=VARIANTS,required=True)
+    parser.add_argument("--name",required=True)
+    parser.add_argument("--workers",type=int,default=64)
+    parser.add_argument("--request-slots",type=int,default=64)
+    parser.add_argument("--build-only",action="store_true")
+    args = parser.parse_args()
+    source = args.source.resolve()
+    if not source.is_relative_to(ROOT / "experiments/.cache") or not re.fullmatch(r"[A-Za-z0-9_-]+",args.name) or not 1 <= args.workers <= 64 or not 1 <= args.request_slots <= 64:
+        parser.error("Invalid source, name or concurrency")
+    items, generation = build_items(source)
+    if not items:
+        parser.error("No valid derived inputs")
+    root = ROOT / "experiments/.cache" / ("jh_transfer_" + args.name)
+    root.mkdir(exist_ok=False)
+    dataset = "".join(json.dumps(item,ensure_ascii=False)+"\n" for item in items)
+    (root / "derived_inputs.jsonl").write_text(dataset)
+    provenance = {"scope":"public_paraphrase_input_diagnostic","count":len(items),
+        "source":str(source.relative_to(ROOT)),"source_sha256":hashlib.sha256(source.read_bytes()).hexdigest(),
+        "dataset_sha256":hashlib.sha256(dataset.encode()).hexdigest(),"generation_model":generation["model"],
+        "inherited_labels":True,"independent_source_holdout":False}
+    (root / "derivation.json").write_text(json.dumps(provenance,indent=2))
+    if args.build_only:
+        print(json.dumps(provenance),flush=True)
+        return
+    # Collection uses the same HTTP transport and server as the full comparison.
+    # No judge is needed for input-only guard metrics.
+    args.judge_workers, args.no_judge, args.collect_only, args.endpoints = 1, True, True, ["guard"]
+    run_variant(args,args.variant,1,items,root)
+    dest = root / (args.variant + "_1")
+    manifest = json.loads((dest / "manifest.json").read_text())
+    manifest.update(provenance)
+    (dest / "manifest.json").write_text(json.dumps(manifest,indent=2))
+    rows = list(map(json.loads,(dest / "responses.jsonl").read_text().splitlines()))
+    result = score_rows(items,rows,1,no_judge=True)
+    diagnostic = {**provenance,"variant":args.variant,"invalid":result["invalid"],
+                  "input_metrics":result["guard_details"],"runtime":json.loads((dest / "runtime.json").read_text())}
+    (dest / "diagnostic.json").write_text(json.dumps(diagnostic,indent=2))
+    print(json.dumps({"count":len(items),"variant":args.variant,"invalid":result["invalid"],
+        **{key:result["guard_details"][key] for key in ("block_f1","category_accuracy","false_block","missed_block")}}),flush=True)
+
+
+if __name__ == "__main__":
+    main()
