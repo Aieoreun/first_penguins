@@ -68,8 +68,10 @@ def load(name: str = ""):
         if name in {"jh_voted_output", "jh_voted_output5"}:
             module = importlib.import_module("pipelines.kimjaehak.voted_output")
             return module.Five if name.endswith("5") else module.Pipeline
-        if name == "jh_uncertain_sources":
-            return importlib.import_module("pipelines.kimjaehak.uncertain_sources").Pipeline
+        if name in {"jh_uncertain_sources", "jh_resilient_sources", "jh_six_sources"}:
+            module = importlib.import_module("pipelines.kimjaehak.uncertain_sources")
+            return {"jh_uncertain_sources": module.Pipeline, "jh_resilient_sources": module.Resilient,
+                    "jh_six_sources": module.Six}[name]
         if name in {"jh_context_policy", "jh_context_policy_voted"}:
             module = importlib.import_module("pipelines.kimjaehak.context_policy")
             return module.WithVotedOutput if name.endswith("_voted") else module.Pipeline
