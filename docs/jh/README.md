@@ -1,5 +1,7 @@
 # 김재학 실험 — 승원 v2 + Peace 가드
 
+진행 상황·최고 관측 점수·재개 방법은 [HANDOFF.md](HANDOFF.md), 모든 후속 가설과 채택 여부는 [01_experiments.md](01_experiments.md), 집계 데이터는 [results.json](results.json)에 기록한다. 아래 네 비교군은 후속 실험과 별도로 그대로 유지한다.
+
 ## 출처와 범위
 
 - 기준 코드: `experiment/seungwon`의 `6ec111d` (v2 사용).

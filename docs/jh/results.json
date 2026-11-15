@@ -1,0 +1,1098 @@
+{
+  "updated": "2026-11-16",
+  "official_hidden_evaluation": false,
+  "evaluator_hashes": {
+    "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+    "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+    "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+  },
+  "runs": [
+    {
+      "run": "experiments/.cache/jh_calibrated_guard/jh_calibrated_1",
+      "variant": "jh_calibrated",
+      "commit": "41b63722d421d2a666c92dc13cf1d3b8891a9280",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "42be0a321161a96a860357f104126c9ee56b530aae885d4052c8654d80597a0d",
+      "responses_sha256": "157f4efa839fae92bc4def14106b9e73d4a0b1dd79057cf478f7510da3c5b519",
+      "scores": {
+        "total": 44.7,
+        "tutor": 0.0,
+        "guard": 89.41,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8813559322033898,
+        "category_accuracy": 0.907,
+        "grounded_accuracy": 0.9302,
+        "span_f1": 0.8052,
+        "safe_accuracy": 0.9767,
+        "false_block": 10,
+        "missed_block": 4
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 85.71,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 87.99,
+          "off_topic": 71.43,
+          "out_of_material": 91.67,
+          "pii_disclosure": 78.57
+        }
+      },
+      "runtime": {
+        "collect_seconds": 72.66,
+        "p50": 5.1335,
+        "p95": 9.413,
+        "max": 11.92,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "material:parse": 4
+        }
+      },
+      "effective_config": {
+        "answer_effort": "low",
+        "answer_max_tokens": 2000,
+        "votes": 1,
+        "seek_first": true,
+        "safe_by_rule": true,
+        "deadline": 24.0,
+        "prepare_limit": 14.0,
+        "peace_input": null,
+        "peace_output": null,
+        "guided_input": null,
+        "guided_output": null,
+        "focus_input": null,
+        "class": "pipelines.kimjaehak.calibrated.Pipeline",
+        "answer_prompts_sha256": "cfc631f10a3aaf07d0bf9a1460bd19df83ffb76b4fe3d331f494a88b9b274544",
+        "unsupported_prompt_sha256": "ff6eee50bcef279019e09954f50eb98a5a016dcf81609e9747bc65997cf4145f"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_fewshot_guard/jh_fewshot_1",
+      "variant": "jh_fewshot",
+      "commit": "72478c5b5218c6b98afef1d42c4d65aaa0d8c126",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "94bb3f1c6d843c83af5e85f58fe385ee4f771e1036ca29d3ccb8e7b1ebc7d014",
+      "responses_sha256": "68c53b9d081bbd5820c0219d3f6bbf73d2068da09f21759d5f53896640bb5d6d",
+      "scores": {
+        "total": 43.27,
+        "tutor": 0.0,
+        "guard": 86.54,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8429752066115702,
+        "category_accuracy": 0.8953,
+        "grounded_accuracy": 0.907,
+        "span_f1": 0.795,
+        "safe_accuracy": 0.9419,
+        "false_block": 14,
+        "missed_block": 5
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 85.71,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 92.31,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 84.29,
+          "off_topic": 71.43,
+          "out_of_material": 87.5,
+          "pii_disclosure": 92.86
+        }
+      },
+      "runtime": {
+        "collect_seconds": 74.55,
+        "p50": 5.119,
+        "p95": 9.958,
+        "max": 12.92,
+        "http_errors": 0,
+        "stage_failure_requests": 3,
+        "stage_errors": {
+          "material:TimeoutError": 2,
+          "material:parse": 1
+        }
+      },
+      "effective_config": {
+        "answer_effort": "low",
+        "answer_max_tokens": 2000,
+        "votes": 1,
+        "seek_first": true,
+        "safe_by_rule": true,
+        "deadline": 24.0,
+        "prepare_limit": 14.0,
+        "peace_input": null,
+        "peace_output": null,
+        "guided_input": null,
+        "guided_output": null,
+        "focus_input": null,
+        "request_slots": null,
+        "short_votes": null,
+        "class": "pipelines.kimjaehak.fewshot.Pipeline",
+        "answer_prompts_sha256": "cfc631f10a3aaf07d0bf9a1460bd19df83ffb76b4fe3d331f494a88b9b274544",
+        "unsupported_prompt_sha256": "ff6eee50bcef279019e09954f50eb98a5a016dcf81609e9747bc65997cf4145f"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_full_baseline/jh_baseline_1",
+      "variant": "jh_baseline",
+      "commit": "640375549b340c16fa307b6f91494340e589f18c",
+      "scope": "guard+tutor",
+      "count": 400,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "2b2198535f2ab713e18b79a391ffab9bf48c6713c3e728ab54d842e1cf45e622",
+      "responses_sha256": "56cbad4074a3c3f7695c373249ed844b50eb9548b438e949c17f727eacd42f83",
+      "scores": {
+        "total": 82.2,
+        "tutor": 80.12,
+        "guard": 84.28,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8571428571428571,
+        "category_accuracy": 0.8488,
+        "grounded_accuracy": 0.8488,
+        "span_f1": 0.7369,
+        "safe_accuracy": 0.8953,
+        "false_block": 16,
+        "missed_block": 2
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 100.0,
+          "answer_seeking": 0.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 92.31,
+          "jailbreak_injection": 96.25,
+          "low_signal_input": 100.0,
+          "normal": 83.63,
+          "off_topic": 85.71,
+          "out_of_material": 79.17,
+          "pii_disclosure": 78.57
+        },
+        "tutor": {
+          "academic_dishonesty": 50.0,
+          "answer_seeking": 84.38,
+          "emotional_distress": 88.89,
+          "harmful_content": 87.5,
+          "jailbreak_injection": 86.67,
+          "low_signal_input": 87.5,
+          "normal": 80.1,
+          "off_topic": 60.0,
+          "out_of_material": 67.5,
+          "pii_disclosure": 96.15
+        }
+      },
+      "runtime": {
+        "collect_seconds": 160.86,
+        "p50": 5.7955000000000005,
+        "p95": 10.881,
+        "max": 20.054,
+        "http_errors": 0,
+        "stage_failure_requests": 18,
+        "stage_errors": {
+          "material:parse": 5,
+          "material:TimeoutError": 11,
+          "other:TimeoutError": 1,
+          "unsupported:parse": 1
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_full_calibrated/jh_calibrated_1",
+      "variant": "jh_calibrated",
+      "commit": "de47e69bc011079e84e7783d628f75bd01a8ac88",
+      "scope": "tutor+guard",
+      "count": 400,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "bb1360b7a47d93d76e7ac94157337c1ac3a22f9e6de36be8dcf2c7fe0af3f6d4",
+      "responses_sha256": "ecabcfaede01daa10917b6329448b23559d81185f16359562da8ae85a6daf2e2",
+      "scores": {
+        "total": 86.61,
+        "tutor": 84.0,
+        "guard": 89.22,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8907563025210085,
+        "category_accuracy": 0.8837,
+        "grounded_accuracy": 0.9186,
+        "span_f1": 0.8032,
+        "safe_accuracy": 0.9651,
+        "false_block": 10,
+        "missed_block": 3
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 85.71,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 87.3,
+          "off_topic": 85.71,
+          "out_of_material": 79.17,
+          "pii_disclosure": 85.71
+        },
+        "tutor": {
+          "academic_dishonesty": 62.5,
+          "answer_seeking": 81.25,
+          "emotional_distress": 100.0,
+          "harmful_content": 75.0,
+          "jailbreak_injection": 93.33,
+          "low_signal_input": 87.5,
+          "normal": 83.93,
+          "off_topic": 80.0,
+          "out_of_material": 77.5,
+          "pii_disclosure": 98.08
+        }
+      },
+      "runtime": {
+        "collect_seconds": 166.65,
+        "p50": 6.0145,
+        "p95": 11.886,
+        "max": 14.761,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "material:TimeoutError": 3,
+          "material:parse": 2
+        }
+      },
+      "effective_config": {
+        "answer_effort": "low",
+        "answer_max_tokens": 2000,
+        "votes": 1,
+        "seek_first": true,
+        "safe_by_rule": true,
+        "deadline": 24.0,
+        "prepare_limit": 14.0,
+        "peace_input": null,
+        "peace_output": null,
+        "guided_input": null,
+        "guided_output": null,
+        "focus_input": null,
+        "class": "pipelines.kimjaehak.calibrated.Pipeline",
+        "answer_prompts_sha256": "cfc631f10a3aaf07d0bf9a1460bd19df83ffb76b4fe3d331f494a88b9b274544",
+        "unsupported_prompt_sha256": "ff6eee50bcef279019e09954f50eb98a5a016dcf81609e9747bc65997cf4145f"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_full_peace_both/jh_peace_both_1",
+      "variant": "jh_peace_both",
+      "commit": "42146437103398ef1b6fd1951be06099dcbe1f6c",
+      "scope": "tutor+guard",
+      "count": 400,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "6d0361fbbf9fd4f0fd16d10c7d113cef11c67d4968ac98cb6738175840f892b7",
+      "responses_sha256": "231ac00a69767d8b0b4a4bb5eac2260b2688cbe40af4f6e04655698bcf588158",
+      "scores": {
+        "total": 77.64,
+        "tutor": 74.44,
+        "guard": 80.84,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8518518518518519,
+        "category_accuracy": 0.6279,
+        "grounded_accuracy": 0.8256,
+        "span_f1": 0.6828,
+        "safe_accuracy": 0.907,
+        "false_block": 6,
+        "missed_block": 10
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 65.71,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 73.08,
+          "jailbreak_injection": 80.0,
+          "low_signal_input": 66.67,
+          "normal": 90.95,
+          "off_topic": 60.0,
+          "out_of_material": 50.0,
+          "pii_disclosure": 64.29
+        },
+        "tutor": {
+          "academic_dishonesty": 62.5,
+          "answer_seeking": 84.38,
+          "emotional_distress": 66.67,
+          "harmful_content": 37.5,
+          "jailbreak_injection": 93.33,
+          "low_signal_input": 25.0,
+          "normal": 88.9,
+          "off_topic": 40.0,
+          "out_of_material": 37.5,
+          "pii_disclosure": 96.15
+        }
+      },
+      "runtime": {
+        "collect_seconds": 81.77,
+        "p50": 3.1205,
+        "p95": 5.373,
+        "max": 7.657,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "peace_input:ValidationError": 1
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_full_peace_input/jh_peace_input_1",
+      "variant": "jh_peace_input",
+      "commit": "971e15a889e6421176d4cb90b4a98c22f38025bd",
+      "scope": "guard+tutor",
+      "count": 400,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "cc10713a613797293b2c074bf8a3328d492a7eb86bb46c38900e4a026661eeb0",
+      "responses_sha256": "700cc799ed843cb4c202d74888705e0023e7a7e2c4531e07defb3015b03cccb8",
+      "scores": {
+        "total": 77.25,
+        "tutor": 73.38,
+        "guard": 81.12,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8598130841121495,
+        "category_accuracy": 0.6628,
+        "grounded_accuracy": 0.8256,
+        "span_f1": 0.724,
+        "safe_accuracy": 0.8372,
+        "false_block": 5,
+        "missed_block": 10
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 85.71,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 74.23,
+          "jailbreak_injection": 86.25,
+          "low_signal_input": 50.0,
+          "normal": 88.43,
+          "off_topic": 67.14,
+          "out_of_material": 50.0,
+          "pii_disclosure": 71.43
+        },
+        "tutor": {
+          "academic_dishonesty": 56.25,
+          "answer_seeking": 78.12,
+          "emotional_distress": 66.67,
+          "harmful_content": 37.5,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 37.5,
+          "normal": 84.69,
+          "off_topic": 40.0,
+          "out_of_material": 45.0,
+          "pii_disclosure": 92.31
+        }
+      },
+      "runtime": {
+        "collect_seconds": 89.47,
+        "p50": 3.1005000000000003,
+        "p95": 7.123,
+        "max": 11.096,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "unsupported:parse": 1
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_full_peace_output/jh_peace_output_1",
+      "variant": "jh_peace_output",
+      "commit": "9fc6db366e980e68082db518e62cd7235fe06049",
+      "scope": "guard+tutor",
+      "count": 400,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "6d4879f227d4e37c4229c3d4fa987534095767530f673efcd450dd9a8927a5b8",
+      "responses_sha256": "aad80843331d0589c1c8ead5bd3e761e99fbdeea67e682ec8aa4185de7dfedea",
+      "scores": {
+        "total": 81.03,
+        "tutor": 80.62,
+        "guard": 81.45,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8709677419354839,
+        "category_accuracy": 0.8837,
+        "grounded_accuracy": 0.7442,
+        "span_f1": 0.6119,
+        "safe_accuracy": 0.8721,
+        "false_block": 14,
+        "missed_block": 2
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 74.29,
+          "answer_seeking": 25.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 83.08,
+          "jailbreak_injection": 81.25,
+          "low_signal_input": 100.0,
+          "normal": 87.2,
+          "off_topic": 80.0,
+          "out_of_material": 87.5,
+          "pii_disclosure": 85.71
+        },
+        "tutor": {
+          "academic_dishonesty": 43.75,
+          "answer_seeking": 78.12,
+          "emotional_distress": 100.0,
+          "harmful_content": 87.5,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 75.0,
+          "normal": 80.61,
+          "off_topic": 60.0,
+          "out_of_material": 67.5,
+          "pii_disclosure": 92.31
+        }
+      },
+      "runtime": {
+        "collect_seconds": 169.73,
+        "p50": 6.0895,
+        "p95": 10.91,
+        "max": 14.987,
+        "http_errors": 0,
+        "stage_failure_requests": 20,
+        "stage_errors": {
+          "material:TimeoutError": 15,
+          "material:parse": 4,
+          "other:TimeoutError": 1
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_full_v4/v4_1",
+      "variant": "v4",
+      "commit": "8062e16d0dfbe3f939dc94b58d14d438434edc44",
+      "scope": "tutor+guard",
+      "count": 400,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "ec7fc282c81bf1d38b9b166c8f1633c711c6efc5bcc396be83d576459eb97df3",
+      "responses_sha256": "92f0f85340f2e446cb9efc99b7a81bf3562c53501dfed50214cb62db854329f3",
+      "scores": {
+        "total": 86.28,
+        "tutor": 83.38,
+        "guard": 89.17,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8695652173913043,
+        "category_accuracy": 0.8721,
+        "grounded_accuracy": 0.9419,
+        "span_f1": 0.8361,
+        "safe_accuracy": 0.9767,
+        "false_block": 9,
+        "missed_block": 6
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 62.86,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 89.23,
+          "off_topic": 71.43,
+          "out_of_material": 83.33,
+          "pii_disclosure": 85.71
+        },
+        "tutor": {
+          "academic_dishonesty": 62.5,
+          "answer_seeking": 78.12,
+          "emotional_distress": 100.0,
+          "harmful_content": 75.0,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 75.0,
+          "normal": 84.18,
+          "off_topic": 60.0,
+          "out_of_material": 77.5,
+          "pii_disclosure": 96.15
+        }
+      },
+      "runtime": {
+        "collect_seconds": 193.96,
+        "p50": 6.797499999999999,
+        "p95": 15.126,
+        "max": 21.159,
+        "http_errors": 0,
+        "stage_failure_requests": 15,
+        "stage_errors": {
+          "material:TimeoutError": 14,
+          "unsupported:TimeoutError": 1
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_guided_focus_guard/jh_guided_focus_1",
+      "variant": "jh_guided_focus",
+      "commit": "a9667999822de52c94ae8dcd0fb7f28ea2281837",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "48945695df3b89ffd091522c3f9588b33f0949ef126ac0d36117a9207465b4b9",
+      "responses_sha256": "f7dd4d9c72596f9f888ba58f15ed4ef1afc478d97aba376e8ba516157c88d0e8",
+      "scores": {
+        "total": 41.21,
+        "tutor": 0.0,
+        "guard": 82.42,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8421052631578947,
+        "category_accuracy": 0.7791,
+        "grounded_accuracy": 0.8256,
+        "span_f1": 0.74,
+        "safe_accuracy": 0.8837,
+        "false_block": 10,
+        "missed_block": 8
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 48.57,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 84.62,
+          "jailbreak_injection": 97.5,
+          "low_signal_input": 100.0,
+          "normal": 85.45,
+          "off_topic": 85.71,
+          "out_of_material": 66.67,
+          "pii_disclosure": 71.43
+        }
+      },
+      "runtime": {
+        "collect_seconds": 73.24,
+        "p50": 5.0169999999999995,
+        "p95": 10.241,
+        "max": 20.275,
+        "http_errors": 0,
+        "stage_failure_requests": 2,
+        "stage_errors": {
+          "guided_input:category": 1,
+          "guided_input:TimeoutError": 1
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_guided_input_guard/jh_guided_input_1",
+      "variant": "jh_guided_input",
+      "commit": "189b9ca40c62cd147147678b74b414fb1de6093f",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": false,
+      "result_sha256": "3c89654ab645816e84063b32fa957569ce514b8e36eaddf0a2d2298d66a17ab8",
+      "responses_sha256": "59979478c987c621a2abb719bad013d32ff59ae7cf7c86da4668e71fe6d30259",
+      "scores": {
+        "total": 15.35,
+        "tutor": 0.0,
+        "guard": 30.69,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.0,
+        "category_accuracy": 0.0,
+        "grounded_accuracy": 0.686,
+        "span_f1": 0.5808,
+        "safe_accuracy": 0.7791,
+        "false_block": 0,
+        "missed_block": 56
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 5.71,
+          "answer_seeking": 50.0,
+          "emotional_distress": 50.0,
+          "harmful_content": 1.54,
+          "jailbreak_injection": 2.5,
+          "low_signal_input": 50.0,
+          "normal": 92.75,
+          "off_topic": 5.71,
+          "out_of_material": 50.0,
+          "pii_disclosure": 50.0
+        }
+      },
+      "runtime": {
+        "collect_seconds": 29.82,
+        "p50": 0.199,
+        "p95": 6.42,
+        "max": 9.592,
+        "http_errors": 0,
+        "stage_failure_requests": 200,
+        "stage_errors": {
+          "guided_input:BadRequestError": 200
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_guided_input_guard_fixed/jh_guided_input_1",
+      "variant": "jh_guided_input",
+      "commit": "2e7243f042c3cfb1da531d14bcc98db09e398db7",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "dfb78a39952ec3d22d0c9bd9f3d35169c6fb4a5773b2db83c68ed585c0d301da",
+      "responses_sha256": "9b7d7f339f4d8ee165765196d9e27c17adc20227752d74b70e8d4c098771cf4b",
+      "scores": {
+        "total": 40.13,
+        "tutor": 0.0,
+        "guard": 80.27,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.7920792079207921,
+        "category_accuracy": 0.6744,
+        "grounded_accuracy": 0.8721,
+        "span_f1": 0.7815,
+        "safe_accuracy": 0.8721,
+        "false_block": 5,
+        "missed_block": 16
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 34.29,
+          "answer_seeking": 87.5,
+          "emotional_distress": 75.0,
+          "harmful_content": 74.62,
+          "jailbreak_injection": 97.5,
+          "low_signal_input": 100.0,
+          "normal": 91.27,
+          "off_topic": 28.57,
+          "out_of_material": 79.17,
+          "pii_disclosure": 71.43
+        }
+      },
+      "runtime": {
+        "collect_seconds": 71.03,
+        "p50": 4.77,
+        "p95": 10.375,
+        "max": 15.501,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "guided_input:category": 1
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_guided_output_guard/jh_guided_output_1",
+      "variant": "jh_guided_output",
+      "commit": "2e7243f042c3cfb1da531d14bcc98db09e398db7",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "04e64204fc9ec46f8a8af1182bbb3b979da4e714e8c5171f09415382bdba6112",
+      "responses_sha256": "01792281e993db489bd9bc560a79ffe6d841a892afe639f681d346b459643910",
+      "scores": {
+        "total": 44.27,
+        "tutor": 0.0,
+        "guard": 88.53,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8925619834710744,
+        "category_accuracy": 0.8488,
+        "grounded_accuracy": 0.9302,
+        "span_f1": 0.8099,
+        "safe_accuracy": 0.9186,
+        "false_block": 11,
+        "missed_block": 2
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 97.14,
+          "answer_seeking": 25.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 98.75,
+          "low_signal_input": 100.0,
+          "normal": 89.62,
+          "off_topic": 65.71,
+          "out_of_material": 83.33,
+          "pii_disclosure": 64.29
+        }
+      },
+      "runtime": {
+        "collect_seconds": 98.01,
+        "p50": 6.884,
+        "p95": 12.791,
+        "max": 16.705,
+        "http_errors": 0,
+        "stage_failure_requests": 11,
+        "stage_errors": {
+          "material:TimeoutError": 9,
+          "material:parse": 2
+        }
+      },
+      "effective_config": null
+    },
+    {
+      "run": "experiments/.cache/jh_output_safety_fixed_1",
+      "variant": "jh_v4_safety",
+      "commit": "27947f0369f06f10ad33eda170c826e3409dadb0",
+      "scope": "public_output_component_only",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": false,
+      "quality_comparison_valid": true,
+      "result_sha256": "fbded01a5b09e8184587acc016060f35bef46416e753fdb305f70269944473c0",
+      "responses_sha256": "e33926f04b4f3b9056f4f99ea545a8512677f029b2974ace286cdb0bbfb6840a",
+      "scores": {
+        "total": 44.15,
+        "tutor": 0.0,
+        "guard": 88.29,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8695652173913043,
+        "category_accuracy": 0.8721,
+        "grounded_accuracy": 0.9186,
+        "span_f1": 0.8122,
+        "safe_accuracy": 0.9651,
+        "false_block": 9,
+        "missed_block": 6
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 62.86,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 87.69,
+          "off_topic": 77.14,
+          "out_of_material": 83.33,
+          "pii_disclosure": 85.71
+        }
+      },
+      "runtime": null,
+      "effective_config": null,
+      "stage_failure_requests": 0,
+      "fixed_prediction_source": "experiments/.cache/jh_full_v4/v4_1"
+    },
+    {
+      "run": "experiments/.cache/jh_output_v4_fixed_1",
+      "variant": "v4",
+      "commit": "27947f0369f06f10ad33eda170c826e3409dadb0",
+      "scope": "public_output_component_only",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": false,
+      "quality_comparison_valid": true,
+      "result_sha256": "f94cfe0e2661af218db7acc4b1683c98dd83cc547810c88844dd4332e5e745b5",
+      "responses_sha256": "64b22eadc8832814361fc6ef5de290bb877604ce7d0a40f218d84873f91e1dad",
+      "scores": {
+        "total": 43.9,
+        "tutor": 0.0,
+        "guard": 87.79,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8695652173913043,
+        "category_accuracy": 0.8721,
+        "grounded_accuracy": 0.907,
+        "span_f1": 0.7787,
+        "safe_accuracy": 0.9767,
+        "false_block": 9,
+        "missed_block": 6
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 62.86,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 87.49,
+          "off_topic": 71.43,
+          "out_of_material": 83.33,
+          "pii_disclosure": 85.71
+        }
+      },
+      "runtime": null,
+      "effective_config": null,
+      "stage_failure_requests": 0,
+      "fixed_prediction_source": "experiments/.cache/jh_full_v4/v4_1"
+    },
+    {
+      "run": "experiments/.cache/jh_precise_guard/jh_precise_output_1",
+      "variant": "jh_precise_output",
+      "commit": "988928ca5aeba9eff3c485fdedad2b60f870a1c2",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "48e5239c5af0ae24c736cf44ddc3188a8325a35730d11e3c654c5d8294b50992",
+      "responses_sha256": "7fcec47e1fc2ff3897a5af65b72cc056ab2c6cf629079c059cf2f6041455c65f",
+      "scores": {
+        "total": 43.62,
+        "tutor": 0.0,
+        "guard": 87.25,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8429752066115702,
+        "category_accuracy": 0.8605,
+        "grounded_accuracy": 0.9186,
+        "span_f1": 0.8186,
+        "safe_accuracy": 0.9767,
+        "false_block": 14,
+        "missed_block": 5
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 85.71,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 92.31,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 86.71,
+          "off_topic": 82.86,
+          "out_of_material": 79.17,
+          "pii_disclosure": 78.57
+        }
+      },
+      "runtime": {
+        "collect_seconds": 79.03,
+        "p50": 5.566,
+        "p95": 10.194,
+        "max": 15.159,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "guided_grounding:span": 1,
+          "material:TimeoutError": 2,
+          "material:parse": 2
+        }
+      },
+      "effective_config": {
+        "answer_effort": "low",
+        "answer_max_tokens": 2000,
+        "votes": 1,
+        "seek_first": true,
+        "safe_by_rule": true,
+        "deadline": 24.0,
+        "prepare_limit": 14.0,
+        "peace_input": false,
+        "peace_output": false,
+        "guided_input": false,
+        "guided_output": true,
+        "focus_input": false,
+        "class": "pipelines.kimjaehak.precise_output.Pipeline",
+        "answer_prompts_sha256": "b4df0aedaf1b53005ccfa11cd55b604b65f67101a43f9b5835175612838dfa10",
+        "unsupported_prompt_sha256": "ff6eee50bcef279019e09954f50eb98a5a016dcf81609e9747bc65997cf4145f"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_v4_output_guard/jh_v4_output_1",
+      "variant": "jh_v4_output",
+      "commit": "aa1d0e1b669daedf84ef9560e08381aa8a2879be",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "5979eb624a1ac4edddb6ece8c54202ef13bf9e5634cbc5563b69832559641536",
+      "responses_sha256": "95803476e13facf9b66ab162363387e08e2f2c94b68bf68284ae261625bc01c9",
+      "scores": {
+        "total": 43.6,
+        "tutor": 0.0,
+        "guard": 87.2,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8429752066115702,
+        "category_accuracy": 0.8953,
+        "grounded_accuracy": 0.9419,
+        "span_f1": 0.8156,
+        "safe_accuracy": 0.9302,
+        "false_block": 14,
+        "missed_block": 5
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 68.57,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 96.15,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 86.43,
+          "off_topic": 71.43,
+          "out_of_material": 95.83,
+          "pii_disclosure": 64.29
+        }
+      },
+      "runtime": {
+        "collect_seconds": 79.76,
+        "p50": 5.6025,
+        "p95": 10.271,
+        "max": 13.071,
+        "http_errors": 0,
+        "stage_failure_requests": 2,
+        "stage_errors": {
+          "material:parse": 2
+        }
+      },
+      "effective_config": {
+        "answer_effort": "low",
+        "answer_max_tokens": 2000,
+        "votes": 1,
+        "seek_first": true,
+        "safe_by_rule": true,
+        "deadline": 24.0,
+        "prepare_limit": 14.0,
+        "peace_input": false,
+        "peace_output": false,
+        "guided_input": false,
+        "guided_output": true,
+        "focus_input": false,
+        "class": "pipelines.kimjaehak.v4_output.Pipeline",
+        "answer_prompts_sha256": "b4df0aedaf1b53005ccfa11cd55b604b65f67101a43f9b5835175612838dfa10",
+        "unsupported_prompt_sha256": "ff6eee50bcef279019e09954f50eb98a5a016dcf81609e9747bc65997cf4145f"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_voted_guard/jh_voted_1",
+      "variant": "jh_voted",
+      "commit": "72478c5b5218c6b98afef1d42c4d65aaa0d8c126",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "dc5282d3b249aadfc05346810c3d07c4ce8098393b58f770005d8615324cbfd8",
+      "responses_sha256": "df970c40a929458a0cb78c2adffe8363be8acbe346620c5aa4c0c453007d70c7",
+      "scores": {
+        "total": 45.67,
+        "tutor": 0.0,
+        "guard": 91.35,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.9166666666666666,
+        "category_accuracy": 0.9535,
+        "grounded_accuracy": 0.9186,
+        "span_f1": 0.8088,
+        "safe_accuracy": 0.9767,
+        "false_block": 9,
+        "missed_block": 1
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 85.71,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 87.84,
+          "off_topic": 100.0,
+          "out_of_material": 91.67,
+          "pii_disclosure": 92.86
+        }
+      },
+      "runtime": {
+        "collect_seconds": 74.56,
+        "p50": 5.418,
+        "p95": 10.019,
+        "max": 12.881,
+        "http_errors": 0,
+        "stage_failure_requests": 6,
+        "stage_errors": {
+          "material:TimeoutError": 2,
+          "material:parse": 4
+        }
+      },
+      "effective_config": {
+        "answer_effort": "low",
+        "answer_max_tokens": 2000,
+        "votes": 1,
+        "seek_first": true,
+        "safe_by_rule": true,
+        "deadline": 26,
+        "prepare_limit": 14.0,
+        "peace_input": null,
+        "peace_output": null,
+        "guided_input": null,
+        "guided_output": null,
+        "focus_input": null,
+        "request_slots": 32,
+        "short_votes": 3,
+        "class": "pipelines.kimjaehak.voted.Pipeline",
+        "answer_prompts_sha256": "cfc631f10a3aaf07d0bf9a1460bd19df83ffb76b4fe3d331f494a88b9b274544",
+        "unsupported_prompt_sha256": "ff6eee50bcef279019e09954f50eb98a5a016dcf81609e9747bc65997cf4145f"
+      }
+    }
+  ]
+}
