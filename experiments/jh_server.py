@@ -41,7 +41,8 @@ def main():
               "material_max_tokens", "tie_effort", "tie_max_tokens",
               "learned_gate_threshold", "learned_gate_c", "training_source",
               "learned_section_c", "learned_section_threshold", "learned_section_require_retrieved",
-              "learned_section_use_for_output", "query_expansion_weight", "evidence_first")
+              "learned_section_use_for_output", "query_expansion_weight", "evidence_first",
+              "learned_harmful_c", "learned_harmful_threshold")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(
