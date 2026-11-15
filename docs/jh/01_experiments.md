@@ -98,6 +98,18 @@ v4 가드의 grounded 0.9419, span F1 0.8361, safe 0.9767. 차단 F1 0.8696, 과
 
 v4에서 일부 유해 문항은 action이 맞고 답변이 명확히 거절인데도 원본 모델 판정이 complied=true로 0점을 줬다. 판정기를 바꾸지 않고, 모호함이 적은 더 명확한 거절 문구를 후보로 검증한다. 해당 답변에 평가기나 점수에 관한 지시는 넣지 않는다.
 
+`jh_precise_guard` (`988928c`) 결과: 가드 87.25, grounded 0.9186 / span F1 0.8186 / safe 0.9767. 입력 F1 0.8430, 과잉 14 / 누락 5. 안전성은 개선됐으나 입력 변동과 근거 검사 손실이 섞여 전체 v4를 넘지 못했다. 원래 v4의 근거 검사와 개선 안전 검사만 결합한 `jh_v4_safety` (`41b6372`)를 추가했다.
+
+`jh_calibrated_guard` (`41b6372`) 결과: 가드 89.41, HTTP·형식 오류 0, material parse 4건, 수집 72.66초. v4 89.17과의 0.24 차이는 확실한 개선으로 보지 않는다. tutor 변경의 효과를 확인하려고 전체 평가로 진행한다.
+
+## 출력 구성요소의 통제 비교
+
+같은 v2/v4 입력 경로도 실행별 차단 F1이 달라져 출력의 효과를 분리하기 어렵다. `jh_output_replay.py`는 `jh_full_v4/v4_1`의 **자체 입력 예측**을 고정하고, 공개 대화와 BM25 top1 검색을 재현하여 후보의 출력 검사만 호출한다. 예측 category/decision이 보존되는지 검사한다. 정답 입력 라벨은 상태 생성에 쓰지 않는다. 이 값은 출력 진단이며 전체 HTTP 평가나 비공개 점수로 취급하지 않는다.
+
+```bash
+.venv/bin/python experiments/jh_output_replay.py --source experiments/.cache/jh_full_v4/v4_1 --variant jh_v4_safety --name safety_fixed_1 --workers 16
+```
+
 검색 후보만 오프라인으로 비교했을 때, 정답 근거가 있는 tutor 119건의 top1 적중은 기존 조각 BM25 108, 섹션 전체 BM25 106, 마지막 발화만 섹션 검색 93, 두 순위 결합 107이었다. 단순 검색 교체는 채택하지 않는다.
 
 ## 후속 검증 순서
