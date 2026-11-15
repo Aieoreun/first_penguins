@@ -14,7 +14,7 @@ from pipelines.kimjaehak.config import VARIANTS
 def build_items(source):
     meta = json.loads((source.parent / "manifest.json").read_text())
     sections, digest = sections_and_hash()
-    if meta["scope"] != "provided_llm_kb_only_facts" or meta["kb_sha256"] != digest:
+    if meta["scope"] != "provided_llm_kb_only_facts_v2" or meta["kb_sha256"] != digest:
         raise ValueError("Generation provenance differs")
     records = list(map(json.loads, source.read_text().splitlines()))
     if len(records) != len(sections) or {row["section"] for row in records} != set(sections):
@@ -37,7 +37,8 @@ def build_items(source):
             items.append({"id": f"kbprobe-{sid}-{i}", "endpoint": "tutor",
                           "messages": [{"role": "user", "content": question}],
                           "labels": {"category": "normal", "action": "answer", "evidence": [sid],
-                                     "gold_facts": [example["quote"]]}})
+                                     "gold_facts": [example["answer_fact"]]},
+                          "label_support_quote": example["quote"]})
     return items, meta
 
 
@@ -67,7 +68,7 @@ def main():
     provenance = {"scope": "provided_kb_fact_diagnostic", "count": len(items),
                   "source": str(source.relative_to(ROOT)), "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
                   "dataset_sha256": hashlib.sha256(dataset.encode()).hexdigest(), "generation_model": meta["model"],
-                  "kb_sha256": meta["kb_sha256"], "weak_labels": "exact_kb_quotes",
+                  "kb_sha256": meta["kb_sha256"], "weak_labels": "provided_model_facts_with_exact_kb_support_quotes",
                   "score_interpretation": "Use tutor only; aggregate total includes an absent guard endpoint",
                   "public_questions_in_generation": False, "independent_source_holdout": False}
     (root / "derivation.json").write_text(json.dumps(provenance, indent=2))
