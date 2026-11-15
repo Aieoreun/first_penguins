@@ -14,3 +14,5 @@
 | 2026-11-15 | dj (`bsuk1`) | `e0c65a1` | 74.19 | 70.0 | 78.37 | 0 | 0 | 0 | `4e54757258beec8c728b0763af6ec11e` | 45.52 (판정 없음) | Single-pass 하이브리드 RAG + Guard 1차 제출 (소요 67.98s) |
 | 2026-11-15 | dj (`bsuk1`) | `db0d9bb` | 71.89 | 73.08 | 70.71 | 0 | 0 | 0 | `52fab960572ab82d781ff1a1999692e9` | 73.77 (판정 없음) | Supervisor Search->Review->Write 2차 제출 (소요 61.33s; Guard CoT `max_completion_tokens` 부족으로 폴백 발생 -> `769af41`에서 수정) |
 | 2026-11-15 | dj (`bsuk1`) | `6de55ef` | 74.95 | 73.58 | 76.32 | 0 | 0 | 0 | `be5edf7af2ef9e6afd1d97973331bfde` | - | Guard CoT 토큰 상향 + 프록시 2000 상한 준수 + Verifier 휴리스틱 제거 3차 제출 (소요 65.13s; 튜터 +3.58p 상승, 가드 76.32 회복) |
+| 2026-11-16 | dj (`bsuk1`) | `9f2f2e4` | 79.44 | 73.08 | 85.79 | 0 | 0 | 0 | `8e291475dcb5d64db4b40105e2b57732` | 87.56 | Step 3+4 통합 제출 (Verifier 1600자 절단 제거 + 중립 4후보 Review + 도옥싱/과제대필/PR-03 경계 정비, 소요 80.82s; 가드 +9.47p 도약) |
+| 2026-11-16 | dj (`bsuk1`) | `b1a3d2d` | 79.71 | 73.67 | 85.75 | 0 | 0 | 0 | `057741a878c16a02aafc893dd6f6c6dc` | - | Step 4b 핫픽스 (Guard academic_dishonesty 문구 정비 + 명령형 탈옥 allow 오버라이드 차단 + 혐오/모욕 무조건 redirect, 소요 86.62s) |
