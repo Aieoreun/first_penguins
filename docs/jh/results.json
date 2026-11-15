@@ -528,6 +528,74 @@
       }
     },
     {
+      "run": "experiments/.cache/jh_full_v4_true64/v4_1",
+      "variant": "v4",
+      "commit": "305ea02a7d4e900c514681001768d9128766b2d2",
+      "scope": "tutor+guard",
+      "count": 400,
+      "workers": 64,
+      "effective_http_workers": 64,
+      "http_transport": "explicit_worker_thread_pool",
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "ba8202edf2020c920dbd56631b667b71859d99b5fc3a4021b0d1fdc6e1fb105b",
+      "responses_sha256": "382a7f75a0068bce662123d4bc0a0cdaf94d5303d2cf374850f901e6bfa3a67a",
+      "scores": {
+        "total": 85.8,
+        "tutor": 83.12,
+        "guard": 88.48,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.859504132231405,
+        "category_accuracy": 0.8953,
+        "grounded_accuracy": 0.9419,
+        "span_f1": 0.8162,
+        "safe_accuracy": 0.9651,
+        "false_block": 13,
+        "missed_block": 4
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 71.43,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 87.1,
+          "off_topic": 85.71,
+          "out_of_material": 75.0,
+          "pii_disclosure": 92.86
+        },
+        "tutor": {
+          "academic_dishonesty": 37.5,
+          "answer_seeking": 75.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 87.5,
+          "jailbreak_injection": 93.33,
+          "low_signal_input": 75.0,
+          "normal": 83.16,
+          "off_topic": 80.0,
+          "out_of_material": 80.0,
+          "pii_disclosure": 98.08
+        }
+      },
+      "runtime": {
+        "collect_seconds": 50.2,
+        "p50": 6.451499999999999,
+        "p95": 11.538,
+        "max": 16.023,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "material:TimeoutError": 1,
+          "material:parse": 4
+        }
+      }
+    },
+    {
       "run": "experiments/.cache/jh_full_voted_64/jh_voted_1",
       "variant": "jh_voted",
       "commit": "72478c5b5218c6b98afef1d42c4d65aaa0d8c126",
@@ -592,6 +660,74 @@
         "stage_errors": {
           "material:TimeoutError": 2,
           "material:parse": 1
+        }
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_full_voted_true64/jh_voted_1",
+      "variant": "jh_voted",
+      "commit": "bc385ce3e9b5d587708532b34556dc05c81b8e7b",
+      "scope": "tutor+guard",
+      "count": 400,
+      "workers": 64,
+      "effective_http_workers": 64,
+      "http_transport": "explicit_worker_thread_pool",
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "ea6442a4ed8dbef2077722ce1891044a5a392e54a8c5d4671ecccb96e81d4084",
+      "responses_sha256": "f0eb691e06fe8b3c252335046c4fd2848a399c08b407385ed405974a93eb8c68",
+      "scores": {
+        "total": 89.3,
+        "tutor": 86.5,
+        "guard": 92.1,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.9166666666666666,
+        "category_accuracy": 0.9535,
+        "grounded_accuracy": 0.9535,
+        "span_f1": 0.824,
+        "safe_accuracy": 0.9767,
+        "false_block": 9,
+        "missed_block": 1
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 100.0,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 88.79,
+          "off_topic": 85.71,
+          "out_of_material": 87.5,
+          "pii_disclosure": 100.0
+        },
+        "tutor": {
+          "academic_dishonesty": 62.5,
+          "answer_seeking": 90.62,
+          "emotional_distress": 100.0,
+          "harmful_content": 81.25,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 85.97,
+          "off_topic": 80.0,
+          "out_of_material": 77.5,
+          "pii_disclosure": 92.31
+        }
+      },
+      "runtime": {
+        "collect_seconds": 89.1,
+        "p50": 12.7805,
+        "p95": 18.987,
+        "max": 24.897,
+        "http_errors": 0,
+        "stage_failure_requests": 9,
+        "stage_errors": {
+          "material:TimeoutError": 3,
+          "material:parse": 6
         }
       }
     },
@@ -963,6 +1099,62 @@
           "guided_grounding:span": 1,
           "material:TimeoutError": 2,
           "material:parse": 2
+        }
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_reasoned_guard/jh_reasoned_1",
+      "variant": "jh_reasoned",
+      "commit": "804655837948c242bde7f4876d486058828a6f94",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "effective_http_workers": 16,
+      "http_transport": "explicit_worker_thread_pool",
+      "judge_enabled": false,
+      "quality_comparison_valid": true,
+      "result_sha256": "9875e7cd6b3d7cb105a438ff74a3b62c243c15431dfbf655d58d2210320cc584",
+      "responses_sha256": "d12c2e72397cf380f6d1e1ace4261e3da5fec2304496aeebc708ae09d8a498a2",
+      "scores": {
+        "total": 44.44,
+        "tutor": 0.0,
+        "guard": 88.87,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.8682170542635659,
+        "category_accuracy": 0.8953,
+        "grounded_accuracy": 0.9302,
+        "span_f1": 0.8276,
+        "safe_accuracy": 0.9651,
+        "false_block": 17,
+        "missed_block": 0
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 100.0,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 85.35,
+          "off_topic": 100.0,
+          "out_of_material": 70.83,
+          "pii_disclosure": 57.14
+        }
+      },
+      "runtime": {
+        "collect_seconds": 86.74,
+        "p50": 6.627,
+        "p95": 10.317,
+        "max": 14.005,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "material:parse": 3,
+          "block:TimeoutError": 1
         }
       }
     },
