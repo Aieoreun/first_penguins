@@ -224,7 +224,7 @@ class SupervisorTutorPipeline:
             kb_task = asyncio.create_task(
                 self.kb_index.retrieve(
                     state.last_query,
-                    top_k_sections=6,
+                    top_k_sections=5,
                     prev_query=state.prev_query,
                     last_weight=0.75,
                 )
@@ -250,7 +250,7 @@ class SupervisorTutorPipeline:
                 p for p in [state.expanded_query or state.last_query, " ".join(assistant_entities)] if p
             )
             more_secs = await self.kb_index.retrieve(
-                re_query, top_k_sections=6, prev_query=state.prev_query, last_weight=0.55
+                re_query, top_k_sections=5, prev_query=state.prev_query, last_weight=0.55
             )
             seen = {s.section_id for s in state.retrieved}
             merged = list(state.retrieved)
@@ -428,7 +428,7 @@ class SupervisorTutorPipeline:
             return
 
         if (
-            not state.budget.has_at_least(10.0)
+            not state.budget.has_at_least(8.0)
             or state.low_signal
             or (
                 high_conf_block
@@ -436,10 +436,8 @@ class SupervisorTutorPipeline:
             )
         ):
             efforts = ("minimal",)
-        elif state.budget.has_at_least(14.0):
-            efforts = ("medium", "low")
         else:
-            efforts = ("low",)
+            efforts = ("low", "minimal")
 
         dynamic_context = self._format_dynamic_context(state)
         llm_messages: list[dict[str, str]] = [
@@ -479,9 +477,33 @@ class SupervisorTutorPipeline:
                     ),
                 )
             raw_content = (resp.choices[0].message.content or "").strip()
-            if raw_content or not state.budget.has_at_least(5.0):
+            if raw_content:
+                try:
+                    return json.loads(raw_content)
+                except json.JSONDecodeError:
+                    raw_content = ""
+            if not state.budget.has_at_least(4.5):
                 break
-        return json.loads(raw_content)
+        # Graceful deterministic fallback if model exhausted completion tokens or returned empty string
+        if state.retrieved and state.retrieved[0].bm25_score >= 1.5 and state.primary_section_id:
+            return {
+                "thought_category": "pii_disclosure" if state.signals.get("has_self_pii") else "normal",
+                "evidence_in_kb": True,
+                "best_section_id": state.primary_section_id,
+                "kb_quote_check": "",
+                "action": "answer",
+                "citations": [state.primary_section_id],
+                "answer": _FALLBACK_ANSWER,
+            }
+        return {
+            "thought_category": "out_of_material",
+            "evidence_in_kb": False,
+            "best_section_id": "",
+            "kb_quote_check": "자료에 없음",
+            "action": "abstain",
+            "citations": [],
+            "answer": _FALLBACK_ANSWER,
+        }
 
     @staticmethod
     def _apply_parsed_write(state: TutorGraphState, parsed: dict[str, Any]) -> None:
@@ -730,27 +752,6 @@ class SupervisorTutorPipeline:
 
             cur = state.final_response
             cur_action = cur.get("action", "answer")
-            run_faithful = bool(state.retrieved and cur_action in ("answer", "scaffold", "abstain"))
-
-            if round_idx == 1:
-                if run_faithful:
-                    c1, c2 = await asyncio.gather(
-                        self._run_action_critic(state, cur),
-                        self._run_faithful_critic(state, cur),
-                    )
-                else:
-                    c1 = await self._run_action_critic(state, cur)
-                    c2 = None
-            else:
-                # Round 2 focused verification: confirm repair actually resolved defects
-                if cur_action == "answer" and run_faithful:
-                    c1 = None
-                    c2 = await self._run_faithful_critic(state, cur)
-                else:
-                    c1 = await self._run_action_critic(state, cur)
-                    c2 = None
-
-            # Check deterministic claims strictly against the SINGLE cited section (mirrors grader/scoring.py)
             cur_cites = cur.get("citations") or []
             cited_sid = str(cur_cites[0]) if cur_cites else ""
             cited_texts = (
@@ -763,6 +764,46 @@ class SupervisorTutorPipeline:
                 if cur_action == "answer"
                 else []
             )
+
+            top1_bm25 = state.retrieved[0].bm25_score if state.retrieved else 0.0
+            close_sibling = (
+                len(state.retrieved) >= 2
+                and (state.retrieved[0].rrf_score - state.retrieved[1].rrf_score) < 0.008
+            )
+            need_action_critic = (
+                cur_action in ("refuse", "redirect")
+                or (cur_action == "abstain" and top1_bm25 >= 2.0)
+                or (cur_action == "scaffold" and not state.signals.get("has_answer_seeking"))
+                or (cur_action == "answer" and top1_bm25 < 1.8)
+            )
+            need_faithful_critic = bool(
+                state.retrieved
+                and cur_action == "answer"
+                and (suspect_claims or close_sibling or top1_bm25 < 2.2)
+            )
+
+            if round_idx == 1:
+                if not need_action_critic and not need_faithful_critic:
+                    break
+                if need_action_critic and need_faithful_critic:
+                    c1, c2 = await asyncio.gather(
+                        self._run_action_critic(state, cur),
+                        self._run_faithful_critic(state, cur),
+                    )
+                elif need_action_critic:
+                    c1 = await self._run_action_critic(state, cur)
+                    c2 = None
+                else:
+                    c1 = None
+                    c2 = await self._run_faithful_critic(state, cur)
+            else:
+                # Round 2 focused verification: confirm repair actually resolved defects
+                if cur_action == "answer" and state.retrieved:
+                    c1 = None
+                    c2 = await self._run_faithful_critic(state, cur)
+                else:
+                    c1 = await self._run_action_critic(state, cur)
+                    c2 = None
 
             # Fast 0-ms Citation Swap if Action is OK and Faithfulness Critic spotted exact sibling section
             action_ok = True if c1 is None else bool(c1.get("action_ok", True))

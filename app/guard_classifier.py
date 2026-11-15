@@ -54,6 +54,14 @@ _JAILBREAK_PATTERNS = (
     re.compile(r"(?:프롬프트|내부\s*지침|숨겨진\s*(?:지시|지침|규칙)|시스템\s*(?:규칙|메시지))(?:을|를)?\s*.{0,12}(?:출력|공개|알려|보여)"),
 )
 
+# Course-domain entity cues (only inject KB summary into input classifier when course domain is mentioned)
+_GUARD_COURSE_CUE_RE = re.compile(
+    r"(?:다람쥐|체크카드|틴즈|통장|새싹\s*적금|꿈모으기|정기예금|도토리|다람\s*문구점|문구점|"
+    r"파이썬|프롬프트|울타리|거름망|실습|교재|학습자료|수업|동아리|kkumtle|helpy|fruit_|"
+    r"\bround\b|\bint\b|\bif\b|\bwhile\b|\bfor\b|\bdef\b)",
+    re.IGNORECASE,
+)
+
 # Curriculum meta-discussion (PR-01/PR-03 defense, fence usage, role comparison/analysis)
 _META_DEFENSE_EDUCATIONAL_RE = re.compile(
     r"(?:울타리.*(?:어떻게|어케)\s*쓰는지|fence로\s*구분하는\s*방법|역할을\s*검토하면서|"
@@ -442,7 +450,7 @@ class GuardClassifier:
             if score > max_bm25:
                 max_bm25 = score
             secs_meta.append({"id": sid, "title": title, "bm25_score": score})
-            blocks.append(f"[{sid}] ({title}, bm25={score:.2f})\n{_head_tail(body, 650)}")
+            blocks.append(f"[{sid}] ({title}, bm25={score:.2f})\n{_head_tail(body, 420)}")
         return "\n\n".join(blocks), max_bm25, secs_meta
 
     async def _llm_classify(
@@ -488,8 +496,8 @@ class GuardClassifier:
             hint_notes.append(
                 "학습자 본인 이름·학교·연락처 자기소개가 포함되었습니다. 과제·수행평가 제출 대필이나 off_topic이 아니면 allow(pii_disclosure)로 판정하세요."
             )
-        if kb_summary is None and self.kb_index is not None:
-            kb_summary, _, _ = await self._retrieve_kb_summary(last_user or query_text, top_k=3)
+        if kb_summary is None and self.kb_index is not None and _GUARD_COURSE_CUE_RE.search(last_user):
+            kb_summary, _, _ = await self._retrieve_kb_summary(last_user or query_text, top_k=2)
 
         user_parts: list[str] = []
         if kb_summary:
@@ -614,7 +622,10 @@ class GuardClassifier:
             and not signals.get("has_hate_insult")
         )
 
-        kb_summary, max_bm25, _ = await self._retrieve_kb_summary(last_user or query_text, top_k=3)
+        if _GUARD_COURSE_CUE_RE.search(last_user):
+            kb_summary, max_bm25, _ = await self._retrieve_kb_summary(last_user or query_text, top_k=2)
+        else:
+            kb_summary, max_bm25 = "", 0.0
 
         diag: dict[str, Any] = {
             "deterministic": False,

@@ -93,13 +93,13 @@ class GuardSupervisor:
         if signals.get("has_other_pii_dox") or signals.get("has_hate_insult") or signals.get("has_emotional_distress"):
             return None
 
-        # 1. out_of_material vs normal / off_topic boundary
+        # 1. out_of_material vs normal / off_topic boundary (strictly when weak KB hit)
         if category == "out_of_material":
             return ("out_of_material", "normal")
         if (
             category in ("normal", "off_topic")
             and _COURSE_DOMAIN_CUE_RE.search(last_user)
-            and (max_bm25 < 1.1 or _OOM_DETAIL_CUE_RE.search(last_user))
+            and max_bm25 < 0.9
         ):
             return (category, "out_of_material")
 
@@ -402,46 +402,41 @@ class GuardSupervisor:
         # Exclude numeric/entity tokens clearly echoed from the student's own prompt
         suspicious_tokens = _precheck_claims(cand, "\n".join(kb_text_all) + " " + " ".join(user_turns))
 
-        # Concurrent Dual-Perspective Output Audit (OA Grounding + OB Safety)
-        oa_task = self._audit_grounding(kb_context, cand, suspicious_tokens, budget)
-        ob_task = self._audit_safety(messages, cand, budget)
-        oa_res, ob_res = await asyncio.gather(oa_task, ob_task)
+        # Single fast GuardVerifier pass (runs concurrently with classify_input in handle()); escalates to Round-2 Judge only on conflicts
+        if self.guard_verifier is not None:
+            ver = await self.guard_verifier.verify(messages, cand, input_decision, safe_category)
+            safe = bool(ver.get("safe", input_decision == "allow"))
+            raw_grounded = bool(ver.get("grounded", True))
+            unsupported = list(ver.get("unsupported") or [])
+            ob_fallback = False
+        else:
+            oa_res = await self._audit_grounding(kb_context, cand, suspicious_tokens, budget)
+            ob_fallback = True
+            safe = input_decision == "allow"
+            if oa_res is None:
+                return {"grounded": True, "unsupported": [], "safe": safe, "category": safe_category}, True
+            raw_grounded = bool(oa_res.get("grounded", True))
+            raw_unsup = oa_res.get("unsupported") or []
+            unsupported = _deduplicate_spans(
+                [
+                    s
+                    for item in raw_unsup
+                    if isinstance(item, str)
+                    for s in (_snap_span_to_verbatim(item, cand, min_ratio=0.65),)
+                    if s
+                ]
+            )
 
-        ob_fallback = ob_res is None
-        safe = bool(ob_res.get("safe", True)) if ob_res is not None else (input_decision == "allow")
-
-        if oa_res is None:
-            return {
-                "grounded": True,
-                "unsupported": [],
-                "safe": safe,
-                "category": safe_category,
-            }, ob_fallback
-
-        raw_grounded = bool(oa_res.get("grounded", True))
-        raw_unsupported = oa_res.get("unsupported") or []
-        if not isinstance(raw_unsupported, list):
-            raw_unsupported = []
-
-        snapped = [
-            s
-            for item in raw_unsupported
-            if isinstance(item, str)
-            for s in (_snap_span_to_verbatim(item, cand, min_ratio=0.65),)
-            if s
-        ]
-        unsupported = _deduplicate_spans(snapped)
-
-        # Round-2 Conflict Adjudicator: only when OA disagrees with precheck or failed to extract verbatim spans
+        # Round-2 Conflict Adjudicator: fires ONLY when primary verifier says grounded=True despite unmatched precheck claims,
+        # or flagged ungrounded without managing to snap a verbatim span.
         conflict_notes: list[str] = []
         if raw_grounded and suspicious_tokens:
             conflict_notes.append(
                 f"1차 근거 검증은 grounded=true로 보았으나, 자료/질문에서 미확인 수치·고유어({', '.join(suspicious_tokens[:6])})가 감지됨"
             )
-        elif not raw_grounded and raw_unsupported and not unsupported:
-            raw_joined = ", ".join(str(x)[:40] for x in raw_unsupported[:4])
+        elif not raw_grounded and not unsupported:
             conflict_notes.append(
-                f"1차 근거 검증이 왜곡({raw_joined})을 지적했으나 후보 답변 원문 스팬 매칭에 실패함"
+                "1차 근거 검증이 grounded=false로 판정했으나 원문 스팬(unsupported) 추출에 실패함"
             )
 
         if conflict_notes and budget.has_at_least(7.5):

@@ -776,8 +776,8 @@ class TestStep5Generalization:
         res_abstain = asyncio.run(
             sup_abstain.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금의 중도해지 수수료는 몇 %야?"}])
         )
-        assert retrieve_calls[0]["top_k_sections"] == 6
-        assert call_efforts == ["medium", "low"]
+        assert retrieve_calls[0]["top_k_sections"] == 5
+        assert call_efforts == ["low", "minimal"]
         assert res_abstain["action"] == "abstain"
         assert res_abstain["citations"] == []
 
@@ -986,7 +986,7 @@ class TestStep5Generalization:
                 input_category="normal",
             )
         )
-        assert calls == [("medium", 2000), ("low", 1800)]
+        assert calls == [("low", 1800), ("minimal", 1400)]
         assert out["grounded"] is True
         assert out["safe"] is True
         assert out["unsupported"] == []
@@ -1064,7 +1064,7 @@ class TestStep6DualSupervisor:
         kb_sec = SimpleNamespace(
             section_id="FIN-02-01",
             title="다람쥐 꿈모으기 정기예금",
-            bm25_score=2.1,
+            bm25_score=0.6,
             full_text="다람쥐 꿈모으기 정기예금은 만기 1년 상품이며 약정 금리는 연 2.5%입니다.",
         )
         fake_kb = MagicMock()
@@ -1104,14 +1104,17 @@ class TestStep6DualSupervisor:
                         "decision": "allow",
                     }
                 )
-            if schema_name == "guard_output_grounding":
-                # Perspective OA misses numeric claim "연 7.5%" initially -> triggers conflict with precheck
+            if schema_name == "guard_output_response":
+                # Primary GuardVerifier misses numeric claim "연 7.5%" initially -> triggers conflict with precheck
                 return _make_resp(
-                    {"fabricated_claims_check": "이상 없음", "unsupported": [], "grounded": True}
+                    {
+                        "safety_check": "안전한 답변",
+                        "safe": True,
+                        "fabricated_claims_check": "이상 없음",
+                        "unsupported": [],
+                        "grounded": True,
+                    }
                 )
-            if schema_name == "guard_output_safety":
-                # Perspective OB checks safety independently
-                return _make_resp({"safety_check": "안전한 답변", "safe": True})
             if schema_name == "guard_output_judge":
                 # Round-2 Judge catches unmatched precheck token and quotes candidate substring
                 return _make_resp(
@@ -1140,8 +1143,7 @@ class TestStep6DualSupervisor:
         assert set(schema_calls) == {
             "guard_input_response",
             "guard_input_tiebreaker",
-            "guard_output_grounding",
-            "guard_output_safety",
+            "guard_output_response",
             "guard_output_judge",
         }
 
@@ -1405,3 +1407,56 @@ class TestStep6DualSupervisor:
         assert res_rescue["action"] == "answer"
         assert res_rescue["citations"] == ["FIN-02-01"]
         assert "2.5%" in res_rescue["answer"]
+
+    def test_korean_numeric_normalization_and_empty_write_fallback(self):
+        import asyncio
+        from types import SimpleNamespace
+        from app.guard_verifier import _precheck_claims
+        from app.supervisor_graph import SupervisorTutorPipeline
+
+        # Korean unit & comma equivalence prevents false unmatched claim repairs
+        kb_text = "다람 문구점 카드 결제 수수료는 1,000원이며 하루 최대 이체 한도는 30,000원입니다."
+        assert _precheck_claims("수수료는 1천 원이고 한도는 3만 원이에요.", kb_text) == []
+        assert _precheck_claims("수수료는 2천 원입니다.", kb_text) != []
+
+        # Empty LLM completion content must NOT raise JSONDecodeError
+        settings = load_settings()
+        settings = settings.__class__(
+            **{
+                **settings.__dict__,
+                "openai_api_key": "dummy",
+                "request_deadline_sec": 30.0,
+                "llm_timeout_sec": 10.0,
+            }
+        )
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+
+        def _empty_resp():
+            msg = MagicMock()
+            msg.content = ""
+            choice = MagicMock()
+            choice.message = msg
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        pool.chat_client.chat.completions.create = AsyncMock(return_value=_empty_resp())
+        sec = SimpleNamespace(
+            section_id="FIN-01-01",
+            title="첫걸음 통장",
+            domain="finance",
+            bm25_score=2.5,
+            dense_score=0.7,
+            rrf_score=0.05,
+            full_text="다람쥐 첫걸음 통장은 용돈 관리 기본 통장입니다.",
+            is_table=False,
+        )
+        fake_kb = MagicMock()
+        fake_kb.build_toc.return_value = "FIN-01-01"
+        fake_kb.retrieve = AsyncMock(return_value=[sec])
+
+        sup = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None)
+        res = asyncio.run(sup.handle([{"role": "user", "content": "다람쥐 첫걸음 통장 설명해 줘"}]))
+        assert res["action"] == "answer"
+        assert res["citations"] == ["FIN-01-01"]

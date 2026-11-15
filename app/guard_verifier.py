@@ -24,7 +24,7 @@ logger = logging.getLogger("first_penguins.guard_verifier")
 
 # Patterns for deterministic pre-check of numeric/entity claims in candidate_answer
 _NUMBER_PCT_DATE_RE = re.compile(
-    r"\d{4}[-./년]\s*\d{1,2}[-./월]?(?:\s*\d{1,2}일?)?|\d+(?:[.,]\d+)?\s*(?:%|원|세|살|명|개|건|점|단계|분|초|시간|일|주|개월|년|배|회)|\b\d{2,}(?:[.,]\d+)?\b"
+    r"\d{4}[-./년]\s*\d{1,2}[-./월]?(?:\s*\d{1,2}일?)?|\d+(?:[.,]\d+)?\s*(?:천|만)\s*(?:원|명|개|건|회)?|\d+(?:[.,]\d+)?\s*(?:%|원|세|살|명|개|건|점|단계|분|초|시간|일|주|개월|년|배|회)|\b\d{2,}(?:[.,]\d+)?\b"
 )
 _COURSE_ENTITY_RE = re.compile(
     r"(?:다람쥐\s*은행|다람\s*문구점|kkumtle|HelpyCode|Helpy|(?:PY|FIN|PR)-\d{2}(?:-\d{2})?)",
@@ -159,9 +159,26 @@ async def _retrieve_kb_sections(kb_index: Any, query: str, top_k: int = 6) -> li
     return formatted
 
 
+def _normalize_ko_numeric_text(text: str) -> str:
+    """Normalize commas and common Korean currency/unit multipliers for equivalent matching."""
+    norm = normalize_text(text).lower()
+    norm = re.sub(r"(?<=\d),(?=\d)", "", norm)
+    # Expand shorthand Korean number expressions (e.g., 1천원 <-> 1000원, 3만원 <-> 30000원)
+    def _repl_unit(m: re.Match[str]) -> str:
+        num = float(m.group(1))
+        unit = m.group(2)
+        mult = 10000 if unit == "만" else 1000
+        val = int(round(num * mult))
+        return f"{val}"
+    expanded = re.sub(r"(\d+(?:\.\d+)?)\s*([천만])", _repl_unit, norm)
+    expanded = re.sub(r"(?<=\d)\s+(?=(?:원|%|세|살|명|개|건|점|단계|분|초|시간|일|주|개월|년|배|회))", "", expanded)
+    return expanded
+
+
 def _precheck_claims(candidate_answer: str, kb_text: str) -> list[str]:
-    """Extract numbers, percentages, dates, and course entities not verbatim-present in retrieved KB."""
+    """Extract numbers, percentages, dates, and course entities not present in retrieved KB."""
     kb_norm = normalize_text(kb_text).lower()
+    kb_num_norm = _normalize_ko_numeric_text(kb_text)
     unmatched: list[str] = []
     seen: set[str] = set()
 
@@ -172,7 +189,13 @@ def _precheck_claims(candidate_answer: str, kb_text: str) -> list[str]:
             if not tok_norm or tok_norm in seen:
                 continue
             seen.add(tok_norm)
-            if tok_norm not in kb_norm:
+            tok_num_norm = _normalize_ko_numeric_text(tok)
+            num_hit = (
+                bool(re.search(rf"(?<!\d){re.escape(tok_num_norm)}", kb_num_norm))
+                if tok_num_norm and tok_num_norm[0].isdigit()
+                else (tok_num_norm in kb_num_norm)
+            )
+            if tok_norm not in kb_norm and not num_hit:
                 unmatched.append(tok)
     return unmatched[:12]
 
@@ -245,7 +268,7 @@ class GuardVerifier:
         try:
             raw = ""
             finish_reason = None
-            for effort, tok_cap in (("medium", 2000), ("low", 1800)):
+            for effort, tok_cap in (("low", 1800), ("minimal", 1400)):
                 async with self.pool.semaphore:
                     resp = await self.pool.chat_client.chat.completions.create(
                         model=self.settings.openai_model,
