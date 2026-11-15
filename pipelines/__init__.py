@@ -47,6 +47,10 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.brief_material").Pipeline
         if name == "jh_concise_answer":
             return importlib.import_module("pipelines.kimjaehak.concise_answer").Pipeline
+        if name == "jh_concise_fitted":
+            return importlib.import_module("pipelines.kimjaehak.concise_answer").Fitted
+        if name == "jh_evidence_answer":
+            return importlib.import_module("pipelines.kimjaehak.evidence_answer").Pipeline
         if name == "jh_reasoned_tie":
             return importlib.import_module("pipelines.kimjaehak.reasoned_tie").Pipeline
         if name == "jh_learned_gate":

@@ -1,6 +1,7 @@
 """Answer ordinary learning questions using only the directly relevant facts."""
 from core.schema import Label
 from .adaptive import Pipeline as Adaptive
+from .learned_sections import TutorOnly
 
 
 ANSWER_SYSTEM = """당신은 파이썬, 프롬프트 쓰기, 돈 관리를 가르치는 중학생용 튜터예요.
@@ -22,4 +23,9 @@ ANSWER_SYSTEM = """당신은 파이썬, 프롬프트 쓰기, 돈 관리를 가�
 
 class Pipeline(Adaptive):
     answer_systems = {**Adaptive.answer_systems,
+                      Label.NORMAL: ANSWER_SYSTEM, Label.PII_DISCLOSURE: ANSWER_SYSTEM}
+
+
+class Fitted(TutorOnly):
+    answer_systems = {**TutorOnly.answer_systems,
                       Label.NORMAL: ANSWER_SYSTEM, Label.PII_DISCLOSURE: ANSWER_SYSTEM}
