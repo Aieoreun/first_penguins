@@ -67,6 +67,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.medium_answer").Pipeline
         if name == "jh_voted_output":
             return importlib.import_module("pipelines.kimjaehak.voted_output").Pipeline
+        if name == "jh_uncertain_sources":
+            return importlib.import_module("pipelines.kimjaehak.uncertain_sources").Pipeline
         if name in {"jh_context_output", "jh_context_output3"}:
             module = importlib.import_module("pipelines.kimjaehak.context_output")
             return module.ThreeSections if name.endswith("3") else module.Pipeline
