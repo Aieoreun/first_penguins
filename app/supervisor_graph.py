@@ -10,6 +10,7 @@ import asyncio
 import inspect
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
@@ -224,7 +225,7 @@ class SupervisorTutorPipeline:
             kb_task = asyncio.create_task(
                 self.kb_index.retrieve(
                     state.last_query,
-                    top_k_sections=5,
+                    top_k_sections=4,
                     prev_query=state.prev_query,
                     last_weight=0.75,
                 )
@@ -250,7 +251,7 @@ class SupervisorTutorPipeline:
                 p for p in [state.expanded_query or state.last_query, " ".join(assistant_entities)] if p
             )
             more_secs = await self.kb_index.retrieve(
-                re_query, top_k_sections=5, prev_query=state.prev_query, last_weight=0.55
+                re_query, top_k_sections=4, prev_query=state.prev_query, last_weight=0.55
             )
             seen = {s.section_id for s in state.retrieved}
             merged = list(state.retrieved)
@@ -259,7 +260,7 @@ class SupervisorTutorPipeline:
                     merged.append(s)
                     seen.add(s.section_id)
             merged.sort(key=lambda x: (x.rrf_score, x.bm25_score, x.dense_score), reverse=True)
-            state.retrieved = merged[:6]
+            state.retrieved = merged[:5]
 
         state.node_latencies_ms[f"search_{state.re_search_count}"] = round(
             (time.perf_counter() - t0) * 1000, 1
@@ -290,7 +291,7 @@ class SupervisorTutorPipeline:
         )
         if (
             state.re_search_count == 0
-            and (top1.bm25_score <= 0.8 or has_referential)
+            and (top1.bm25_score <= 0.8 or (has_referential and top1.bm25_score <= 1.2))
             and len(state.messages) >= 3
             and state.budget.has_at_least(14.0)
         ):
@@ -368,7 +369,12 @@ class SupervisorTutorPipeline:
 
         if state.retrieved:
             sec_blocks = [
-                f"[{sec.section_id}] ({sec.title})\n{sec.full_text}"
+                f"[{sec.section_id}] ({sec.title})\n"
+                + (
+                    sec.full_text
+                    if len(sec.full_text) <= 2300
+                    else sec.full_text[:1750] + "\n...\n" + sec.full_text[-520:]
+                )
                 for sec in state.retrieved
             ]
             parts.append("[검색된 교육 자료]\n" + "\n\n---\n\n".join(sec_blocks))
@@ -458,31 +464,37 @@ class SupervisorTutorPipeline:
         efforts: tuple[str, ...],
         state: TutorGraphState,
     ) -> dict[str, Any]:
-        raw_content = ""
-        for effort in efforts:
-            async with self.pool.semaphore:
-                resp = await asyncio.wait_for(
-                    self.pool.chat_client.chat.completions.create(
-                        model=self.settings.openai_model,
-                        messages=llm_messages,
-                        response_format={
-                            "type": "json_schema",
-                            "json_schema": TUTOR_REVIEW_WRITE_JSON_SCHEMA,
-                        },
-                        max_completion_tokens=2000,
-                        extra_body={"reasoning_effort": effort},
-                    ),
-                    timeout=state.budget.step_timeout(
-                        self.settings.llm_timeout_sec, reserve_sec=1.2
-                    ),
-                )
-            raw_content = (resp.choices[0].message.content or "").strip()
-            if raw_content:
-                try:
+        effort_seq = list(efforts)
+        if "minimal" not in effort_seq:
+            effort_seq.append("minimal")
+        for idx, effort in enumerate(effort_seq):
+            try:
+                async with self.pool.semaphore:
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=llm_messages,
+                            response_format={
+                                "type": "json_schema",
+                                "json_schema": TUTOR_REVIEW_WRITE_JSON_SCHEMA,
+                            },
+                            max_completion_tokens=2000,
+                            extra_body={"reasoning_effort": effort},
+                        ),
+                        timeout=state.budget.step_timeout(
+                            self.settings.llm_timeout_sec, reserve_sec=1.2
+                        ),
+                    )
+                raw_content = (resp.choices[0].message.content or "").strip()
+                if raw_content:
                     return json.loads(raw_content)
-                except json.JSONDecodeError:
-                    raw_content = ""
-            if not state.budget.has_at_least(4.5):
+            except Exception as exc:
+                logger.warning(
+                    "write_llm_attempt_failed effort=%s err=%s",
+                    effort,
+                    type(exc).__name__,
+                )
+            if idx + 1 >= len(effort_seq) or not state.budget.has_at_least(3.0):
                 break
         # Graceful deterministic fallback if model exhausted completion tokens or returned empty string
         if state.retrieved and state.retrieved[0].bm25_score >= 1.5 and state.primary_section_id:
@@ -577,8 +589,8 @@ class SupervisorTutorPipeline:
                             "type": "json_schema",
                             "json_schema": TUTOR_ACTION_CRITIC_SCHEMA,
                         },
-                        extra_body={"reasoning_effort": "low"},
-                        max_completion_tokens=450,
+                        extra_body={"reasoning_effort": "minimal"},
+                        max_completion_tokens=900,
                     ),
                     timeout=state.budget.step_timeout(
                         self.settings.llm_timeout_sec, reserve_sec=1.5
@@ -630,36 +642,38 @@ class SupervisorTutorPipeline:
             + f"\n\n[다른 후보 섹션 목록]\n{others_text}"
             + f"\n\n[초안 답변]\n{draft.get('answer', '')[:1600]}"
         )
-        try:
-            async with self.pool.semaphore:
-                resp = await asyncio.wait_for(
-                    self.pool.chat_client.chat.completions.create(
-                        model=self.settings.openai_model,
-                        messages=[
-                            {"role": "system", "content": TUTOR_FAITHFUL_CRITIC_SYSTEM_PREFIX},
-                            {"role": "user", "content": user_prompt},
-                        ],
-                        response_format={
-                            "type": "json_schema",
-                            "json_schema": TUTOR_FAITHFUL_CRITIC_SCHEMA,
-                        },
-                        extra_body={"reasoning_effort": "low"},
-                        max_completion_tokens=500,
-                    ),
-                    timeout=state.budget.step_timeout(
-                        self.settings.llm_timeout_sec, reserve_sec=1.5
-                    ),
-                )
-            raw = (resp.choices[0].message.content or "").strip()
-            if not raw:
-                return None
-            parsed = json.loads(raw)
-            if "faithful" not in parsed:
-                return None
-            return parsed
-        except Exception as exc:
-            logger.warning("faithful_critic_skipped err=%s", type(exc).__name__)
-            return None
+        for effort, tok_cap in (("low", 1100), ("minimal", 900)):
+            try:
+                async with self.pool.semaphore:
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=[
+                                {"role": "system", "content": TUTOR_FAITHFUL_CRITIC_SYSTEM_PREFIX},
+                                {"role": "user", "content": user_prompt},
+                            ],
+                            response_format={
+                                "type": "json_schema",
+                                "json_schema": TUTOR_FAITHFUL_CRITIC_SCHEMA,
+                            },
+                            extra_body={"reasoning_effort": effort},
+                            max_completion_tokens=tok_cap,
+                        ),
+                        timeout=state.budget.step_timeout(
+                            self.settings.llm_timeout_sec, reserve_sec=1.5
+                        ),
+                    )
+                raw = (resp.choices[0].message.content or "").strip()
+                if not raw:
+                    continue
+                parsed = json.loads(raw)
+                if "faithful" in parsed:
+                    return parsed
+            except Exception as exc:
+                logger.warning("faithful_critic_attempt_failed effort=%s err=%s", effort, type(exc).__name__)
+                if not state.budget.has_at_least(4.0):
+                    break
+        return None
 
     async def verify_node(self, state: TutorGraphState) -> None:
         """Node 5 (Verify): Dual-Perspective Critique, 0ms Citation Swap & Bounded 2x Repair."""
@@ -746,7 +760,7 @@ class SupervisorTutorPipeline:
         prior_critic_feedback = ""
 
         for round_idx in range(1, max_rounds + 1):
-            min_gate = 10.5 if round_idx == 1 else 7.5
+            min_gate = 10.5 if round_idx == 1 else 9.0
             if not state.budget.has_at_least(min_gate):
                 break
 
@@ -766,20 +780,37 @@ class SupervisorTutorPipeline:
             )
 
             top1_bm25 = state.retrieved[0].bm25_score if state.retrieved else 0.0
-            close_sibling = (
-                len(state.retrieved) >= 2
-                and (state.retrieved[0].rrf_score - state.retrieved[1].rrf_score) < 0.008
-            )
+            raw_quote = re.sub(r"^\s*\[[^\]]+\]\s*", "", state.raw_kb_quote_check or "").strip()
+            norm_quote = re.sub(r"\s+", "", raw_quote)
+            quote_in_other_sec = False
+            if (
+                len(norm_quote) >= 6
+                and raw_quote not in ("자료에 없음", "없음", "해당 없음", "확인 불가")
+                and cited_sid
+                and cited_sid in retrieved_texts
+            ):
+                cited_norm = re.sub(r"\s+", "", retrieved_texts[cited_sid])
+                if norm_quote not in cited_norm:
+                    quote_in_other_sec = any(
+                        norm_quote in re.sub(r"\s+", "", txt)
+                        for sid, txt in retrieved_texts.items()
+                        if sid != cited_sid
+                    )
+
             need_action_critic = (
                 cur_action in ("refuse", "redirect")
-                or (cur_action == "abstain" and top1_bm25 >= 2.0)
-                or (cur_action == "scaffold" and not state.signals.get("has_answer_seeking"))
-                or (cur_action == "answer" and top1_bm25 < 1.8)
+                or (cur_action == "abstain" and top1_bm25 >= 2.2)
+                or (
+                    cur_action == "scaffold"
+                    and not state.signals.get("has_answer_seeking")
+                    and not state.signals.get("has_academic_dishonesty")
+                )
+                or (cur_action == "answer" and top1_bm25 < 1.3)
             )
             need_faithful_critic = bool(
                 state.retrieved
                 and cur_action == "answer"
-                and (suspect_claims or close_sibling or top1_bm25 < 2.2)
+                and (suspect_claims or quote_in_other_sec or top1_bm25 < 1.6)
             )
 
             if round_idx == 1:
@@ -884,9 +915,11 @@ class SupervisorTutorPipeline:
                 {"role": "user", "content": repair_ctx},
                 *state.messages,
             ]
-            repair_effort = ("low",) if (round_idx == 1 or state.budget.has_at_least(8.5)) else ("minimal",)
+            repair_effort = ("low", "minimal") if (round_idx == 1 or state.budget.has_at_least(8.5)) else ("minimal",)
             try:
                 parsed = await self._call_write_llm(repair_msgs, repair_effort, state)
+                if parsed.get("answer") == _FALLBACK_ANSWER and state.raw_answer:
+                    break
                 self._apply_parsed_write(state, parsed)
                 state.correction_rounds = round_idx
                 state.final_response = _run_invariants()

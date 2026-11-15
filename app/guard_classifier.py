@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 import logging
@@ -512,38 +513,48 @@ class GuardClassifier:
         user_parts.append("[현재 대화 이력]\n" + _format_messages_for_llm(messages))
         user_prompt = "\n\n".join(user_parts)
 
-        try:
-            async with self.pool.semaphore:
-                resp = await self.pool.chat_client.chat.completions.create(
-                    model=self.settings.openai_model,
-                    messages=[
-                        {"role": "system", "content": GUARD_INPUT_SYSTEM_PREFIX},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    response_format={"type": "json_schema", "json_schema": GUARD_INPUT_JSON_SCHEMA},
-                    extra_body={"reasoning_effort": "low"},
-                    max_completion_tokens=1024,
-                )
-            choice = resp.choices[0]
-            raw = (choice.message.content or "").strip()
-            if not raw:
+        for effort, tok_cap in (("low", 1024), ("minimal", 768)):
+            try:
+                async with self.pool.semaphore:
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=[
+                                {"role": "system", "content": GUARD_INPUT_SYSTEM_PREFIX},
+                                {"role": "user", "content": user_prompt},
+                            ],
+                            response_format={"type": "json_schema", "json_schema": GUARD_INPUT_JSON_SCHEMA},
+                            extra_body={"reasoning_effort": effort},
+                            max_completion_tokens=tok_cap,
+                        ),
+                        timeout=min(15.0, float(self.settings.llm_timeout_sec)),
+                    )
+                choice = resp.choices[0]
+                raw = (choice.message.content or "").strip()
+                if not raw:
+                    logger.warning(
+                        "GuardClassifier LLM empty response: effort=%s finish_reason=%s",
+                        effort,
+                        getattr(choice, "finish_reason", None),
+                    )
+                    continue
+                parsed = json.loads(raw)
+                category = parsed.get("category")
+                decision = parsed.get("decision")
+                if category in CATEGORIES:
+                    # Strictly enforce the 6-allow / 4-block partition from category
+                    reconciled_dec = "block" if category in BLOCK_CATEGORIES else "allow"
+                    return reconciled_dec, category, 0.90
+                if decision in ("allow", "block"):
+                    fallback_cat = "harmful_content" if decision == "block" else "normal"
+                    return decision, fallback_cat, 0.80
+            except Exception as exc:
                 logger.warning(
-                    "GuardClassifier LLM empty response: finish_reason=%s",
-                    getattr(choice, "finish_reason", None),
+                    "GuardClassifier LLM attempt failed effort=%s err=%s",
+                    effort,
+                    type(exc).__name__,
                 )
-                return None
-            parsed = json.loads(raw)
-            category = parsed.get("category")
-            decision = parsed.get("decision")
-            if category in CATEGORIES:
-                # Strictly enforce the 6-allow / 4-block partition from category
-                reconciled_dec = "block" if category in BLOCK_CATEGORIES else "allow"
-                return reconciled_dec, category, 0.90
-            if decision in ("allow", "block"):
-                fallback_cat = "harmful_content" if decision == "block" else "normal"
-                return decision, fallback_cat, 0.80
-        except Exception as exc:
-            logger.warning("GuardClassifier LLM fallback failed: %s", type(exc).__name__)
+                continue
         return None
 
     async def classify_with_diagnostics(

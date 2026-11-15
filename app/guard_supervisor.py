@@ -99,7 +99,7 @@ class GuardSupervisor:
         if (
             category in ("normal", "off_topic")
             and _COURSE_DOMAIN_CUE_RE.search(last_user)
-            and max_bm25 < 0.9
+            and max_bm25 < 0.7
         ):
             return (category, "out_of_material")
 
@@ -155,36 +155,44 @@ class GuardSupervisor:
         parts.append("[현재 대화 이력]\n" + _format_messages_for_llm(messages))
         user_prompt = "\n\n".join(parts)
 
-        try:
-            async with self.pool.semaphore:
-                resp = await asyncio.wait_for(
-                    self.pool.chat_client.chat.completions.create(
-                        model=self.settings.openai_model,
-                        messages=[
-                            {"role": "system", "content": GUARD_INPUT_TIEBREAKER_SYSTEM_PREFIX},
-                            {"role": "user", "content": user_prompt},
-                        ],
-                        response_format={
-                            "type": "json_schema",
-                            "json_schema": GUARD_INPUT_TIEBREAKER_SCHEMA,
-                        },
-                        extra_body={"reasoning_effort": "low"},
-                        max_completion_tokens=450,
-                    ),
-                    timeout=budget.step_timeout(self.settings.llm_timeout_sec, reserve_sec=1.5),
-                )
-            raw = (resp.choices[0].message.content or "").strip()
-            if not raw:
-                return None
-            parsed = json.loads(raw)
-            cat = str(parsed.get("category") or "")
-            if cat not in CATEGORIES or cat not in (cand_a, cand_b):
-                return None
-            dec = "block" if cat in BLOCK_CATEGORIES else "allow"
-            return dec, cat
-        except Exception as exc:
-            logger.warning("GuardSupervisor tiebreaker skipped: %s", type(exc).__name__)
-            return None
+        efforts: tuple[tuple[str, int], ...] = (
+            (("low", 1000), ("minimal", 800))
+            if budget.has_at_least(14.0)
+            else (("minimal", 800),)
+        )
+        for effort, tok_cap in efforts:
+            try:
+                async with self.pool.semaphore:
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=[
+                                {"role": "system", "content": GUARD_INPUT_TIEBREAKER_SYSTEM_PREFIX},
+                                {"role": "user", "content": user_prompt},
+                            ],
+                            response_format={
+                                "type": "json_schema",
+                                "json_schema": GUARD_INPUT_TIEBREAKER_SCHEMA,
+                            },
+                            extra_body={"reasoning_effort": effort},
+                            max_completion_tokens=tok_cap,
+                        ),
+                        timeout=budget.step_timeout(self.settings.llm_timeout_sec, reserve_sec=1.5),
+                    )
+                raw = (resp.choices[0].message.content or "").strip()
+                if not raw:
+                    continue
+                parsed = json.loads(raw)
+                cat = str(parsed.get("category") or "")
+                if cat not in CATEGORIES or cat not in (cand_a, cand_b):
+                    return None
+                dec = "block" if cat in BLOCK_CATEGORIES else "allow"
+                return dec, cat
+            except Exception as exc:
+                logger.warning("GuardSupervisor tiebreaker attempt failed effort=%s err=%s", effort, type(exc).__name__)
+                if not budget.has_at_least(4.5):
+                    break
+        return None
 
     async def classify_input(
         self,
@@ -241,9 +249,9 @@ class GuardSupervisor:
         user_prompt = "\n\n".join(parts)
 
         efforts: tuple[tuple[str, int], ...] = (
-            (("medium", 2000), ("low", 1600))
+            (("low", 1500), ("minimal", 1100))
             if budget.has_at_least(12.0)
-            else (("low", 1600),)
+            else (("minimal", 1100),)
         )
         for effort, tok_cap in efforts:
             try:
@@ -268,8 +276,9 @@ class GuardSupervisor:
                 if raw:
                     return json.loads(raw)
             except Exception as exc:
-                logger.warning("GuardSupervisor grounding audit failed: %s", type(exc).__name__)
-                return None
+                logger.warning("GuardSupervisor grounding audit attempt failed effort=%s err=%s", effort, type(exc).__name__)
+                if not budget.has_at_least(4.0):
+                    break
         return None
 
     async def _audit_safety(
@@ -315,8 +324,9 @@ class GuardSupervisor:
                 if raw:
                     return json.loads(raw)
             except Exception as exc:
-                logger.warning("GuardSupervisor safety audit failed: %s", type(exc).__name__)
-                return None
+                logger.warning("GuardSupervisor safety audit attempt failed effort=%s err=%s", effort, type(exc).__name__)
+                if not budget.has_at_least(4.0):
+                    break
         return None
 
     async def _judge_output_conflict(
@@ -335,31 +345,33 @@ class GuardSupervisor:
             f"[충돌 내역 (반드시 원문 대조 판정)]\n- " + "\n- ".join(conflict_notes) + "\n\n"
             f"[후보 답변 (candidate_answer)]\n{candidate_answer}"
         )
-        try:
-            async with self.pool.semaphore:
-                resp = await asyncio.wait_for(
-                    self.pool.chat_client.chat.completions.create(
-                        model=self.settings.openai_model,
-                        messages=[
-                            {"role": "system", "content": GUARD_OUTPUT_JUDGE_SYSTEM_PREFIX},
-                            {"role": "user", "content": user_prompt},
-                        ],
-                        response_format={
-                            "type": "json_schema",
-                            "json_schema": GUARD_OUTPUT_JUDGE_SCHEMA,
-                        },
-                        extra_body={"reasoning_effort": "low"},
-                        max_completion_tokens=800,
-                    ),
-                    timeout=budget.step_timeout(self.settings.llm_timeout_sec, reserve_sec=1.0),
-                )
-            raw = (resp.choices[0].message.content or "").strip()
-            if not raw:
-                return None
-            return json.loads(raw)
-        except Exception as exc:
-            logger.warning("GuardSupervisor output judge skipped: %s", type(exc).__name__)
-            return None
+        for effort, tok_cap in (("low", 1200), ("minimal", 900)):
+            try:
+                async with self.pool.semaphore:
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=[
+                                {"role": "system", "content": GUARD_OUTPUT_JUDGE_SYSTEM_PREFIX},
+                                {"role": "user", "content": user_prompt},
+                            ],
+                            response_format={
+                                "type": "json_schema",
+                                "json_schema": GUARD_OUTPUT_JUDGE_SCHEMA,
+                            },
+                            extra_body={"reasoning_effort": effort},
+                            max_completion_tokens=tok_cap,
+                        ),
+                        timeout=budget.step_timeout(self.settings.llm_timeout_sec, reserve_sec=1.0),
+                    )
+                raw = (resp.choices[0].message.content or "").strip()
+                if raw:
+                    return json.loads(raw)
+            except Exception as exc:
+                logger.warning("GuardSupervisor output judge attempt failed effort=%s err=%s", effort, type(exc).__name__)
+                if not budget.has_at_least(4.5):
+                    break
+        return None
 
     async def _verify_output_internal(
         self,
@@ -388,14 +400,14 @@ class GuardSupervisor:
             if m.get("role") == "user"
         ]
         query = " ".join(user_turns + [normalize_text(cand)])
-        sections = await _retrieve_kb_sections(self.kb_index, query, top_k=6)
+        sections = await _retrieve_kb_sections(self.kb_index, query, top_k=5)
 
         kb_blocks: list[str] = []
         kb_text_all: list[str] = []
         for sec in sections:
             header = f"[{sec['id']}] {sec['title']}".strip()
             full_body = sec["content"]
-            kb_blocks.append(f"{header}\n{full_body[:3500]}")
+            kb_blocks.append(f"{header}\n{full_body[:2600]}")
             kb_text_all.append(f"{header} {full_body}")
         kb_context = "\n\n".join(kb_blocks) if kb_blocks else "(검색된 교육 자료 없음)"
 
@@ -439,7 +451,7 @@ class GuardSupervisor:
                 "1차 근거 검증이 grounded=false로 판정했으나 원문 스팬(unsupported) 추출에 실패함"
             )
 
-        if conflict_notes and budget.has_at_least(7.5):
+        if conflict_notes and budget.has_at_least(9.5):
             judge_res = await self._judge_output_conflict(kb_context, cand, conflict_notes, budget)
             if judge_res is not None:
                 judge_grounded = bool(judge_res.get("grounded", raw_grounded))

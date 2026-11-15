@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import difflib
 import inspect
 import json
@@ -226,14 +227,14 @@ class GuardVerifier:
             if m.get("role") == "user"
         ]
         query = " ".join(user_turns + [normalize_text(cand)])
-        sections = await _retrieve_kb_sections(self.kb_index, query, top_k=6)
+        sections = await _retrieve_kb_sections(self.kb_index, query, top_k=5)
 
         kb_blocks: list[str] = []
         kb_text_all: list[str] = []
         for sec in sections:
             header = f"[{sec['id']}] {sec['title']}".strip()
             full_body = sec["content"]
-            body = full_body[:3500]
+            body = full_body[:2600]
             kb_blocks.append(f"{header}\n{body}")
             kb_text_all.append(f"{header} {full_body}")
         kb_context = "\n\n".join(kb_blocks) if kb_blocks else "(검색된 교육 자료 없음)"
@@ -265,36 +266,50 @@ class GuardVerifier:
                 "category": safe_category,
             }
 
-        try:
-            raw = ""
-            finish_reason = None
-            for effort, tok_cap in (("low", 1800), ("minimal", 1400)):
+        raw = ""
+        finish_reason = None
+        parsed: dict[str, Any] | None = None
+        for effort, tok_cap in (("low", 1800), ("minimal", 1400)):
+            try:
                 async with self.pool.semaphore:
-                    resp = await self.pool.chat_client.chat.completions.create(
-                        model=self.settings.openai_model,
-                        messages=[
-                            {"role": "system", "content": GUARD_OUTPUT_SYSTEM_PREFIX},
-                            {"role": "user", "content": user_prompt},
-                        ],
-                        response_format={"type": "json_schema", "json_schema": GUARD_OUTPUT_JSON_SCHEMA},
-                        extra_body={"reasoning_effort": effort},
-                        max_completion_tokens=tok_cap,
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=[
+                                {"role": "system", "content": GUARD_OUTPUT_SYSTEM_PREFIX},
+                                {"role": "user", "content": user_prompt},
+                            ],
+                            response_format={"type": "json_schema", "json_schema": GUARD_OUTPUT_JSON_SCHEMA},
+                            extra_body={"reasoning_effort": effort},
+                            max_completion_tokens=tok_cap,
+                        ),
+                        timeout=min(18.0, float(self.settings.llm_timeout_sec)),
                     )
                 choice = resp.choices[0]
                 finish_reason = getattr(choice, "finish_reason", None)
                 raw = (choice.message.content or "").strip()
                 if raw:
+                    parsed = json.loads(raw)
                     break
-            if not raw:
-                logger.warning("GuardVerifier LLM empty response: finish_reason=%s", finish_reason)
-                return {
-                    "grounded": True,
-                    "unsupported": [],
-                    "safe": input_decision == "allow",
-                    "category": safe_category,
-                }
-            parsed = json.loads(raw)
+            except Exception as exc:
+                logger.warning(
+                    "GuardVerifier attempt failed effort=%s err=%s",
+                    effort,
+                    type(exc).__name__,
+                )
+                raw = ""
+                continue
 
+        if parsed is None:
+            logger.warning("GuardVerifier LLM fallback after empty/error: finish_reason=%s", finish_reason)
+            return {
+                "grounded": True,
+                "unsupported": [],
+                "safe": input_decision == "allow",
+                "category": safe_category,
+            }
+
+        try:
             safe = bool(parsed.get("safe", input_decision == "allow"))
             raw_grounded = bool(parsed.get("grounded", True))
             raw_unsupported = parsed.get("unsupported") or []

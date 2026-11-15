@@ -776,7 +776,7 @@ class TestStep5Generalization:
         res_abstain = asyncio.run(
             sup_abstain.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금의 중도해지 수수료는 몇 %야?"}])
         )
-        assert retrieve_calls[0]["top_k_sections"] == 5
+        assert retrieve_calls[0]["top_k_sections"] == 4
         assert call_efforts == ["low", "minimal"]
         assert res_abstain["action"] == "abstain"
         assert res_abstain["citations"] == []
@@ -1460,3 +1460,107 @@ class TestStep6DualSupervisor:
         res = asyncio.run(sup.handle([{"role": "user", "content": "다람쥐 첫걸음 통장 설명해 줘"}]))
         assert res["action"] == "answer"
         assert res["citations"] == ["FIN-01-01"]
+    def test_bad_request_max_tokens_retries_minimal_cleanly(self):
+        import asyncio
+        from types import SimpleNamespace
+        import httpx
+        from openai import BadRequestError
+        from app.guard_verifier import GuardVerifier
+        from app.supervisor_graph import SupervisorTutorPipeline
+
+        settings = load_settings()
+        settings = settings.__class__(
+            **{
+                **settings.__dict__,
+                'openai_api_key': 'dummy',
+                'request_deadline_sec': 30.0,
+                'llm_timeout_sec': 10.0,
+            }
+        )
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+
+        def _make_resp(payload: dict):
+            msg = MagicMock()
+            msg.content = json.dumps(payload, ensure_ascii=False)
+            choice = MagicMock()
+            choice.message = msg
+            choice.finish_reason = 'stop'
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        req = httpx.Request('POST', 'https://api.openai.com/v1/chat/completions')
+        http_400 = httpx.Response(400, request=req)
+        err_400 = BadRequestError(
+            'Could not finish the message because max_tokens or model output limit was reached.',
+            response=http_400,
+            body={'error': {'code': '400', 'type': 'invalid_request_error'}},
+        )
+
+        # 1) Write LLM hits BadRequestError on 'low' -> automatically retries 'minimal' without abstain crash
+        efforts_write: list[str] = []
+
+        async def _write_400_then_ok(**kwargs):
+            effort = (kwargs.get('extra_body') or {}).get('reasoning_effort')
+            efforts_write.append(effort)
+            if len(efforts_write) == 1:
+                raise err_400
+            return _make_resp(
+                {
+                    'thought_category': 'normal',
+                    'kb_quote_check': '용돈 관리 기본 통장',
+                    'evidence_in_kb': True,
+                    'best_section_id': 'FIN-01-01',
+                    'action': 'answer',
+                    'citations': ['FIN-01-01'],
+                    'answer': '다람쥐 첫걸음 통장은 용돈 관리 기본 통장입니다.',
+                }
+            )
+
+        sec = SimpleNamespace(
+            section_id='FIN-01-01',
+            title='첫걸음 통장',
+            domain='finance',
+            bm25_score=2.8,
+            dense_score=0.75,
+            rrf_score=0.05,
+            full_text='다람쥐 첫걸음 통장은 용돈 관리 기본 통장입니다.',
+            is_table=False,
+        )
+        fake_kb = MagicMock()
+        fake_kb.build_toc.return_value = 'FIN-01-01'
+        fake_kb.retrieve = AsyncMock(return_value=[sec])
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_write_400_then_ok)
+        sup = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, enable_dual_critics=False)
+        res = asyncio.run(sup.handle([{'role': 'user', 'content': '다람쥐 첫걸음 통장 설명해 줘'}]))
+        assert efforts_write == ['low', 'minimal']
+        assert res['action'] == 'answer'
+        assert res['citations'] == ['FIN-01-01']
+
+        # 2) GuardVerifier hits BadRequestError on ('low', 1800) -> retries ('minimal', 1400) cleanly
+        ver_calls: list[tuple[str, int]] = []
+
+        async def _verify_400_then_ok(**kwargs):
+            effort = (kwargs.get('extra_body') or {}).get('reasoning_effort')
+            tok_cap = kwargs.get('max_completion_tokens')
+            ver_calls.append((effort, tok_cap))
+            if len(ver_calls) == 1:
+                raise err_400
+            return _make_resp(
+                {
+                    'safety_check': '안전',
+                    'safe': True,
+                    'fabricated_claims_check': '없음',
+                    'unsupported': [],
+                    'grounded': True,
+                }
+            )
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_verify_400_then_ok)
+        gv = GuardVerifier(settings, pool, fake_kb)
+        out = asyncio.run(gv.verify([{'role': 'user', 'content': '통장 알려줘'}], '용돈 관리 기본 통장입니다.', 'allow', 'normal'))
+        assert ver_calls == [('low', 1800), ('minimal', 1400)]
+        assert out['grounded'] is True
+        assert out['safe'] is True
