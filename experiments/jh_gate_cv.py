@@ -7,7 +7,9 @@ the public set has already been inspected during prompt development.
 import argparse
 import hashlib
 import json
+import re
 import sys
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +33,10 @@ def run(source=None, exclude_harmful=False, augmentation=None):
     y = np.array([p["labels"]["category"] for p in rows])
     augmented, augmentation_meta = {}, None
     if augmentation:
+        def normalized(text):
+            return re.sub(r"[\W_]+", "", unicodedata.normalize("NFKC",text).casefold())
+        originals = {normalized(text) for text in texts}
+        raw_examples = 0
         metadata = json.loads((augmentation.parent / "manifest.json").read_text())
         expected = {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
         if metadata.get("scope") != "provided_llm_public_paraphrases" or metadata["public_hashes"] != expected:
@@ -41,12 +47,16 @@ def run(source=None, exclude_harmful=False, augmentation=None):
                 raise ValueError("Augmented source/category mismatch")
             if row["source_id"] in augmented:
                 raise ValueError("Duplicate augmented source")
-            augmented[row["source_id"]] = row["paraphrases"] if row["error"] is None else []
+            values = row["paraphrases"] if row["error"] is None else []
+            raw_examples += len(values)
+            # Remove punctuation-only copies of any public original, not just
+            # the source, before defining validation folds.
+            augmented[row["source_id"]] = [text for text in values if normalized(text) not in originals]
         if set(augmented) != set(metadata["source_ids"]):
             raise ValueError("Augmentation collection is incomplete")
         augmentation_meta = {"path":str(augmentation.relative_to(ROOT)),
             "sha256":hashlib.sha256(augmentation.read_bytes()).hexdigest(),"model":metadata["model"],
-            "examples":sum(map(len,augmented.values())),"sample_weight":.5}
+            "examples":sum(map(len,augmented.values())),"raw_examples":raw_examples,"sample_weight":.5}
     size = len(rows)
     groups = list(range(size))
     def find(i):
