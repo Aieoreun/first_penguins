@@ -19,7 +19,7 @@ def main():
         parser.error("Use an unscored local derived run")
     manifest = json.loads((run / "manifest.json").read_text())
     provenance = json.loads((run.parent / "derivation.json").read_text())
-    if manifest.get("scope") != "public_paraphrase_full_diagnostic" or provenance["scope"] != manifest["scope"]:
+    if manifest.get("scope") not in {"public_paraphrase_full_diagnostic", "provided_kb_fact_diagnostic"} or provenance["scope"] != manifest["scope"]:
         parser.error("This is not a full public-derived diagnostic")
     if manifest["model"] != os.environ["OPENAI_MODEL"] or manifest["evaluator_hashes"] != evaluator_hashes():
         parser.error("Model or original evaluator differs")
