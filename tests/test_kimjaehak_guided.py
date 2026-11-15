@@ -18,7 +18,8 @@ class GuidedTests(unittest.TestCase):
             self.assertEqual(list(obj)[-1], "classify_this_last_user_message")
             self.assertEqual(obj["classify_this_last_user_message"], QUESTION[-1]["content"])
             return '{"category":"normal","section":"","quote":""}'
-        asyncio.run(FocusInput(SEARCHER, FakeLLM({INPUT_SYSTEM: reply})).guard({"messages": QUESTION}))
+        state = asyncio.run(FocusInput(SEARCHER, FakeLLM({INPUT_SYSTEM: reply})).guard({"messages": QUESTION}))
+        self.assertEqual(state.errors, [])
 
     def test_nonstreaming_proxy_token_ceiling(self):
         class BoundedLLM(FakeLLM):
@@ -26,7 +27,8 @@ class GuidedTests(unittest.TestCase):
                 self.assertLessEqual(kwargs["max_tokens"], 2000)
                 return await super().chat(system, user, **kwargs)
         llm = BoundedLLM({INPUT_SYSTEM: '{"category":"normal","section":"","quote":""}'})
-        asyncio.run(GuidedInput(SEARCHER, llm).guard({"messages": QUESTION}))
+        state = asyncio.run(GuidedInput(SEARCHER, llm).guard({"messages": QUESTION}))
+        self.assertEqual(state.errors, [])
 
     def test_harmful_speech_keeps_redirect_subtype(self):
         llm = FakeLLM({INPUT_SYSTEM: '{"category":"harmful_speech","section":"","quote":""}'})
