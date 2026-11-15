@@ -16,4 +16,15 @@ DEFAULT = "v1"
 def load(name: str = ""):
     """흐름 이름으로 Pipeline 클래스를 돌려준다."""
     name = name or os.environ.get("PIPELINE", DEFAULT)
+    if name.startswith("jh_"):
+        from pipelines.kimjaehak.config import VARIANTS, configure
+        if name not in VARIANTS:
+            raise ValueError(f"Unknown experiment pipeline: {name}")
+        configure()
+        if name == "jh_baseline":
+            return importlib.import_module("pipelines.v2.pipeline").Pipeline
+        module = importlib.import_module("pipelines.kimjaehak.pipeline")
+        return {"jh_peace_input": module.PeaceInput,
+                "jh_peace_output": module.PeaceOutput,
+                "jh_peace_both": module.PeaceBoth}[name]
     return importlib.import_module(f"pipelines.{name}.pipeline").Pipeline
