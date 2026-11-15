@@ -29,18 +29,20 @@ def summarize(root=ROOT):
             raise ValueError("Cannot combine results from different evaluators")
         hashes = m["evaluator_hashes"]
         component = m.get("scope") == "public_output_component_only"
+        scope = m.get("scope", r.get("score_scope"))
         transport = m.get("http_transport", "legacy_default_thread_pool")
         requested = m["workers"]
         # Historical runs were made on this host, where the pool had 16 threads.
         effective = None if component else requested if transport == "explicit_worker_thread_pool" else min(16, requested)
         records.append({
             "run": str(run.relative_to(root)), "variant": m["variant"], "commit": m["commit"],
-            "scope": m.get("scope", r.get("score_scope")), "count": count,
+            "scope": scope, "count": count,
             "workers": requested, "effective_http_workers": effective,
             "http_transport": None if component else transport,
             "request_slots_override": m.get("request_slots_override"),
             "judge_enabled": m.get("judge_enabled", False),
-            "quality_comparison_valid": run.parent.name != "jh_guided_input_guard",
+            "quality_comparison_valid": run.parent.name != "jh_guided_input_guard" and
+                                        (component or scope == "guard" or m.get("judge_enabled", False)),
             "result_sha256": digest(path), "responses_sha256": digest(run / "responses.jsonl"),
             "scores": {key: r[key] for key in ("total", "tutor", "guard", "invalid", "judge_errors")},
             "guard_details": {key: value for key, value in r["guard_details"].items() if key != "confusion"},

@@ -177,6 +177,8 @@ def run_variant(args, variant, repetition, items, root):
         "judge_workers": args.judge_workers, "count": len(items), "judge_enabled": not args.no_judge,
         "http_transport": "explicit_worker_thread_pool",
         "request_slots_override": args.request_slots,
+        "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "scoring_deferred": args.collect_only,
         "endpoints": args.endpoints,
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
@@ -216,6 +218,11 @@ def run_variant(args, variant, repetition, items, root):
         "stage_failure_requests": sum(e != "-" for e in errors),
         "stage_errors": dict(__import__('collections').Counter(e for es in errors if es != "-" for e in es.split(',')))}
     (dest / "runtime.json").write_text(json.dumps(runtime, indent=2))
+    if evaluator_hashes() != manifest["evaluator_hashes"]:
+        raise RuntimeError("Official evaluator files changed during collection")
+    if args.collect_only:
+        print(json.dumps({"scoring_pending": True, "variant": variant, "runtime": runtime}), flush=True)
+        return {"variant": variant, "repeat": repetition, "scoring_pending": True, "runtime": runtime}
     print(f"SCORING {variant} (official scorer, judge={'off' if args.no_judge else 'on'})", flush=True)
     result = score_rows(items, rows, args.judge_workers, args.no_judge, dest / "judge.jsonl")
     result["runtime"] = runtime
@@ -240,7 +247,9 @@ def main():
     ap.add_argument("--endpoints", nargs="+", choices=("tutor", "guard"), default=["tutor", "guard"],
                     help="Single endpoint is diagnostic only; its total is not a full-set score")
     ap.add_argument("--limit", type=int, default=0, help="Smoke test: items per endpoint; 0 means all 400")
-    ap.add_argument("--no-judge", action="store_true", help="Schema/load only; not comparable full tutor scores")
+    scoring_mode = ap.add_mutually_exclusive_group()
+    scoring_mode.add_argument("--no-judge", action="store_true", help="Schema/load only; not comparable full tutor scores")
+    scoring_mode.add_argument("--collect-only", action="store_true", help="Checkpoint responses; score later with jh_resume_score.py")
     ap.add_argument("--name", default=time.strftime("%Y%m%d-%H%M%S"))
     args = ap.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.name):
