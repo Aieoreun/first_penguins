@@ -16,7 +16,11 @@ from typing import Any, Callable, Dict, List, Optional
 
 from app.config import ClientPool, Settings
 from app.deadline_budget import DeadlineBudget
-from app.harness_guardrails import detect_deterministic_signals, enforce_tutor_invariants
+from app.harness_guardrails import (
+    detect_deterministic_signals,
+    enforce_tutor_invariants,
+    has_unmatched_kb_claims,
+)
 from app.kb_index import KBIndex, RetrievedSection, _COURSE_TERMS
 from app.normalize import collapse_korean_obfuscation
 from app.prompts import (
@@ -83,11 +87,13 @@ class SupervisorTutorPipeline:
         pool: ClientPool,
         kb_index: KBIndex,
         guard_classifier: Any = None,
+        guard_verifier: Any = None,
     ):
         self.settings = settings
         self.pool = pool
         self.kb_index = kb_index
         self.guard_classifier = guard_classifier
+        self.guard_verifier = guard_verifier
         self._system_prefix = TUTOR_SYSTEM_PREFIX_TEMPLATE.format(
             toc=self.kb_index.build_toc()
         )
@@ -197,26 +203,19 @@ class SupervisorTutorPipeline:
             kb_task = asyncio.create_task(
                 self.kb_index.retrieve(
                     state.last_query,
-                    top_k_sections=4,
+                    top_k_sections=6,
                     prev_query=state.prev_query,
                     last_weight=0.75,
                 )
             )
-            ex_query = (
-                f"{state.prev_query} {state.last_query}".strip()
-                if state.prev_query
-                else state.last_query
-            )
-            ex_task = asyncio.create_task(
-                self.kb_index.retrieve_similar_tutor_examples(ex_query, k=3)
-            )
-            (block_cat, block_conf), retrieved, exemplars = await asyncio.gather(
-                guard_task, kb_task, ex_task
+            (block_cat, block_conf), retrieved = await asyncio.gather(
+                guard_task, kb_task
             )
             state.block_category = block_cat
             state.block_confidence = block_conf
             state.retrieved = retrieved
-            state.exemplars = exemplars
+            # Omit public/tutor exemplars so Write never anchors onto mismatched actions/citations
+            state.exemplars = []
         else:
             # Bounded 1x Re-search with expanded multi-turn context & assistant history entities
             assistant_entities: list[str] = []
@@ -230,7 +229,7 @@ class SupervisorTutorPipeline:
                 p for p in [state.expanded_query or state.last_query, " ".join(assistant_entities)] if p
             )
             more_secs = await self.kb_index.retrieve(
-                re_query, top_k_sections=4, prev_query=state.prev_query, last_weight=0.55
+                re_query, top_k_sections=6, prev_query=state.prev_query, last_weight=0.55
             )
             seen = {s.section_id for s in state.retrieved}
             merged = list(state.retrieved)
@@ -239,7 +238,7 @@ class SupervisorTutorPipeline:
                     merged.append(s)
                     seen.add(s.section_id)
             merged.sort(key=lambda x: (x.rrf_score, x.bm25_score, x.dense_score), reverse=True)
-            state.retrieved = merged[:4]
+            state.retrieved = merged[:6]
 
         state.node_latencies_ms[f"search_{state.re_search_count}"] = round(
             (time.perf_counter() - t0) * 1000, 1
@@ -270,7 +269,7 @@ class SupervisorTutorPipeline:
         )
         if (
             state.re_search_count == 0
-            and (top1.bm25_score <= 0.5 or has_referential)
+            and (top1.bm25_score <= 0.8 or has_referential)
             and len(state.messages) >= 3
             and state.budget.has_at_least(14.0)
         ):
@@ -289,7 +288,7 @@ class SupervisorTutorPipeline:
             "- 후보 섹션 목록(검색 순위와 무관하게 본문을 직접 대조해 1개만 선택): " + " | ".join(sec_summaries),
             "- 섹션 선택 주의: 같은 상품·실습명(다람쥐 틴즈 체크카드, 첫걸음 통장, 새싹적금, 동아리 실습 등)이 여러 섹션에 나올 수 있습니다. "
             "질문이 요구하는 **정확한 수치·규칙·함수·예외가 본문에 실제로 적힌 단 1개의 섹션**만 best_section_id와 citations에 넣으세요.",
-            "- out_of_material 판별: 위 4개 후보 본문 어디에도 질문한 바로 그 세부 규정(등급 기준, 수수료, 긴급 확인 기준, 삭제 확인창 여부, 가상 댓글 기준 등)이 "
+            "- kb_quote_check 필수: 답변할 때 근거로 삼을 [검색된 교육 자료]의 섹션 ID와 짧은 원문 구절을 먼저 적으세요. 위 후보 본문 어디에도 질문한 바로 그 세부 규정(등급 기준, 수수료, 긴급 확인 기준, 삭제 확인창 여부, 가상 댓글 기준 등)이 "
             "**직접 명시돼 있지 않으면** 인접 문장으로 유추하지 말고 반드시 thought_category='out_of_material', evidence_in_kb=false, action='abstain', citations=[]로 답하세요.",
         ]
         if state.signals.get("has_other_pii_dox"):
@@ -407,18 +406,19 @@ class SupervisorTutorPipeline:
             state.node_latencies_ms["write"] = round((time.perf_counter() - t0) * 1000, 1)
             return
 
-        effort = (
-            "minimal"
-            if (
-                not state.budget.has_at_least(10.0)
-                or state.low_signal
-                or (
-                    high_conf_block
-                    and state.block_category in ("jailbreak_injection", "harmful_content", "off_topic")
-                )
+        if (
+            not state.budget.has_at_least(10.0)
+            or state.low_signal
+            or (
+                high_conf_block
+                and state.block_category in ("jailbreak_injection", "harmful_content", "off_topic")
             )
-            else "low"
-        )
+        ):
+            efforts = ("minimal",)
+        elif state.budget.has_at_least(14.0):
+            efforts = ("medium", "low")
+        else:
+            efforts = ("low",)
 
         dynamic_context = self._format_dynamic_context(state)
         llm_messages: list[dict[str, str]] = [
@@ -427,49 +427,124 @@ class SupervisorTutorPipeline:
             *state.messages,
         ]
 
-        async with self.pool.semaphore:
-            resp = await asyncio.wait_for(
-                self.pool.chat_client.chat.completions.create(
-                    model=self.settings.openai_model,
-                    messages=llm_messages,
-                    response_format={
-                        "type": "json_schema",
-                        "json_schema": TUTOR_REVIEW_WRITE_JSON_SCHEMA,
-                    },
-                    max_completion_tokens=2000,
-                    extra_body={"reasoning_effort": effort},
-                ),
-                timeout=state.budget.step_timeout(self.settings.llm_timeout_sec, reserve_sec=0.8),
-            )
-
-        raw_content = (resp.choices[0].message.content or "").strip()
-        parsed = json.loads(raw_content)
+        parsed = await self._call_write_llm(llm_messages, efforts, state)
 
         # Support both TUTOR_REVIEW_WRITE_JSON_SCHEMA and legacy TUTOR_JSON_SCHEMA in mocks
+        self._apply_parsed_write(state, parsed)
+        state.node_latencies_ms["write"] = round((time.perf_counter() - t0) * 1000, 1)
+
+    async def _call_write_llm(
+        self,
+        llm_messages: list[dict[str, str]],
+        efforts: tuple[str, ...],
+        state: TutorGraphState,
+    ) -> dict[str, Any]:
+        raw_content = ""
+        for effort in efforts:
+            async with self.pool.semaphore:
+                resp = await asyncio.wait_for(
+                    self.pool.chat_client.chat.completions.create(
+                        model=self.settings.openai_model,
+                        messages=llm_messages,
+                        response_format={
+                            "type": "json_schema",
+                            "json_schema": TUTOR_REVIEW_WRITE_JSON_SCHEMA,
+                        },
+                        max_completion_tokens=2000,
+                        extra_body={"reasoning_effort": effort},
+                    ),
+                    timeout=state.budget.step_timeout(
+                        self.settings.llm_timeout_sec, reserve_sec=1.2
+                    ),
+                )
+            raw_content = (resp.choices[0].message.content or "").strip()
+            if raw_content or not state.budget.has_at_least(5.0):
+                break
+        return json.loads(raw_content)
+
+    @staticmethod
+    def _apply_parsed_write(state: TutorGraphState, parsed: dict[str, Any]) -> None:
         state.thought_category = str(parsed.get("thought_category", ""))
         state.evidence_in_kb = bool(parsed.get("evidence_in_kb", True))
         state.best_section_id = str(parsed.get("best_section_id", "")).strip()
         state.raw_action = str(parsed.get("action", "answer"))
         state.raw_citations = list(parsed.get("citations") or [])
         state.raw_answer = str(parsed.get("answer", "")).strip()
-        state.node_latencies_ms["write"] = round((time.perf_counter() - t0) * 1000, 1)
+        kb_quote = str(parsed.get("kb_quote_check", "")).strip()
+        if (
+            kb_quote in ("자료에 없음", "없음", "해당 없음", "확인 불가")
+            and state.raw_action == "answer"
+            and not state.signals.get("has_answer_seeking")
+        ):
+            state.evidence_in_kb = False
+            state.thought_category = "out_of_material"
+            state.raw_action = "abstain"
+            state.raw_citations = []
 
     async def verify_node(self, state: TutorGraphState) -> None:
-        """Node 5 (Verify): Apply deterministic Runtime Harness invariants."""
+        """Node 5 (Verify): Apply deterministic invariants and conditional KB-repair."""
         t0 = time.perf_counter()
         retrieved_ids = [s.section_id for s in state.retrieved]
-        state.final_response = enforce_tutor_invariants(
-            action=state.raw_action,
-            citations=state.raw_citations,
-            answer=state.raw_answer,
-            retrieved_ids=retrieved_ids,
-            thought_category=state.thought_category,
-            best_section_id=state.best_section_id,
-            evidence_in_kb=state.evidence_in_kb,
-            guard_block_category=state.block_category,
-            guard_confidence=state.block_confidence,
-            last_query=state.last_query,
+        retrieved_texts = {s.section_id: s.full_text for s in state.retrieved}
+        user_ctx = " ".join(
+            m.get("content", "") for m in state.messages if m.get("role") == "user"
         )
+
+        def _run_invariants() -> Dict[str, Any]:
+            return enforce_tutor_invariants(
+                action=state.raw_action,
+                citations=state.raw_citations,
+                answer=state.raw_answer,
+                retrieved_ids=retrieved_ids,
+                thought_category=state.thought_category,
+                best_section_id=state.best_section_id,
+                evidence_in_kb=state.evidence_in_kb,
+                guard_block_category=state.block_category,
+                guard_confidence=state.block_confidence,
+                last_query=state.last_query,
+                retrieved_texts=retrieved_texts,
+                user_context_text=user_ctx,
+            )
+
+        state.final_response = _run_invariants()
+
+        # Conditional Verify -> Repair loop only when deterministic precheck spots ungrounded numbers/entities
+        if (
+            self.guard_verifier is not None
+            and self.pool.chat_client is not None
+            and state.final_response.get("action") == "answer"
+            and state.budget.has_at_least(9.0)
+        ):
+            suspect_claims = has_unmatched_kb_claims(
+                state.final_response.get("answer", ""), retrieved_texts, user_ctx
+            )
+            if suspect_claims:
+                try:
+                    ver = await self.guard_verifier.verify(
+                        state.messages,
+                        state.final_response["answer"],
+                        "allow",
+                        state.thought_category or "normal",
+                    )
+                    if not ver.get("grounded", True) and state.budget.has_at_least(5.0):
+                        unsup = ", ".join(ver.get("unsupported") or suspect_claims)
+                        repair_ctx = (
+                            self._format_dynamic_context(state)
+                            + "\n\n[사후 검증 경고]\n"
+                            + f"직전 초안의 `{unsup}` 내용이 [검색된 교육 자료]에 없습니다. "
+                            + "자료 본문에 직접 적힌 내용만으로 다시 쓰거나, 질문한 세부 규칙이 본문에 없으면 반드시 action='abstain', citations=[]로 답하세요."
+                        )
+                        repair_msgs = [
+                            {"role": "system", "content": self._system_prefix},
+                            {"role": "user", "content": repair_ctx},
+                            *state.messages,
+                        ]
+                        parsed = await self._call_write_llm(repair_msgs, ("low",), state)
+                        self._apply_parsed_write(state, parsed)
+                        state.final_response = _run_invariants()
+                except Exception as exc:
+                    logger.warning("verify_repair_skipped err=%s", type(exc).__name__)
+
         state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
 
     async def _execute_graph(self, state: TutorGraphState) -> Dict[str, Any]:

@@ -114,7 +114,9 @@ def _build_in_process_caller(mode: str) -> tuple[Callable[[str, Dict[str, Any]],
     if mode == "supervisor":
         try:
             from app.supervisor_graph import SupervisorTutorPipeline
-            tutor_pipe: Any = SupervisorTutorPipeline(settings, pool, kb_index, guard_classifier=guard_clf)
+            tutor_pipe: Any = SupervisorTutorPipeline(
+                settings, pool, kb_index, guard_classifier=guard_clf, guard_verifier=guard_ver
+            )
         except ImportError:
             tutor_pipe = TutorPipeline(settings, pool, kb_index, guard_classifier=guard_clf)
     else:

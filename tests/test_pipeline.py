@@ -649,3 +649,344 @@ class TestComplianceAndContracts:
                             assert isinstance(kw.value.value, int) and kw.value.value <= 2000, (
                                 f"{py_path.name}:{kw.lineno} max_completion_tokens={kw.value.value} exceeds 2000"
                             )
+
+
+# ---------------------------------------------------------------------------
+# 7. Step 5 Generalization tests (Citation Rescue, Verify-Repair, Guard Gates)
+# ---------------------------------------------------------------------------
+
+class TestStep5Generalization:
+    def test_citation_alignment_rescue_and_unmatched_claims(self):
+        from app.harness_guardrails import enforce_tutor_invariants, has_unmatched_kb_claims
+
+        retrieved_texts = {
+            "PY-03-04": "조건식과 while 반복문 기본 문법을 설명합니다.",
+            "PY-01-01": "반복 횟수가 정해진 경우 최대 3회까지 실행합니다.",
+            "FIN-02-01": "다람쥐은행 정기예금은 만기까지 유지 시 연 2.5% 금리를 제공합니다.",
+        }
+
+        # Mis-cited PY-03-04 is swapped to PY-01-01 when claim "3회" lives in PY-01-01
+        res_swapped = enforce_tutor_invariants(
+            action="answer",
+            citations=["PY-03-04"],
+            answer="반복 횟수가 정해진 경우 최대 3회까지 실행할 수 있습니다.",
+            retrieved_ids=["PY-03-04", "PY-01-01"],
+            thought_category="normal",
+            best_section_id="PY-03-04",
+            evidence_in_kb=True,
+            last_query="반복 횟수는 최대 몇 회인가요?",
+            retrieved_texts=retrieved_texts,
+            user_context_text="반복 횟수는 최대 몇 회인가요?",
+        )
+        assert res_swapped["action"] == "answer"
+        assert res_swapped["citations"] == ["PY-01-01"]
+
+        # Valid citation containing all claims stays untouched
+        res_kept = enforce_tutor_invariants(
+            action="answer",
+            citations=["FIN-02-01"],
+            answer="만기 유지 시 연 2.5% 금리를 제공합니다.",
+            retrieved_ids=["FIN-02-01", "PY-01-01"],
+            thought_category="normal",
+            best_section_id="FIN-02-01",
+            evidence_in_kb=True,
+            last_query="정기예금 금리 알려줘",
+            retrieved_texts=retrieved_texts,
+            user_context_text="정기예금 금리 알려줘",
+        )
+        assert res_kept["citations"] == ["FIN-02-01"]
+
+        # has_unmatched_kb_claims checks both retrieved KB texts and student user context
+        assert has_unmatched_kb_claims("최대 3회 실행합니다.", retrieved_texts, "") == []
+        assert has_unmatched_kb_claims("19개 항목을 확인해요.", retrieved_texts, "내가 19개 적었어") == []
+        missing = has_unmatched_kb_claims("최대 99회 실행합니다.", retrieved_texts, "")
+        assert any("99회" in c for c in missing)
+
+    def test_supervisor_kb_quote_abstain_medium_low_retry_and_verify_repair(self):
+        import asyncio
+        from types import SimpleNamespace
+        from app.supervisor_graph import SupervisorTutorPipeline
+
+        settings = load_settings()
+        settings = settings.__class__(
+            **{
+                **settings.__dict__,
+                "openai_api_key": "dummy",
+                "request_deadline_sec": 30.0,
+                "llm_timeout_sec": 10.0,
+            }
+        )
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+
+        kb_section = SimpleNamespace(
+            section_id="FIN-02-01",
+            title="다람쥐 꿈모으기 정기예금",
+            domain="finance",
+            bm25_score=3.2,
+            dense_score=0.8,
+            rrf_score=0.05,
+            full_text="다람쥐 꿈모으기 정기예금은 만기 1년 상품이며 약정 금리는 연 2.5%입니다.",
+            is_table=False,
+        )
+        retrieve_calls: list[dict] = []
+
+        async def _fake_retrieve(query: str, top_k_sections: int = 4, prev_query: str = "", last_weight: float = 0.75):
+            retrieve_calls.append({"query": query, "top_k_sections": top_k_sections})
+            return [kb_section]
+
+        fake_kb = MagicMock()
+        fake_kb.retrieve = AsyncMock(side_effect=_fake_retrieve)
+
+        def _make_resp(content: str):
+            msg = MagicMock()
+            msg.content = content
+            choice = MagicMock()
+            choice.message = msg
+            choice.finish_reason = "stop"
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        # 1) kb_quote_check="자료에 없음" forces abstain with empty citations & exemplars disabled
+        call_efforts: list[str] = []
+
+        async def _write_empty_then_abstain(**kwargs):
+            effort = (kwargs.get("extra_body") or {}).get("reasoning_effort")
+            call_efforts.append(effort)
+            if len(call_efforts) == 1:
+                return _make_resp("")
+            return _make_resp(
+                json.dumps(
+                    {
+                        "thought_category": "normal",
+                        "evidence_in_kb": True,
+                        "best_section_id": "FIN-02-01",
+                        "kb_quote_check": "자료에 없음",
+                        "action": "answer",
+                        "citations": ["FIN-02-01"],
+                        "answer": "중도해지 수수료는 1.5%입니다.",
+                    },
+                    ensure_ascii=False,
+                )
+            )
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_write_empty_then_abstain)
+        sup_abstain = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, guard_verifier=None)
+        res_abstain = asyncio.run(
+            sup_abstain.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금의 중도해지 수수료는 몇 %야?"}])
+        )
+        assert retrieve_calls[0]["top_k_sections"] == 6
+        assert call_efforts == ["medium", "low"]
+        assert res_abstain["action"] == "abstain"
+        assert res_abstain["citations"] == []
+
+        # 2) Verify -> GuardVerifier -> Repair loop triggers when ungrounded claim slips through Write
+        write_prompts: list[str] = []
+
+        async def _write_fabricated_then_repaired(**kwargs):
+            write_prompts.append(kwargs["messages"][1]["content"])
+            if len(write_prompts) == 1:
+                return _make_resp(
+                    json.dumps(
+                        {
+                            "thought_category": "normal",
+                            "evidence_in_kb": True,
+                            "best_section_id": "FIN-02-01",
+                            "kb_quote_check": "약정 금리는 연 2.5%",
+                            "action": "answer",
+                            "citations": ["FIN-02-01"],
+                            "answer": "약정 금리는 연 5.5%입니다.",
+                        },
+                        ensure_ascii=False,
+                    )
+                )
+            return _make_resp(
+                json.dumps(
+                    {
+                        "thought_category": "normal",
+                        "evidence_in_kb": True,
+                        "best_section_id": "FIN-02-01",
+                        "kb_quote_check": "약정 금리는 연 2.5%",
+                        "action": "answer",
+                        "citations": ["FIN-02-01"],
+                        "answer": "다람쥐 꿈모으기 정기예금의 약정 금리는 연 2.5%입니다.",
+                    },
+                    ensure_ascii=False,
+                )
+            )
+
+        fake_verifier = MagicMock()
+        fake_verifier.verify = AsyncMock(
+            return_value={
+                "grounded": False,
+                "unsupported": ["연 5.5%"],
+                "safe": True,
+                "category": "normal",
+            }
+        )
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_write_fabricated_then_repaired)
+        sup_repair = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, guard_verifier=fake_verifier)
+        res_repair = asyncio.run(
+            sup_repair.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금 금리 알려줘"}])
+        )
+        assert fake_verifier.verify.await_count == 1
+        assert len(write_prompts) == 2
+        assert "[사후 검증 경고]" in write_prompts[1]
+        assert "[유사 답변 예시]" not in write_prompts[0]
+        assert "2.5%" in res_repair["answer"]
+        assert res_repair["action"] == "answer"
+        assert res_repair["citations"] == ["FIN-02-01"]
+
+    def test_guard_classifier_confidence_gate_meta_normal_self_pii_and_knn_self_exclusion(self):
+        import asyncio
+        import numpy as np
+        from app.guard_classifier import GuardClassifier, _TrainExample
+
+        settings = load_settings()
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+        clf = GuardClassifier(settings, pool)
+        clf._loaded = True
+        clf._block_threshold = 0.35
+
+        class _FakeVec:
+            def transform(self, texts):
+                from scipy.sparse import csr_matrix
+
+                rows = []
+                for t in texts:
+                    vec = np.asarray([1.0 if "이자" in t else 0.5, 0.5], dtype=float)
+                    vec /= np.linalg.norm(vec)
+                    rows.append(vec)
+                return csr_matrix(np.asarray(rows, dtype=float))
+
+        class _FakeBlockClf:
+            def __init__(self, p_block: float):
+                self.p_block = p_block
+
+            def predict_proba(self, _x):
+                return np.asarray([[1.0 - self.p_block, self.p_block]], dtype=float)
+
+        class _FakeCatClf:
+            classes_ = np.asarray(["normal", "off_topic", "jailbreak_injection"])
+
+            def predict_proba(self, _x):
+                return np.asarray([[0.30, 0.50, 0.20]], dtype=float)
+
+        clf._vectorizer = _FakeVec()
+        clf._block_clf = _FakeBlockClf(p_block=0.45)  # above threshold 0.35, below strong 0.70
+        clf._cat_clf = _FakeCatClf()
+
+        # 1) Weak CPU p_block (0.45 < 0.70) + LLM block -> confidence gated at 0.72 (NOT 0.95)
+        clf._llm_classify = AsyncMock(return_value=("block", "off_topic", 0.90))
+        dec, cat, conf = asyncio.run(
+            clf.classify([{"role": "user", "content": "이 금융 규칙 정리해줘"}])
+        )
+        assert (dec, cat) == ("block", "off_topic")
+        assert conf == pytest.approx(0.72)
+
+        # 2) Strong CPU p_block (>= 0.70) + LLM block -> agreed high confidence 0.95
+        clf._block_clf = _FakeBlockClf(p_block=0.75)
+        dec_hi, cat_hi, conf_hi = asyncio.run(
+            clf.classify([{"role": "user", "content": "오늘 저녁 메뉴 추천해줘"}])
+        )
+        assert (dec_hi, cat_hi) == ("block", "off_topic")
+        assert conf_hi == pytest.approx(0.95)
+
+        # 3) PR-03 meta-defense educational question overrides false LLM jailbreak block -> allow(normal)
+        clf._llm_classify = AsyncMock(return_value=("block", "jailbreak_injection", 0.90))
+        dec_meta, cat_meta, _ = asyncio.run(
+            clf.classify([
+                {"role": "user", "content": "이 사례에서 숨겨진 지시와 역할을 비교해서 설명해 주세요"}
+            ])
+        )
+        assert (dec_meta, cat_meta) == ("allow", "normal")
+
+        # 4) Self-PII queries reconcile LLM allow(normal) -> allow(pii_disclosure)
+        clf._llm_classify = AsyncMock(return_value=("allow", "normal", 0.90))
+        for q in (
+            "나는 별콩중 2학년 모래야 이자 계산 방법 알려줘",
+            "내 이름은 라온이야 파이썬 반복문 코드 짜 줘",
+        ):
+            dec_p, cat_p, conf_p = asyncio.run(clf.classify([{"role": "user", "content": q}]))
+            assert dec_p == "allow"
+            assert cat_p == "pii_disclosure"
+            assert conf_p >= 0.78
+
+        # 5) _retrieve_knn excludes exact normalized self from exemplars
+        q_self = "다람쥐은행 이자 계산 방법 알려줘"
+        ex_self = _TrainExample(
+            example_id="ex-self",
+            text=q_self,
+            last_user=q_self,
+            decision="allow",
+            category="normal",
+            messages=[{"role": "user", "content": q_self}],
+        )
+        ex_other = _TrainExample(
+            example_id="ex-other",
+            text="다람쥐은행 예금 이자율이 궁금해요",
+            last_user="다람쥐은행 예금 이자율이 궁금해요",
+            decision="allow",
+            category="normal",
+            messages=[{"role": "user", "content": "다람쥐은행 예금 이자율이 궁금해요"}],
+        )
+        clf._train_examples = [ex_self, ex_other]
+        clf._train_tfidf = clf._vectorizer.transform([ex_self.text, ex_other.text])
+        knn = clf._retrieve_knn(q_self, k=4, last_user=q_self)
+        assert [row["id"] for row in knn] == ["ex-other"]
+
+    def test_guard_verifier_medium_to_low_retry_on_empty_content(self):
+        import asyncio
+        from app.guard_verifier import GuardVerifier
+
+        settings = load_settings()
+        pool = ClientPool(settings)
+        pool.chat_client = MagicMock()
+        fake_kb = MagicMock()
+        fake_kb.retrieve = AsyncMock(
+            return_value=[{"id": "FIN-01-01", "title": "통장", "content": "가입 대상은 만 14세 이상입니다."}]
+        )
+        verifier = GuardVerifier(settings, pool, fake_kb)
+
+        calls: list[tuple[str, int]] = []
+
+        async def _create(**kwargs):
+            effort = (kwargs.get("extra_body") or {}).get("reasoning_effort")
+            tok_cap = kwargs.get("max_completion_tokens")
+            calls.append((effort, tok_cap))
+            msg = MagicMock()
+            if len(calls) == 1:
+                msg.content = ""
+            else:
+                msg.content = json.dumps(
+                    {
+                        "safety_check": "안전",
+                        "safe": True,
+                        "fabricated_claims_check": "없음",
+                        "unsupported": [],
+                        "grounded": True,
+                    },
+                    ensure_ascii=False,
+                )
+            choice = MagicMock()
+            choice.message = msg
+            choice.finish_reason = "length" if len(calls) == 1 else "stop"
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_create)
+        out = asyncio.run(
+            verifier.verify(
+                messages=[{"role": "user", "content": "가입 나이 알려줘"}],
+                candidate_answer="만 14세 이상부터 가입할 수 있습니다.",
+                input_decision="allow",
+                input_category="normal",
+            )
+        )
+        assert calls == [("medium", 2000), ("low", 1800)]
+        assert out["grounded"] is True
+        assert out["safe"] is True
+        assert out["unsupported"] == []

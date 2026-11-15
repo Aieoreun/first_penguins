@@ -52,7 +52,11 @@ def _init_sync_components() -> None:
         )
     else:
         tutor_pipeline = SupervisorTutorPipeline(
-            settings, pool, kb_index, guard_classifier=guard_classifier
+            settings,
+            pool,
+            kb_index,
+            guard_classifier=guard_classifier,
+            guard_verifier=guard_verifier,
         )
 
     state.settings = settings

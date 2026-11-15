@@ -243,24 +243,27 @@ class GuardVerifier:
             }
 
         try:
-            async with self.pool.semaphore:
-                resp = await self.pool.chat_client.chat.completions.create(
-                    model=self.settings.openai_model,
-                    messages=[
-                        {"role": "system", "content": GUARD_OUTPUT_SYSTEM_PREFIX},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    response_format={"type": "json_schema", "json_schema": GUARD_OUTPUT_JSON_SCHEMA},
-                    extra_body={"reasoning_effort": "low"},
-                    max_completion_tokens=1800,
-                )
-            choice = resp.choices[0]
-            raw = (choice.message.content or "").strip()
+            raw = ""
+            finish_reason = None
+            for effort, tok_cap in (("medium", 2000), ("low", 1800)):
+                async with self.pool.semaphore:
+                    resp = await self.pool.chat_client.chat.completions.create(
+                        model=self.settings.openai_model,
+                        messages=[
+                            {"role": "system", "content": GUARD_OUTPUT_SYSTEM_PREFIX},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        response_format={"type": "json_schema", "json_schema": GUARD_OUTPUT_JSON_SCHEMA},
+                        extra_body={"reasoning_effort": effort},
+                        max_completion_tokens=tok_cap,
+                    )
+                choice = resp.choices[0]
+                finish_reason = getattr(choice, "finish_reason", None)
+                raw = (choice.message.content or "").strip()
+                if raw:
+                    break
             if not raw:
-                logger.warning(
-                    "GuardVerifier LLM empty response: finish_reason=%s",
-                    getattr(choice, "finish_reason", None),
-                )
+                logger.warning("GuardVerifier LLM empty response: finish_reason=%s", finish_reason)
                 return {
                     "grounded": True,
                     "unsupported": [],
