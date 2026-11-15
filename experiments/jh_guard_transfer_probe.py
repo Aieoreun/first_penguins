@@ -23,6 +23,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--source",type=Path,required=True)
     ap.add_argument("--predictions",type=Path,required=True)
+    ap.add_argument("--curation",type=Path,required=True)
     ap.add_argument("--variant",choices=VARIANTS,required=True)
     ap.add_argument("--name",required=True)
     ap.add_argument("--workers",type=int,default=16)
@@ -40,6 +41,15 @@ def main():
     generated=list(map(json.loads,source.read_text().splitlines()))
     ids={r["source_id"] for r in generated}
     if ids!=set(metadata["source_ids"]) or len(ids)!=len(generated):ap.error("Incomplete or duplicate generation")
+    curation_path=args.curation.resolve()
+    if not curation_path.is_relative_to(ROOT/"experiments/.cache"):ap.error("Invalid curation path")
+    curation=json.loads(curation_path.read_text())
+    if (curation.get("scope")!="pre_scoring_guard_paraphrase_exclusions"
+            or curation.get("source_sha256")!=hashlib.sha256(source.read_bytes()).hexdigest()
+            or curation.get("candidate_scores_observed") is not False):
+        ap.error("Curation provenance differs")
+    excluded={r["id"] for r in curation["excluded"]}
+    if not excluded.issubset(ids):ap.error("Unknown curation IDs")
     prior_manifest=json.loads((predictions.parent/"manifest.json").read_text())
     if prior_manifest["evaluator_hashes"]!=evaluator_hashes():ap.error("Evaluator changed")
     if prior_manifest.get("scope") or prior_manifest.get("count")!=400:
@@ -48,7 +58,7 @@ def main():
     items=[]
     original_texts={normalized(r["candidate_answer"]) for r in originals.values() if r.get("candidate_answer")}
     for row in sorted(generated,key=lambda r:r["source_id"]):
-        if row["error"] is not None:continue
+        if row["error"] is not None or row["source_id"] in excluded:continue
         original=originals[row["source_id"]]
         if (normalized(row["candidate_answer"]) in original_texts
                 or any(s not in row["candidate_answer"] for s in row["unsupported"])
@@ -65,6 +75,8 @@ def main():
     manifest={"scope":"public_guard_answer_paraphrase_component","count":len(items),"variant":args.variant,
               "source":str(source.relative_to(ROOT)),"source_sha256":hashlib.sha256(source.read_bytes()).hexdigest(),
               "dataset_sha256":hashlib.sha256(data.encode()).hexdigest(),"generation":metadata,
+              "curation":{**curation,"path":str(curation_path.relative_to(ROOT)),
+                          "sha256":hashlib.sha256(curation_path.read_bytes()).hexdigest()},
               "predictions":str(predictions.relative_to(ROOT)),"predictions_sha256":hashlib.sha256(predictions.read_bytes()).hexdigest(),
               "model":os.environ["OPENAI_MODEL"],"workers":args.workers,"evaluator_hashes":evaluator_hashes(),
               "commit":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
