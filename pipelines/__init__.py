@@ -84,6 +84,8 @@ def load(name: str = ""):
             return module.Reasoned if name.endswith("_medium") else module.Pipeline
         if name == "jh_hybrid_output":
             return importlib.import_module("pipelines.kimjaehak.hybrid_output").Pipeline
+        if name == "jh_guard_fitted_span99":
+            return importlib.import_module("pipelines.kimjaehak.span_decision").Pipeline
         if name in {"jh_guard_fitted_hybrid", "jh_guard_fitted_fast", "jh_guard_fitted_contextfast"}:
             module = importlib.import_module("pipelines.kimjaehak.guard_fitted")
             if name.endswith("_contextfast"):

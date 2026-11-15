@@ -46,7 +46,8 @@ def main():
               "stream_answer_effort", "stream_answer_max_tokens", "stream_answer_timeout",
               "fixed_academic_scaffold", "output_votes", "uncertain_sources_only", "contextual_refusal",
               "retry_source_failure", "learned_span_c", "learned_span_threshold", "guard_category_without_subtype",
-              "output_timeout", "hybrid_output", "refusal_review", "refusal_timeout", "guard_only_c")
+              "output_timeout", "hybrid_output", "refusal_review", "refusal_timeout", "guard_only_c",
+              "span_decision_threshold")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     if hasattr(pipeline, "refusal_pattern"):
