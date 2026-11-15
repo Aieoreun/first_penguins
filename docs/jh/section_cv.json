@@ -1,0 +1,421 @@
+{
+  "scope": "public_section_classifier_grouped_oof",
+  "count": 119,
+  "groups": 117,
+  "baseline_hits": 108,
+  "source_sha256": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+  "reports": [
+    {
+      "C": 10,
+      "oof_hits": 48,
+      "training_hits": 119,
+      "gates": {
+        "top3@0.9": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top3@0.95": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top3@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top3@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top10@0.9": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top10@0.95": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top10@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top10@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        }
+      }
+    },
+    {
+      "C": 100,
+      "oof_hits": 48,
+      "training_hits": 119,
+      "gates": {
+        "top3@0.9": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 113,
+            "selected_hits": 113,
+            "combined_hits": 114
+          }
+        },
+        "top3@0.95": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 28,
+            "selected_hits": 28,
+            "combined_hits": 108
+          }
+        },
+        "top3@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top3@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top10@0.9": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 116,
+            "selected_hits": 116,
+            "combined_hits": 117
+          }
+        },
+        "top10@0.95": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 28,
+            "selected_hits": 28,
+            "combined_hits": 108
+          }
+        },
+        "top10@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        },
+        "top10@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          }
+        }
+      }
+    },
+    {
+      "C": 1000,
+      "oof_hits": 47,
+      "training_hits": 119,
+      "gates": {
+        "top3@0.9": {
+          "oof": {
+            "coverage": 2,
+            "selected_hits": 2,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 114,
+            "selected_hits": 114,
+            "combined_hits": 114
+          }
+        },
+        "top3@0.95": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 114,
+            "selected_hits": 114,
+            "combined_hits": 114
+          }
+        },
+        "top3@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 114,
+            "selected_hits": 114,
+            "combined_hits": 114
+          }
+        },
+        "top3@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 68,
+            "selected_hits": 68,
+            "combined_hits": 113
+          }
+        },
+        "top10@0.9": {
+          "oof": {
+            "coverage": 2,
+            "selected_hits": 2,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 117,
+            "selected_hits": 117,
+            "combined_hits": 117
+          }
+        },
+        "top10@0.95": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 117,
+            "selected_hits": 117,
+            "combined_hits": 117
+          }
+        },
+        "top10@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 117,
+            "selected_hits": 117,
+            "combined_hits": 117
+          }
+        },
+        "top10@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 68,
+            "selected_hits": 68,
+            "combined_hits": 113
+          }
+        }
+      }
+    },
+    {
+      "C": 5000,
+      "oof_hits": 38,
+      "training_hits": 119,
+      "gates": {
+        "top3@0.9": {
+          "oof": {
+            "coverage": 10,
+            "selected_hits": 9,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 114,
+            "selected_hits": 114,
+            "combined_hits": 114
+          }
+        },
+        "top3@0.95": {
+          "oof": {
+            "coverage": 2,
+            "selected_hits": 2,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 114,
+            "selected_hits": 114,
+            "combined_hits": 114
+          }
+        },
+        "top3@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 114,
+            "selected_hits": 114,
+            "combined_hits": 114
+          }
+        },
+        "top3@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 90,
+            "selected_hits": 90,
+            "combined_hits": 114
+          }
+        },
+        "top10@0.9": {
+          "oof": {
+            "coverage": 10,
+            "selected_hits": 9,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 117,
+            "selected_hits": 117,
+            "combined_hits": 117
+          }
+        },
+        "top10@0.95": {
+          "oof": {
+            "coverage": 2,
+            "selected_hits": 2,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 117,
+            "selected_hits": 117,
+            "combined_hits": 117
+          }
+        },
+        "top10@0.98": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 117,
+            "selected_hits": 117,
+            "combined_hits": 117
+          }
+        },
+        "top10@0.995": {
+          "oof": {
+            "coverage": 0,
+            "selected_hits": 0,
+            "combined_hits": 108
+          },
+          "training": {
+            "coverage": 93,
+            "selected_hits": 93,
+            "combined_hits": 117
+          }
+        }
+      }
+    }
+  ]
+}
