@@ -28,6 +28,7 @@ class Pipeline(Broad):
     learned_section_c = 1000
     learned_section_threshold = .98
     learned_section_require_retrieved = True
+    learned_section_use_for_output = True
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
@@ -36,6 +37,8 @@ class Pipeline(Broad):
 
     async def _classify(self, state):
         await super()._classify(state)
+        if state.has_candidate and not self.learned_section_use_for_output:
+            return
         probability = self.section_classifier.predict_proba(self.section_vectorizer.transform([state.last_user]))[0]
         index = probability.argmax()
         section = str(self.section_classifier.classes_[index])
@@ -47,3 +50,7 @@ class Pipeline(Broad):
 
 class WholeKB(Pipeline):
     learned_section_require_retrieved = False
+
+
+class TutorOnly(WholeKB):
+    learned_section_use_for_output = False

@@ -55,9 +55,10 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.learned_gate").Relaxed
         if name == "jh_learned_gate95":
             return importlib.import_module("pipelines.kimjaehak.learned_gate").Broad
-        if name in {"jh_learned_sections", "jh_learned_sections_all"}:
+        if name in {"jh_learned_sections", "jh_learned_sections_all", "jh_learned_sections_tutor"}:
             module = importlib.import_module("pipelines.kimjaehak.learned_sections")
-            return module.WholeKB if name.endswith("_all") else module.Pipeline
+            return {"jh_learned_sections":module.Pipeline, "jh_learned_sections_all":module.WholeKB,
+                    "jh_learned_sections_tutor":module.TutorOnly}[name]
         if name == "jh_intent":
             return importlib.import_module("pipelines.kimjaehak.intent").Pipeline
         if name == "jh_diverse":
