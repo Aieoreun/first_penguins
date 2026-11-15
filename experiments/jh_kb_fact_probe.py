@@ -53,6 +53,7 @@ def main():
     parser.add_argument("--request-slots", type=int, default=64)
     parser.add_argument("--build-only", action="store_true")
     parser.add_argument("--review", type=Path, help="Completed provided-model review; required for collection")
+    parser.add_argument("--curation", type=Path, help="Frozen pre-scoring exclusions after direct question/label review")
     args = parser.parse_args()
     source = args.source.resolve()
     if not source.is_relative_to(ROOT / "experiments/.cache") or not re.fullmatch(r"[A-Za-z0-9_-]+", args.name):
@@ -77,6 +78,19 @@ def main():
         review_provenance = {"path": str(review_path.relative_to(ROOT)), "sha256": hashlib.sha256(review_path.read_bytes()).hexdigest(), **review_meta}
     elif not args.build_only:
         parser.error("Review the weak labels before collecting candidate responses")
+    curation_provenance = None
+    if args.curation:
+        curation_path = args.curation.resolve()
+        if not args.review or not curation_path.is_relative_to(ROOT / "experiments/.cache"):
+            parser.error("Curation requires the recorded review")
+        curation = json.loads(curation_path.read_text())
+        if curation["scope"] != "pre_scoring_kb_fact_exclusions" or curation["source_dataset_sha256"] != review_meta["dataset_sha256"] or curation["review_sha256"] != review_provenance["sha256"]:
+            parser.error("Curation provenance differs")
+        excluded = [row["id"] for row in curation["excluded"]]
+        if len(excluded) != len(set(excluded)) or not set(excluded).issubset({row["id"] for row in items}):
+            parser.error("Invalid curated exclusions")
+        items = [row for row in items if row["id"] not in set(excluded)]
+        curation_provenance = {"path": str(curation_path.relative_to(ROOT)), "sha256": hashlib.sha256(curation_path.read_bytes()).hexdigest(), **curation}
     if not items:
         parser.error("No valid facts")
     root = ROOT / "experiments/.cache" / ("jh_kb_probe_" + args.name)
@@ -89,6 +103,7 @@ def main():
                   "kb_sha256": meta["kb_sha256"], "weak_labels": "provided_model_facts_with_exact_kb_support_quotes",
                   "score_interpretation": "Use tutor only; aggregate total includes an absent guard endpoint",
                   "review": review_provenance,
+                  "curation": curation_provenance,
                   "public_questions_in_generation": False, "independent_source_holdout": False}
     (root / "derivation.json").write_text(json.dumps(provenance, indent=2))
     if args.build_only:
