@@ -52,6 +52,7 @@ def main():
     parser.add_argument("--workers", type=int, default=64)
     parser.add_argument("--request-slots", type=int, default=64)
     parser.add_argument("--build-only", action="store_true")
+    parser.add_argument("--review", type=Path, help="Completed provided-model review; required for collection")
     args = parser.parse_args()
     source = args.source.resolve()
     if not source.is_relative_to(ROOT / "experiments/.cache") or not re.fullmatch(r"[A-Za-z0-9_-]+", args.name):
@@ -59,6 +60,23 @@ def main():
     if not 1 <= args.workers <= 64 or not 1 <= args.request_slots <= 64:
         parser.error("Invalid concurrency")
     items, meta = build_items(source)
+    review_provenance = None
+    if args.review:
+        review_path = args.review.resolve()
+        if not review_path.is_relative_to(ROOT / "experiments/.cache"):
+            parser.error("Use a local provided-model review")
+        review_meta = json.loads((review_path.parent / "manifest.json").read_text())
+        original_dataset = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in items)
+        if review_meta["scope"] != "provided_llm_kb_fact_review" or review_meta["model"] != meta["model"] or review_meta["dataset_sha256"] != hashlib.sha256(original_dataset.encode()).hexdigest():
+            parser.error("Review provenance differs")
+        reviewed = list(map(json.loads, review_path.read_text().splitlines()))
+        accepted = {row["id"] for row in reviewed if row["valid"] and row["error"] is None}
+        if len(reviewed) != len(items) or {r["id"] for r in reviewed} != {r["id"] for r in items}:
+            parser.error("Incomplete or duplicate review")
+        items = [row for row in items if row["id"] in accepted]
+        review_provenance = {"path": str(review_path.relative_to(ROOT)), "sha256": hashlib.sha256(review_path.read_bytes()).hexdigest(), **review_meta}
+    elif not args.build_only:
+        parser.error("Review the weak labels before collecting candidate responses")
     if not items:
         parser.error("No valid facts")
     root = ROOT / "experiments/.cache" / ("jh_kb_probe_" + args.name)
@@ -70,6 +88,7 @@ def main():
                   "dataset_sha256": hashlib.sha256(dataset.encode()).hexdigest(), "generation_model": meta["model"],
                   "kb_sha256": meta["kb_sha256"], "weak_labels": "provided_model_facts_with_exact_kb_support_quotes",
                   "score_interpretation": "Use tutor only; aggregate total includes an absent guard endpoint",
+                  "review": review_provenance,
                   "public_questions_in_generation": False, "independent_source_holdout": False}
     (root / "derivation.json").write_text(json.dumps(provenance, indent=2))
     if args.build_only:
