@@ -27,7 +27,8 @@ from core.schema import POLICY, parse_label
 BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off_topic"}
 
 
-def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weight=.5):
+def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weight=.5,
+        regularizations=(10, 100, 300, 1000)):
     paths = [ROOT / "public" / f"{e}.jsonl" for e in ("tutor", "guard")]
     rows = [p for path in paths for p in map(json.loads, path.read_text().splitlines())]
     texts = [next(m["content"] for m in reversed(p["messages"]) if m["role"] == "user") for p in rows]
@@ -92,7 +93,7 @@ def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weig
                 "block_f1": float(f1_score([v in BLOCKED for v in gold], [v in BLOCKED for v in pred])),
                 "tutor_action_accuracy": sum(tutor_actions) / len(tutor_actions)}
     reports = []
-    for c in (10, 100, 300, 1000):
+    for c in regularizations:
         predicted, confidence = np.empty(size, dtype=object), np.zeros(size)
         def fit(indices):
             fit_texts = [texts[i] for i in indices]
@@ -151,10 +152,13 @@ if __name__ == "__main__":
     parser.add_argument("--exclude-harmful", action="store_true")
     parser.add_argument("--augmentation", type=Path)
     parser.add_argument("--augmentation-weight", type=float, default=.5)
+    parser.add_argument("--regularizations", type=float, nargs="+", default=[10, 100, 300, 1000])
     parser.add_argument("--output", type=Path, default=ROOT / "experiments/.cache/jh_gate_cv")
     args = parser.parse_args()
     if not 0 < args.augmentation_weight <= 1:
         parser.error("Augmentation weight must be in (0, 1]")
+    if not all(0 < c <= 1e6 for c in args.regularizations):
+        parser.error("Regularization values must be in (0, 1000000]")
     source = args.source.resolve() if args.source else None
     augmentation = args.augmentation.resolve() if args.augmentation else None
     if source and not source.is_relative_to(ROOT / "experiments/.cache"):
@@ -162,7 +166,7 @@ if __name__ == "__main__":
     if augmentation and not augmentation.is_relative_to(ROOT / "experiments/.cache"):
         parser.error("Only recorded public augmentations are supported")
     with threadpool_limits(limits=1):
-        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight)
+        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight, args.regularizations)
     dest = args.output
     dest.mkdir(exist_ok=True)
     (dest / "result.json").write_text(json.dumps(data, indent=2) + "\n")
