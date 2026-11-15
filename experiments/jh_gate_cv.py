@@ -29,10 +29,13 @@ BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off
 
 
 def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weight=.5,
-        regularizations=(10, 100, 300, 1000), features="char"):
+        regularizations=(10, 100, 300, 1000), features="char", text_mode="last"):
     paths = [ROOT / "public" / f"{e}.jsonl" for e in ("tutor", "guard")]
     rows = [p for path in paths for p in map(json.loads, path.read_text().splitlines())]
     texts = [next(m["content"] for m in reversed(p["messages"]) if m["role"] == "user") for p in rows]
+    # Keep the original last-user similarity grouping fixed across modes.
+    training_texts = texts if text_mode == "last" else [
+        "\n".join(f"{m['role']}: {m['content']}" for m in row["messages"][-5:]) for row in rows]
     y = np.array([p["labels"]["category"] for p in rows])
     augmented, augmentation_meta = {}, None
     if augmentation:
@@ -97,7 +100,7 @@ def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weig
     for c in regularizations:
         predicted, confidence = np.empty(size, dtype=object), np.zeros(size)
         def fit(indices):
-            fit_texts = [texts[i] for i in indices]
+            fit_texts = [training_texts[i] for i in indices]
             fit_labels = [y[i] for i in indices]
             weights = [1.] * len(indices)
             # Only descendants of the training indices enter this fold.
@@ -113,11 +116,11 @@ def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weig
         for train, test in folds:
             assert not set(groups[i] for i in train).intersection(groups[i] for i in test)
             vectorizer, model = fit(train)
-            probability = model.predict_proba(vectorizer.transform([texts[i] for i in test]))
+            probability = model.predict_proba(vectorizer.transform([training_texts[i] for i in test]))
             predicted[test] = model.classes_[probability.argmax(axis=1)]
             confidence[test] = probability.max(axis=1)
         vectorizer, model = fit(np.arange(size))
-        train_probability = model.predict_proba(vectorizer.transform(texts))
+        train_probability = model.predict_proba(vectorizer.transform(training_texts))
         train_prediction = model.classes_[train_probability.argmax(axis=1)]
         report = {"C": c, "out_of_fold_accuracy": float(accuracy_score(y, predicted)),
                   "training_accuracy": float(accuracy_score(y, train_prediction)), "gates": {}}
@@ -139,7 +142,7 @@ def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weig
         print(json.dumps(report), flush=True)
     return {"scope": "public_grouped_oof_gate_diagnostic", "groups": len(set(groups)),
             "analysis_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
-            "exclude_harmful": exclude_harmful, "features": features,
+            "exclude_harmful": exclude_harmful, "features": features, "text_mode": text_mode,
             "augmentation":augmentation_meta,
             "baseline": metrics(baseline), "source": str(source.relative_to(ROOT)),
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -154,6 +157,7 @@ if __name__ == "__main__":
     parser.add_argument("--augmentation-weight", type=float, default=.5)
     parser.add_argument("--regularizations", type=float, nargs="+", default=[10, 100, 300, 1000])
     parser.add_argument("--features", choices=FEATURES, default="char")
+    parser.add_argument("--text-mode", choices=("last", "recent_conversation"), default="last")
     parser.add_argument("--output", type=Path, default=ROOT / "experiments/.cache/jh_gate_cv")
     args = parser.parse_args()
     if not 0 < args.augmentation_weight <= 1:
@@ -162,12 +166,15 @@ if __name__ == "__main__":
         parser.error("Regularization values must be in (0, 1000000]")
     source = args.source.resolve() if args.source else None
     augmentation = args.augmentation.resolve() if args.augmentation else None
+    if augmentation and args.text_mode != "last":
+        parser.error("Paraphrase augmentation is supported only for last-user features")
     if source and not source.is_relative_to(ROOT / "experiments/.cache"):
         parser.error("Only local public recordings are supported")
     if augmentation and not augmentation.is_relative_to(ROOT / "experiments/.cache"):
         parser.error("Only recorded public augmentations are supported")
     with threadpool_limits(limits=1):
-        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight, args.regularizations, args.features)
+        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight,
+                   args.regularizations, args.features, args.text_mode)
     dest = args.output
     dest.mkdir(exist_ok=True)
     (dest / "result.json").write_text(json.dumps(data, indent=2) + "\n")
