@@ -27,7 +27,7 @@ from core.schema import POLICY, parse_label
 BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off_topic"}
 
 
-def run(source=None, exclude_harmful=False, augmentation=None):
+def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weight=.5):
     paths = [ROOT / "public" / f"{e}.jsonl" for e in ("tutor", "guard")]
     rows = [p for path in paths for p in map(json.loads, path.read_text().splitlines())]
     texts = [next(m["content"] for m in reversed(p["messages"]) if m["role"] == "user") for p in rows]
@@ -58,7 +58,7 @@ def run(source=None, exclude_harmful=False, augmentation=None):
             raise ValueError("Augmentation collection is incomplete")
         augmentation_meta = {"path":str(augmentation.relative_to(ROOT)),
             "sha256":hashlib.sha256(augmentation.read_bytes()).hexdigest(),"model":metadata["model"],
-            "examples":sum(map(len,augmented.values())),"raw_examples":raw_examples,"sample_weight":.5,
+            "examples":sum(map(len,augmented.values())),"raw_examples":raw_examples,"sample_weight":augmentation_weight,
             "excluded_categories":["low_signal_input"]}
     size = len(rows)
     groups = list(range(size))
@@ -103,7 +103,7 @@ def run(source=None, exclude_harmful=False, augmentation=None):
                 additions = augmented.get(rows[i]["id"], [])
                 fit_texts.extend(additions)
                 fit_labels.extend([y[i]] * len(additions))
-                weights.extend([.5] * len(additions))
+                weights.extend([augmentation_weight] * len(additions))
             vectorizer = TfidfVectorizer(analyzer="char", ngram_range=(2, 5), min_df=2,
                                          max_features=60000, sublinear_tf=True)
             x = vectorizer.fit_transform(fit_texts)
@@ -150,8 +150,11 @@ if __name__ == "__main__":
     parser.add_argument("--source", type=Path)
     parser.add_argument("--exclude-harmful", action="store_true")
     parser.add_argument("--augmentation", type=Path)
+    parser.add_argument("--augmentation-weight", type=float, default=.5)
     parser.add_argument("--output", type=Path, default=ROOT / "experiments/.cache/jh_gate_cv")
     args = parser.parse_args()
+    if not 0 < args.augmentation_weight <= 1:
+        parser.error("Augmentation weight must be in (0, 1]")
     source = args.source.resolve() if args.source else None
     augmentation = args.augmentation.resolve() if args.augmentation else None
     if source and not source.is_relative_to(ROOT / "experiments/.cache"):
@@ -159,7 +162,7 @@ if __name__ == "__main__":
     if augmentation and not augmentation.is_relative_to(ROOT / "experiments/.cache"):
         parser.error("Only recorded public augmentations are supported")
     with threadpool_limits(limits=1):
-        data = run(source, args.exclude_harmful, augmentation)
+        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight)
     dest = args.output
     dest.mkdir(exist_ok=True)
     (dest / "result.json").write_text(json.dumps(data, indent=2) + "\n")
