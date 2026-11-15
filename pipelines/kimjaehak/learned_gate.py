@@ -53,3 +53,8 @@ class Pipeline(Adaptive):
             state.debug = {"learned_gate": True, "confidence": float(probability[index])}
             return
         await super()._classify(state)
+
+
+class Relaxed(Pipeline):
+    """More public fitting; compare separately against grouped OOF diagnostics."""
+    learned_gate_threshold = .98

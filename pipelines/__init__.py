@@ -51,6 +51,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.reasoned_tie").Pipeline
         if name == "jh_learned_gate":
             return importlib.import_module("pipelines.kimjaehak.learned_gate").Pipeline
+        if name == "jh_learned_gate98":
+            return importlib.import_module("pipelines.kimjaehak.learned_gate").Relaxed
         if name == "jh_intent":
             return importlib.import_module("pipelines.kimjaehak.intent").Pipeline
         if name == "jh_diverse":

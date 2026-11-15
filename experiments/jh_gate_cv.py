@@ -19,6 +19,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import StratifiedGroupKFold
 from threadpoolctl import threadpool_limits
+from core.schema import POLICY, parse_label
 
 BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off_topic"}
 
@@ -48,9 +49,17 @@ def run(source=None, exclude_harmful=False):
     guard = np.array([p["endpoint"] == "guard" for p in rows])
     baseline = np.array([recorded[p["id"]]["input"]["category"] if p["endpoint"] == "guard" else "" for p in rows])
     def metrics(pred):
+        tutor_actions = []
+        for i, row in enumerate(rows):
+            if guard[i]:
+                continue
+            label = parse_label(str(pred[i]))
+            action = POLICY[label].action.value if label is not None else recorded[row["id"]]["action"]
+            tutor_actions.append(action == row["labels"]["action"])
         gold, pred = y[guard], pred[guard]
         return {"category_accuracy_non_normal": float(accuracy_score(gold[gold != "normal"], pred[gold != "normal"])),
-                "block_f1": float(f1_score([v in BLOCKED for v in gold], [v in BLOCKED for v in pred]))}
+                "block_f1": float(f1_score([v in BLOCKED for v in gold], [v in BLOCKED for v in pred])),
+                "tutor_action_accuracy": sum(tutor_actions) / len(tutor_actions)}
     reports = []
     for c in (10, 100, 300, 1000):
         predicted, confidence = np.empty(size, dtype=object), np.zeros(size)
@@ -82,6 +91,7 @@ def run(source=None, exclude_harmful=False):
                 "oof_coverage": int(mask.sum()), "oof_selected_accuracy": float(accuracy_score(y[mask], predicted[mask])) if mask.any() else None,
                 "guard_replacements": int((guard & mask & (predicted != baseline)).sum()),
                 "combined_guard_input": metrics(combined), "training_coverage": int(train_mask.sum()),
+                "training_combined": metrics(np.where(train_mask, train_prediction, baseline)),
                 "training_selected_accuracy": float(accuracy_score(y[train_mask], train_prediction[train_mask])) if train_mask.any() else None}
         reports.append(report)
         print(json.dumps(report), flush=True)
