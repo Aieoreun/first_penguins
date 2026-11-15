@@ -13,7 +13,7 @@ BASELINE_ENV = {
 INITIAL_VARIANTS = ("jh_baseline", "jh_peace_input", "jh_peace_output", "jh_peace_both")
 VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided_both", "jh_guided_focus",
                               "jh_v4_output", "jh_precise_output", "jh_calibrated", "jh_v4_safety", "jh_voted",
-                              "jh_fewshot")
+                              "jh_fewshot", "jh_reasoned")
 
 
 def configure():
