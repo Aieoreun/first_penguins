@@ -22,7 +22,11 @@ def normalized(text):
     return re.sub(r"[\W_]+","",unicodedata.normalize("NFKC",text).casefold())
 
 
-def build_items(source):
+def build_items(source, alternative=False):
+    used = set()
+    if alternative:
+        primary,_ = build_items(source)
+        used = {json.dumps(row["messages"],ensure_ascii=False,sort_keys=True) for row in primary}
     metadata = json.loads((source.parent / "manifest.json").read_text())
     expected = {name:hashlib.sha256((ROOT / "public" / name).read_bytes()).hexdigest()
                 for name in ("tutor.jsonl","guard.jsonl")}
@@ -50,7 +54,7 @@ def build_items(source):
                 raise ValueError("Unexpected source conversation")
             messages[-1]["content"] = text
             key = json.dumps(messages,ensure_ascii=False,sort_keys=True)
-            if key in seen:
+            if key in seen or key in used:
                 continue
             seen.add(key)
             items.append({"id":item["id"]+f"-p{index}","source_id":item["id"],
@@ -70,11 +74,12 @@ def main():
     parser.add_argument("--workers",type=int,default=64)
     parser.add_argument("--request-slots",type=int,default=64)
     parser.add_argument("--build-only",action="store_true")
+    parser.add_argument("--alternative",action="store_true",help="Use expressions excluded from the primary transfer set")
     args = parser.parse_args()
     source = args.source.resolve()
     if not source.is_relative_to(ROOT / "experiments/.cache") or not re.fullmatch(r"[A-Za-z0-9_-]+",args.name) or not 1 <= args.workers <= 64 or not 1 <= args.request_slots <= 64:
         parser.error("Invalid source, name or concurrency")
-    items, generation = build_items(source)
+    items, generation = build_items(source,args.alternative)
     if not items:
         parser.error("No valid derived inputs")
     root = ROOT / "experiments/.cache" / ("jh_transfer_" + args.name)
@@ -84,7 +89,8 @@ def main():
     provenance = {"scope":"public_paraphrase_input_diagnostic","count":len(items),
         "source":str(source.relative_to(ROOT)),"source_sha256":hashlib.sha256(source.read_bytes()).hexdigest(),
         "dataset_sha256":hashlib.sha256(dataset.encode()).hexdigest(),"generation_model":generation["model"],
-        "inherited_labels":True,"independent_source_holdout":False}
+        "inherited_labels":True,"independent_source_holdout":False,
+        "paraphrase_partition":"alternative" if args.alternative else "primary"}
     (root / "derivation.json").write_text(json.dumps(provenance,indent=2))
     if args.build_only:
         print(json.dumps(provenance),flush=True)
