@@ -33,6 +33,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.v4_safety").Pipeline
         if name == "jh_voted":
             return importlib.import_module("pipelines.kimjaehak.voted").Pipeline
+        if name == "jh_fewshot":
+            return importlib.import_module("pipelines.kimjaehak.fewshot").Pipeline
         if name.startswith("jh_guided_"):
             module = importlib.import_module("pipelines.kimjaehak.guided")
             return {"jh_guided_input": module.GuidedInput,
