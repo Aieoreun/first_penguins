@@ -53,7 +53,11 @@ class Pipeline(Calibrated):
                  "out_of_material": isinstance(material.get("quote"), str) and not material["quote"].strip()}
         state.label = next((label for key, label in _priority(self.seek_first) if flags.get(key)), Label.NORMAL)
         state.section = state.chunks[0].section_id if state.chunks else None
-        state.debug = {"valid_block_votes": len(block_votes), "valid_other_votes": len(other_votes)}
+        # Ephemeral diagnostics, never emitted by the HTTP server or its logs.
+        state.debug = {"valid_block_votes": len(block_votes), "valid_other_votes": len(other_votes),
+                       "block_votes": block_votes, "other_votes": other_votes,
+                       "self_info_votes": personal, "out_of_material": flags["out_of_material"],
+                       "model_section": material.get("section")}
 
     async def _run(self, body, guard):
         started = time.monotonic()
