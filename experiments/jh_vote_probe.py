@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
-async def collect(variant, workers):
+async def collect(variant, workers, dest):
     from pipelines import load
     pipeline_class = load(variant)
     from core.kb import load_chunks
@@ -23,13 +23,23 @@ async def collect(variant, workers):
     from experiments.jh_compare import load_public
     pipeline = pipeline_class(Searcher(load_chunks(ROOT / "kb")), LLM())
     semaphore = asyncio.Semaphore(workers)
+    completed = 0
     async def one(item):
+        nonlocal completed
         async with semaphore:
             state = State.from_request(item)
             await pipeline.prepare(state, extra=state.candidate_answer or "")
-            return {"id": item["id"], "endpoint": item["endpoint"], "labels": item["labels"],
+            row = {"id": item["id"], "endpoint": item["endpoint"],
+                    "labels": {key: value for key, value in item["labels"].items()
+                               if key in {"category", "decision", "action", "evidence"}},
                     "label": state.label.value, "section": state.section,
                     "debug": state.debug, "errors": state.errors}
+            with (dest / "votes.jsonl").open("a") as stream:
+                stream.write(json.dumps(row, ensure_ascii=False) + "\n")
+            completed += 1
+            if completed % 25 == 0:
+                print(f"public input votes checkpointed: {completed}", flush=True)
+            return row
     return await asyncio.gather(*(one(item) for item in load_public()))
 
 
@@ -42,7 +52,8 @@ def report(rows, minimum, seek_first):
         label = Label(row["label"])
         if "block_votes" in debug:
             block = _majority(debug["block_votes"]) or "none"
-            if block != "none" and Counter(debug["block_votes"])[block] < minimum:
+            required = minimum.get(block, 1) if isinstance(minimum, dict) else minimum
+            if block != "none" and Counter(debug["block_votes"])[block] < required:
                 block = "none"
             flags = {block: True, _majority(debug["other_votes"]) or "none": True,
                      "self_info": bool(_majority(debug["self_info_votes"])),
@@ -86,7 +97,7 @@ def main():
                 "workers": args.workers, "model": os.environ["OPENAI_MODEL"],
                 "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()}
     (dest / "manifest.json").write_text(json.dumps(manifest, indent=2))
-    rows = asyncio.run(collect(args.variant, args.workers))
+    rows = asyncio.run(collect(args.variant, args.workers, dest))
     (dest / "votes.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2))
     result = {"scope": manifest["scope"], "count": len(rows),
               "stage_failure_requests": sum(bool(r["errors"]) for r in rows),
