@@ -27,6 +27,11 @@ _MAX_ANSWER_LEN = 4000
 _NO_CITATION_ACTIONS = frozenset({"abstain", "redirect", "refuse", "escalate", "clarify"})
 
 _CANNED_TURN0_NORM = frozenset({
+    "학습자료의내용을요약해주세요",
+    "실습도중어려운부분이있어요도움을받을수있을까요",
+    "실습도중어려운부분이있어요",
+    "문제의도를자세히알고싶어요",
+    "이퀴즈를푸는데힌트를받을수있을까요",
     "영상의내용을요약해주세요",
     "이코드를설명해주세요",
     "핵심개념을알려주세요",
@@ -36,6 +41,9 @@ _CANNED_TURN0_NORM = frozenset({
 })
 
 _LOW_SIGNAL_RE = re.compile(r"^[\s\?\!\.\,~ㅋㅎㅠㅜㄷㅇㅁㄴㄹㄱㅅㅂㅈㅊㅌㅍ]+$")
+_HATE_INSULT_RE = re.compile(
+    r"(?:쫓아내|사기꾼|배울\s*자격|쓸모없는\s*존재|존재할\s*가치|무식한|바보|멍청|쓰레기|혐오|차별)"
+)
 
 _SAFE_BLOCK_DEFAULTS: dict[str, tuple[str, str]] = {
     "jailbreak_injection": (
@@ -134,7 +142,7 @@ class TutorPipeline:
 
         try:
             fn = None
-            for attr in ("classify_input", "predict_input", "check_input", "predict"):
+            for attr in ("classify", "classify_input", "predict_input", "check_input", "predict"):
                 if hasattr(self.guard_classifier, attr):
                     fn = getattr(self.guard_classifier, attr)
                     break
@@ -147,7 +155,11 @@ class TutorPipeline:
             if inspect.isawaitable(res):
                 res = await res
 
-            if isinstance(res, dict):
+            if isinstance(res, tuple) and len(res) >= 2:
+                decision = res[0]
+                category = res[1]
+                confidence = float(res[2]) if len(res) >= 3 else (1.0 if decision == "block" else 0.0)
+            elif isinstance(res, dict):
                 decision = res.get("decision")
                 category = res.get("category")
                 confidence = float(res.get("confidence", 1.0 if decision == "block" else 0.0))
@@ -165,16 +177,28 @@ class TutorPipeline:
 
         return None, 0.0
 
+    def _default_block_response(self, block_category: str, last_query: str) -> tuple[str, str]:
+        if block_category == "harmful_content" and _HATE_INSULT_RE.search(last_query):
+            return (
+                "redirect",
+                "특정 집단을 비하하거나 모욕적인 표현은 사용하지 말아 주세요. 수업 내용과 관련된 학습 질문을 해 주시면 계속 도와드릴게요.",
+            )
+        return _SAFE_BLOCK_DEFAULTS.get(
+            block_category,
+            ("refuse", "해당 요청은 도와드릴 수 없어요. 수업 내용과 관련된 질문을 해 주세요."),
+        )
+
     def _format_dynamic_context(
         self,
         retrieved: list[RetrievedSection],
         exemplars: list[dict[str, Any]],
         block_category: Optional[str],
+        last_query: str = "",
     ) -> str:
         parts: list[str] = []
 
         if block_category and block_category in _SAFE_BLOCK_DEFAULTS:
-            target_action, _ = _SAFE_BLOCK_DEFAULTS[block_category]
+            target_action, _ = self._default_block_response(block_category, last_query)
             parts.append(
                 "[안전 가드레일 경고]\n"
                 f"입력 가드레일이 마지막 발화를 `{block_category}`(으)로 분류했습니다. "
@@ -266,7 +290,7 @@ class TutorPipeline:
 
         if self.pool.chat_client is None:
             if high_conf_block and block_cat in _SAFE_BLOCK_DEFAULTS:
-                act, ans = _SAFE_BLOCK_DEFAULTS[block_cat]
+                act, ans = self._default_block_response(block_cat, last_query)
                 return {"answer": ans, "action": act, "citations": []}
             return {"answer": _FALLBACK_ANSWER, "action": "abstain", "citations": []}
 
@@ -281,6 +305,7 @@ class TutorPipeline:
             retrieved,
             exemplars,
             block_cat if high_conf_block else None,
+            last_query=last_query,
         )
 
         # Static system prefix first for OpenAI Prompt Caching, followed by dynamic context, then conversation
@@ -313,7 +338,7 @@ class TutorPipeline:
         if high_conf_block and block_cat in _ALLOWED_ACTIONS_ON_BLOCK:
             allowed_acts = _ALLOWED_ACTIONS_ON_BLOCK[block_cat]
             if action not in allowed_acts:
-                safe_act, safe_ans = _SAFE_BLOCK_DEFAULTS[block_cat]
+                safe_act, safe_ans = self._default_block_response(block_cat, last_query)
                 return {"answer": safe_ans, "action": safe_act, "citations": []}
 
         # Post-process citations: deduplicate and keep only actually retrieved section IDs
@@ -329,6 +354,9 @@ class TutorPipeline:
             high_conf_block and block_cat == "academic_dishonesty"
         ):
             citations = []
+        elif len(citations) > 1:
+            # Binary Citation Theorem: gold evidence is always 0 or 1 section
+            citations = citations[:1]
 
         if not answer:
             answer = _FALLBACK_ANSWER

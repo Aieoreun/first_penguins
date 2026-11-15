@@ -7,6 +7,7 @@ import csv
 import json
 import logging
 import re
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
@@ -86,13 +87,22 @@ class RetrievedSection:
     dense_score: float
 
 
+_GLOBAL_KIWI: Optional[Kiwi] = None
+
+
 def _build_kiwi() -> Kiwi:
-    kiwi = Kiwi()
+    global _GLOBAL_KIWI
+    if _GLOBAL_KIWI is not None:
+        return _GLOBAL_KIWI
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        kiwi = Kiwi(num_workers=0)
     for term in _COURSE_TERMS:
         try:
-            kiwi.add_user_word(term, "NNP", 0)
+            kiwi.add_user_word(term.replace(" ", ""), "NNP", 0)
         except Exception:
             pass
+    _GLOBAL_KIWI = kiwi
     return kiwi
 
 
@@ -266,10 +276,8 @@ class KBIndex:
 
     def _split_md_chunks(self, section_id: str, title: str, text: str) -> None:
         parts = _HEADING_SPLIT_RE.split(text)
-        # parts[0] is content before first ##/### heading (usually # Title + intro)
         intro = parts[0].strip()
         if intro:
-            # Strip the top-level # heading line if it's alone, keep any body
             intro_lines = [
                 ln for ln in intro.splitlines() if not ln.strip().startswith("# ")
             ]
@@ -371,7 +379,6 @@ class KBIndex:
             )
             for c in self.chunks
         ]
-        # Ensure no completely empty document breaks bm25s
         chunk_corpus = [toks if toks else ["_empty_"] for toks in chunk_corpus]
         self._chunk_bm25: Optional[bm25s.BM25] = None
         if chunk_corpus:
@@ -479,13 +486,11 @@ class KBIndex:
         if self._chunk_embeddings is None and self.embed_client is not None:
             await self.ensure_embeddings()
 
-        # Sparse BM25 scores (blended if prev_query is provided)
         bm25_scores = self._bm25_chunk_scores(query)
         if prev_query and prev_query.strip():
             prev_bm25 = self._bm25_chunk_scores(prev_query)
             bm25_scores = last_weight * bm25_scores + (1.0 - last_weight) * prev_bm25
 
-        # Dense cosine scores if embeddings are available
         dense_scores = np.zeros(len(self.chunks), dtype=np.float32)
         has_dense = False
         if self._chunk_embeddings is not None and self.embed_client is not None:
@@ -501,7 +506,6 @@ class KBIndex:
                 dense_scores = self._chunk_embeddings @ q_vec
                 has_dense = True
 
-        # Reciprocal Rank Fusion (k=60) over chunks
         rrf_k = 60.0
         chunk_rrf = np.zeros(len(self.chunks), dtype=np.float32)
 
@@ -515,7 +519,6 @@ class KBIndex:
             for rank, idx in enumerate(dense_order, start=1):
                 chunk_rrf[idx] += 1.0 / (rrf_k + rank)
 
-        # Aggregate chunk scores to parent sections
         sec_rrf: dict[str, float] = {}
         sec_bm25: dict[str, float] = {}
         sec_dense: dict[str, float] = {}
