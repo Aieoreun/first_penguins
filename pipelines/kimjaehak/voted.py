@@ -6,7 +6,7 @@ Failed calls are excluded from ballots. The 26-second budget includes queue time
 import asyncio
 import time
 
-from core.schema import FALLBACK_ANSWER, Label
+from core.schema import FALLBACK_ANSWER, Decision, Label
 from pipelines.v1.pipeline import CLASSIFY_EFFORT, CLASSIFY_TIMEOUT
 from pipelines.v2 import prompts
 from pipelines.v2.pipeline import _majority, _priority
@@ -84,6 +84,8 @@ class Pipeline(Calibrated):
             state.errors.append("request:Deadline")
             if not guard:
                 state.answer, state.citations = FALLBACK_ANSWER, []
+            elif state.has_candidate:
+                state.safe = state.decision is Decision.ALLOW
         return state
 
     async def tutor(self, body):

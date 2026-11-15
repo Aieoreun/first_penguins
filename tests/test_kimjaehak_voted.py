@@ -83,6 +83,16 @@ class VotedTests(unittest.TestCase):
         self.assertEqual(llm.calls.count(prompts.OTHER_SYSTEM), 1)
         self.assertEqual(llm.calls.count(prompts.MATERIAL_SYSTEM), 1)
 
+    def test_deadline_preserves_blocked_output_safety_default(self):
+        class SlowBlocked(Pipeline):
+            deadline = .01
+            async def _prepare_within(self, state, extra=""):
+                state.label = Label.HARMFUL_REQUEST
+                await asyncio.sleep(.1)
+        state = asyncio.run(SlowBlocked(SEARCHER, FakeLLM({})).guard({"messages": QUESTION, "candidate_answer":"candidate"}))
+        self.assertIn("request:Deadline", state.errors)
+        self.assertFalse(state.to_guard_response()["output"]["safe"])
+
 
 if __name__ == "__main__":
     unittest.main()
