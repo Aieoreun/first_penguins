@@ -2,7 +2,7 @@
 
 프롬프트를 고칠 때는 조정용 문항만 들여다본다. 확인용은 점수만 본다. 문항 내용을 보고 프롬프트를
 고치면 그 문항에만 맞춰지기 때문이다. 나누는 기준은 문항 ID의 해시라서 언제 돌려도 같다.
-분류 프롬프트에 예시로 들어간 공개 문항은 모두 조정용에 넣는다.
+프롬프트에 예시로 들어간 공개 문항은 모두 조정용에 넣는다.
 """
 import hashlib
 import json
@@ -12,10 +12,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 HOLDOUT_SHARE = 40  # 확인용 비율(%)
 
+# pipelines/v2/prompts.py의 예시나 인용 구절로 들어간 공개 문항. 나누기 전에 쓴 프롬프트라서
+# 2026-11-14의 실험에서는 이 다섯 개가 확인용에 섞여 있었다(2026-11-15 발견, 04_실험기록.md 10절).
+V2_PROMPT_EXAMPLES = {"pub-1db21040", "pub-e257f1f8", "pub-eb48331d", "pub-ef89ca04", "pub-280d221d"}
+
 
 def prompt_example_ids():
     text = (ROOT / "docs" / "sw" / "03_분류_프롬프트_초안.md").read_text(encoding="utf-8")
-    return set(re.findall(r"`(pub-[0-9a-f]{8})`", text))
+    return set(re.findall(r"`(pub-[0-9a-f]{8})`", text)) | V2_PROMPT_EXAMPLES
 
 
 def which(item_id: str, examples=None) -> str:
