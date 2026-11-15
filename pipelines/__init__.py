@@ -69,6 +69,9 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.voted_output").Pipeline
         if name == "jh_uncertain_sources":
             return importlib.import_module("pipelines.kimjaehak.uncertain_sources").Pipeline
+        if name in {"jh_context_policy", "jh_context_policy_voted"}:
+            module = importlib.import_module("pipelines.kimjaehak.context_policy")
+            return module.WithVotedOutput if name.endswith("_voted") else module.Pipeline
         if name in {"jh_context_output", "jh_context_output3"}:
             module = importlib.import_module("pipelines.kimjaehak.context_output")
             return module.ThreeSections if name.endswith("3") else module.Pipeline

@@ -17,6 +17,7 @@ OTHERS = {"none", "emotional_distress", "answer_seeking", "low_signal_input"}
 
 
 class Pipeline(Calibrated):
+    state_class = ResponseState
     request_slots = 32
     deadline = 26
     short_votes = 3
@@ -76,7 +77,7 @@ class Pipeline(Calibrated):
 
     async def _run(self, body, guard):
         started = time.monotonic()
-        state = ResponseState.from_request(body)
+        state = self.state_class.from_request(body)
         async def work():
             async with self._slots:
                 await self._prepare_within(state, extra=(state.candidate_answer or "") if guard else "")
