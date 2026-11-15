@@ -110,6 +110,12 @@ class AdapterTests(unittest.TestCase):
         items = load_public()
         self.assertEqual(len(items), len({request_key(p['endpoint'], p) for p in items}))
 
+    def test_guard_diagnostic_uses_only_public_guards(self):
+        from experiments.jh_compare import load_public
+        guards = load_public(endpoints=("guard",))
+        self.assertEqual(len(guards), 200)
+        self.assertEqual({p["endpoint"] for p in guards}, {"guard"})
+
     def test_public_judge_checkpoint_reuses_only_identical_calls(self):
         from experiments.jh_compare import journal_judge
         calls = []

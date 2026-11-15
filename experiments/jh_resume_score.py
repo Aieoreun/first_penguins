@@ -31,6 +31,7 @@ def main():
     result = score_rows(items, rows, manifest["judge_workers"],
                         not manifest["judge_enabled"], run / "judge.jsonl")
     result["runtime"] = json.loads((run / "runtime.json").read_text())
+    result["score_scope"] = "+".join(manifest.get("endpoints", ["tutor", "guard"]))
     (run / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2))
     print(json.dumps({k: result[k] for k in ("total", "tutor", "guard", "judge_errors", "invalid")}))
 

@@ -41,9 +41,9 @@ def request_key(endpoint, payload):
                       ensure_ascii=False, sort_keys=True)
 
 
-def load_public(limit=0):
+def load_public(limit=0, endpoints=("tutor", "guard")):
     items = []
-    for endpoint in ("tutor", "guard"):
+    for endpoint in endpoints:
         rows = [json.loads(s) for s in (ROOT / "public" / f"{endpoint}.jsonl").read_text().splitlines() if s.strip()]
         random.Random(20261115).shuffle(rows)
         items.extend(rows[:limit] if limit else rows)
@@ -171,6 +171,7 @@ def run_variant(args, variant, repetition, items, root):
     manifest = {
         "variant": variant, "repeat": repetition, "workers": args.workers,
         "judge_workers": args.judge_workers, "count": len(items), "judge_enabled": not args.no_judge,
+        "endpoints": args.endpoints,
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
         "model": os.environ["OPENAI_MODEL"], "pinned_v2": BASELINE_ENV,
@@ -204,6 +205,7 @@ def run_variant(args, variant, repetition, items, root):
     print(f"SCORING {variant} (official scorer, judge={'off' if args.no_judge else 'on'})", flush=True)
     result = score_rows(items, rows, args.judge_workers, args.no_judge, dest / "judge.jsonl")
     result["runtime"] = runtime
+    result["score_scope"] = "+".join(args.endpoints)
     if evaluator_hashes() != manifest["evaluator_hashes"]:
         raise RuntimeError("Official evaluator files changed during experiment")
     (dest / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2))
@@ -220,6 +222,8 @@ def main():
     ap.add_argument("--repeat", type=int, default=1)
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=8)
+    ap.add_argument("--endpoints", nargs="+", choices=("tutor", "guard"), default=["tutor", "guard"],
+                    help="Single endpoint is diagnostic only; its total is not a full-set score")
     ap.add_argument("--limit", type=int, default=0, help="Smoke test: items per endpoint; 0 means all 400")
     ap.add_argument("--no-judge", action="store_true", help="Schema/load only; not comparable full tutor scores")
     ap.add_argument("--name", default=time.strftime("%Y%m%d-%H%M%S"))
@@ -228,12 +232,14 @@ def main():
         ap.error("name must contain only letters, digits, underscore or hyphen")
     if min(args.workers, args.judge_workers, args.repeat) < 1 or args.limit < 0:
         ap.error("workers and repeat must be positive; limit must be nonnegative")
+    if len(set(args.endpoints)) != len(args.endpoints):
+        ap.error("endpoints must not repeat")
     for key in ("OPENAI_BASE_URL", "OPENAI_MODEL", "OPENAI_API_KEY", "TEAM_TOKEN"):
         if not os.environ.get(key):
             ap.error(f"Missing setting: {key}")
     root = ROOT / "experiments/.cache" / ("jh_" + args.name)
     root.mkdir(parents=True, exist_ok=False)
-    items = load_public(args.limit)
+    items = load_public(args.limit, args.endpoints)
     results = []
     for repetition in range(1, args.repeat + 1):
         for variant in args.variants:
