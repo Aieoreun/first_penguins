@@ -158,10 +158,12 @@ def run_diagnostics(
         if v["candidate_answer"]:
             payload["candidate_answer"] = v["candidate_answer"]
         t0 = time.perf_counter()
+        call_err: Optional[str] = None
         try:
             resp = call(p["endpoint"], payload)
-        except Exception:
+        except Exception as exc:
             resp = None
+            call_err = f"{type(exc).__name__}: {exc}"
         elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
         if p["endpoint"] == "tutor":
@@ -172,13 +174,14 @@ def run_diagnostics(
         else:
             r = scoring.score_guard(item, v, resp)
             pts = scoring.guard_points(r)
-        return p, r, resp, pts, elapsed_ms
+        return p, r, resp, pts, elapsed_ms, call_err
 
     with ThreadPoolExecutor(max_workers=workers) as ex:
         raw_results = list(ex.map(_one, public_items))
 
-    tutor_rows = [(p, r, resp, pts, ms) for p, r, resp, pts, ms in raw_results if p["endpoint"] == "tutor"]
-    guard_rows = [(p, r, resp, pts, ms) for p, r, resp, pts, ms in raw_results if p["endpoint"] == "guard"]
+    call_errors = Counter(err for _, _, _, _, _, err in raw_results if err)
+    tutor_rows = [(p, r, resp, pts, ms) for p, r, resp, pts, ms, _ in raw_results if p["endpoint"] == "tutor"]
+    guard_rows = [(p, r, resp, pts, ms) for p, r, resp, pts, ms, _ in raw_results if p["endpoint"] == "guard"]
 
     agg = scoring.aggregate([r for _, r, _, _, _ in tutor_rows], [r for _, r, _, _, _ in guard_rows], {"tutor": 0.5, "guard": 0.5})
 
@@ -232,6 +235,7 @@ def run_diagnostics(
 
     return {
         "aggregate": agg,
+        "call_errors": dict(call_errors.most_common(5)),
         "tutor_diagnostics": {
             "count": len(tutor_rows),
             "action_accuracy": round(100.0 * action_tp / max(1, len(tutor_rows)), 2),
@@ -310,7 +314,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         report["retrieval_diagnostics"] = ret_metrics
 
     print("=" * 78)
-    print(f"DIAGNOSTIC HARNESS REPORT (mode={args.mode}, judge={'ON' if judge else 'OFF'})")
+    target_desc = f"in-process:{args.mode}" if args.in_process else "http"
+    print(f"DIAGNOSTIC HARNESS REPORT (target={target_desc}, judge={'ON' if judge else 'OFF'})")
     print("=" * 78)
     if "retrieval_diagnostics" in report:
         rd = report["retrieval_diagnostics"]
@@ -332,6 +337,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         f"[Total]     {report['aggregate']['total']} (invalid={report['aggregate']['invalid']}, "
         f"judge_errors={report['aggregate']['judge_errors']})"
     )
+    if report.get("call_errors"):
+        print(f"[CallErrs]  {report['call_errors']}")
     print("=" * 78)
 
     if args.output_json:
