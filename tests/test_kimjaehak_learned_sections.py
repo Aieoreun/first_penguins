@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
 
 from core.state import Chunk, State
-from pipelines.kimjaehak.learned_sections import Pipeline, WholeKB, TutorOnly
+from pipelines.kimjaehak.learned_sections import Pipeline, WholeKB, TutorOnly, WideTutor
 from tests.test_kimjaehak_learned_gate import Probability
 
 
@@ -30,6 +30,11 @@ class LearnedSectionTests(unittest.TestCase):
     def test_tutor_only_selection_preserves_candidate_answer_search(self):
         self.assertEqual(self.run_section(TutorOnly,"SECOND",.999).section,"SECOND")
         self.assertEqual(self.run_section(TutorOnly,"SECOND",.999,candidate="answer").section,"FIRST")
+
+    def test_wider_threshold_does_not_change_the_original_variant(self):
+        self.assertEqual(self.run_section(TutorOnly,"SECOND",.96).section,"FIRST")
+        self.assertEqual(self.run_section(WideTutor,"SECOND",.96).section,"SECOND")
+        self.assertEqual(self.run_section(WideTutor,"SECOND",.96,candidate="answer").section,"FIRST")
 
 
 if __name__ == "__main__":

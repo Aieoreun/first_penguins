@@ -54,3 +54,7 @@ class WholeKB(Pipeline):
 
 class TutorOnly(WholeKB):
     learned_section_use_for_output = False
+
+
+class WideTutor(TutorOnly):
+    learned_section_threshold = .95
