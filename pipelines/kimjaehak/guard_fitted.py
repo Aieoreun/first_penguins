@@ -3,6 +3,7 @@ from core.schema import parse_label
 from .learned_gate import train_public_classifier
 from .refusal_review import BroadPipeline, BroadReview
 from .learned_output import Consensus
+from .context_grounding import Pipeline as ContextGrounding
 
 
 class GuardFitting:
@@ -41,5 +42,10 @@ class Pipeline(GuardFitting, BroadPipeline):
 
 
 class Fast(GuardFitting, BroadReview, Consensus):
-    """Same endpoint-specific input and safety checks, with low-only grounding."""
+    """Same input/safety; restore the original low-only grounding rubric."""
     pass
+
+
+class ContextFast(Fast):
+    """Match the hybrid's grounding prompt while omitting medium reasoning."""
+    unsupported_system = ContextGrounding.unsupported_system

@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import AsyncMock, patch
 
 from core.schema import Label
-from pipelines.kimjaehak.guard_fitted import Pipeline, Fast, GuardFitting
+from pipelines.kimjaehak.guard_fitted import Pipeline, Fast, ContextFast, GuardFitting
 from pipelines.kimjaehak.refusal_review import BroadPipeline, RefusalReview
 from pipelines.kimjaehak.learned_output import Consensus
 from tests.test_kimjaehak_candidate import classifier
@@ -16,6 +16,8 @@ class GuardFittedTests(unittest.TestCase):
         pipe = Fast.__new__(Fast)
         self.assertIs(super(RefusalReview, pipe)._check_output.__func__, Consensus._check_output)
         self.assertFalse(getattr(Fast, "hybrid_output", False))
+        self.assertEqual(ContextFast.unsupported_system, Pipeline.unsupported_system)
+        self.assertNotEqual(Fast.unsupported_system, Pipeline.unsupported_system)
 
     def test_endpoint_model_does_not_change_tutor_or_harmful_subtypes(self):
         pipe = Pipeline.__new__(Pipeline)

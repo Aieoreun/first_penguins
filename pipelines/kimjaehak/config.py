@@ -29,7 +29,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_learned_output_stronger", "jh_guard_category", "jh_context_grounding",
                               "jh_context_grounding_medium", "jh_hybrid_output",
                               "jh_refusal_review", "jh_hybrid_refusal", "jh_hybrid_refusal_broad",
-                              "jh_guard_fitted_hybrid", "jh_guard_fitted_fast")
+                              "jh_guard_fitted_hybrid", "jh_guard_fitted_fast", "jh_guard_fitted_contextfast")
 
 
 def configure():
