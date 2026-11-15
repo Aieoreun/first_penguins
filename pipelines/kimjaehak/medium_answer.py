@@ -19,7 +19,7 @@ class Pipeline(Candidate):
                 self.llm, self.answer_systems[state.label],
                 prompts.answer_user(self.searcher.section_text(state.section), state.history, state.last_user),
                 effort=self.stream_answer_effort, max_tokens=self.stream_answer_max_tokens,
-                timeout=self.stream_answer_timeout)
+                timeout=self.stream_answer_timeout, json_mode=False)
             text = _SECTION_MARK.sub("", text).strip()
             if not text:
                 raise ValueError("Empty answer")

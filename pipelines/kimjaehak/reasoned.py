@@ -9,13 +9,13 @@ from pipelines.v1.pipeline import _json_object
 from .calibrated import BLOCK_SYSTEM, Pipeline as Calibrated
 
 
-async def stream_text(llm, system, user, *, effort, max_tokens, timeout):
+async def stream_text(llm, system, user, *, effort, max_tokens, timeout, json_mode=True):
     async def consume():
         stream = await llm._chat.chat.completions.create(
             model=llm.model,
             messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             extra_body={"reasoning_effort": effort}, max_completion_tokens=max_tokens,
-            response_format={"type": "json_object"}, stream=True)
+            stream=True, **({"response_format": {"type": "json_object"}} if json_mode else {}))
         parts = []
         async with stream:
             async for chunk in stream:

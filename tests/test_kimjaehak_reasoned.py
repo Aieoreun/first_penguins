@@ -9,9 +9,10 @@ from tests.test_pipeline_v2 import SEARCHER
 
 
 class Stream:
-    def __init__(self, delay=0):
+    def __init__(self, delay=0, parts=None):
         self.delay = delay
         self.closed = False
+        self.parts = parts if parts is not None else ('{"category":', '"none"}')
 
     async def __aenter__(self):
         return self
@@ -22,7 +23,7 @@ class Stream:
     async def __aiter__(self):
         yield SimpleNamespace(choices=[])
         await asyncio.sleep(self.delay)
-        for content in ('{"category":', '"none"}'):
+        for content in self.parts:
             yield SimpleNamespace(choices=[SimpleNamespace(delta=SimpleNamespace(content=content))])
 
 
@@ -46,6 +47,16 @@ class StreamingTests(unittest.TestCase):
         self.assertEqual(calls[0]["extra_body"], {"reasoning_effort": "medium"})
         self.assertEqual(calls[0]["max_completion_tokens"], 4000)
         self.assertTrue(calls[0]["stream"])
+        self.assertEqual(calls[0]["response_format"], {"type": "json_object"})
+
+    def test_plain_answer_does_not_request_json_format(self):
+        stream, calls = Stream(parts=["수업 ", "설명입니다."]), []
+        result = asyncio.run(stream_text(self.llm(stream, calls), "system", "user",
+                                         effort="medium", max_tokens=4000,
+                                         timeout=1, json_mode=False))
+        self.assertEqual(result, "수업 설명입니다.")
+        self.assertNotIn("response_format", calls[0])
+        self.assertTrue(stream.closed)
 
     def test_timeout_covers_stream_body_and_closes_connection(self):
         stream = Stream(delay=0.1)
