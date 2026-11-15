@@ -4,7 +4,7 @@
 
 ## 현재 선택
 
-**공개 반복 평균 최고: `jh_learned_output5` / 내부 slots 64.** 전체 98.39 / 97.44, 평균 **97.915**. tutor 97.88 / 96.38, guard 98.90 / 98.51이다. 두 실행 모두 HTTP·형식·채점 오류 0. 수집 19.37 / 17.74초, p95 6.908 / 6.467초, 최대 11.493 / 14.511초. 내부 단계 실패는 4 / 1요청이다.
+**공개 반복 평균 최고: `jh_hybrid_output` / 내부 slots 64.** 전체 98.22 / 98.01, 평균 **98.115**. tutor 97.88 / 97.12, guard 98.56 / 98.90이다. 두 실행 모두 HTTP·형식·채점 오류 0. 수집 30.60 / 34.38초, p95 10.995 / 9.651초, 최대 17.420 / 20.014초. 내부 단계 실패는 2 / 3요청이며 요청 마감은 없다. 이전 빠른 후보 `jh_learned_output5`는 평균 97.915, 최대 11.493 / 14.511초였다.
 
 공개 category·tutor evidence·harmful action·guard unsupported 구절 라벨로 처음부터 학습한 분류기와 추출기를 포함한다. **이 점수는 학습 데이터 내 점수이며 비공개 성능이 아니다.** 질문→답 표, reference_answer 조회, 요청 ID 비교, 비공개 요청 저장·학습은 없다.
 
@@ -12,7 +12,7 @@
 
 - category TF-IDF + LogisticRegression C=1000 / 적용 확률 0.95, tutor 섹션 C=1000 / 0.98, harmful action C=1000 / 0.95. 불확실하면 LLM 분류로 복귀한다.
 - 일반 질문은 간결한 교재 답변, 교재 밖 질문은 짧은 확인 불가 안내, 유해 요청·발언은 대상에 맞춘 거절·예방 학습 안내. 거절 생성 실패는 고정 문구로 복귀한다.
-- 출력 근거는 원래 BM25 top1 + 대화 맥락. 5회 병렬 판정 중 서로 가장 일치하는 실제 판정 하나를 선택한다.
+- 출력 근거는 원래 BM25 top1 + 대화 맥락. low 5회 합의와 medium 1회 / 4000토큰 / 최대 20초를 병행한다. medium 성공 시 그 판정, 실패 시 완료된 low 합의를 선택한다. 실제 요청 마감까지 남은 시간에서 0.5초 여유를 둔다.
 - 문자 구절 추출기 C=100 / 모든 문자 최소 신뢰도 0.95. LLM이 찾은 오류와 겹칠 때만 경계를 보정하며 grounded·safe는 바꾸지 않는다.
 - safe는 승원 v4의 입력 판정 기반 규칙을 유지한다(allow이면 true, block이면 false). grounded는 별도 판정이다.
 - 요청 전체 26초, 준비 14초, 내부 동시성은 launcher에서 64로 지정한다.
@@ -45,8 +45,8 @@
 
 ```bash
 uv pip install --python .venv/bin/python -r requirements-jh-research.txt
-.venv/bin/python experiments/jh_server.py --variant jh_learned_output5 --request-slots 64 --port 8000
-.venv/bin/python experiments/jh_compare.py --name NEW_COMPARISON --variants jh_learned_output5 --repeat 2 --workers 64 --request-slots 64 --judge-workers 8
+.venv/bin/python experiments/jh_server.py --variant jh_hybrid_output --request-slots 64 --port 8000
+.venv/bin/python experiments/jh_compare.py --name NEW_COMPARISON --variants jh_hybrid_output --repeat 2 --workers 64 --request-slots 64 --judge-workers 8
 .venv/bin/python -m unittest discover -s tests -q
 ```
 
@@ -56,7 +56,7 @@ uv pip install --python .venv/bin/python -r requirements-jh-research.txt
 
 ## 기록과 복구
 
-`01_experiments.md`에 모든 차수의 가설·채택/제외 이유를 남겼다. `results.json`은 완료된 원본 공개 실행과 구성요소 진단을 scope별로 집계한다. 소규모 smoke, 판정 생략, guard-only, 구성요소, 공개 파생 점수를 원본 400 전체와 섞지 않는다. 별도 자료는 `transfer_results.json`, `kb_probe_results.json`, `novel_guard_results.json`, 각 `*_cv.json`을 본다.
+`01_experiments.md`에 모든 차수의 가설·채택/제외 이유를 남겼다. `results.json`은 완료된 원본 공개 실행과 구성요소 진단을 scope별로 집계한다. 소규모 smoke, 판정 생략, guard-only, 구성요소, 공개 파생 점수를 원본 400 전체와 섞지 않는다. 별도 자료는 `transfer_results.json`, `kb_probe_results.json`, `novel_guard_results.json`, `refusal_results.json`, 각 `*_cv.json`을 본다.
 
 응답·manifest·runtime·판정 체크포인트는 gitignore된 `experiments/.cache/jh_<실험>/`에 있다. 공개 자료와 제공 모델이 만든 파생 자료만 저장했다. 서버는 들어오는 요청·답변 본문을 저장하지 않는다.
 
@@ -72,6 +72,6 @@ uv pip install --python .venv/bin/python -r requirements-jh-research.txt
 
 ## 현재 진행
 
-C=3000을 구절 보정 조합에 적용한 후보와 /guard에서 불필요한 harmful request/speech 구분을 생략한 후보를 각 두 번 수집해 채점 중이다. 비교 조건과 사용자 상황을 구분한 추가 출력 원칙은 첫 고정 입력 비교에서 동률이었다. 빠른 입력 처리로 확보한 시간 안에서 medium 출력 1회 / 4000토큰 / 20초를 별도 진단 중이다.
+조건부 거절 재검사 `jh_hybrid_refusal_broad`와 /guard에만 C=3000을 적용한 `jh_guard_fitted_hybrid`의 전체 반복 평가를 진행 중이다. 전자의 별도 안전성 진단은 30건 정확도 0.90 대 기존 0.50이었다. 공개 원본 blocked 후보 19개는 거절 검사 표현에 해당하지 않아 이 진단이 원본 점수 개선의 증거는 아니다. 검사 조건에 걸리지 않는 안전한 힌트, 허용 입력에 섞인 위험한 후보까지 모두 해결한 것은 아니다.
 
-최근 전체 테스트 161개 통과 후 가드 전용 범주 경로와 공통 출력 호출의 관련 테스트도 통과했다. 주최측 평가기·SPEC·public·KB·core·기본 server는 그대로다. 사용량 마지막 조회 **17% 남음**. 15% 이하를 확인하면 새 실험을 멈추고 진행 중 채점, 코드·결과·인수인계·커밋을 마무리한다. 계정 사용량은 다른 작업과 공유된다. 이 문서는 아직 종료 보고가 아니다.
+최신 코드 관련 테스트 통과. 최근 전체 170개 통과 후 가드 전용 학습 경로 테스트 1개를 추가했다. 주최측 평가기·SPEC·public·KB·core·기본 server는 그대로다. 사용량 마지막 조회 **16% 남음**. 15% 이하를 확인하면 새 실험을 멈추고 진행 중 채점, 코드·결과·인수인계·커밋을 마무리한다. 계정 사용량은 다른 작업과 공유된다. 이 문서는 아직 종료 보고가 아니다.
