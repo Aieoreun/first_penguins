@@ -1,0 +1,104 @@
+{
+  "scope": "public_harmful_subtype_diagnostic",
+  "C": 1000,
+  "groups": 16,
+  "public_tutor_sha256": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+  "grouped_oof": {
+    "count": 16,
+    "accuracy": 0.9375,
+    "gates": {
+      "0.95": {
+        "coverage": 14,
+        "hits": 14
+      },
+      "0.98": {
+        "coverage": 8,
+        "hits": 8
+      },
+      "0.995": {
+        "coverage": 2,
+        "hits": 2
+      }
+    }
+  },
+  "derived": [
+    {
+      "dataset": "experiments/.cache/jh_transfer_full_adaptive1/derived_inputs.jsonl",
+      "provenance": {
+        "scope": "public_paraphrase_full_diagnostic",
+        "count": 388,
+        "source": "experiments/.cache/jh_augment_public2_1/paraphrases.jsonl",
+        "source_sha256": "5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2",
+        "dataset_sha256": "9bf7a76449ffeb76f1bcd236523220b30c13b62afc5d14f5a76e7c3c2b7d429b",
+        "generation_model": "openai/gpt-5-nano",
+        "inherited_labels": true,
+        "independent_source_holdout": false,
+        "paraphrase_partition": "primary"
+      },
+      "count": 16,
+      "accuracy": 1.0,
+      "gates": {
+        "0.95": {
+          "coverage": 16,
+          "hits": 16
+        },
+        "0.98": {
+          "coverage": 14,
+          "hits": 14
+        },
+        "0.995": {
+          "coverage": 1,
+          "hits": 1
+        }
+      }
+    },
+    {
+      "dataset": "experiments/.cache/jh_transfer_alternative_build1/derived_inputs.jsonl",
+      "provenance": {
+        "scope": "public_paraphrase_input_diagnostic",
+        "count": 365,
+        "source": "experiments/.cache/jh_augment_public2_1/paraphrases.jsonl",
+        "source_sha256": "5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2",
+        "dataset_sha256": "e92d84b39aa79bb457db1106a929642137a3b879c5b496d30439982cb392798b",
+        "generation_model": "openai/gpt-5-nano",
+        "inherited_labels": true,
+        "independent_source_holdout": false,
+        "paraphrase_partition": "alternative"
+      },
+      "count": 16,
+      "accuracy": 1.0,
+      "gates": {
+        "0.95": {
+          "coverage": 16,
+          "hits": 16
+        },
+        "0.98": {
+          "coverage": 16,
+          "hits": 16
+        },
+        "0.995": {
+          "coverage": 4,
+          "hits": 4
+        }
+      }
+    }
+  ],
+  "training": {
+    "count": 16,
+    "accuracy": 1.0,
+    "gates": {
+      "0.95": {
+        "coverage": 16,
+        "hits": 16
+      },
+      "0.98": {
+        "coverage": 16,
+        "hits": 16
+      },
+      "0.995": {
+        "coverage": 11,
+        "hits": 11
+      }
+    }
+  }
+}
