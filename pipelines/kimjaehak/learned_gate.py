@@ -58,3 +58,7 @@ class Pipeline(Adaptive):
 class Relaxed(Pipeline):
     """More public fitting; compare separately against grouped OOF diagnostics."""
     learned_gate_threshold = .98
+
+
+class Broad(Pipeline):
+    learned_gate_threshold = .95
