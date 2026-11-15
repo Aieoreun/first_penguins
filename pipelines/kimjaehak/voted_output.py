@@ -44,3 +44,7 @@ class Pipeline(Candidate):
         state.unsupported = (good[consensus_index(state.candidate_answer or "",
                              [trial.unsupported for trial in good])].unsupported if good else [])
         state.grounded = not state.unsupported
+
+
+class Five(Pipeline):
+    output_votes = 5

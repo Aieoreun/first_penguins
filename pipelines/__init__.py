@@ -65,8 +65,9 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.brief_policy").ClearScaffold
         if name == "jh_medium_answer":
             return importlib.import_module("pipelines.kimjaehak.medium_answer").Pipeline
-        if name == "jh_voted_output":
-            return importlib.import_module("pipelines.kimjaehak.voted_output").Pipeline
+        if name in {"jh_voted_output", "jh_voted_output5"}:
+            module = importlib.import_module("pipelines.kimjaehak.voted_output")
+            return module.Five if name.endswith("5") else module.Pipeline
         if name == "jh_uncertain_sources":
             return importlib.import_module("pipelines.kimjaehak.uncertain_sources").Pipeline
         if name in {"jh_context_policy", "jh_context_policy_voted"}:
