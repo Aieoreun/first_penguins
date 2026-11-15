@@ -34,7 +34,8 @@ def summarize(root=ROOT):
         requested = m["workers"]
         # Historical runs were made on this host, where the pool had 16 threads.
         effective = None if component else requested if transport == "explicit_worker_thread_pool" else min(16, requested)
-        trained = (m.get("effective_config") or {}).get("training_source") == "bundled_public_categories"
+        trained = bool((m.get("effective_config") or {}).get("training_source")
+                       or ((m.get("source_manifest") or {}).get("effective_config") or {}).get("training_source"))
         records.append({
             "run": str(run.relative_to(root)), "variant": m["variant"], "commit": m["commit"],
             "started_at": m.get("started_at"), "scoring_deferred": m.get("scoring_deferred", False),
