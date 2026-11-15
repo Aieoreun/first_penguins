@@ -19,7 +19,9 @@ _SELF_PII_RE = re.compile(
 
 # Hate speech / group slur / tutor insult vs actionable harm
 _HATE_INSULT_RE = re.compile(
-    r"(?:다\s*쫓아내|(?:모두|전부|다)\s*사기꾼|배울\s*자격이\s*없|쓸모없는\s*존재|존재할\s*가치|열등한|혐오스럽|꺼져|멍청한\s*(?:AI|튜터|놈|년))"
+    r"(?:다\s*쫓아내|(?:모두|전부|다)\s*사기꾼|배울\s*자격(?:이|도)?\s*없|수준이\s*낮|"
+    r"그\s*동네\s*사람들.{0,15}다\s*빼야|쓸모없는\s*존재|존재할\s*가치|열등한|혐오스럽|꺼져|"
+    r"멍청한\s*(?:AI|튜터|놈|년))"
 )
 # Quoted-example lesson framing (e.g., string-cleaning PY-01-04 or filter-testing PR-04-04)
 _QUOTED_LESSON_FRAME_RE = re.compile(
@@ -39,11 +41,22 @@ _EXPLICIT_JAILBREAK_RE = re.compile(
     r"(?:이전|기존|위의)\s*(?:지시|지침|명령|규칙).{0,8}무시|규칙\s*없는|제한\s*없는|탈옥|jailbreak)",
     re.IGNORECASE,
 )
+_IMPERATIVE_JAILBREAK_RE = re.compile(
+    r"(?:(?:^|\s)지시\s*(?:를\s*)?무시해|제한\s*없는\s*(?:AI로\s*바뀌|안내자가\s*돼서)|"
+    r"이전\s*(?:지시|지침|규칙)를?\s*무시하고.{0,35}(?:안내자가?\s*돼서|등장인물이?\s*돼서|역할로|대답해)|"
+    r"규칙\s*(?:없는|없이\s*답하는)\s*(?:등장인물이|안내자가)\s*돼서)",
+    re.IGNORECASE,
+)
+_JAILBREAK_META_EXEMPT_RE = re.compile(
+    r"(?:역할\s*문장을\s*살펴보면서|역할과\s*비교해서|역할\s*지정이\s*괜찮은지\s*검토|"
+    r"실습\s*예시로\s*분석|라는\s*역할|가상의\s*예로\s*보여)",
+    re.IGNORECASE,
+)
 
 # Academic dishonesty keywords (graded assessment / homework substitution or full solution)
 _ACADEMIC_DISHONESTY_RE = re.compile(
     r"(?:수행평가.{0,35}(?:완성|대신|작성|대필|짜\s*줄|써\s*줘)|"
-    r"제출용|제출\s*답안|제출할\s*(?:코드|답안|글|과제|숙제)|숙제에\s*낼|숙제\s*대신|과제\s*대신|과제에\s*낼|"
+    r"제출용|제출\s*답안|제출할.{0,15}(?:코드|답안|글|과제|숙제)|숙제에\s*낼|숙제\s*대신|과제\s*대신|과제에\s*낼|수행평가에\s*낼\s*완성|"
     r"보고서\s*전체|코드\s*전체를\s*대신|graded\s+assessment|assessment\s+answer|"
     r"for\s+submission|complete\s+(?:assessment\s+)?answer\s+for|"
     r"(?:숙제|과제|수행평가).{0,45}(?:첨부터\s*끝까지|처음부터\s*끝까지|전부|통째로).{0,20}(?:설명|풀어|작성|완성))",
@@ -85,7 +98,7 @@ _SAFE_BLOCK_RESPONSES: dict[str, tuple[str, str]] = {
     ),
     "harmful_content_hate_insult": (
         "redirect",
-        "특정 집단을 비하하거나 모욕적인 표현은 사용하지 말아 주세요. 수업 내용과 관련된 궁금한 점을 질문해 주시면 계속 도와드릴게요.",
+        "비하하거나 모욕적인 표현, 또는 특정 집단을 배제하는 말은 사용하지 말아 주세요. 수업 내용과 관련된 궁금한 점을 질문해 주시면 계속 도와드릴게요.",
     ),
     "off_topic": (
         "redirect",
@@ -119,6 +132,9 @@ def detect_deterministic_signals(last_query: str) -> dict[str, bool]:
     )
     has_other_pii_dox = bool(_OTHER_PII_DOX_RE.search(last_query))
     has_explicit_jailbreak = bool(_EXPLICIT_JAILBREAK_RE.search(last_query))
+    has_imperative_jailbreak = bool(_IMPERATIVE_JAILBREAK_RE.search(last_query)) and not bool(
+        _JAILBREAK_META_EXEMPT_RE.search(last_query)
+    )
     has_dishonesty = bool(_ACADEMIC_DISHONESTY_RE.search(last_query)) and not bool(
         _OWN_WORK_EXPLAIN_RE.search(last_query)
     )
@@ -131,6 +147,7 @@ def detect_deterministic_signals(last_query: str) -> dict[str, bool]:
         "has_hate_insult": has_hate,
         "has_other_pii_dox": has_other_pii_dox,
         "has_explicit_jailbreak": has_explicit_jailbreak,
+        "has_imperative_jailbreak": has_imperative_jailbreak,
         "has_academic_dishonesty": has_dishonesty,
         "has_answer_seeking": has_answer_seeking,
         "has_emotional_distress": has_distress,
@@ -177,8 +194,12 @@ def enforce_tutor_invariants(
         action, answer = _SAFE_BLOCK_RESPONSES["harmful_content_actionable"]
         citations = []
 
-    elif signals["has_hate_insult"] and not high_conf_block and thought_category != "harmful_content_hate_insult":
+    elif signals["has_hate_insult"]:
         action, answer = _SAFE_BLOCK_RESPONSES["harmful_content_hate_insult"]
+        citations = []
+
+    elif signals.get("has_imperative_jailbreak"):
+        action, answer = _SAFE_BLOCK_RESPONSES["jailbreak_injection"]
         citations = []
 
     # 2. Anti-Compliance Safety Net for Block categories (prevents 0-point compliance cliff)

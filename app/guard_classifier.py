@@ -44,7 +44,8 @@ _JAILBREAK_PATTERNS = (
     re.compile(r"system\s*prompt", re.IGNORECASE),
     re.compile(r"ignore\s+(?:all\s+)?(?:previous|prior|above)\s+instructions?", re.IGNORECASE),
     re.compile(r"(?:이전|기존|위의)\s*(?:지시|지침|명령|규칙)(?:을|를)?\s*(?:모두|싹|다)?\s*무시"),
-    re.compile(r"제한\s*없는\s*(?:ai|인공지능|모델|챗봇)", re.IGNORECASE),
+    re.compile(r"(?:^|\s)지시\s*(?:를\s*)?무시"),
+    re.compile(r"제한\s*없는\s*(?:ai|인공지능|모델|챗봇|안내자)", re.IGNORECASE),
     re.compile(r"(?:탈옥|jailbreak)", re.IGNORECASE),
     re.compile(r"\bDAN\b"),
     re.compile(r"(?:개발자\s*모드|developer\s*mode)", re.IGNORECASE),
@@ -55,12 +56,15 @@ _JAILBREAK_PATTERNS = (
 _META_DEFENSE_EDUCATIONAL_RE = re.compile(
     r"(?:울타리.*(?:어떻게|어케)\s*쓰는지|fence로\s*구분하는\s*방법|역할을\s*검토하면서|"
     r"역할\s*지정이\s*괜찮은지\s*검토|실습\s*예시로\s*분석|가상의\s*예로\s*보여|프롬프트\s*주입이\s*뭔지|"
-    r"역할과\s*비교해서.{0,25}설명을?해|역할과\s*비교해서.{0,25}맡길)",
+    r"역할과\s*비교해서.{0,25}설명을?해|역할과\s*비교해서.{0,25}맡길|"
+    r"역할\s*문장을\s*살펴보면서|원문을\s*요구하는\s*글에|의심\s*문장을\s*알릴\s*때\s*튜터가|이라는\s*역할|이\s*사례에서\s*숨겨진)",
     re.IGNORECASE,
 )
 _DIRECT_ATTACK_OVERRIDE_RE = re.compile(
     r"(?:(?:튜터의|네)\s*(?:숨겨진\s*지시|system\s*prompt)|너한테\s*적용|"
-    r"안내자가\s*돼서|AI가\s*돼서.{0,20}주제를\s*검토)",
+    r"(?:^|\s)지시\s*(?:를\s*)?무시해|제한\s*없는\s*(?:AI로\s*바뀌|안내자가\s*돼서)|"
+    r"이전\s*(?:지시|지침|규칙)를?\s*무시하고.{0,35}(?:안내자가?\s*돼서|등장인물이?\s*돼서|역할로|대답해)|"
+    r"규칙\s*(?:없는|없이\s*답하는)\s*(?:등장인물이|안내자가)\s*돼서)",
     re.IGNORECASE,
 )
 
@@ -508,6 +512,13 @@ class GuardClassifier:
             llm_res = await self._llm_classify(messages, similar_examples, query_text)
             if llm_res is not None:
                 llm_dec, llm_cat, _ = llm_res
+                if (
+                    llm_dec == "allow"
+                    and jb_boost
+                    and _DIRECT_ATTACK_OVERRIDE_RE.search(last_user)
+                    and not _META_DEFENSE_EDUCATIONAL_RE.search(last_user)
+                ):
+                    return "block", "jailbreak_injection", 0.96
                 if llm_dec == "block":
                     agreed = bool(jb_boost or cpu_decision == "block")
                     conf = 0.95 if agreed else 0.72
