@@ -84,6 +84,9 @@ def load(name: str = ""):
             return module.Reasoned if name.endswith("_medium") else module.Pipeline
         if name == "jh_hybrid_output":
             return importlib.import_module("pipelines.kimjaehak.hybrid_output").Pipeline
+        if name in {"jh_refusal_review", "jh_hybrid_refusal"}:
+            module = importlib.import_module("pipelines.kimjaehak.refusal_review")
+            return module.HybridPipeline if name == "jh_hybrid_refusal" else module.Pipeline
         if name in {"jh_context_output", "jh_context_output3"}:
             module = importlib.import_module("pipelines.kimjaehak.context_output")
             return module.ThreeSections if name.endswith("3") else module.Pipeline
