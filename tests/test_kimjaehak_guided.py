@@ -12,6 +12,20 @@ from tests.test_pipeline_v2 import SEARCHER, TOP1
 
 
 class GuidedTests(unittest.TestCase):
+    def test_v4_output_keeps_deadlines_generation_and_independent_safety(self):
+        from pipelines.kimjaehak.v4_output import Pipeline
+        from pipelines.v4.pipeline import Pipeline as V4
+        from pipelines.v2 import prompts as v2
+        self.assertIs(Pipeline.tutor, V4.tutor)
+        self.assertIs(Pipeline.guard, V4.guard)
+        self.assertIs(Pipeline.answer_systems, v2.ANSWER_SYSTEMS)
+        self.assertEqual(Pipeline.answer_effort, "low")
+        llm = FakeLLM({SAFE_SYSTEM: '{"safe":true}'})
+        state = PeaceState(messages=QUESTION, candidate_answer="거절합니다.", label=Label.HARMFUL_REQUEST)
+        asyncio.run(Pipeline(SEARCHER, llm)._check_output(state))
+        self.assertTrue(state.safe)
+        self.assertEqual(llm.calls, [SAFE_SYSTEM])
+
     def test_focus_places_actual_last_request_after_evidence(self):
         def reply(payload):
             obj = json.loads(payload)
