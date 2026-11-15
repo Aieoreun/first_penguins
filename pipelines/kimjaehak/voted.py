@@ -75,9 +75,12 @@ class Pipeline(Calibrated):
                        "model_section": material.get("section"),
                        "block_calls": len(blocks), "other_calls": len(others)}
 
+    def _new_state(self, body, guard):
+        return self.state_class.from_request(body)
+
     async def _run(self, body, guard):
         started = time.monotonic()
-        state = self.state_class.from_request(body)
+        state = self._new_state(body, guard)
         async def work():
             async with self._slots:
                 await self._prepare_within(state, extra=(state.candidate_answer or "") if guard else "")

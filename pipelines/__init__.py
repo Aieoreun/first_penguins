@@ -75,9 +75,10 @@ def load(name: str = ""):
         if name in {"jh_context_policy", "jh_context_policy_voted"}:
             module = importlib.import_module("pipelines.kimjaehak.context_policy")
             return module.WithVotedOutput if name.endswith("_voted") else module.Pipeline
-        if name in {"jh_learned_output", "jh_learned_output5"}:
+        if name in {"jh_learned_output", "jh_learned_output5", "jh_learned_output_stronger", "jh_guard_category"}:
             module = importlib.import_module("pipelines.kimjaehak.learned_output")
-            return module.Consensus if name.endswith("5") else module.Pipeline
+            return {"jh_learned_output":module.Pipeline, "jh_learned_output5":module.Consensus,
+                    "jh_learned_output_stronger":module.Stronger, "jh_guard_category":module.GuardCategory}[name]
         if name in {"jh_context_output", "jh_context_output3"}:
             module = importlib.import_module("pipelines.kimjaehak.context_output")
             return module.ThreeSections if name.endswith("3") else module.Pipeline
