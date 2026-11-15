@@ -1,8 +1,10 @@
 """Test a confidence-gated scratch classifier against recorded LLM predictions.
 
 Only public classification labels are used. This produces offline diagnostics,
-not a deployed model. Fold vocabularies and models never see their test rows.
+not model artifacts. Fold vocabularies and models never see their test rows;
+the public set has already been inspected during prompt development.
 """
+import argparse
 import hashlib
 import json
 import sys
@@ -21,7 +23,7 @@ from threadpoolctl import threadpool_limits
 BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off_topic"}
 
 
-def run():
+def run(source=None, exclude_harmful=False):
     paths = [ROOT / "public" / f"{e}.jsonl" for e in ("tutor", "guard")]
     rows = [p for path in paths for p in map(json.loads, path.read_text().splitlines())]
     texts = [next(m["content"] for m in reversed(p["messages"]) if m["role"] == "user") for p in rows]
@@ -41,7 +43,7 @@ def run():
                 groups[find(i)] = find(j)
     groups = [find(i) for i in range(size)]
     folds = list(StratifiedGroupKFold(5, shuffle=True, random_state=20261116).split(texts, y, groups))
-    source = ROOT / "experiments/.cache/jh_full_voted_true64/jh_voted_1/responses.jsonl"
+    source = source or ROOT / "experiments/.cache/jh_full_voted_true64/jh_voted_1/responses.jsonl"
     recorded = {r["id"]: r["response"] for r in map(json.loads, source.read_text().splitlines())}
     guard = np.array([p["endpoint"] == "guard" for p in rows])
     baseline = np.array([recorded[p["id"]]["input"]["category"] if p["endpoint"] == "guard" else "" for p in rows])
@@ -70,8 +72,12 @@ def run():
                   "training_accuracy": float(accuracy_score(y, train_prediction)), "gates": {}}
         for threshold in (.9, .95, .98, .995):
             mask = confidence >= threshold
+            if exclude_harmful:
+                mask &= predicted != "harmful_content"
             combined = np.where(mask, predicted, baseline)
             train_mask = train_probability.max(axis=1) >= threshold
+            if exclude_harmful:
+                train_mask &= train_prediction != "harmful_content"
             report["gates"][str(threshold)] = {
                 "oof_coverage": int(mask.sum()), "oof_selected_accuracy": float(accuracy_score(y[mask], predicted[mask])) if mask.any() else None,
                 "guard_replacements": int((guard & mask & (predicted != baseline)).sum()),
@@ -80,14 +86,23 @@ def run():
         reports.append(report)
         print(json.dumps(report), flush=True)
     return {"scope": "public_grouped_oof_gate_diagnostic", "groups": len(set(groups)),
+            "exclude_harmful": exclude_harmful,
             "baseline": metrics(baseline), "source": str(source.relative_to(ROOT)),
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
             "public_hashes": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}, "reports": reports}
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path)
+    parser.add_argument("--exclude-harmful", action="store_true")
+    parser.add_argument("--output", type=Path, default=ROOT / "experiments/.cache/jh_gate_cv")
+    args = parser.parse_args()
+    source = args.source.resolve() if args.source else None
+    if source and not source.is_relative_to(ROOT / "experiments/.cache"):
+        parser.error("Only local public recordings are supported")
     with threadpool_limits(limits=1):
-        data = run()
-    dest = ROOT / "experiments/.cache/jh_gate_cv"
+        data = run(source, args.exclude_harmful)
+    dest = args.output
     dest.mkdir(exist_ok=True)
     (dest / "result.json").write_text(json.dumps(data, indent=2) + "\n")
