@@ -9,6 +9,7 @@ import hashlib
 import json
 import re
 import sys
+import subprocess
 import unicodedata
 from pathlib import Path
 
@@ -51,12 +52,14 @@ def run(source=None, exclude_harmful=False, augmentation=None):
             raw_examples += len(values)
             # Remove punctuation-only copies of any public original, not just
             # the source, before defining validation folds.
-            augmented[row["source_id"]] = [text for text in values if normalized(text) not in originals]
+            augmented[row["source_id"]] = [text for text in values if normalized(text) not in originals] \
+                if row["category"] != "low_signal_input" else []
         if set(augmented) != set(metadata["source_ids"]):
             raise ValueError("Augmentation collection is incomplete")
         augmentation_meta = {"path":str(augmentation.relative_to(ROOT)),
             "sha256":hashlib.sha256(augmentation.read_bytes()).hexdigest(),"model":metadata["model"],
-            "examples":sum(map(len,augmented.values())),"raw_examples":raw_examples,"sample_weight":.5}
+            "examples":sum(map(len,augmented.values())),"raw_examples":raw_examples,"sample_weight":.5,
+            "excluded_categories":["low_signal_input"]}
     size = len(rows)
     groups = list(range(size))
     def find(i):
@@ -134,6 +137,7 @@ def run(source=None, exclude_harmful=False, augmentation=None):
         reports.append(report)
         print(json.dumps(report), flush=True)
     return {"scope": "public_grouped_oof_gate_diagnostic", "groups": len(set(groups)),
+            "analysis_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
             "exclude_harmful": exclude_harmful,
             "augmentation":augmentation_meta,
             "baseline": metrics(baseline), "source": str(source.relative_to(ROOT)),
