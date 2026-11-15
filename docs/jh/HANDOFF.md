@@ -1,70 +1,67 @@
 # 김재학 실험 인수인계 — 진행 중
 
-2026-11-16 KST. 브랜치 `experiment/kimjaehak`. 아직 후속 실험 중이며 최종 선택 문서는 갱신 예정이다.
+2026-11-16 KST. 브랜치 `experiment/kimjaehak`, 기준 커밋 `6ec111d`(승원). 후속 실험을 진행 중이며 아래 수치는 완료된 실행만 포함한다. 원격 push나 공식 비공개 평가 제출은 하지 않았다.
 
-## 현재 확인한 최고 전체 점수
+## 현재 선택
 
-**새 공개 최고 관측값은 `jh_learned_gate95`의 94.52 (tutor 93.12 / guard 95.91)**이다. 공개 범주 라벨로 처음부터 학습한 분류기이므로 이 값은 학습 데이터 내 점수다. grouped OOF 분류기를 기존 adaptive 예측에 결합하면 guard F1은 0.9000→0.8908, tutor action은 0.875→0.890으로 상충한다. 비공개 개선을 확인한 값이 아니다. `learned_cv.json`과 실험 기록 8차에 조건을 기록했다. 적용 기준 0.995는 90.44, 0.98은 92.73이었다. 학습 후보는 `requirements-jh-research.txt` 의존성이 필요하다.
+반복 확인된 공개 최고 후보는 **`jh_learned_sections_tutor` / 내부 slots 64**다. 공개 400문항 전체 점수 **95.26 / 95.78, 평균 95.52**다. 두 번째 실행은 tutor 95.50 / guard 96.05, 수집 23.12초, 요청 p95 7.452초 / 최대 11.215초, HTTP·형식·채점·내부 단계 오류 모두 0이었다.
 
-현재 반복 검증된 후보는 **jh_voted / 내부 slots 32**와 **jh_adaptive / 내부 slots 64**다. 실제 HTTP 동시성 64, 공개 400문항 전체 평가에서 voted는 **89.30 / 88.78 (평균 89.04)**, adaptive는 **89.72 / 88.19 (평균 88.96)**다. 단일 최고점은 adaptive지만 평균 점수 차이는 작고, adaptive의 수집 시간은 54~60초로 voted / slots 32의 89~95초보다 짧았다. 원본 평가기 및 모델 판정을 사용한 로컬 점수이며 비공개 공식 점수가 아니다. 최초 v2 기준선은 82.20이다. 후보별 결과는 `01_experiments.md`, 집계는 `results.json`, 초기 네 버전의 고정 기록은 `01_four_way.json`에 있다.
+이 후보는 공개 category와 tutor evidence 라벨로 처음부터 학습한 TF-IDF + LogisticRegression 분류기를 포함한다. **위 점수는 학습 데이터 내 점수이며 비공개 성능이 아니다.** 질문→답 표, reference_answer 조회, 요청 ID 비교, 비공개 요청 저장·학습은 없다. 입력 분류 확률 기준은 0.95, 튜터 섹션 선택은 0.98이다. 낮은 확률과 harmful_content는 LLM adaptive 파이프라인으로 보낸다. candidate_answer가 있는 가드 출력 검사는 기존 BM25 섹션을 사용한다.
 
-초기 네 버전은 모두 유지한다. Peace 원본 단순 교체는 77.25 / 81.03 / 77.64로 기준선을 넘지 못했다. `.env`는 출력·커밋하지 않았고, 주최측 평가 코드·SPEC·KB·public은 변경하지 않았다.
+공개 라벨로 학습하지 않는 대안은 `jh_adaptive` / slots 64이다. 전체 **89.72 / 88.19, 평균 88.96**, 수집 54~60초다. `jh_voted` / slots 32는 **89.30 / 88.78, 평균 89.04**지만 수집 89~95초였다. 양쪽 모두 공개 프롬프트 튜닝을 거쳤다.
 
-## 재현
+## 최초 네 가지 비교
 
-프로젝트 루트에서 실행한다. `.venv`와 사용자 공통 `.env`를 그대로 사용한다.
+| 버전 | 전체 | tutor | guard |
+|---|---:|---:|---:|
+| 승원 v2 기준선 | 82.20 | 80.12 | 84.28 |
+| Peace 입력만 | 77.25 | 73.38 | 81.12 |
+| Peace 출력만 | 81.03 | 80.62 | 81.45 |
+| Peace 둘 다 | 77.64 | 74.44 | 80.84 |
+
+네 비교군은 동일 HTTP 동시성 16으로 측정했고 그대로 유지한다. Peace 단순 교체는 개선되지 않았다. 후속 후보는 Peace의 실제 요청 의도 판정 기준을 반영하고, 짧은 분류의 선택적 다수결·요청 마감·고신뢰 학습 분류를 조합했다. 전체 기록은 `01_experiments.md`, 완료된 공개 실행 집계는 `results.json`, 최초 네 결과는 `01_four_way.json`에 있다.
+
+## 일반화에 관한 증거와 한계
+
+- 원본 유사 문항을 묶은 category 분류기 OOF 정확도는 74.25%다. 기준 0.95의 OOF 예측을 기존 adaptive 결과에 결합하면 guard F1 0.9000→0.8908, tutor action 0.875→0.890으로 상충한다. `learned_cv.json` 참조.
+- 섹션 분류기 OOF 단독 적중은 47/119로 BM25 108/119보다 낮다. 기준 0.98을 통과한 OOF 질문은 없어 결합 결과는 BM25와 같았다. `section_cv.json` 참조.
+- 제공 모델로 만든 공개 표현 변형 388건의 실제 HTTP 입력 진단에서는 adaptive F1 0.9038→learned_gate95 0.9694, 과잉 차단 15→2로 개선됐다. 라벨은 학습한 원본에서 상속했으므로 독립 holdout은 아니다. 변형의 의미가 달라졌을 가능성도 있다. `transfer_results.json` 참조.
+- 변형으로 추가 학습하는 증강은 grouped OOF를 악화시켜 미채택이다. 생성 데이터는 배포 분류기 학습에 쓰지 않는다. `augmented_cv.json` 참조.
+- KB만으로 생성한 검색 질문 261개는 보조 색인 후보다. 전체 실행은 비학습 89.37, 학습 결합 95.13으로 기존 반복 최고를 넘었다고 판단할 수 없다. `kb_expansion_grid.json` 참조.
+
+## 실행
+
+프로젝트 루트의 기존 `.venv`와 공통 `.env`를 사용한다. 학습 후보에는 `requirements-jh-research.txt`가 필요하다.
 
 ```bash
-.venv/bin/python experiments/jh_server.py --variant jh_voted --port 8000
-.venv/bin/python experiments/jh_compare.py --name voted_repeat_NEW --variants jh_voted --workers 64 --judge-workers 8
-.venv/bin/python experiments/jh_compare.py --name v4_repeat_NEW --variants v4 --workers 16 --judge-workers 8
-.venv/bin/python experiments/jh_compare.py --name load64_NEW --variants v4 --workers 64 --no-judge
+uv pip install --python .venv/bin/python -r requirements-jh-research.txt
+.venv/bin/python experiments/jh_server.py --variant jh_learned_sections_tutor --request-slots 64 --port 8000
+.venv/bin/python experiments/jh_compare.py --name learned_tutor_NEW --variants jh_learned_sections_tutor --workers 64 --request-slots 64 --judge-workers 8
 .venv/bin/python -m unittest discover -s tests -q
 ```
 
-`--name`은 중복되면 중단한다. 외부 런박스에 열 때만 서버에 `--host 0.0.0.0`을 추가한다. 기본 서버 `server.py`를 직접 실행하면 `.env` 자동 로드나 후보 선택이 적용되지 않으니 실험 launcher를 사용한다.
+실험 이름은 새 이름을 쓴다. `--workers`는 HTTP 클라이언트 동시성, `--request-slots`는 서버 내부 동시성이다. 내부 기본값 32와 구별해야 한다. 런박스 외부 연결이 필요할 때만 launcher에 `--host 0.0.0.0`을 추가한다. 기본 `server.py`는 변경하지 않았으므로 후보 선택과 `.env` 로딩에는 실험 launcher를 쓴다.
 
-`.env` 사용 변수: `OPENAI_BASE_URL`, `OPENAI_MODEL`, `OPENAI_API_KEY`, `TEAM_TOKEN`. 현재 임베딩은 사용할 수 없어 모든 비교는 BM25-only다. 같은 API 주소의 허용 임베딩 식별자 두 개는 404였고 임의 외부 주소를 사용하지 않았다.
+`.env` 변수는 `OPENAI_BASE_URL`, `OPENAI_MODEL`, `OPENAI_API_KEY`, `TEAM_TOKEN`이다. 값은 출력·커밋하지 않았다. 같은 API 주소의 허용 임베딩 식별자 두 개가 404여서 모든 비교는 BM25-only다. 임의 외부 API는 사용하지 않았다. 비스트리밍 completion 한도는 2000이며 원본 판정기는 streaming 4000 그대로다.
 
-검증 환경: Python 3.12.13, openai 3.51.0, httpx2 2.16.0, fastapi 0.163.1, uvicorn 0.54.0, pydantic 2.14.3, python-dotenv 1.2.4. 설치 입력은 `requirements-jh.txt`다.
+## 기록·복구
 
-프록시의 비스트리밍 completion 한도는 2000이다. 원본 판정기는 streaming 4000을 사용하며 그대로 둔다.
-
-## 기록과 복구
-
-- `experiments/.cache/jh_<실험명>/<variant>_1/`에 공개 응답, 원본 점수, 메타데이터, 서버 단계 오류, 판정 체크포인트가 있다. gitignore된 로컬 자료다.
-- 공개 응답 수집이 끝나고 채점만 중단됐으면 `experiments/jh_resume_score.py <실행 폴더>`로 재개한다. 평가기 해시·모델·ID·문항 수를 확인하며 완성된 결과를 덮어쓰지 않는다.
-- `--endpoints guard`는 200문항 가드 진단이다. 그 실행의 total을 전체 점수로 인용하지 않는다.
-- `experiments/jh_output_replay.py`는 기존 **자체 입력 예측**을 고정한 출력 구성요소 진단이다. 정답 라벨을 파이프라인 상태로 쓰지 않는다. HTTP·부하·전체 점수 검증을 대체하지 않는다.
-- `5426530` 이후 manifest에 실제 상속 설정과 프롬프트 해시를 기록한다. 그 이전 v4 manifest의 `pinned_v2` 표기는 실제 클래스 override를 나타내지 않는다. 상세 정정은 실험 기록에 있다.
-
-## 남은 검증
-
-짧은 분류만 세 번 투표하는 `jh_voted`는 무거운 material을 한 번만 부르고 내부 동시 요청 32개, 대기 포함 26초 제한을 쓴다. 실제 동시성 64의 두 실행은 HTTP·형식·채점 오류 0, 최대 지연 24.897 / 25.309초였다. material timeout/parse는 각각 9 / 8요청에 발생했으나 정상 형식 fallback을 반환했다.
-
-첫 voted 64 부하 실험의 87.19는 클라이언트 기본 풀이 16개라 실제 64개를 보내지 못했다. `305ea02`에서 수정했고 기록을 보존한다. 기존 workers 16 비교에는 영향이 없다.
-
-`jh_reasoned`·`jh_explicit`·`jh_diverse`·`jh_multiground`·`jh_material_review`·`jh_block5`·`jh_unanimous`·`jh_token_output`는 현재까지 미채택이다. 세 섹션 중 근거를 고르게 한 multiground는 전체 87.61, 전원 일치 차단은 전체 86.51이었다. 세부 실패·점수는 실험 기록에 모두 남긴다.
-
-`jh_adaptive`는 결과를 바꿀 수 없는 세 번째 투표를 생략한다. 전체 88.59 (87.38 / 89.79), 내부 실패 15요청이었다. 지연 변동을 줄여 비교하기 위해 같은 시점의 부하 비교를 진행한다. `jh_adaptive_thin`은 교재 판정에만 검색 조각 5개를 제공하는 후보다. `jh_reconsider`와 `jh_medium_output`도 아직 진단을 마치지 않았다.
-
-같은 시점의 네 부하 조건은 모두 채점 완료했다. adaptive / slots 32는 86.81, adaptive / slots 64는 89.72, adaptive_thin / slots 64는 87.22, voted / slots 64는 88.41이다. adaptive / slots 64의 새 반복은 88.19, adaptive_unanimous / slots 64는 88.17, adaptive_explicit / slots 64는 88.78이었다.
+응답·manifest·runtime·판정 체크포인트는 gitignore된 `experiments/.cache/jh_<이름>/<variant>_1/`에 남아 있다. 공개 자료와 제공 모델의 공개·KB 파생 자료만 저장한다. 서버는 들어오는 요청 본문을 저장하지 않는다.
 
 ```bash
-.venv/bin/python experiments/jh_server.py --variant jh_adaptive --request-slots 64 --port 8000
-.venv/bin/python experiments/jh_compare.py --name adaptive_NEW --variants jh_adaptive --request-slots 64 --workers 64 --judge-workers 8
+.venv/bin/python experiments/jh_resume_score.py experiments/.cache/jh_RUN/VARIANT_1
+.venv/bin/python experiments/jh_resume_transfer.py experiments/.cache/jh_TRANSFER/VARIANT_1
+.venv/bin/python experiments/jh_summarize.py
 ```
 
-`--request-slots`는 서버 내부 동시성이다. `--workers`는 HTTP 클라이언트 동시성이며 서로 다르다. 기본값은 여전히 32이므로 adaptive의 위 결과를 재현하려면 64를 명시한다. 아직 점수가 없는 후보를 최종 선택으로 취급하지 않는다.
+첫 명령은 원래 공개 400문항, 두 번째는 공개 파생 전체 진단용이다. 평가기·모델·데이터 해시와 수집 완료를 검증하며 완료된 결과를 덮어쓰지 않는다. 채점 중단 재개는 같은 호출의 체크포인트만 사용한다. 좋은 점수가 나올 때까지 같은 응답을 재채점하지 않는다.
 
-차단 후 재검토는 guard 이진 F1 0.90→0.8317로 악화돼 미채택이다. medium 출력 검사도 고정 입력 guard 88.48→87.26, 내부 실패 14요청으로 미채택이다. 다음 준비 후보는 `jh_brief_material`(검색 문맥은 유지하고 교재 판정 출력만 축소)과 `jh_concise_answer`(일반 답변의 사실 누락·불필요한 추측 완화)다. 아직 실제 API 실험 전이다.
+초기 `full_voted_64`는 executor 문제로 실제 HTTP 16이었다. `305ea02`에서 수정했다. manifest의 `http_transport=explicit_worker_thread_pool` 이후 64 실행은 실제 HTTP 64다. 기존 HTTP 16 비교에는 영향이 없다. `--no-judge`, guard-only, 출력 구성요소 진단, 공개 파생 점수를 전체 원본 400점수와 섞지 않는다.
 
-출력 구성요소 비교와 공개 예시 참고, 자체 분류기 교차검증은 유의미한 우위를 확인하지 못했다. `jh_compact`의 짧은 오류 구절 추출은 같은 입력의 v4 88.48 대비 88.87이었으나 반복 확인 전이다. 자체 분류기는 학습 문항 100%까지 적합되더라도 grouped OOF 약 74%였으며, 확신이 높은 경우에만 사용해도 기존 LLM과 결합한 입력 점수가 개선되지 않아 배포하지 않았다. 선택 의존성 `requirements-jh-research.txt`와 `jh_classical_cv.py`, `jh_gate_cv.py`로 재현한다.
+## 현재 진행·다음 판단
 
-새 후보도 전체 400문항, 반복 실행, 실제 HTTP 동시성 64에서 확인해야 한다. 1점 안팎의 차이는 모델 변동일 수 있다. 공식 비공개 평가는 제출하지 않았다. 현재 테스트 130개 통과.
+`jh_learned_sections_tutor95`는 섹션 기준만 0.95로 낮춘 후보다. 원본 400문항과 공개 파생 388문항 전체 응답을 수집했고 채점 중이다. 파생 baseline은 adaptive다. 다른 표현의 오프라인 섹션 진단은 0.98보다 각각 1건 좋아졌지만 전체 점수로 확인해야 한다.
 
-현재 추가 수집한 `jh_learned_sections64`, `jh_learned_sections_all64`, `jh_learned_gate95_64_repeat`와 수집 중인 `jh_learned_sections_tutor64`는 아직 채점 전이다. 모두 `jh_resume_score.py`로 원본 채점해야 한다. 섹션 학습도 공개 evidence 라벨을 사용한 in-sample 후보이고, `section_cv.json`은 별도 일반화 진단이다.
+`jh_concise_fitted`, `jh_evidence_answer`는 가장 좋은 입력·검색 구성을 고정한 답변 생성 비교다. 코드와 144개 테스트를 커밋했고 API 실험은 아직 시작하지 않았다. 주최측 평가기, SPEC, public, KB, core와 기본 server는 그대로 유지한다.
 
-`jh_augment_public.py`는 운영진 제공 모델로만 공개 질문의 표현 변형을 생성한다. 원본 ID를 보존해 교차검증에서 원본과 변형이 다른 fold로 나뉘지 않게 한다. 아직 실제 생성·학습에 쓰기 전이다.
-
-Codex 잔여 사용량 15% 이하를 확인하면 새 실험을 시작하지 않고 진행 중 결과·코드·이 문서를 정리해 커밋한다. 마지막 조회는 잔여 25%였다. 원격 push는 하지 않았다.
+사용량은 마지막 조회 기준 **23% 남음**이다. 15% 이하를 확인하면 새 실험을 중단하고 진행 중 채점·결과·인수인계를 마무리해 커밋한다. 계정 사용량은 다른 작업과 공유된다. 현재 문서는 종료 보고가 아니다.

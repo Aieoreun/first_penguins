@@ -1,0 +1,175 @@
+{
+  "scope": "public_derived_diagnostics",
+  "independent_source_holdout": false,
+  "warning": "Labels inherited from seen public parents. Paraphrase meaning may drift. Not private or independent validation. No derived examples used in deployed classifier training.",
+  "runs": [
+    {
+      "scope": "public_paraphrase_input_diagnostic",
+      "count": 388,
+      "source": "experiments/.cache/jh_augment_public2_1/paraphrases.jsonl",
+      "source_sha256": "5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2",
+      "dataset_sha256": "adfc9ba4b5caccbe87789b59d1c7beccb5f1e64be6ef72ca6339d4e0df7213d0",
+      "generation_model": "openai/gpt-5-nano",
+      "inherited_labels": true,
+      "independent_source_holdout": false,
+      "variant": "jh_adaptive",
+      "invalid": 0,
+      "input_metrics": {
+        "block_f1": 0.9038461538461539,
+        "category_accuracy": 0.9034,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 15,
+        "missed_block": 5,
+        "confusion": {
+          "normal -> normal": 174,
+          "normal -> out_of_material": 15,
+          "harmful_content -> harmful_content": 40,
+          "jailbreak_injection -> jailbreak_injection": 30,
+          "normal -> jailbreak_injection": 8,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> pii_disclosure": 16,
+          "academic_dishonesty -> answer_seeking": 1,
+          "emotional_distress -> emotional_distress": 13,
+          "answer_seeking -> answer_seeking": 12,
+          "pii_disclosure -> normal": 2,
+          "normal -> answer_seeking": 6,
+          "normal -> emotional_distress": 2,
+          "academic_dishonesty -> academic_dishonesty": 13,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> normal": 8,
+          "out_of_material -> out_of_material": 24,
+          "normal -> harmful_content": 4,
+          "off_topic -> out_of_material": 1,
+          "normal -> off_topic": 2,
+          "academic_dishonesty -> normal": 1,
+          "pii_disclosure -> out_of_material": 2,
+          "jailbreak_injection -> normal": 1,
+          "normal -> academic_dishonesty": 1
+        }
+      },
+      "runtime": {
+        "collect_seconds": 38.2,
+        "p50": 5.0184999999999995,
+        "p95": 9.069,
+        "max": 10.26,
+        "http_errors": 0,
+        "stage_failure_requests": 15,
+        "stage_errors": {
+          "material:TimeoutError": 11,
+          "material:parse": 4
+        }
+      },
+      "artifact": "experiments/.cache/jh_transfer_adaptive1/jh_adaptive_1/diagnostic.json"
+    },
+    {
+      "scope": "public_paraphrase_input_diagnostic",
+      "count": 388,
+      "source": "experiments/.cache/jh_augment_public2_1/paraphrases.jsonl",
+      "source_sha256": "5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2",
+      "dataset_sha256": "adfc9ba4b5caccbe87789b59d1c7beccb5f1e64be6ef72ca6339d4e0df7213d0",
+      "generation_model": "openai/gpt-5-nano",
+      "inherited_labels": true,
+      "independent_source_holdout": false,
+      "variant": "jh_learned_gate95",
+      "invalid": 0,
+      "input_metrics": {
+        "block_f1": 0.9693877551020408,
+        "category_accuracy": 0.9318,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 2,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 205,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 31,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "off_topic -> off_topic": 10,
+          "out_of_material -> out_of_material": 27,
+          "out_of_material -> normal": 5,
+          "off_topic -> out_of_material": 2,
+          "normal -> out_of_material": 5,
+          "answer_seeking -> normal": 1,
+          "normal -> jailbreak_injection": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "runtime": {
+        "collect_seconds": 19.57,
+        "p50": 0.113,
+        "p95": 8.895,
+        "max": 10.156,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "material:TimeoutError": 5
+        }
+      },
+      "artifact": "experiments/.cache/jh_transfer_learned95_1/jh_learned_gate95_1/diagnostic.json"
+    },
+    {
+      "scope": "public_derived_section_transfer",
+      "independent_source_holdout": false,
+      "partition": "primary",
+      "count": 119,
+      "source_sha256": "adfc9ba4b5caccbe87789b59d1c7beccb5f1e64be6ef72ca6339d4e0df7213d0",
+      "training_source_sha256": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+      "bm25_hits": 109,
+      "expanded_hits": 109,
+      "gates": {
+        "0.95": {
+          "coverage": 78,
+          "selected_hits": 78,
+          "combined_hits": 114
+        },
+        "0.98": {
+          "coverage": 54,
+          "selected_hits": 54,
+          "combined_hits": 113
+        },
+        "0.995": {
+          "coverage": 10,
+          "selected_hits": 10,
+          "combined_hits": 109
+        }
+      },
+      "artifact": "experiments/.cache/jh_transfer_build1/section_diagnostic.json"
+    },
+    {
+      "scope": "public_derived_section_transfer",
+      "independent_source_holdout": false,
+      "partition": "alternative",
+      "count": 112,
+      "source_sha256": "e92d84b39aa79bb457db1106a929642137a3b879c5b496d30439982cb392798b",
+      "training_source_sha256": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+      "bm25_hits": 102,
+      "expanded_hits": 104,
+      "gates": {
+        "0.95": {
+          "coverage": 75,
+          "selected_hits": 75,
+          "combined_hits": 108
+        },
+        "0.98": {
+          "coverage": 52,
+          "selected_hits": 52,
+          "combined_hits": 107
+        },
+        "0.995": {
+          "coverage": 10,
+          "selected_hits": 10,
+          "combined_hits": 103
+        }
+      },
+      "artifact": "experiments/.cache/jh_transfer_alternative_build1/section_diagnostic.json"
+    }
+  ]
+}
