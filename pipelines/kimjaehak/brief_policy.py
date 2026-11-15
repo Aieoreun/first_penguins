@@ -24,3 +24,16 @@ class Pipeline(Candidate):
     async def tutor(self, body):
         state = await super().tutor(body)
         return BriefState(**vars(state))
+
+
+class ClearScaffold(Pipeline):
+    fixed_academic_scaffold = True
+
+    async def _generate(self, state):
+        if state.label is Label.ACADEMIC_DISHONESTY:
+            state.answer = ("제출할 답안을 대신 완성해 드릴 수는 없어요. 먼저 자료에서 필요한 개념을 찾고, "
+                            "문제의 조건과 풀이 순서를 직접 정리해 보세요. 작성한 풀이를 보내주시면 "
+                            "어떤 부분을 고치면 좋을지 함께 살펴볼게요.")
+            state.citations = []
+            return
+        await super()._generate(state)
