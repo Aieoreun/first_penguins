@@ -174,7 +174,8 @@ def run_variant(args, variant, repetition, items, root):
         "endpoints": args.endpoints,
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
-        "model": os.environ["OPENAI_MODEL"], "pinned_v2": BASELINE_ENV,
+        "model": os.environ["OPENAI_MODEL"],
+        "pinned_v2": BASELINE_ENV if variant.startswith("jh_") else None,
         "embedding_configured": bool(os.environ.get("EMBEDDING_BASE_URL") and os.environ.get("EMBEDDING_MODEL")),
         "evaluator_hashes": evaluator_hashes(),
     }
@@ -195,7 +196,12 @@ def run_variant(args, variant, repetition, items, root):
             except subprocess.TimeoutExpired:
                 proc.kill(); proc.wait()
     secs = sorted(r["seconds"] for r in rows)
-    errors = re.findall(r"errors=([^\s]+)", (dest / "server.log").read_text())
+    server_log = (dest / "server.log").read_text()
+    errors = re.findall(r"errors=([^\s]+)", server_log)
+    for line in server_log.splitlines():
+        if line.startswith("EXPERIMENT_CONFIG "):
+            manifest["effective_config"] = json.loads(line.removeprefix("EXPERIMENT_CONFIG "))
+    (dest / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
     runtime = {"collect_seconds": collect_seconds, "p50": statistics.median(secs),
         "p95": secs[min(len(secs)-1, int(len(secs)*0.95))], "max": max(secs),
         "http_errors": sum(bool(r["error"]) for r in rows),
