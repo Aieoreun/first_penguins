@@ -21,6 +21,7 @@ class Pipeline(Calibrated):
     deadline = 26
     short_votes = 3
     other_vote_count = None  # None preserves the same count as block votes.
+    block_min_votes = 1
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
@@ -54,7 +55,10 @@ class Pipeline(Calibrated):
         other_votes = [x["category"] for x in others
                        if isinstance(x.get("category"), str) and x["category"] in OTHERS]
         personal = [x["self_info"] for x in others if isinstance(x.get("self_info"), bool)]
-        flags = {_majority(block_votes) or "none": True, _majority(other_votes) or "none": True,
+        block = _majority(block_votes) or "none"
+        if block != "none" and block_votes.count(block) < self.block_min_votes:
+            block = "none"
+        flags = {block: True, _majority(other_votes) or "none": True,
                  "self_info": bool(_majority(personal)),
                  "out_of_material": isinstance(material.get("quote"), str) and not material["quote"].strip()}
         state.label = next((label for key, label in _priority(self.seek_first) if flags.get(key)), Label.NORMAL)

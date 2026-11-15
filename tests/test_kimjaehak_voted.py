@@ -93,6 +93,26 @@ class VotedTests(unittest.TestCase):
         self.assertIn("request:Deadline", state.errors)
         self.assertFalse(state.to_guard_response()["output"]["safe"])
 
+    def test_unanimous_candidate_requires_three_matching_valid_block_votes(self):
+        from pipelines.kimjaehak.unanimous import Pipeline as Unanimous
+        class SplitLLM(FakeLLM):
+            count = 0
+            async def chat(self, system, user, **kwargs):
+                if system == BLOCK_SYSTEM:
+                    self.calls.append(system)
+                    self.count += 1
+                    return '{"category":"none"}' if self.count == 3 else '{"category":"harmful_request"}'
+                return await super().chat(system, user, **kwargs)
+        llm = SplitLLM({prompts.OTHER_SYSTEM:NONE_OTHER, prompts.MATERIAL_SYSTEM:FOUND})
+        state = asyncio.run(Unanimous(SEARCHER, llm).guard({"messages":QUESTION}))
+        self.assertEqual(state.label, Label.NORMAL)
+        self.assertEqual(state.errors, [])
+        self.assertEqual(len(llm.calls), 7)
+        llm = FakeLLM({BLOCK_SYSTEM:'{"category":"harmful_request"}', prompts.OTHER_SYSTEM:NONE_OTHER,
+                       prompts.MATERIAL_SYSTEM:FOUND})
+        state = asyncio.run(Unanimous(SEARCHER, llm).guard({"messages":QUESTION}))
+        self.assertEqual(state.label, Label.HARMFUL_REQUEST)
+
 
 if __name__ == "__main__":
     unittest.main()
