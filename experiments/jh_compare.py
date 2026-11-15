@@ -11,7 +11,6 @@ import json
 import os
 import random
 import re
-import signal
 import socket
 import statistics
 import subprocess
@@ -73,7 +72,8 @@ async def collect(items, port, token, workers, dest):
                 start = time.monotonic()
                 err, response = None, None
                 try:
-                    response = await asyncio.to_thread(post, port, token, item["endpoint"], payload)
+                    response = await asyncio.get_running_loop().run_in_executor(
+                        executor, post, port, token, item["endpoint"], payload)
                 except Exception as exc:
                     err = type(exc).__name__
                 row = {"id": item["id"], "endpoint": item["endpoint"], "response": response,
@@ -84,7 +84,11 @@ async def collect(items, port, token, workers, dest):
                 if completed % 25 == 0 or completed == len(items):
                     print(f"collected {completed}/{len(items)}", flush=True)
                 return row
-        return await asyncio.gather(*(one(p) for p in items))
+        # asyncio.to_thread uses a CPU-dependent pool (often only 16/32 slots).
+        # Give every requested HTTP worker a thread so 64 really means 64, and
+        # measured latency does not include an unseen client thread-pool queue.
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            return await asyncio.gather(*(one(p) for p in items))
 
 
 def wait_ready(proc, port):
@@ -127,7 +131,7 @@ def journal_judge(judge, path):
 
 def score_rows(items, rows, workers, no_judge=False, journal=None):
     by_id = {r["id"]: r for r in rows}
-    if set(by_id) != {p["id"] for p in items}:
+    if len(rows) != len(items) or len(by_id) != len(rows) or set(by_id) != {p["id"] for p in items}:
         raise ValueError("Missing or duplicate public responses; refusing partial scoring")
     cache = {request_key(p["endpoint"], p): by_id[p["id"]]["response"] for p in items}
     def call(endpoint, payload):
@@ -171,6 +175,7 @@ def run_variant(args, variant, repetition, items, root):
     manifest = {
         "variant": variant, "repeat": repetition, "workers": args.workers,
         "judge_workers": args.judge_workers, "count": len(items), "judge_enabled": not args.no_judge,
+        "http_transport": "explicit_worker_thread_pool",
         "endpoints": args.endpoints,
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),

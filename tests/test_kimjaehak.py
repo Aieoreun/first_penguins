@@ -3,6 +3,8 @@ import asyncio
 import json
 import unittest
 import tempfile
+import threading
+from unittest.mock import patch
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -115,6 +117,24 @@ class AdapterTests(unittest.TestCase):
         guards = load_public(endpoints=("guard",))
         self.assertEqual(len(guards), 200)
         self.assertEqual({p["endpoint"] for p in guards}, {"guard"})
+
+    def test_http_collection_really_starts_all_requested_workers(self):
+        from experiments.jh_compare import collect
+        workers = 40  # More than asyncio's default maximum of 32 threads.
+        barrier = threading.Barrier(workers, timeout=5)
+        def post(*args):
+            barrier.wait()
+            return {"input": {"decision": "allow", "category": "normal"}}
+        items = [{"id": str(i), "endpoint": "guard", "messages": QUESTION} for i in range(workers)]
+        with tempfile.TemporaryDirectory() as tmp, patch("experiments.jh_compare.post", post):
+            rows = asyncio.run(collect(items, 1, "test", workers, Path(tmp) / "responses.jsonl"))
+        self.assertEqual(len(rows), workers)
+        self.assertFalse(any(row["error"] for row in rows))
+
+    def test_duplicate_response_is_rejected_before_scoring(self):
+        from experiments.jh_compare import score_rows
+        with self.assertRaises(ValueError):
+            score_rows([{"id": "one"}], [{"id": "one"}, {"id": "one"}], 1, no_judge=True)
 
     def test_public_judge_checkpoint_reuses_only_identical_calls(self):
         from experiments.jh_compare import journal_judge
