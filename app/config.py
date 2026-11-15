@@ -30,7 +30,7 @@ class Settings:
     max_concurrency: int = 64
     request_deadline_sec: float = 27.5
     llm_timeout_sec: float = 22.0
-    enable_dual_critics: bool = True
+    enable_dual_critics: bool = False
     max_correction_rounds: int = 2
 
 
@@ -53,7 +53,7 @@ def load_settings() -> Settings:
         public_dir=Path(os.environ.get("PUBLIC_DIR", str(root / "public"))),
         assets_dir=Path(os.environ.get("ASSETS_DIR", str(root / "app" / "assets"))),
         pipeline_mode=mode,
-        enable_dual_critics=os.environ.get("ENABLE_DUAL_CRITICS", "1").strip().lower() not in ("0", "false", "no"),
+        enable_dual_critics=os.environ.get("ENABLE_DUAL_CRITICS", "0").strip().lower() not in ("0", "false", "no"),
         max_correction_rounds=max(0, int(os.environ.get("MAX_CORRECTION_ROUNDS", "2"))),
     )
 

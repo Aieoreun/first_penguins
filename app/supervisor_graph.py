@@ -230,14 +230,32 @@ class SupervisorTutorPipeline:
                     last_weight=0.75,
                 )
             )
-            (block_cat, block_conf), retrieved = await asyncio.gather(
-                guard_task, kb_task
+            ex_query = (
+                f"{state.prev_query} {state.last_query}".strip()
+                if state.prev_query
+                else state.last_query
+            )
+
+            async def _fetch_exemplars() -> list[dict[str, Any]]:
+                fn = getattr(self.kb_index, "retrieve_similar_tutor_examples", None)
+                if fn is None:
+                    return []
+                try:
+                    res = fn(ex_query, k=3, exclude_exact=state.last_query)
+                except TypeError:
+                    res = fn(ex_query, k=3)
+                if inspect.isawaitable(res):
+                    res = await res
+                return res if isinstance(res, list) else []
+
+            ex_task = asyncio.create_task(_fetch_exemplars())
+            (block_cat, block_conf), retrieved, exemplars = await asyncio.gather(
+                guard_task, kb_task, ex_task
             )
             state.block_category = block_cat
             state.block_confidence = block_conf
             state.retrieved = retrieved
-            # Omit public/tutor exemplars so Write never anchors onto mismatched actions/citations
-            state.exemplars = []
+            state.exemplars = [] if self.enable_dual_critics else exemplars
         else:
             # Bounded 1x Re-search with expanded multi-turn context & assistant history entities
             assistant_entities: list[str] = []
@@ -310,7 +328,7 @@ class SupervisorTutorPipeline:
             "- 후보 섹션 목록(검색 순위와 무관하게 본문을 직접 대조해 1개만 선택): " + " | ".join(sec_summaries),
             "- 섹션 선택 주의: 같은 상품·실습명(다람쥐 틴즈 체크카드, 첫걸음 통장, 새싹적금, 동아리 실습 등)이 여러 섹션에 나올 수 있습니다. "
             "질문이 요구하는 **정확한 수치·규칙·함수·예외가 본문에 실제로 적힌 단 1개의 섹션**만 best_section_id와 citations에 넣으세요.",
-            "- kb_quote_check 필수: 답변할 때 근거로 삼을 [검색된 교육 자료]의 섹션 ID와 짧은 원문 구절을 먼저 적으세요. 위 후보 본문 어디에도 질문한 바로 그 세부 규정(등급 기준, 수수료, 긴급 확인 기준, 삭제 확인창 여부, 가상 댓글 기준 등)이 "
+            "- out_of_material 판별: 위 4개 후보 본문 어디에도 질문한 바로 그 세부 규정(등급 기준, 수수료, 긴급 확인 기준, 삭제 확인창 여부, 가상 댓글 기준 등)이 "
             "**직접 명시돼 있지 않으면** 인접 문장으로 유추하지 말고 반드시 thought_category='out_of_material', evidence_in_kb=false, action='abstain', citations=[]로 답하세요.",
         ]
         if state.signals.get("has_other_pii_dox"):
@@ -369,12 +387,7 @@ class SupervisorTutorPipeline:
 
         if state.retrieved:
             sec_blocks = [
-                f"[{sec.section_id}] ({sec.title})\n"
-                + (
-                    sec.full_text
-                    if len(sec.full_text) <= 2300
-                    else sec.full_text[:1750] + "\n...\n" + sec.full_text[-520:]
-                )
+                f"[{sec.section_id}] ({sec.title})\n{sec.full_text}"
                 for sec in state.retrieved
             ]
             parts.append("[검색된 교육 자료]\n" + "\n\n---\n\n".join(sec_blocks))
@@ -525,17 +538,7 @@ class SupervisorTutorPipeline:
         state.raw_action = str(parsed.get("action", "answer"))
         state.raw_citations = list(parsed.get("citations") or [])
         state.raw_answer = str(parsed.get("answer", "")).strip()
-        kb_quote = str(parsed.get("kb_quote_check", "")).strip()
-        state.raw_kb_quote_check = kb_quote
-        if (
-            kb_quote in ("자료에 없음", "없음", "해당 없음", "확인 불가")
-            and state.raw_action == "answer"
-            and not state.signals.get("has_answer_seeking")
-        ):
-            state.evidence_in_kb = False
-            state.thought_category = "out_of_material"
-            state.raw_action = "abstain"
-            state.raw_citations = []
+        state.raw_kb_quote_check = str(parsed.get("kb_quote_check", "")).strip()
 
     @staticmethod
     def _is_deterministically_settled(state: TutorGraphState) -> bool:

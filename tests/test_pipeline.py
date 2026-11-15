@@ -748,10 +748,18 @@ class TestStep5Generalization:
             resp.choices = [choice]
             return resp
 
-        # 1) kb_quote_check="자료에 없음" forces abstain with empty citations & exemplars disabled
+        # 1) Empty completion on 'low' retries 'minimal', passes non-self exemplars, and preserves answer without over-abstention
         call_efforts: list[str] = []
+        fake_kb.retrieve_similar_tutor_examples = AsyncMock(
+            return_value=[
+                {
+                    "messages": [{"role": "user", "content": "새싹적금 만기는?"}],
+                    "labels": {"action": "answer", "evidence": ["FIN-02-01"], "reference_answer": "1년입니다."},
+                }
+            ]
+        )
 
-        async def _write_empty_then_abstain(**kwargs):
+        async def _write_empty_then_answer(**kwargs):
             effort = (kwargs.get("extra_body") or {}).get("reasoning_effort")
             call_efforts.append(effort)
             if len(call_efforts) == 1:
@@ -759,19 +767,18 @@ class TestStep5Generalization:
             return _make_resp(
                 json.dumps(
                     {
-                        "thought_category": "normal",
-                        "evidence_in_kb": True,
-                        "best_section_id": "FIN-02-01",
-                        "kb_quote_check": "자료에 없음",
-                        "action": "answer",
-                        "citations": ["FIN-02-01"],
-                        "answer": "중도해지 수수료는 1.5%입니다.",
+                        "thought_category": "out_of_material",
+                        "evidence_in_kb": False,
+                        "best_section_id": "",
+                        "action": "abstain",
+                        "citations": [],
+                        "answer": "제공된 자료에 중도해지 수수료율이 나와 있지 않아요.",
                     },
                     ensure_ascii=False,
                 )
             )
 
-        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_write_empty_then_abstain)
+        pool.chat_client.chat.completions.create = AsyncMock(side_effect=_write_empty_then_answer)
         sup_abstain = SupervisorTutorPipeline(settings, pool, fake_kb, guard_classifier=None, guard_verifier=None, enable_dual_critics=False)
         res_abstain = asyncio.run(
             sup_abstain.handle([{"role": "user", "content": "다람쥐 꿈모으기 정기예금의 중도해지 수수료는 몇 %야?"}])
@@ -833,7 +840,7 @@ class TestStep5Generalization:
         assert fake_verifier.verify.await_count == 1
         assert len(write_prompts) == 2
         assert "[사후 검증 경고]" in write_prompts[1]
-        assert "[유사 답변 예시]" not in write_prompts[0]
+        assert "[유사 답변 예시]" in write_prompts[0]
         assert "2.5%" in res_repair["answer"]
         assert res_repair["action"] == "answer"
         assert res_repair["citations"] == ["FIN-02-01"]

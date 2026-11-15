@@ -61,7 +61,7 @@ def _init_sync_components() -> None:
             pool,
             kb_index,
             guard_classifier=guard_classifier,
-            guard_verifier=guard_verifier,
+            guard_verifier=guard_verifier if settings.enable_dual_critics else None,
         )
 
     state.settings = settings
