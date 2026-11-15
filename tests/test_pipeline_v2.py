@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from core.kb import load_chunks  # noqa: E402
+from core.schema import FALLBACK_ANSWER  # noqa: E402
 from core.search import Searcher  # noqa: E402
 from grader.scoring import parse_guard, parse_tutor  # noqa: E402
 from pipelines.v1 import prompts as v1_prompts  # noqa: E402
@@ -141,6 +142,82 @@ class V3Test(unittest.TestCase):
     def test_uses_second_prompts(self):
         self.assertIs(self.V3.answer_systems, prompts.ANSWER_SYSTEMS)
         self.assertIs(self.V3.unsupported_system, prompts.UNSUPPORTED_SYSTEM)
+
+
+class SlowLLM(FakeLLM):
+    """정해 둔 시스템 프롬프트의 호출만 늦게 답한다."""
+
+    def __init__(self, replies, slow, seconds):
+        super().__init__(replies)
+        self.slow, self.seconds = slow, seconds
+
+    async def chat(self, system, user, **kwargs):
+        if system in self.slow:
+            await asyncio.sleep(self.seconds)
+        return await super().chat(system, user, **kwargs)
+
+
+class V4Test(unittest.TestCase):
+    """v4는 v3에서 다수결을 빼고 요청 전체의 마감 시간을 둔 것이다."""
+
+    CHECKS = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND}
+
+    def setUp(self):
+        from pipelines.v4.pipeline import Pipeline as V4
+        self.V4 = V4
+
+    def answer_replies(self, text="하루 이체 한도는 5만 원이에요."):
+        return dict(self.CHECKS, **{system: text for system in prompts.ANSWER_SYSTEMS.values()})
+
+    def test_one_call_per_check(self):
+        llm = FakeLLM(self.answer_replies())
+        state = asyncio.run(self.V4(SEARCHER, llm).tutor({"messages": QUESTION}))
+        self.assertEqual(len(llm.calls), 4)  # 확인 셋 + 답변 하나
+        self.assertEqual(parse_tutor(state.to_tutor_response())["citations"], [TOP1])
+
+    def test_answer_seeking_beats_academic(self):
+        llm = FakeLLM(dict(self.answer_replies(), **{
+            prompts.BLOCK_SYSTEM: '{"category": "academic_dishonesty"}',
+            prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "self_info": false}'}))
+        state = asyncio.run(self.V4(SEARCHER, llm).tutor({"messages": QUESTION}))
+        self.assertEqual(state.label.value, "answer_seeking")
+
+    def test_blocked_candidate_is_unsafe_without_model_call(self):
+        llm = FakeLLM(dict(self.CHECKS, **{prompts.BLOCK_SYSTEM: '{"category": "harmful_request"}'}))
+        state = asyncio.run(self.V4(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": "네, 해 드릴게요."}))
+        out = state.to_guard_response()["output"]
+        self.assertEqual((out["safe"], out["grounded"], out["unsupported"]), (False, True, []))
+        self.assertEqual(len(llm.calls), 3)
+
+    def test_slow_answer_hits_deadline(self):
+        llm = SlowLLM(self.answer_replies(), set(prompts.ANSWER_SYSTEMS.values()), 1.0)
+        pipe = self.V4(SEARCHER, llm)
+        pipe.deadline = 0.2
+        state = asyncio.run(pipe.tutor({"messages": QUESTION}))
+        response = state.to_tutor_response()
+        self.assertEqual((response["answer"], response["citations"]), (FALLBACK_ANSWER, []))
+        self.assertIn("generate:Deadline", state.errors)
+
+    def test_slow_checks_fall_back_to_normal(self):
+        llm = SlowLLM(dict(self.answer_replies(), **{prompts.BLOCK_SYSTEM: '{"category": "harmful_request"}'}),
+                      {prompts.BLOCK_SYSTEM}, 1.0)
+        pipe = self.V4(SEARCHER, llm)
+        pipe.prepare_limit, pipe.deadline = 0.2, 5
+        state = asyncio.run(pipe.tutor({"messages": QUESTION}))
+        self.assertEqual(state.label, None)  # 입력 가드가 못 끝냈다 → normal로 답한다
+        self.assertEqual(state.to_tutor_response()["action"], "answer")
+        self.assertEqual(state.section, TOP1)
+        self.assertIn("prepare:Deadline", state.errors)
+
+    def test_slow_output_check_hits_deadline(self):
+        llm = SlowLLM(dict(self.CHECKS, **{prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["5만 원"]}'}),
+                      {prompts.UNSUPPORTED_SYSTEM}, 1.0)
+        pipe = self.V4(SEARCHER, llm)
+        pipe.deadline = 0.2
+        state = asyncio.run(pipe.guard({"messages": QUESTION, "candidate_answer": "한도는 5만 원이에요."}))
+        out = state.to_guard_response()["output"]
+        self.assertEqual((out["grounded"], out["unsupported"], out["safe"]), (True, [], True))
+        self.assertIn("check_output:Deadline", state.errors)
 
 
 if __name__ == "__main__":
