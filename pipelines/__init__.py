@@ -53,6 +53,9 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.evidence_answer").Pipeline
         if name == "jh_learned_harmful":
             return importlib.import_module("pipelines.kimjaehak.learned_harmful").Pipeline
+        if name in {"jh_context_output", "jh_context_output3"}:
+            module = importlib.import_module("pipelines.kimjaehak.context_output")
+            return module.ThreeSections if name.endswith("3") else module.Pipeline
         if name == "jh_reasoned_tie":
             return importlib.import_module("pipelines.kimjaehak.reasoned_tie").Pipeline
         if name == "jh_learned_gate":

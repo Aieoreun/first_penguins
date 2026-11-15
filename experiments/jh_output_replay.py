@@ -76,8 +76,14 @@ def main():
     manifest = json.loads((source / "manifest.json").read_text())
     if manifest.get("embedding_configured"):
         ap.error("Only BM25 source runs can be faithfully replayed")
-    if manifest["variant"] not in ("jh_baseline", "v4"):
-        ap.error("Use a baseline/v4 source with unchanged top1 search")
+    top1_sources = {"jh_baseline", "v4", "jh_learned_gate", "jh_learned_gate98", "jh_learned_gate95",
+                    "jh_learned_sections_tutor", "jh_learned_sections_tutor95", "jh_learned_harmful",
+                    "jh_concise_fitted", "jh_evidence_answer"}
+    if manifest["variant"] not in top1_sources:
+        ap.error("Use an explicitly supported source with unchanged guard top1 search")
+    config = manifest.get("effective_config") or {}
+    if config.get("query_expansion_weight") or config.get("learned_section_use_for_output"):
+        ap.error("The source changed guard search or section selection")
     if manifest["evaluator_hashes"] != evaluator_hashes():
         ap.error("Evaluator hashes changed")
     # Configure the variant before predicted_state imports shared pipeline modules.
