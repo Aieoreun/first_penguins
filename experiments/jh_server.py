@@ -30,7 +30,7 @@ def main():
               "deadline", "prepare_limit", "peace_input", "peace_output",
               "guided_input", "guided_output", "focus_input", "request_slots", "short_votes", "other_vote_count", "block_min_votes",
               "short_effort", "short_max_tokens", "short_timeout", "answer_sections", "material_review_timeout",
-              "block_review_timeout")
+              "block_review_timeout", "adaptive_votes")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(

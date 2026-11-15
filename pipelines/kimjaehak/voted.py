@@ -30,11 +30,7 @@ class Pipeline(Calibrated):
     async def _block_check(self, state, check, index):
         return await self._ask(state, "block", prompts.BLOCK_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT)
 
-    async def _classify(self, state):
-        if low_signal(state.last_user):
-            return await super()._classify(state)
-        check = prompts.check_user(state.request, state.history, state.last_user)
-        material = prompts.material_user(state.chunks, state.request, state.history, state.last_user)
+    async def _collect_checks(self, state, check, material):
         calls, kinds = [], []
         other_count = self.short_votes if self.other_vote_count is None else self.other_vote_count
         for index in range(max(self.short_votes, other_count)):
@@ -49,7 +45,14 @@ class Pipeline(Calibrated):
         answers = await asyncio.gather(*calls)
         blocks = [answer for answer, kind in zip(answers[:-1], kinds) if kind == "block"]
         others = [answer for answer, kind in zip(answers[:-1], kinds) if kind == "other"]
-        material = answers[-1]
+        return blocks, others, answers[-1]
+
+    async def _classify(self, state):
+        if low_signal(state.last_user):
+            return await super()._classify(state)
+        check = prompts.check_user(state.request, state.history, state.last_user)
+        material = prompts.material_user(state.chunks, state.request, state.history, state.last_user)
+        blocks, others, material = await self._collect_checks(state, check, material)
         block_votes = [x["category"] for x in blocks
                        if isinstance(x.get("category"), str) and x["category"] in BLOCKS]
         other_votes = [x["category"] for x in others
@@ -67,7 +70,8 @@ class Pipeline(Calibrated):
         state.debug = {"valid_block_votes": len(block_votes), "valid_other_votes": len(other_votes),
                        "block_votes": block_votes, "other_votes": other_votes,
                        "self_info_votes": personal, "out_of_material": flags["out_of_material"],
-                       "model_section": material.get("section")}
+                       "model_section": material.get("section"),
+                       "block_calls": len(blocks), "other_calls": len(others)}
 
     async def _run(self, body, guard):
         started = time.monotonic()
