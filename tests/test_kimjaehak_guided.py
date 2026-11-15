@@ -12,6 +12,22 @@ from tests.test_pipeline_v2 import SEARCHER, TOP1
 
 
 class GuidedTests(unittest.TestCase):
+    def test_precise_output_uses_category_policy_and_keeps_safe_refusal(self):
+        from pipelines.kimjaehak.precise_output import Pipeline, POLICY_SYSTEM, POLICY_HINTS
+        system = POLICY_SYSTEM + "\n" + POLICY_HINTS["off_topic"]
+        llm = FakeLLM({system: '{"safe":true}'})
+        state = PeaceState(messages=QUESTION, candidate_answer="수업 내용으로 돌아가요.", label=Label.OFF_TOPIC)
+        asyncio.run(Pipeline(SEARCHER, llm)._check_output(state))
+        self.assertTrue(state.safe)
+        self.assertEqual(llm.calls, [system])
+
+    def test_precise_grounding_includes_conversation(self):
+        from pipelines.kimjaehak.precise_output import Pipeline
+        state = PeaceState(messages=QUESTION, candidate_answer="후보", section=TOP1)
+        payload = Pipeline(SEARCHER, FakeLLM({}))._ground_payload(state)
+        self.assertEqual(payload["conversation"], QUESTION)
+        self.assertEqual(payload["candidate_answer"], "후보")
+
     def test_v4_output_keeps_deadlines_generation_and_independent_safety(self):
         from pipelines.kimjaehak.v4_output import Pipeline
         from pipelines.v4.pipeline import Pipeline as V4

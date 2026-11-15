@@ -99,8 +99,7 @@ class Guided(Pipeline):
             state.section = section
 
     async def _ground(self, state):
-        obj = await self._json(GROUND_SYSTEM,
-            {"material": self._sections(state), "candidate_answer": state.candidate_answer}, SECOND_TIMEOUT)
+        obj = await self._json(GROUND_SYSTEM, self._ground_payload(state), SECOND_TIMEOUT)
         phrases = obj.get("unsupported")
         if not isinstance(phrases, list) or not all(isinstance(s, str) for s in phrases):
             raise ValueError("Invalid phrases")
@@ -109,6 +108,9 @@ class Guided(Pipeline):
         if any(s and s not in candidate for s in phrases):
             state.errors.append("guided_grounding:span")
         return [s for s in valid if not any(s != other and s in other for other in valid)]
+
+    def _ground_payload(self, state):
+        return {"material": self._sections(state), "candidate_answer": state.candidate_answer}
 
     async def _safe(self, state):
         obj = await self._json(SAFE_SYSTEM, {"conversation": state.messages,

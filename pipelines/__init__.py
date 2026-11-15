@@ -25,6 +25,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.v2.pipeline").Pipeline
         if name == "jh_v4_output":
             return importlib.import_module("pipelines.kimjaehak.v4_output").Pipeline
+        if name == "jh_precise_output":
+            return importlib.import_module("pipelines.kimjaehak.precise_output").Pipeline
         if name.startswith("jh_guided_"):
             module = importlib.import_module("pipelines.kimjaehak.guided")
             return {"jh_guided_input": module.GuidedInput,
