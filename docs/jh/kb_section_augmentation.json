@@ -1,0 +1,1127 @@
+{
+  "scope": "public_grouped_oof_kb_section_augmentation",
+  "reports": [
+    {
+      "scope": "public_section_classifier_grouped_oof",
+      "count": 119,
+      "groups": 117,
+      "baseline_hits": 108,
+      "source_sha256": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+      "augmentation": {
+        "weight": 0.1,
+        "examples": 261,
+        "provenance": {
+          "scope": "provided_llm_kb_only_questions",
+          "model": "openai/gpt-5-nano",
+          "workers": 4,
+          "sections": [
+            "FIN-01-01",
+            "FIN-01-02",
+            "FIN-01-03",
+            "FIN-01-04",
+            "FIN-02-01",
+            "FIN-02-02",
+            "FIN-02-03",
+            "FIN-02-04",
+            "FIN-03-01",
+            "FIN-03-02",
+            "FIN-03-03",
+            "FIN-03-04",
+            "FIN-04-01",
+            "FIN-04-02",
+            "FIN-04-03",
+            "FIN-04-04",
+            "PR-01-01",
+            "PR-01-02",
+            "PR-01-03",
+            "PR-01-04",
+            "PR-02-01",
+            "PR-02-02",
+            "PR-02-03",
+            "PR-02-04",
+            "PR-03-01",
+            "PR-03-02",
+            "PR-03-03",
+            "PR-03-04",
+            "PR-04-01",
+            "PR-04-02",
+            "PR-04-03",
+            "PR-04-04",
+            "PY-01-01",
+            "PY-01-02",
+            "PY-01-03",
+            "PY-01-04",
+            "PY-02-01",
+            "PY-02-02",
+            "PY-02-03",
+            "PY-02-04",
+            "PY-03-01",
+            "PY-03-02",
+            "PY-03-03",
+            "PY-03-04",
+            "PY-04-01",
+            "PY-04-02",
+            "PY-04-03",
+            "PY-04-04"
+          ],
+          "prompt_sha256": "2f1bb443b2019cda8928b6464cb6bba620050a25fb6ebe1c29239efafb4b3bb7",
+          "source_sha256": "a1aa8118bddaf2a8e3028eb97deb8cab02ec741ac38da769c920467cd2c8db66",
+          "commit": "7bf543c13bf4e9d0f4615c290370fa04be765f48",
+          "questions_sha256": "f610820bc16ec245e9832d533af0a68cb955d9c3df475643e43068097e0ed8a3"
+        }
+      },
+      "reports": [
+        {
+          "C": 1000.0,
+          "oof_hits": 73,
+          "training_hits": 119,
+          "gates": {
+            "top3@0.9": {
+              "oof": {
+                "coverage": 3,
+                "selected_hits": 3,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.95": {
+              "oof": {
+                "coverage": 1,
+                "selected_hits": 1,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.98": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 113,
+                "selected_hits": 113,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 23,
+                "selected_hits": 23,
+                "combined_hits": 108
+              }
+            },
+            "top10@0.9": {
+              "oof": {
+                "coverage": 3,
+                "selected_hits": 3,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.95": {
+              "oof": {
+                "coverage": 1,
+                "selected_hits": 1,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.98": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 116,
+                "selected_hits": 116,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 24,
+                "selected_hits": 24,
+                "combined_hits": 109
+              }
+            },
+            "all@0.9": {
+              "oof": {
+                "coverage": 3,
+                "selected_hits": 3,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.95": {
+              "oof": {
+                "coverage": 1,
+                "selected_hits": 1,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.98": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 118,
+                "selected_hits": 118,
+                "combined_hits": 119
+              }
+            },
+            "all@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 24,
+                "selected_hits": 24,
+                "combined_hits": 109
+              }
+            }
+          }
+        },
+        {
+          "C": 3000.0,
+          "oof_hits": 73,
+          "training_hits": 119,
+          "gates": {
+            "top3@0.9": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 7,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.95": {
+              "oof": {
+                "coverage": 5,
+                "selected_hits": 5,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.98": {
+              "oof": {
+                "coverage": 1,
+                "selected_hits": 1,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top10@0.9": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 7,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.95": {
+              "oof": {
+                "coverage": 5,
+                "selected_hits": 5,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.98": {
+              "oof": {
+                "coverage": 1,
+                "selected_hits": 1,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "all@0.9": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 7,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.95": {
+              "oof": {
+                "coverage": 5,
+                "selected_hits": 5,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.98": {
+              "oof": {
+                "coverage": 1,
+                "selected_hits": 1,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "scope": "public_section_classifier_grouped_oof",
+      "count": 119,
+      "groups": 117,
+      "baseline_hits": 108,
+      "source_sha256": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+      "augmentation": {
+        "weight": 0.5,
+        "examples": 261,
+        "provenance": {
+          "scope": "provided_llm_kb_only_questions",
+          "model": "openai/gpt-5-nano",
+          "workers": 4,
+          "sections": [
+            "FIN-01-01",
+            "FIN-01-02",
+            "FIN-01-03",
+            "FIN-01-04",
+            "FIN-02-01",
+            "FIN-02-02",
+            "FIN-02-03",
+            "FIN-02-04",
+            "FIN-03-01",
+            "FIN-03-02",
+            "FIN-03-03",
+            "FIN-03-04",
+            "FIN-04-01",
+            "FIN-04-02",
+            "FIN-04-03",
+            "FIN-04-04",
+            "PR-01-01",
+            "PR-01-02",
+            "PR-01-03",
+            "PR-01-04",
+            "PR-02-01",
+            "PR-02-02",
+            "PR-02-03",
+            "PR-02-04",
+            "PR-03-01",
+            "PR-03-02",
+            "PR-03-03",
+            "PR-03-04",
+            "PR-04-01",
+            "PR-04-02",
+            "PR-04-03",
+            "PR-04-04",
+            "PY-01-01",
+            "PY-01-02",
+            "PY-01-03",
+            "PY-01-04",
+            "PY-02-01",
+            "PY-02-02",
+            "PY-02-03",
+            "PY-02-04",
+            "PY-03-01",
+            "PY-03-02",
+            "PY-03-03",
+            "PY-03-04",
+            "PY-04-01",
+            "PY-04-02",
+            "PY-04-03",
+            "PY-04-04"
+          ],
+          "prompt_sha256": "2f1bb443b2019cda8928b6464cb6bba620050a25fb6ebe1c29239efafb4b3bb7",
+          "source_sha256": "a1aa8118bddaf2a8e3028eb97deb8cab02ec741ac38da769c920467cd2c8db66",
+          "commit": "7bf543c13bf4e9d0f4615c290370fa04be765f48",
+          "questions_sha256": "f610820bc16ec245e9832d533af0a68cb955d9c3df475643e43068097e0ed8a3"
+        }
+      },
+      "reports": [
+        {
+          "C": 1000.0,
+          "oof_hits": 74,
+          "training_hits": 119,
+          "gates": {
+            "top3@0.9": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 6,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.95": {
+              "oof": {
+                "coverage": 2,
+                "selected_hits": 2,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.98": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 6,
+                "selected_hits": 6,
+                "combined_hits": 108
+              }
+            },
+            "top10@0.9": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 6,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.95": {
+              "oof": {
+                "coverage": 2,
+                "selected_hits": 2,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.98": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 6,
+                "selected_hits": 6,
+                "combined_hits": 108
+              }
+            },
+            "all@0.9": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 6,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.95": {
+              "oof": {
+                "coverage": 2,
+                "selected_hits": 2,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.98": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 6,
+                "selected_hits": 6,
+                "combined_hits": 108
+              }
+            }
+          }
+        },
+        {
+          "C": 3000.0,
+          "oof_hits": 71,
+          "training_hits": 119,
+          "gates": {
+            "top3@0.9": {
+              "oof": {
+                "coverage": 13,
+                "selected_hits": 11,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.95": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 6,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.98": {
+              "oof": {
+                "coverage": 4,
+                "selected_hits": 2,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.995": {
+              "oof": {
+                "coverage": 2,
+                "selected_hits": 1,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 88,
+                "selected_hits": 88,
+                "combined_hits": 114
+              }
+            },
+            "top10@0.9": {
+              "oof": {
+                "coverage": 14,
+                "selected_hits": 11,
+                "combined_hits": 106
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.95": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 6,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.98": {
+              "oof": {
+                "coverage": 4,
+                "selected_hits": 2,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.995": {
+              "oof": {
+                "coverage": 2,
+                "selected_hits": 1,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 89,
+                "selected_hits": 89,
+                "combined_hits": 115
+              }
+            },
+            "all@0.9": {
+              "oof": {
+                "coverage": 14,
+                "selected_hits": 11,
+                "combined_hits": 106
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.95": {
+              "oof": {
+                "coverage": 8,
+                "selected_hits": 6,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.98": {
+              "oof": {
+                "coverage": 4,
+                "selected_hits": 2,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.995": {
+              "oof": {
+                "coverage": 2,
+                "selected_hits": 1,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 91,
+                "selected_hits": 91,
+                "combined_hits": 117
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "scope": "public_section_classifier_grouped_oof",
+      "count": 119,
+      "groups": 117,
+      "baseline_hits": 108,
+      "source_sha256": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+      "augmentation": {
+        "weight": 1.0,
+        "examples": 261,
+        "provenance": {
+          "scope": "provided_llm_kb_only_questions",
+          "model": "openai/gpt-5-nano",
+          "workers": 4,
+          "sections": [
+            "FIN-01-01",
+            "FIN-01-02",
+            "FIN-01-03",
+            "FIN-01-04",
+            "FIN-02-01",
+            "FIN-02-02",
+            "FIN-02-03",
+            "FIN-02-04",
+            "FIN-03-01",
+            "FIN-03-02",
+            "FIN-03-03",
+            "FIN-03-04",
+            "FIN-04-01",
+            "FIN-04-02",
+            "FIN-04-03",
+            "FIN-04-04",
+            "PR-01-01",
+            "PR-01-02",
+            "PR-01-03",
+            "PR-01-04",
+            "PR-02-01",
+            "PR-02-02",
+            "PR-02-03",
+            "PR-02-04",
+            "PR-03-01",
+            "PR-03-02",
+            "PR-03-03",
+            "PR-03-04",
+            "PR-04-01",
+            "PR-04-02",
+            "PR-04-03",
+            "PR-04-04",
+            "PY-01-01",
+            "PY-01-02",
+            "PY-01-03",
+            "PY-01-04",
+            "PY-02-01",
+            "PY-02-02",
+            "PY-02-03",
+            "PY-02-04",
+            "PY-03-01",
+            "PY-03-02",
+            "PY-03-03",
+            "PY-03-04",
+            "PY-04-01",
+            "PY-04-02",
+            "PY-04-03",
+            "PY-04-04"
+          ],
+          "prompt_sha256": "2f1bb443b2019cda8928b6464cb6bba620050a25fb6ebe1c29239efafb4b3bb7",
+          "source_sha256": "a1aa8118bddaf2a8e3028eb97deb8cab02ec741ac38da769c920467cd2c8db66",
+          "commit": "7bf543c13bf4e9d0f4615c290370fa04be765f48",
+          "questions_sha256": "f610820bc16ec245e9832d533af0a68cb955d9c3df475643e43068097e0ed8a3"
+        }
+      },
+      "reports": [
+        {
+          "C": 1000.0,
+          "oof_hits": 67,
+          "training_hits": 119,
+          "gates": {
+            "top3@0.9": {
+              "oof": {
+                "coverage": 10,
+                "selected_hits": 8,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.95": {
+              "oof": {
+                "coverage": 7,
+                "selected_hits": 5,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.98": {
+              "oof": {
+                "coverage": 3,
+                "selected_hits": 1,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 17,
+                "selected_hits": 17,
+                "combined_hits": 108
+              }
+            },
+            "top10@0.9": {
+              "oof": {
+                "coverage": 10,
+                "selected_hits": 8,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.95": {
+              "oof": {
+                "coverage": 7,
+                "selected_hits": 5,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.98": {
+              "oof": {
+                "coverage": 3,
+                "selected_hits": 1,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 18,
+                "selected_hits": 18,
+                "combined_hits": 109
+              }
+            },
+            "all@0.9": {
+              "oof": {
+                "coverage": 10,
+                "selected_hits": 8,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.95": {
+              "oof": {
+                "coverage": 7,
+                "selected_hits": 5,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.98": {
+              "oof": {
+                "coverage": 3,
+                "selected_hits": 1,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 18,
+                "selected_hits": 18,
+                "combined_hits": 109
+              }
+            }
+          }
+        },
+        {
+          "C": 3000.0,
+          "oof_hits": 68,
+          "training_hits": 119,
+          "gates": {
+            "top3@0.9": {
+              "oof": {
+                "coverage": 15,
+                "selected_hits": 13,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.95": {
+              "oof": {
+                "coverage": 13,
+                "selected_hits": 11,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.98": {
+              "oof": {
+                "coverage": 7,
+                "selected_hits": 5,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 114,
+                "selected_hits": 114,
+                "combined_hits": 114
+              }
+            },
+            "top3@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 92,
+                "selected_hits": 92,
+                "combined_hits": 113
+              }
+            },
+            "top10@0.9": {
+              "oof": {
+                "coverage": 16,
+                "selected_hits": 13,
+                "combined_hits": 106
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.95": {
+              "oof": {
+                "coverage": 14,
+                "selected_hits": 11,
+                "combined_hits": 106
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.98": {
+              "oof": {
+                "coverage": 7,
+                "selected_hits": 5,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 117,
+                "selected_hits": 117,
+                "combined_hits": 117
+              }
+            },
+            "top10@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 93,
+                "selected_hits": 93,
+                "combined_hits": 114
+              }
+            },
+            "all@0.9": {
+              "oof": {
+                "coverage": 16,
+                "selected_hits": 13,
+                "combined_hits": 106
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.95": {
+              "oof": {
+                "coverage": 14,
+                "selected_hits": 11,
+                "combined_hits": 106
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.98": {
+              "oof": {
+                "coverage": 7,
+                "selected_hits": 5,
+                "combined_hits": 107
+              },
+              "training": {
+                "coverage": 119,
+                "selected_hits": 119,
+                "combined_hits": 119
+              }
+            },
+            "all@0.995": {
+              "oof": {
+                "coverage": 0,
+                "selected_hits": 0,
+                "combined_hits": 108
+              },
+              "training": {
+                "coverage": 93,
+                "selected_hits": 93,
+                "combined_hits": 114
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

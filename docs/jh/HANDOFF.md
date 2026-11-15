@@ -4,9 +4,11 @@
 
 ## 현재 선택
 
-반복 확인된 공개 최고 후보는 **`jh_learned_sections_tutor` / 내부 slots 64**다. 공개 400문항 전체 점수 **95.26 / 95.78, 평균 95.52**다. 두 번째 실행은 tutor 95.50 / guard 96.05, 수집 23.12초, 요청 p95 7.452초 / 최대 11.215초, HTTP·형식·채점·내부 단계 오류 모두 0이었다.
+반복 확인된 공개 최고 후보는 **`jh_candidate` / 내부 slots 64**다. 공개 400문항 전체 점수 **96.90 / 97.11, 평균 97.005**다. 두 번째 실행은 tutor 97.00 / guard 97.22, 수집 17.36초, 요청 p95 5.983초 / 최대 9.418초였다. 두 실행 모두 HTTP·형식·채점 오류 0, 내부 material parse 실패는 각각 1 / 2요청이다.
 
-이 후보는 공개 category와 tutor evidence 라벨로 처음부터 학습한 TF-IDF + LogisticRegression 분류기를 포함한다. **위 점수는 학습 데이터 내 점수이며 비공개 성능이 아니다.** 질문→답 표, reference_answer 조회, 요청 ID 비교, 비공개 요청 저장·학습은 없다. 입력 분류 확률 기준은 0.95, 튜터 섹션 선택은 0.98이다. 낮은 확률과 harmful_content는 LLM adaptive 파이프라인으로 보낸다. candidate_answer가 있는 가드 출력 검사는 기존 BM25 섹션을 사용한다.
+공개 category와 tutor evidence·harmful action 라벨로 처음부터 학습한 TF-IDF + LogisticRegression 분류기를 포함한다. **위 점수는 학습 데이터 내 점수이며 비공개 성능이 아니다.** 질문→답 표, reference_answer 조회, 요청 ID 비교, 비공개 요청 저장·학습은 없다. 입력 C=1000 / 확률 기준 0.95, 튜터 섹션 기준 0.98, harmful 세부 action 기준 0.95다. 불확실하면 기존 LLM 경로로 간다.
+
+여기에 간결한 일반 답변, 교재 밖 질문의 짧은 안내, 대화 맥락을 포함한 출력 가드를 결합했다. 출력에는 원래 BM25 top1 섹션을 쓰며 학습 섹션 선택은 튜터에만 적용한다. 통합 전 `jh_concise_fitted`는 95.72 / 96.00(평균 95.86), `jh_learned_sections_tutor`는 95.26 / 95.78(평균 95.52)이었다.
 
 공개 라벨로 학습하지 않는 대안은 `jh_adaptive` / slots 64이다. 전체 **89.72 / 88.19, 평균 88.96**, 수집 54~60초다. `jh_voted` / slots 32는 **89.30 / 88.78, 평균 89.04**지만 수집 89~95초였다. 양쪽 모두 공개 프롬프트 튜닝을 거쳤다.
 
@@ -35,8 +37,8 @@
 
 ```bash
 uv pip install --python .venv/bin/python -r requirements-jh-research.txt
-.venv/bin/python experiments/jh_server.py --variant jh_learned_sections_tutor --request-slots 64 --port 8000
-.venv/bin/python experiments/jh_compare.py --name learned_tutor_NEW --variants jh_learned_sections_tutor --workers 64 --request-slots 64 --judge-workers 8
+.venv/bin/python experiments/jh_server.py --variant jh_candidate --request-slots 64 --port 8000
+.venv/bin/python experiments/jh_compare.py --name candidate_NEW --variants jh_candidate --workers 64 --request-slots 64 --judge-workers 8
 .venv/bin/python -m unittest discover -s tests -q
 ```
 
@@ -60,12 +62,10 @@ uv pip install --python .venv/bin/python -r requirements-jh-research.txt
 
 ## 현재 진행·다음 판단
 
-섹션 기준만 0.95로 낮춘 `jh_learned_sections_tutor95`는 원본 공개 전체 95.20이었다. 공개 파생 388건 전체에서는 adaptive 87.86 대비 93.01로 개선됐다. HTTP·형식·채점 오류는 모두 0이다. 파생 문항은 원본 부모를 이미 학습했으므로 비공개 검증으로 취급하지 않는다.
+학습 강도 C=3000 / 입력 기준 0.95의 `jh_stronger95`는 공개 전체 96.89였다. 같은 C / 기준 0.98은 94.70이었다. 전자는 공개 파생 입력에서 고신뢰 적용 범위를 늘렸지만 원본 grouped OOF guard F1은 기존보다 낮아졌다. `gate_transfer_grid.json`, `stronger_cv.json`의 상충 결과를 확인해야 한다. 기본 통합 후보는 C=1000을 유지한다.
 
-`jh_concise_fitted`는 공개 전체 95.72(tutor 95.75 / guard 95.69)로 반복 확인 중이다. `jh_evidence_answer`는 94.62, 원문 검증 실패 fallback 27건으로 미채택이다. `jh_plain_abstain`은 교재 밖 질문에 추측을 덧붙이지 않는 정책 답변 후보다. 현재 전체 수집 중이다.
+섹션 기준만 0.95로 낮춘 `jh_learned_sections_tutor95`는 원본 공개 전체 95.20이었다. 공개 파생 388건 전체에서는 adaptive 87.86 대비 93.01로 개선됐다. 모든 HTTP·형식·채점 오류는 0이다. 통합 후보의 파생 전체 비교는 아직 실행 전이다.
 
-`jh_learned_harmful`은 category와 별도 harmful action 분류가 모두 고신뢰일 때만 LLM을 생략한다. 공개 16문항으로 학습했으며 작은 grouped OOF에서 0.95 이상 선택 14/14, 전체 15/16이었다. `harmful_cv.json` 참조. 실제 전체 공개 응답은 수집했고 채점 전이다.
+교재만으로 별도 사실 확인 문항을 생성해 학습에 넣지 않고 비교할 예정이다. 첫 초안은 질문 문맥 누락과 너무 넓은 정답 인용이 발견돼 성능 평가 전에 제외했다. 생성 방식과 약한 라벨 한계를 수정해 두 번째 초안을 생성 중이다. tutor-only 진단이므로 tutor 점수만 사용하며 공개 400 점수와 섞지 않는다.
 
-출력의 맥락 추가는 고정 입력 진단에서 guard 95.83→96.15로 소폭 상승해 반복 확인할 예정이다. 세 섹션 확장은 95.86으로 차이가 거의 없었다. 기본 최고 반복 후보는 아직 learned_sections_tutor다.
-
-최근 테스트 146개 통과. 주최측 평가기, SPEC, public, KB, core와 기본 server는 그대로 유지한다. 사용량은 마지막 조회 기준 **22% 남음**이다. 15% 이하를 확인하면 새 실험을 중단하고 진행 중 채점·결과·인수인계를 마무리해 커밋한다. 계정 사용량은 다른 작업과 공유된다. 현재 문서는 종료 보고가 아니다.
+최근 테스트 149개 통과. 주최측 평가기, SPEC, public, KB, core와 기본 server는 그대로 유지한다. 사용량은 마지막 조회 기준 **21% 남음**이다. 15% 이하를 확인하면 새 실험을 중단하고 진행 중 채점·결과·인수인계를 마무리해 커밋한다. 계정 사용량은 다른 작업과 공유된다. 현재 문서는 종료 보고가 아니다.
