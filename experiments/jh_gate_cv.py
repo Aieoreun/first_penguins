@@ -42,6 +42,8 @@ def run(source=None, exclude_harmful=False, augmentation=None):
             if row["source_id"] in augmented:
                 raise ValueError("Duplicate augmented source")
             augmented[row["source_id"]] = row["paraphrases"] if row["error"] is None else []
+        if set(augmented) != set(metadata["source_ids"]):
+            raise ValueError("Augmentation collection is incomplete")
         augmentation_meta = {"path":str(augmentation.relative_to(ROOT)),
             "sha256":hashlib.sha256(augmentation.read_bytes()).hexdigest(),"model":metadata["model"],
             "examples":sum(map(len,augmented.values())),"sample_weight":.5}
@@ -95,6 +97,7 @@ def run(source=None, exclude_harmful=False, augmentation=None):
             model = LogisticRegression(C=c, max_iter=500, class_weight="balanced").fit(x, fit_labels, sample_weight=weights)
             return vectorizer, model
         for train, test in folds:
+            assert not set(groups[i] for i in train).intersection(groups[i] for i in test)
             vectorizer, model = fit(train)
             probability = model.predict_proba(vectorizer.transform([texts[i] for i in test]))
             predicted[test] = model.classes_[probability.argmax(axis=1)]
