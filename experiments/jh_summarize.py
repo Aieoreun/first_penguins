@@ -36,6 +36,7 @@ def summarize(root=ROOT):
         effective = None if component else requested if transport == "explicit_worker_thread_pool" else min(16, requested)
         records.append({
             "run": str(run.relative_to(root)), "variant": m["variant"], "commit": m["commit"],
+            "started_at": m.get("started_at"), "scoring_deferred": m.get("scoring_deferred", False),
             "scope": scope, "count": count,
             "workers": requested, "effective_http_workers": effective,
             "http_transport": None if component else transport,
