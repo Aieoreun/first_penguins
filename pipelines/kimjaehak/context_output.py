@@ -10,6 +10,11 @@ from .learned_sections import TutorOnly
 class Pipeline(TutorOnly):
     output_sections = 1
 
+    async def _ground_response(self, payload):
+        return await self.llm.chat(self.unsupported_system, json.dumps(payload, ensure_ascii=False),
+                                   effort=GUARD_EFFORT, max_tokens=1500,
+                                   timeout=SECOND_TIMEOUT, json_mode=True)
+
     async def _check_output(self, state):
         if state.decision is Decision.BLOCK:
             return await super()._check_output(state)
@@ -20,9 +25,7 @@ class Pipeline(TutorOnly):
         payload = {"교재": [{"section": sid, "text": self.searcher.section_text(sid)} for sid in ids],
                    "대화": state.messages, "후보 답변": candidate}
         try:
-            raw = await self.llm.chat(self.unsupported_system, json.dumps(payload, ensure_ascii=False),
-                                      effort=GUARD_EFFORT, max_tokens=1500,
-                                      timeout=SECOND_TIMEOUT, json_mode=True)
+            raw = await self._ground_response(payload)
             phrases = (_json_object(raw) or {}).get("unsupported")
             if not isinstance(phrases, list):
                 raise ValueError("Invalid unsupported phrases")

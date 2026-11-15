@@ -15,3 +15,19 @@ class Pipeline(Consensus):
 - 이 원칙이 교재의 실제 숫자·사용 조건·순서를 바꾸는 것을 허용하지는 않는다. 그러한 고유 사실은
   반드시 교재와 일치해야 한다. 오류 구절은 여전히 후보의 실제 글자만 짧게 출력한다.
 """
+
+
+class Reasoned(Pipeline):
+    # Unlike the earlier 13-second medium check, fast learned input leaves
+    # room for one longer contextual check inside the 26-second deadline.
+    output_votes = 1
+    output_effort = "medium"
+    output_max_tokens = 4000
+    output_timeout = 20
+
+    async def _ground_response(self, payload):
+        import json
+        from .reasoned import stream_text
+        return await stream_text(self.llm, self.unsupported_system, json.dumps(payload, ensure_ascii=False),
+                                 effort=self.output_effort, max_tokens=self.output_max_tokens,
+                                 timeout=self.output_timeout)
