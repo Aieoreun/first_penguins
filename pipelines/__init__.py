@@ -79,6 +79,8 @@ def load(name: str = ""):
             module = importlib.import_module("pipelines.kimjaehak.learned_output")
             return {"jh_learned_output":module.Pipeline, "jh_learned_output5":module.Consensus,
                     "jh_learned_output_stronger":module.Stronger, "jh_guard_category":module.GuardCategory}[name]
+        if name == "jh_context_grounding":
+            return importlib.import_module("pipelines.kimjaehak.context_grounding").Pipeline
         if name in {"jh_context_output", "jh_context_output3"}:
             module = importlib.import_module("pipelines.kimjaehak.context_output")
             return module.ThreeSections if name.endswith("3") else module.Pipeline
