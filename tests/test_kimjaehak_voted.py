@@ -59,6 +59,19 @@ class VotedTests(unittest.TestCase):
         self.assertEqual(state.label, Label.LOW_SIGNAL_INPUT)
         self.assertEqual(llm.calls, [])
 
+    def test_diverse_votes_keep_the_same_call_budget_and_combine_policies(self):
+        from pipelines.kimjaehak.diverse import Pipeline as Diverse
+        from pipelines.kimjaehak.intent import BLOCK_SYSTEM as INTENT
+        llm = FakeLLM({BLOCK_SYSTEM: '{"category":"jailbreak_injection"}',
+                       INTENT: '{"category":"none"}', prompts.OTHER_SYSTEM: NONE_OTHER,
+                       prompts.MATERIAL_SYSTEM: FOUND})
+        state = asyncio.run(Diverse(SEARCHER, llm).guard({"messages": QUESTION}))
+        self.assertEqual(state.label, Label.NORMAL)
+        self.assertEqual(state.errors, [])
+        self.assertEqual(llm.calls.count(BLOCK_SYSTEM), 1)
+        self.assertEqual(llm.calls.count(INTENT), 2)
+        self.assertEqual(len(llm.calls), 7)
+
 
 if __name__ == "__main__":
     unittest.main()

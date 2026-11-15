@@ -25,15 +25,18 @@ class Pipeline(Calibrated):
         super().__init__(searcher, llm)
         self._slots = asyncio.Semaphore(self.request_slots)
 
+    async def _block_check(self, state, check, index):
+        return await self._ask(state, "block", prompts.BLOCK_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT)
+
     async def _classify(self, state):
         if low_signal(state.last_user):
             return await super()._classify(state)
         check = prompts.check_user(state.request, state.history, state.last_user)
         material = prompts.material_user(state.chunks, state.request, state.history, state.last_user)
         calls = []
-        for _ in range(self.short_votes):
+        for index in range(self.short_votes):
             calls.extend([
-                self._ask(state, "block", prompts.BLOCK_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
+                self._block_check(state, check, index),
                 self._ask(state, "other", prompts.OTHER_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
             ])
         calls.append(self._ask(state, "material", prompts.MATERIAL_SYSTEM, material,
