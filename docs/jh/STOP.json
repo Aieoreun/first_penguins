@@ -1,0 +1,22 @@
+{
+  "new_experiments_stopped_at": "2026-11-16T06:14:15.915103+09:00",
+  "remaining_percent_observed": 15,
+  "used_percent_observed": 85,
+  "usage_window_minutes": 10080,
+  "reason": "User requested no new experiments at 15% remaining.",
+  "remaining_authorized_work": [],
+  "pending_public_run_root": null,
+  "official_submission_or_push": false,
+  "final_status": "complete",
+  "new_experiments_after_stop": false,
+  "selected_variant": "jh_guard_fitted_contextfast",
+  "selected_scores": [
+    98.21,
+    98.16
+  ],
+  "selected_mean": 98.185,
+  "tests_passed": 175,
+  "valid_original_public400_runs": 80,
+  "aggregate_records": 116,
+  "completed_at": "2026-11-16T06:21:06.821992+09:00"
+}
