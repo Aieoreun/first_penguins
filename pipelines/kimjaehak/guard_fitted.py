@@ -1,10 +1,11 @@
 """Increase scratch category fitting only for the guard endpoint."""
 from core.schema import parse_label
 from .learned_gate import train_public_classifier
-from .refusal_review import BroadPipeline
+from .refusal_review import BroadPipeline, BroadReview
+from .learned_output import Consensus
 
 
-class Pipeline(BroadPipeline):
+class GuardFitting:
     guard_only_c = 3000
 
     def __init__(self, searcher, llm):
@@ -33,3 +34,12 @@ class Pipeline(BroadPipeline):
                 return
         # Harmful subtype and every tutor request preserve the original models.
         await super()._classify(state)
+
+
+class Pipeline(GuardFitting, BroadPipeline):
+    pass
+
+
+class Fast(GuardFitting, BroadReview, Consensus):
+    """Same endpoint-specific input and safety checks, with low-only grounding."""
+    pass
