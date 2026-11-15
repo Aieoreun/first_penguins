@@ -47,13 +47,16 @@ def main():
     labels = [bool(r["labels"]["unsupported"]) for r in rows]
     folds = list(StratifiedGroupKFold(5, shuffle=True, random_state=20261116).split(texts, labels, groups))
     def score(predictions, threshold):
-        raw, combined, used = [], [], 0
+        raw, combined, full_gate, used, covered = [], [], [], 0, 0
         for row, (pred, confidence) in zip(rows, predictions):
             gold = row["labels"]["unsupported"]
             original = recorded[row["id"]]
             selected, changed = refine_spans(row["candidate_answer"], original, pred, confidence, threshold)
             raw.append(span_f1(pred, gold)); combined.append(span_f1(selected, gold)); used += changed
-        return {"raw_span_f1":sum(raw)/len(raw), "refined_span_f1":sum(combined)/len(combined), "refinements":used}
+            covered += confidence >= threshold
+            full_gate.append(span_f1(pred if confidence >= threshold else original, gold))
+        return {"raw_span_f1":sum(raw)/len(raw), "refined_span_f1":sum(combined)/len(combined), "refinements":used,
+                "confidence_gate_span_f1":sum(full_gate)/len(full_gate), "confidence_gate_coverage":covered}
     reports = []
     with threadpool_limits(limits=1):
         for c in args.regularizations:
