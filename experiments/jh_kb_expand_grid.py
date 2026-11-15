@@ -40,6 +40,8 @@ def run(source):
         all_text = "\n".join(m["content"] for m in row["messages"])
         last = next(m["content"] for m in reversed(row["messages"]) if m["role"] == "user")
         raw = searcher.bm25.scores(all_text)
+        ranking = list(dict.fromkeys(searcher.chunks[i].section_id
+            for i in sorted(range(len(raw)),key=lambda i:-raw[i])))
         base = {sid:0. for sid in order}
         for chunk,score in zip(searcher.chunks,raw):
             base[chunk.section_id] = max(base[chunk.section_id],score)
@@ -54,15 +56,15 @@ def run(source):
                     scores[sid] = max(scores[sid],score)
                 scale = max(scores.values()) or 1
                 generated[(mode,aggregation)] = {sid:value/scale for sid,value in scores.items()}
-        prepared.append((row,base,generated))
+        prepared.append((row,base,generated,ranking))
     reports = []
     for mode in ("all","last"):
         for aggregation in ("max","joined"):
             for weight in (0,.1,.2,.3,.5,.75,1,1.5,2,3):
                 hits, halves, sizes = [], [0,0], [0,0]
-                for row,base,generated in prepared:
+                for row,base,generated,ranking in prepared:
                     scores = {sid:base[sid]+weight*generated[(mode,aggregation)][sid] for sid in order}
-                    pred = max(order,key=lambda sid:scores[sid]) if max(scores.values()) else ""
+                    pred = max(ranking,key=lambda sid:scores[sid]) if max(scores.values()) else ""
                     hit = pred == row["labels"]["evidence"][0]
                     part = int(hashlib.sha256(row["id"].encode()).hexdigest()[-1],16)%2
                     halves[part] += hit; sizes[part] += 1; hits.append(hit)
