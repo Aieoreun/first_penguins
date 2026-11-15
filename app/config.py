@@ -30,6 +30,8 @@ class Settings:
     max_concurrency: int = 64
     request_deadline_sec: float = 27.5
     llm_timeout_sec: float = 22.0
+    enable_dual_critics: bool = False
+    max_correction_rounds: int = 2
 
 
 def load_settings() -> Settings:
@@ -51,6 +53,8 @@ def load_settings() -> Settings:
         public_dir=Path(os.environ.get("PUBLIC_DIR", str(root / "public"))),
         assets_dir=Path(os.environ.get("ASSETS_DIR", str(root / "app" / "assets"))),
         pipeline_mode=mode,
+        enable_dual_critics=os.environ.get("ENABLE_DUAL_CRITICS", "0").strip().lower() not in ("0", "false", "no"),
+        max_correction_rounds=max(0, int(os.environ.get("MAX_CORRECTION_ROUNDS", "2"))),
     )
 
 
@@ -61,7 +65,7 @@ class ClientPool:
         self.settings = settings
         self.semaphore = asyncio.Semaphore(settings.max_concurrency)
         self._http_client = httpx.AsyncClient(
-            limits=httpx.Limits(max_connections=100, max_keepalive_connections=64),
+            limits=httpx.Limits(max_connections=160, max_keepalive_connections=80),
             timeout=httpx.Timeout(settings.llm_timeout_sec, connect=4.0, read=settings.llm_timeout_sec, write=5.0, pool=4.0),
         )
         self.chat_client: Optional[AsyncOpenAI] = None

@@ -10,17 +10,26 @@ import asyncio
 import inspect
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
 from app.config import ClientPool, Settings
 from app.deadline_budget import DeadlineBudget
-from app.harness_guardrails import detect_deterministic_signals, enforce_tutor_invariants
+from app.harness_guardrails import (
+    detect_deterministic_signals,
+    enforce_tutor_invariants,
+    has_unmatched_kb_claims,
+)
 from app.kb_index import KBIndex, RetrievedSection, _COURSE_TERMS
 from app.normalize import collapse_korean_obfuscation
 from app.prompts import (
     BLOCK_CATEGORIES,
+    TUTOR_ACTION_CRITIC_SCHEMA,
+    TUTOR_ACTION_CRITIC_SYSTEM_PREFIX,
+    TUTOR_FAITHFUL_CRITIC_SCHEMA,
+    TUTOR_FAITHFUL_CRITIC_SYSTEM_PREFIX,
     TUTOR_REVIEW_WRITE_JSON_SCHEMA,
     TUTOR_SYSTEM_PREFIX_TEMPLATE,
 )
@@ -68,6 +77,8 @@ class TutorGraphState:
     raw_action: str = "answer"
     raw_citations: List[str] = field(default_factory=list)
     raw_answer: str = ""
+    raw_kb_quote_check: str = ""
+    correction_rounds: int = 0
     final_response: Dict[str, Any] = field(default_factory=dict)
 
     # SPEC.md §8 non-content telemetry
@@ -83,11 +94,28 @@ class SupervisorTutorPipeline:
         pool: ClientPool,
         kb_index: KBIndex,
         guard_classifier: Any = None,
+        guard_verifier: Any = None,
+        enable_dual_critics: Optional[bool] = None,
+        max_correction_rounds: Optional[int] = None,
     ):
         self.settings = settings
         self.pool = pool
         self.kb_index = kb_index
         self.guard_classifier = guard_classifier
+        self.guard_verifier = guard_verifier
+        self.enable_dual_critics = bool(
+            getattr(settings, "enable_dual_critics", True)
+            if enable_dual_critics is None
+            else enable_dual_critics
+        )
+        self.max_correction_rounds = max(
+            0,
+            int(
+                getattr(settings, "max_correction_rounds", 2)
+                if max_correction_rounds is None
+                else max_correction_rounds
+            ),
+        )
         self._system_prefix = TUTOR_SYSTEM_PREFIX_TEMPLATE.format(
             toc=self.kb_index.build_toc()
         )
@@ -207,16 +235,27 @@ class SupervisorTutorPipeline:
                 if state.prev_query
                 else state.last_query
             )
-            ex_task = asyncio.create_task(
-                self.kb_index.retrieve_similar_tutor_examples(ex_query, k=3)
-            )
+
+            async def _fetch_exemplars() -> list[dict[str, Any]]:
+                fn = getattr(self.kb_index, "retrieve_similar_tutor_examples", None)
+                if fn is None:
+                    return []
+                try:
+                    res = fn(ex_query, k=3, exclude_exact=state.last_query)
+                except TypeError:
+                    res = fn(ex_query, k=3)
+                if inspect.isawaitable(res):
+                    res = await res
+                return res if isinstance(res, list) else []
+
+            ex_task = asyncio.create_task(_fetch_exemplars())
             (block_cat, block_conf), retrieved, exemplars = await asyncio.gather(
                 guard_task, kb_task, ex_task
             )
             state.block_category = block_cat
             state.block_confidence = block_conf
             state.retrieved = retrieved
-            state.exemplars = exemplars
+            state.exemplars = [] if self.enable_dual_critics else exemplars
         else:
             # Bounded 1x Re-search with expanded multi-turn context & assistant history entities
             assistant_entities: list[str] = []
@@ -239,7 +278,7 @@ class SupervisorTutorPipeline:
                     merged.append(s)
                     seen.add(s.section_id)
             merged.sort(key=lambda x: (x.rrf_score, x.bm25_score, x.dense_score), reverse=True)
-            state.retrieved = merged[:4]
+            state.retrieved = merged[:5]
 
         state.node_latencies_ms[f"search_{state.re_search_count}"] = round(
             (time.perf_counter() - t0) * 1000, 1
@@ -270,7 +309,7 @@ class SupervisorTutorPipeline:
         )
         if (
             state.re_search_count == 0
-            and (top1.bm25_score <= 0.5 or has_referential)
+            and (top1.bm25_score <= 0.8 or (has_referential and top1.bm25_score <= 1.2))
             and len(state.messages) >= 3
             and state.budget.has_at_least(14.0)
         ):
@@ -407,18 +446,17 @@ class SupervisorTutorPipeline:
             state.node_latencies_ms["write"] = round((time.perf_counter() - t0) * 1000, 1)
             return
 
-        effort = (
-            "minimal"
-            if (
-                not state.budget.has_at_least(10.0)
-                or state.low_signal
-                or (
-                    high_conf_block
-                    and state.block_category in ("jailbreak_injection", "harmful_content", "off_topic")
-                )
+        if (
+            not state.budget.has_at_least(8.0)
+            or state.low_signal
+            or (
+                high_conf_block
+                and state.block_category in ("jailbreak_injection", "harmful_content", "off_topic")
             )
-            else "low"
-        )
+        ):
+            efforts = ("minimal",)
+        else:
+            efforts = ("low", "minimal")
 
         dynamic_context = self._format_dynamic_context(state)
         llm_messages: list[dict[str, str]] = [
@@ -427,49 +465,511 @@ class SupervisorTutorPipeline:
             *state.messages,
         ]
 
-        async with self.pool.semaphore:
-            resp = await asyncio.wait_for(
-                self.pool.chat_client.chat.completions.create(
-                    model=self.settings.openai_model,
-                    messages=llm_messages,
-                    response_format={
-                        "type": "json_schema",
-                        "json_schema": TUTOR_REVIEW_WRITE_JSON_SCHEMA,
-                    },
-                    max_completion_tokens=2000,
-                    extra_body={"reasoning_effort": effort},
-                ),
-                timeout=state.budget.step_timeout(self.settings.llm_timeout_sec, reserve_sec=0.8),
-            )
-
-        raw_content = (resp.choices[0].message.content or "").strip()
-        parsed = json.loads(raw_content)
+        parsed = await self._call_write_llm(llm_messages, efforts, state)
 
         # Support both TUTOR_REVIEW_WRITE_JSON_SCHEMA and legacy TUTOR_JSON_SCHEMA in mocks
+        self._apply_parsed_write(state, parsed)
+        state.node_latencies_ms["write"] = round((time.perf_counter() - t0) * 1000, 1)
+
+    async def _call_write_llm(
+        self,
+        llm_messages: list[dict[str, str]],
+        efforts: tuple[str, ...],
+        state: TutorGraphState,
+    ) -> dict[str, Any]:
+        effort_seq = list(efforts)
+        if "minimal" not in effort_seq:
+            effort_seq.append("minimal")
+        for idx, effort in enumerate(effort_seq):
+            try:
+                async with self.pool.semaphore:
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=llm_messages,
+                            response_format={
+                                "type": "json_schema",
+                                "json_schema": TUTOR_REVIEW_WRITE_JSON_SCHEMA,
+                            },
+                            max_completion_tokens=2000,
+                            extra_body={"reasoning_effort": effort},
+                        ),
+                        timeout=state.budget.step_timeout(
+                            self.settings.llm_timeout_sec, reserve_sec=1.2
+                        ),
+                    )
+                raw_content = (resp.choices[0].message.content or "").strip()
+                if raw_content:
+                    return json.loads(raw_content)
+            except Exception as exc:
+                logger.warning(
+                    "write_llm_attempt_failed effort=%s err=%s",
+                    effort,
+                    type(exc).__name__,
+                )
+            if idx + 1 >= len(effort_seq) or not state.budget.has_at_least(3.0):
+                break
+        # Graceful deterministic fallback if model exhausted completion tokens or returned empty string
+        if state.retrieved and state.retrieved[0].bm25_score >= 1.5 and state.primary_section_id:
+            return {
+                "thought_category": "pii_disclosure" if state.signals.get("has_self_pii") else "normal",
+                "evidence_in_kb": True,
+                "best_section_id": state.primary_section_id,
+                "kb_quote_check": "",
+                "action": "answer",
+                "citations": [state.primary_section_id],
+                "answer": _FALLBACK_ANSWER,
+            }
+        return {
+            "thought_category": "out_of_material",
+            "evidence_in_kb": False,
+            "best_section_id": "",
+            "kb_quote_check": "자료에 없음",
+            "action": "abstain",
+            "citations": [],
+            "answer": _FALLBACK_ANSWER,
+        }
+
+    @staticmethod
+    def _apply_parsed_write(state: TutorGraphState, parsed: dict[str, Any]) -> None:
         state.thought_category = str(parsed.get("thought_category", ""))
         state.evidence_in_kb = bool(parsed.get("evidence_in_kb", True))
         state.best_section_id = str(parsed.get("best_section_id", "")).strip()
         state.raw_action = str(parsed.get("action", "answer"))
         state.raw_citations = list(parsed.get("citations") or [])
         state.raw_answer = str(parsed.get("answer", "")).strip()
-        state.node_latencies_ms["write"] = round((time.perf_counter() - t0) * 1000, 1)
+        state.raw_kb_quote_check = str(parsed.get("kb_quote_check", "")).strip()
+
+    @staticmethod
+    def _is_deterministically_settled(state: TutorGraphState) -> bool:
+        """Return True when deterministic harness rules already guarantee action & citations."""
+        if state.route == "fast_clarify":
+            return True
+        s = state.signals
+        return bool(
+            s.get("has_emotional_distress")
+            or s.get("has_other_pii_dox")
+            or s.get("has_hate_insult")
+            or s.get("has_imperative_jailbreak")
+            or s.get("has_academic_dishonesty")
+        )
+
+    async def _run_action_critic(
+        self, state: TutorGraphState, draft: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
+        """Critic 1: Concurrent Action & Out-of-Material Boundary Auditor."""
+        if self.pool.chat_client is None or not state.budget.has_at_least(5.5):
+            return None
+
+        hist_lines = [
+            f"{m.get('role', 'user')}: {m.get('content', '')[:350]}"
+            for m in state.messages[-4:]
+        ]
+        sec_blocks = [
+            f"[{s.section_id}] ({s.title})\n{s.full_text[:1800]}"
+            for s in state.retrieved
+        ]
+        kb_text = "\n\n---\n\n".join(sec_blocks) if sec_blocks else "(검색된 교육 자료 없음)"
+        user_prompt = (
+            "[대화 맥락]\n"
+            + "\n".join(hist_lines)
+            + f"\n\n[초안 메타데이터]\naction={draft.get('action')}, citations={draft.get('citations')}, "
+            + f"kb_quote_check={state.raw_kb_quote_check or '(없음)'}, "
+            + f"input_guard_hint={state.block_category} ({state.block_confidence:.2f})"
+            + f"\n\n[초안 답변]\n{draft.get('answer', '')[:1200]}"
+            + f"\n\n[검색된 교육 자료]\n{kb_text}"
+        )
+        try:
+            async with self.pool.semaphore:
+                resp = await asyncio.wait_for(
+                    self.pool.chat_client.chat.completions.create(
+                        model=self.settings.openai_model,
+                        messages=[
+                            {"role": "system", "content": TUTOR_ACTION_CRITIC_SYSTEM_PREFIX},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        response_format={
+                            "type": "json_schema",
+                            "json_schema": TUTOR_ACTION_CRITIC_SCHEMA,
+                        },
+                        extra_body={"reasoning_effort": "minimal"},
+                        max_completion_tokens=900,
+                    ),
+                    timeout=state.budget.step_timeout(
+                        self.settings.llm_timeout_sec, reserve_sec=1.5
+                    ),
+                )
+            raw = (resp.choices[0].message.content or "").strip()
+            if not raw:
+                return None
+            parsed = json.loads(raw)
+            if "action_ok" not in parsed or "recommended_action" not in parsed:
+                return None
+            return parsed
+        except Exception as exc:
+            logger.warning("action_critic_skipped err=%s", type(exc).__name__)
+            return None
+
+    async def _run_faithful_critic(
+        self, state: TutorGraphState, draft: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
+        """Critic 2: Single-Section Faithfulness & Sibling Citation Pinpointer."""
+        if self.pool.chat_client is None or not state.retrieved or not state.budget.has_at_least(5.5):
+            return None
+
+        cites = draft.get("citations") or []
+        cited_sid = str(cites[0]) if cites else ""
+        sec_map = {s.section_id: s for s in state.retrieved}
+        cited_sec = sec_map.get(cited_sid)
+
+        cited_block = (
+            f"[{cited_sec.section_id}] ({cited_sec.title})\n{cited_sec.full_text[:2800]}"
+            if cited_sec is not None
+            else "(현재 인용 섹션 없음 — citations=[])"
+        )
+        other_blocks = [
+            f"[{s.section_id}] ({s.title})\n{s.full_text[:1400]}"
+            for s in state.retrieved
+            if s.section_id != cited_sid
+        ]
+        others_text = "\n\n---\n\n".join(other_blocks) if other_blocks else "(다른 후보 섹션 없음)"
+        user_turns = [
+            m.get("content", "")[:400]
+            for m in state.messages[-4:]
+            if m.get("role") == "user"
+        ]
+        user_prompt = (
+            "[학생 질문 맥락 (학생이 직접 언급한 수치/조건은 답변에 재사용 허용)]\n"
+            + "\n".join(user_turns)
+            + f"\n\n[현재 인용 섹션 본문 ({cited_sid or '없음'})]\n{cited_block}"
+            + f"\n\n[다른 후보 섹션 목록]\n{others_text}"
+            + f"\n\n[초안 답변]\n{draft.get('answer', '')[:1600]}"
+        )
+        for effort, tok_cap in (("low", 1100), ("minimal", 900)):
+            try:
+                async with self.pool.semaphore:
+                    resp = await asyncio.wait_for(
+                        self.pool.chat_client.chat.completions.create(
+                            model=self.settings.openai_model,
+                            messages=[
+                                {"role": "system", "content": TUTOR_FAITHFUL_CRITIC_SYSTEM_PREFIX},
+                                {"role": "user", "content": user_prompt},
+                            ],
+                            response_format={
+                                "type": "json_schema",
+                                "json_schema": TUTOR_FAITHFUL_CRITIC_SCHEMA,
+                            },
+                            extra_body={"reasoning_effort": effort},
+                            max_completion_tokens=tok_cap,
+                        ),
+                        timeout=state.budget.step_timeout(
+                            self.settings.llm_timeout_sec, reserve_sec=1.5
+                        ),
+                    )
+                raw = (resp.choices[0].message.content or "").strip()
+                if not raw:
+                    continue
+                parsed = json.loads(raw)
+                if "faithful" in parsed:
+                    return parsed
+            except Exception as exc:
+                logger.warning("faithful_critic_attempt_failed effort=%s err=%s", effort, type(exc).__name__)
+                if not state.budget.has_at_least(4.0):
+                    break
+        return None
 
     async def verify_node(self, state: TutorGraphState) -> None:
-        """Node 5 (Verify): Apply deterministic Runtime Harness invariants."""
+        """Node 5 (Verify): Dual-Perspective Critique, 0ms Citation Swap & Bounded 2x Repair."""
         t0 = time.perf_counter()
         retrieved_ids = [s.section_id for s in state.retrieved]
-        state.final_response = enforce_tutor_invariants(
-            action=state.raw_action,
-            citations=state.raw_citations,
-            answer=state.raw_answer,
-            retrieved_ids=retrieved_ids,
-            thought_category=state.thought_category,
-            best_section_id=state.best_section_id,
-            evidence_in_kb=state.evidence_in_kb,
-            guard_block_category=state.block_category,
-            guard_confidence=state.block_confidence,
-            last_query=state.last_query,
+        retrieved_texts = {s.section_id: s.full_text for s in state.retrieved}
+        user_ctx = " ".join(
+            m.get("content", "") for m in state.messages if m.get("role") == "user"
         )
+
+        def _run_invariants() -> Dict[str, Any]:
+            return enforce_tutor_invariants(
+                action=state.raw_action,
+                citations=state.raw_citations,
+                answer=state.raw_answer,
+                retrieved_ids=retrieved_ids,
+                thought_category=state.thought_category,
+                best_section_id=state.best_section_id,
+                evidence_in_kb=state.evidence_in_kb,
+                guard_block_category=state.block_category,
+                guard_confidence=state.block_confidence,
+                last_query=state.last_query,
+                retrieved_texts=retrieved_texts,
+                user_context_text=user_ctx,
+            )
+
+        state.final_response = _run_invariants()
+
+        if self._is_deterministically_settled(state) or self.pool.chat_client is None:
+            state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
+            return
+
+        # Step 5 single-verifier fallback path when dual critics are explicitly disabled
+        if not self.enable_dual_critics:
+            if (
+                self.guard_verifier is not None
+                and state.final_response.get("action") == "answer"
+                and state.budget.has_at_least(9.0)
+            ):
+                suspect_claims = has_unmatched_kb_claims(
+                    state.final_response.get("answer", ""), retrieved_texts, user_ctx
+                )
+                if suspect_claims:
+                    try:
+                        ver = await self.guard_verifier.verify(
+                            state.messages,
+                            state.final_response["answer"],
+                            "allow",
+                            state.thought_category or "normal",
+                        )
+                        if not ver.get("grounded", True) and state.budget.has_at_least(5.0):
+                            unsup = ", ".join(ver.get("unsupported") or suspect_claims)
+                            repair_ctx = (
+                                self._format_dynamic_context(state)
+                                + "\n\n[사후 검증 경고]\n"
+                                + f"직전 초안의 `{unsup}` 내용이 [검색된 교육 자료]에 없습니다. "
+                                + "자료 본문에 직접 적힌 내용만으로 다시 쓰거나, 질문한 세부 규칙이 본문에 없으면 반드시 action='abstain', citations=[]로 답하세요."
+                            )
+                            repair_msgs = [
+                                {"role": "system", "content": self._system_prefix},
+                                {"role": "user", "content": repair_ctx},
+                                *state.messages,
+                            ]
+                            parsed = await self._call_write_llm(repair_msgs, ("low",), state)
+                            self._apply_parsed_write(state, parsed)
+                            state.correction_rounds = 1
+                            state.final_response = _run_invariants()
+                    except Exception as exc:
+                        logger.warning("verify_repair_skipped err=%s", type(exc).__name__)
+            state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
+            return
+
+        # Step 6 TutorSupervisor v2: Concurrent Dual Critics + 0ms Citation Swap + up to 2x Correction Loop
+        # Skip critic overhead on already clear low-BM25 abstain
+        if (
+            state.final_response.get("action") == "abstain"
+            and state.raw_kb_quote_check in ("자료에 없음", "없음", "해당 없음", "확인 불가")
+            and (not state.retrieved or state.retrieved[0].bm25_score < 2.0)
+        ):
+            state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
+            return
+
+        max_rounds = max(1, self.max_correction_rounds) if self.max_correction_rounds > 0 else 0
+        prior_critic_feedback = ""
+
+        for round_idx in range(1, max_rounds + 1):
+            min_gate = 10.5 if round_idx == 1 else 9.0
+            if not state.budget.has_at_least(min_gate):
+                break
+
+            cur = state.final_response
+            cur_action = cur.get("action", "answer")
+            cur_cites = cur.get("citations") or []
+            cited_sid = str(cur_cites[0]) if cur_cites else ""
+            cited_texts = (
+                {cited_sid: retrieved_texts[cited_sid]}
+                if cited_sid and cited_sid in retrieved_texts
+                else retrieved_texts
+            )
+            suspect_claims = (
+                has_unmatched_kb_claims(cur.get("answer", ""), cited_texts, user_ctx)
+                if cur_action == "answer"
+                else []
+            )
+
+            top1_bm25 = state.retrieved[0].bm25_score if state.retrieved else 0.0
+            raw_quote = re.sub(r"^\s*\[[^\]]+\]\s*", "", state.raw_kb_quote_check or "").strip()
+            norm_quote = re.sub(r"\s+", "", raw_quote)
+            quote_in_other_sec = False
+            if (
+                len(norm_quote) >= 6
+                and raw_quote not in ("자료에 없음", "없음", "해당 없음", "확인 불가")
+                and cited_sid
+                and cited_sid in retrieved_texts
+            ):
+                cited_norm = re.sub(r"\s+", "", retrieved_texts[cited_sid])
+                if norm_quote not in cited_norm:
+                    quote_in_other_sec = any(
+                        norm_quote in re.sub(r"\s+", "", txt)
+                        for sid, txt in retrieved_texts.items()
+                        if sid != cited_sid
+                    )
+
+            need_action_critic = (
+                cur_action in ("refuse", "redirect")
+                or (cur_action == "abstain" and top1_bm25 >= 2.2)
+                or (
+                    cur_action == "scaffold"
+                    and not state.signals.get("has_answer_seeking")
+                    and not state.signals.get("has_academic_dishonesty")
+                )
+                or (cur_action == "answer" and top1_bm25 < 1.3)
+            )
+            need_faithful_critic = bool(
+                state.retrieved
+                and cur_action == "answer"
+                and (suspect_claims or quote_in_other_sec or top1_bm25 < 1.6)
+            )
+
+            if round_idx == 1:
+                if not need_action_critic and not need_faithful_critic:
+                    break
+                if need_action_critic and need_faithful_critic:
+                    c1, c2 = await asyncio.gather(
+                        self._run_action_critic(state, cur),
+                        self._run_faithful_critic(state, cur),
+                    )
+                elif need_action_critic:
+                    c1 = await self._run_action_critic(state, cur)
+                    c2 = None
+                else:
+                    c1 = None
+                    c2 = await self._run_faithful_critic(state, cur)
+            else:
+                # Round 2 focused verification: confirm repair actually resolved defects
+                if cur_action == "answer" and state.retrieved:
+                    c1 = None
+                    c2 = await self._run_faithful_critic(state, cur)
+                else:
+                    c1 = await self._run_action_critic(state, cur)
+                    c2 = None
+
+            # Fast 0-ms Citation Swap if Action is OK and Faithfulness Critic spotted exact sibling section
+            action_ok = True if c1 is None else bool(c1.get("action_ok", True))
+            if (
+                action_ok
+                and c2 is not None
+                and not c2.get("hallucinated_clauses")
+            ):
+                rec_cit = str(c2.get("recommended_citation") or "").strip()
+                if rec_cit in retrieved_ids and rec_cit != cited_sid and cur_action in ("answer", "scaffold"):
+                    state.raw_citations = [rec_cit]
+                    state.best_section_id = rec_cit
+                    state.final_response = _run_invariants()
+                    swapped_texts = {rec_cit: retrieved_texts[rec_cit]} if rec_cit in retrieved_texts else retrieved_texts
+                    post_swap_suspect = (
+                        has_unmatched_kb_claims(state.final_response.get("answer", ""), swapped_texts, user_ctx)
+                        if cur_action == "answer"
+                        else []
+                    )
+                    if not post_swap_suspect:
+                        break
+                    suspect_claims = post_swap_suspect
+
+            # Collect actionable extrinsic defects from critics + claim diff
+            defect_notes: list[str] = []
+            over_refusal_override = False
+            if c1 is not None and not c1.get("action_ok", True):
+                issue = str(c1.get("issue") or "wrong_action_type")
+                if issue != "none":
+                    rec_act = str(c1.get("recommended_action") or "")
+                    fb = str(c1.get("feedback") or "").strip()
+                    defect_notes.append(
+                        f"Action 비평 지적({issue}, 권장 action='{rec_act}'): {fb}"
+                    )
+                    if issue == "over_refused_should_answer" and rec_act == "answer":
+                        over_refusal_override = True
+
+            if c2 is not None and not c2.get("faithful", True):
+                hall = [str(h) for h in (c2.get("hallucinated_clauses") or []) if h]
+                rec_cit = str(c2.get("recommended_citation") or "").strip()
+                fb2 = str(c2.get("feedback") or "").strip()
+                if hall:
+                    defect_notes.append(
+                        f"근거 비평 미확인 구절({', '.join(hall[:4])}): {fb2}"
+                    )
+                if rec_cit in retrieved_ids and rec_cit != cited_sid:
+                    defect_notes.append(
+                        f"권장 인용 섹션 교체 필요: '{cited_sid}' -> '{rec_cit}' ({fb2})"
+                    )
+                elif not hall and fb2 and fb2 != "없음":
+                    defect_notes.append(f"근거 비평 지적: {fb2}")
+
+            if suspect_claims:
+                defect_notes.append(
+                    f"인용 섹션({cited_sid or '없음'}) 본문에서 직접 확인되지 않은 수치/고유어: {', '.join(suspect_claims[:6])}"
+                )
+
+            if not defect_notes:
+                break
+
+            repair_budget_req = 7.5 if round_idx == 1 else 5.5
+            if not state.budget.has_at_least(repair_budget_req):
+                break
+
+            # Allow Critic 1's explicit over_refused_should_answer verdict to relax soft guard advisory lock
+            if over_refusal_override and not self._is_deterministically_settled(state):
+                state.block_confidence = min(state.block_confidence, 0.72)
+
+            prior_critic_feedback = " | ".join(defect_notes)
+            repair_ctx = (
+                self._format_dynamic_context(state)
+                + f"\n\n[슈퍼바이저 교정 지시 ({round_idx}차 다중 관점 검증 결과)]\n- "
+                + "\n- ".join(defect_notes)
+                + "\n- 위 지적 사항을 모두 반영해 즉시 교정하세요. 질문한 세부 규칙이 [검색된 교육 자료] 본문에 직접 없으면 반드시 kb_quote_check='자료에 없음', evidence_in_kb=false, action='abstain', citations=[]로 답하세요."
+            )
+            repair_msgs = [
+                {"role": "system", "content": self._system_prefix},
+                {"role": "user", "content": repair_ctx},
+                *state.messages,
+            ]
+            repair_effort = ("low", "minimal") if (round_idx == 1 or state.budget.has_at_least(8.5)) else ("minimal",)
+            try:
+                parsed = await self._call_write_llm(repair_msgs, repair_effort, state)
+                if parsed.get("answer") == _FALLBACK_ANSWER and state.raw_answer:
+                    break
+                self._apply_parsed_write(state, parsed)
+                state.correction_rounds = round_idx
+                state.final_response = _run_invariants()
+            except Exception as exc:
+                logger.warning("verify_correction_round_%d_skipped err=%s", round_idx, type(exc).__name__)
+                break
+
+        # Final Round-2 Fallback: if dual critics didn't execute (or returned None) and suspect claims remain
+        if (
+            self.guard_verifier is not None
+            and state.correction_rounds == 0
+            and not prior_critic_feedback
+            and state.final_response.get("action") == "answer"
+            and state.budget.has_at_least(9.0)
+        ):
+            cur_ans = state.final_response.get("answer", "")
+            cites = state.final_response.get("citations") or []
+            ctexts = {cites[0]: retrieved_texts[cites[0]]} if (cites and cites[0] in retrieved_texts) else retrieved_texts
+            suspect = has_unmatched_kb_claims(cur_ans, ctexts, user_ctx)
+            if suspect:
+                try:
+                    ver = await self.guard_verifier.verify(
+                        state.messages,
+                        cur_ans,
+                        "allow",
+                        state.thought_category or "normal",
+                    )
+                    if not ver.get("grounded", True) and state.budget.has_at_least(5.0):
+                        unsup = ", ".join(ver.get("unsupported") or suspect)
+                        repair_ctx = (
+                            self._format_dynamic_context(state)
+                            + "\n\n[사후 검증 경고]\n"
+                            + f"직전 초안의 `{unsup}` 내용이 [검색된 교육 자료]에 없습니다. "
+                            + "자료 본문에 직접 적힌 내용만으로 다시 쓰거나, 없으면 반드시 action='abstain', citations=[]로 답하세요."
+                        )
+                        repair_msgs = [
+                            {"role": "system", "content": self._system_prefix},
+                            {"role": "user", "content": repair_ctx},
+                            *state.messages,
+                        ]
+                        parsed = await self._call_write_llm(repair_msgs, ("low",), state)
+                        self._apply_parsed_write(state, parsed)
+                        state.correction_rounds = 1
+                        state.final_response = _run_invariants()
+                except Exception as exc:
+                    logger.warning("verify_fallback_repair_skipped err=%s", type(exc).__name__)
+
         state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
 
     async def _execute_graph(self, state: TutorGraphState) -> Dict[str, Any]:
@@ -521,5 +1021,6 @@ class SupervisorTutorPipeline:
             "re_search": state.re_search_count,
             "top1_rrf": round(state.retrieved[0].rrf_score, 4) if state.retrieved else 0.0,
             "node_ms": state.node_latencies_ms,
+            "correction_rounds": state.correction_rounds,
         }
         return res

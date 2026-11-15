@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any, Optional
 
+from app.guard_verifier import _precheck_claims
 from app.prompts import ACTIONS, BLOCK_CATEGORIES, CATEGORIES
 
 _MAX_ANSWER_LEN = 4000
@@ -12,7 +13,9 @@ _NO_CITATION_ACTIONS = frozenset({"abstain", "redirect", "refuse", "escalate", "
 
 # Self-PII disclosure patterns in student questions (must be allow + answer + privacy reminder)
 _SELF_PII_RE = re.compile(
-    r"(?:(?:내|제)\s*이름은|[가-힣]{2,6}\s*(?:중학교|고등학교|초등학교)\s*\d\s*학년|"
+    r"(?:(?:내|제)\s*이름은|[가-힣]{2,6}\s*(?:초등학교|중학교|고등학교)\s*\d\s*학년|"
+    r"[가-힣]{2,6}(?:초|중|고)\s*\d\s*학년|"
+    r"(?:^|\n|\s)(?:나는|난)\s+(?!학생|바보|사람|선생|관리자|개발자|해커|테스터|초보)[가-힣]{2,4}(?:이야|야|예요|이에요|입니다)(?=\s|$|[,.])|"
     r"(?:내|제)\s*(?:연락처|전화번호|휴대폰|집\s*주소|이메일|계좌\s*번호)는|"
     r"010[-\s]?\d{3,4}[-\s]?\d{4})"
 )
@@ -141,7 +144,7 @@ def detect_deterministic_signals(last_query: str) -> dict[str, bool]:
     has_answer_seeking = bool(_ANSWER_SEEKING_RE.search(last_query)) and not has_dishonesty
     has_distress = bool(_EMOTIONAL_DISTRESS_RE.search(last_query))
     # Self-PII only when not asking to dox someone else ("친구", "다른 사람", "선생님")
-    asks_other_pii = any(w in last_query for w in ("친구", "다른 사람", "타인", "선생님", "동창", "알아내", "뿌려", "캐내"))
+    asks_other_pii = any(w in last_query for w in ("친구", "다른 사람", "타인", "선생님", "동창", "알아내", "뿌려", "캐내", "개발자", "관리자"))
     has_self_pii = bool(_SELF_PII_RE.search(last_query)) and not asks_other_pii and not has_other_pii_dox
     return {
         "has_hate_insult": has_hate,
@@ -155,6 +158,44 @@ def detect_deterministic_signals(last_query: str) -> dict[str, bool]:
     }
 
 
+def has_unmatched_kb_claims(
+    answer: str,
+    retrieved_texts: Optional[dict[str, str]],
+    user_context_text: str = "",
+) -> list[str]:
+    """Return numeric/entity claims in answer missing from all retrieved KB texts and user context."""
+    if not answer or not retrieved_texts:
+        return []
+    combined = "\n".join(retrieved_texts.values()) + " " + user_context_text
+    return _precheck_claims(answer, combined)
+
+
+def _rescue_citation_alignment(
+    answer: str,
+    cited_sid: str,
+    retrieved_ids: list[str],
+    retrieved_texts: dict[str, str],
+    user_context_text: str,
+) -> str:
+    """Swap citation if cited section misses claims that another retrieved section explicitly contains."""
+    if cited_sid not in retrieved_texts:
+        return cited_sid
+    base_unmatched = _precheck_claims(answer, retrieved_texts[cited_sid] + " " + user_context_text)
+    if not base_unmatched:
+        return cited_sid
+    best_sid = cited_sid
+    best_miss = len(base_unmatched)
+    for alt_sid in retrieved_ids:
+        alt_txt = retrieved_texts.get(alt_sid)
+        if not alt_txt or alt_sid == cited_sid:
+            continue
+        alt_miss = len(_precheck_claims(answer, alt_txt + " " + user_context_text))
+        if alt_miss < best_miss:
+            best_miss = alt_miss
+            best_sid = alt_sid
+    return best_sid
+
+
 def enforce_tutor_invariants(
     action: str,
     citations: list[str],
@@ -166,6 +207,8 @@ def enforce_tutor_invariants(
     guard_block_category: Optional[str] = None,
     guard_confidence: float = 0.0,
     last_query: str = "",
+    retrieved_texts: Optional[dict[str, str]] = None,
+    user_context_text: str = "",
 ) -> dict[str, Any]:
     """Enforce all competition scoring invariants on Tutor output before returning."""
     signals = detect_deterministic_signals(last_query)
@@ -292,6 +335,16 @@ def enforce_tutor_invariants(
         if not clean_cites and retrieved_ids:
             clean_cites = [retrieved_ids[0]]
         final_citations = clean_cites[:1]
+        if final_citations and retrieved_texts:
+            final_citations = [
+                _rescue_citation_alignment(
+                    answer,
+                    final_citations[0],
+                    retrieved_ids,
+                    retrieved_texts,
+                    user_context_text,
+                )
+            ]
 
     if not answer:
         answer = "지금은 답변을 만들 수 없어요. 잠시 후 다시 질문해 주세요."

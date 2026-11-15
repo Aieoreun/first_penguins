@@ -100,6 +100,7 @@ def _build_in_process_caller(mode: str) -> tuple[Callable[[str, Dict[str, Any]],
     os.environ["PIPELINE_MODE"] = mode
     from app.config import ClientPool, load_settings
     from app.guard_classifier import GuardClassifier
+    from app.guard_supervisor import GuardSupervisor
     from app.guard_verifier import GuardVerifier
     from app.kb_index import KBIndex
     from app.tutor_pipeline import TutorPipeline
@@ -107,14 +108,17 @@ def _build_in_process_caller(mode: str) -> tuple[Callable[[str, Dict[str, Any]],
     settings = load_settings()
     pool = ClientPool(settings)
     kb_index = KBIndex(settings, embed_client=pool.embed_client)
-    guard_clf = GuardClassifier(settings, pool)
+    guard_clf = GuardClassifier(settings, pool, kb_index=kb_index)
     guard_clf.load_or_train()
     guard_ver = GuardVerifier(settings, pool, kb_index)
+    guard_sup = GuardSupervisor(settings, pool, kb_index, guard_clf, guard_ver)
 
     if mode == "supervisor":
         try:
             from app.supervisor_graph import SupervisorTutorPipeline
-            tutor_pipe: Any = SupervisorTutorPipeline(settings, pool, kb_index, guard_classifier=guard_clf)
+            tutor_pipe: Any = SupervisorTutorPipeline(
+                settings, pool, kb_index, guard_classifier=guard_clf, guard_verifier=guard_ver
+            )
         except ImportError:
             tutor_pipe = TutorPipeline(settings, pool, kb_index, guard_classifier=guard_clf)
     else:
@@ -130,13 +134,9 @@ def _build_in_process_caller(mode: str) -> tuple[Callable[[str, Dict[str, Any]],
     def call(endpoint: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         if endpoint == "tutor":
             return loop.run_until_complete(tutor_pipe.handle(payload["messages"]))
-        decision, category, _ = loop.run_until_complete(guard_clf.classify(payload["messages"]))
-        res: Dict[str, Any] = {"input": {"decision": decision, "category": category}}
-        if payload.get("candidate_answer") is not None:
-            res["output"] = loop.run_until_complete(
-                guard_ver.verify(payload["messages"], payload["candidate_answer"], decision, category)
-            )
-        return res
+        return loop.run_until_complete(
+            guard_sup.handle(payload["messages"], payload.get("candidate_answer"))
+        )
 
     return call, kb_index
 

@@ -611,7 +611,7 @@ class KBIndex:
         ]
 
     async def retrieve_similar_tutor_examples(
-        self, query: str, k: int = 3
+        self, query: str, k: int = 3, exclude_exact: Optional[str] = None
     ) -> list[dict[str, Any]]:
         """Return top-k similar public/tutor.jsonl exemplars via BM25/dense RRF."""
         n_ex = len(self.tutor_examples)
@@ -645,8 +645,22 @@ class KBIndex:
             for rank, idx in enumerate(np.argsort(-dense_scores), start=1):
                 rrf_scores[idx] += 1.0 / (rrf_k + rank)
 
-        top_indices = np.argsort(-rrf_scores)[: min(k, n_ex)]
-        return [self.tutor_examples[int(i)] for i in top_indices]
+        excl_norm = normalize_text(exclude_exact) if exclude_exact else ""
+        results: list[dict[str, Any]] = []
+        for idx in np.argsort(-rrf_scores):
+            ex = self.tutor_examples[int(idx)]
+            if excl_norm:
+                last_u = ""
+                for m in reversed(ex.get("messages") or []):
+                    if m.get("role") == "user":
+                        last_u = normalize_text(m.get("content", ""))
+                        break
+                if last_u == excl_norm:
+                    continue
+            results.append(ex)
+            if len(results) >= k:
+                break
+        return results
 
     def build_toc(self) -> str:
         """Build a compact 48-section directory for the static cached system prefix."""

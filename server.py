@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from app.config import ClientPool, load_settings
 from app.guard_classifier import GuardClassifier
+from app.guard_supervisor import GuardSupervisor
 from app.guard_verifier import GuardVerifier
 from app.kb_index import KBIndex
 from app.supervisor_graph import SupervisorTutorPipeline
@@ -30,6 +31,7 @@ class AppState:
     kb_index: Optional[KBIndex] = None
     guard_classifier: Optional[GuardClassifier] = None
     guard_verifier: Optional[GuardVerifier] = None
+    guard_supervisor: Optional[GuardSupervisor] = None
     tutor_pipeline: Any = None
 
 
@@ -42,9 +44,12 @@ def _init_sync_components() -> None:
     settings = load_settings()
     pool = ClientPool(settings)
     kb_index = KBIndex(settings, embed_client=pool.embed_client)
-    guard_classifier = GuardClassifier(settings, pool)
+    guard_classifier = GuardClassifier(settings, pool, kb_index=kb_index)
     guard_classifier.load_or_train()
     guard_verifier = GuardVerifier(settings, pool, kb_index)
+    guard_supervisor = GuardSupervisor(
+        settings, pool, kb_index, guard_classifier, guard_verifier
+    )
 
     if settings.pipeline_mode == "single":
         tutor_pipeline: Any = TutorPipeline(
@@ -52,7 +57,11 @@ def _init_sync_components() -> None:
         )
     else:
         tutor_pipeline = SupervisorTutorPipeline(
-            settings, pool, kb_index, guard_classifier=guard_classifier
+            settings,
+            pool,
+            kb_index,
+            guard_classifier=guard_classifier,
+            guard_verifier=guard_verifier if settings.enable_dual_critics else None,
         )
 
     state.settings = settings
@@ -60,6 +69,7 @@ def _init_sync_components() -> None:
     state.kb_index = kb_index
     state.guard_classifier = guard_classifier
     state.guard_verifier = guard_verifier
+    state.guard_supervisor = guard_supervisor
     state.tutor_pipeline = tutor_pipeline
 
 
@@ -146,14 +156,15 @@ async def guard(req: GuardRequest):
     decision = "allow"
     category = "normal"
     try:
-        decision, category, _conf = await state.guard_classifier.classify(req.messages)
-        result: Dict[str, Any] = {
-            "input": {"decision": decision, "category": category}
-        }
-        if req.candidate_answer is not None:
-            result["output"] = await state.guard_verifier.verify(
-                req.messages, req.candidate_answer, decision, category
-            )
+        if state.guard_supervisor is not None:
+            result = await state.guard_supervisor.handle(req.messages, req.candidate_answer)
+        else:
+            decision, category, _conf = await state.guard_classifier.classify(req.messages)
+            result = {"input": {"decision": decision, "category": category}}
+            if req.candidate_answer is not None:
+                result["output"] = await state.guard_verifier.verify(
+                    req.messages, req.candidate_answer, decision, category
+                )
     except Exception as exc:
         err_name = type(exc).__name__
         result = {"input": {"decision": "allow", "category": "normal"}}
