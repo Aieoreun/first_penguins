@@ -1077,6 +1077,373 @@
           }
         }
       }
+    },
+    {
+      "tutor": 93.18,
+      "judge_errors": 0,
+      "invalid": 0,
+      "per_category": {
+        "tutor": {
+          "normal": 93.18
+        }
+      },
+      "tutor_judge_skipped": false,
+      "scope": "provided_kb_fact_diagnostic",
+      "count": 55,
+      "source": "experiments/.cache/jh_kb_facts_diagnostic2/facts.jsonl",
+      "source_sha256": "fff98e19d26bfbe7cef6919e2d88d4c9a7f05e6f37488d4cfe86f70b33dcca32",
+      "dataset_sha256": "3e99a556ada02b4af83db1b51321650a6a1b4916f53240552bf8ab3573a905de",
+      "generation_model": "openai/gpt-5-nano",
+      "kb_sha256": "a1aa8118bddaf2a8e3028eb97deb8cab02ec741ac38da769c920467cd2c8db66",
+      "weak_labels": "provided_model_facts_with_exact_kb_support_quotes",
+      "score_interpretation": "Use tutor only; aggregate total includes an absent guard endpoint",
+      "review": {
+        "path": "experiments/.cache/jh_kb_review_diagnostic2/reviews.jsonl",
+        "sha256": "459d3141af217bd899c8fd59c401dc1368cd0829e4af41d04b0b34a736aec590",
+        "scope": "provided_llm_kb_fact_review",
+        "dataset_sha256": "00077827a2a7b8f3860ba4d7ca62c276de43a2388cf4c013f8579cc087217567",
+        "model": "openai/gpt-5-nano",
+        "count": 83,
+        "workers": 8,
+        "prompt_sha256": "dc9d3bd0bb3998d48f96d7a297522513997a9ad2e1ef3c6a8178cbd200b45afc"
+      },
+      "curation": {
+        "path": "experiments/.cache/jh_kb_review_diagnostic2/curation.json",
+        "sha256": "d2034581cbe5ec684e7e9255f55c73a69ee8457646b70358f21257537a95fa78",
+        "scope": "pre_scoring_kb_fact_exclusions",
+        "created_at": "2026-11-15T19:44:13.026001+00:00",
+        "source_dataset_sha256": "00077827a2a7b8f3860ba4d7ca62c276de43a2388cf4c013f8579cc087217567",
+        "review_sha256": "459d3141af217bd899c8fd59c401dc1368cd0829e4af41d04b0b34a736aec590",
+        "candidate_responses_inspected": false,
+        "candidate_scores_observed": false,
+        "note": "Direct question/fact review only. Preliminary adaptive70 responses were collected but not opened or scored; final candidates will be recollected on the same curated set.",
+        "excluded": [
+          {
+            "id": "kbprobe-FIN-01-01-1",
+            "reason": "No subject identifies whose weekly settlement is being asked about."
+          },
+          {
+            "id": "kbprobe-FIN-03-02-1",
+            "reason": "Card identity is absent; the night restriction is product-specific."
+          },
+          {
+            "id": "kbprobe-FIN-04-01-0",
+            "reason": "The question already states the complete labeled fact."
+          },
+          {
+            "id": "kbprobe-PR-01-01-0",
+            "reason": "The quote supports fast-answer use, not the added basic/default-model claim."
+          },
+          {
+            "id": "kbprobe-PR-01-02-0",
+            "reason": "This exercise refers to an unspecified data analysis exercise."
+          },
+          {
+            "id": "kbprobe-PR-01-02-1",
+            "reason": "The dataset is absent and the request asks for numbers only."
+          },
+          {
+            "id": "kbprobe-PR-01-03-1",
+            "reason": "The referenced first and second sentences are not supplied."
+          },
+          {
+            "id": "kbprobe-PR-01-04-0",
+            "reason": "The question does not identify an action to classify; its fact names one."
+          },
+          {
+            "id": "kbprobe-PR-02-01-0",
+            "reason": "The question asks placement and length, but the fact only answers placement."
+          },
+          {
+            "id": "kbprobe-PR-03-02-1",
+            "reason": "The exercise whose workspace name is requested is not identified."
+          },
+          {
+            "id": "kbprobe-PR-03-03-1",
+            "reason": "The question already gives the complete answer command."
+          },
+          {
+            "id": "kbprobe-PY-03-01-0",
+            "reason": "The list and fruit example being asked about are not supplied or named."
+          },
+          {
+            "id": "kbprobe-PY-03-01-1",
+            "reason": "An execution result is requested without the code or a named example."
+          },
+          {
+            "id": "kbprobe-PY-03-03-0",
+            "reason": "The particular input statement is not supplied; the fact includes its variable name."
+          },
+          {
+            "id": "kbprobe-PY-03-03-1",
+            "reason": "The matrix whose element is requested is absent."
+          }
+        ]
+      },
+      "public_questions_in_generation": false,
+      "independent_source_holdout": false,
+      "runtime": {
+        "collect_seconds": 12.52,
+        "p50": 6.878,
+        "p95": 10.941,
+        "max": 12.515,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "generate:ValueError": 1
+        }
+      },
+      "variant": "jh_uncertain_sources",
+      "artifact": "experiments/.cache/jh_kb_probe_curated_uncertain1/jh_uncertain_sources_1",
+      "result_sha256": "b87fb27ca71c20dec0ff5338a0baf54409566ead1f569dcd91bb10f4b0d821f7",
+      "manifest": {
+        "variant": "jh_uncertain_sources",
+        "repeat": 1,
+        "workers": 64,
+        "judge_workers": 8,
+        "count": 55,
+        "judge_enabled": true,
+        "http_transport": "explicit_worker_thread_pool",
+        "request_slots_override": 64,
+        "started_at": "2026-11-16T05:04:54+0900",
+        "scoring_deferred": true,
+        "endpoints": [
+          "tutor"
+        ],
+        "commit": "17a481d19b32cc731c2e11d3b5e0f972d83952b6",
+        "dirty": false,
+        "model": "openai/gpt-5-nano",
+        "pinned_v2": {
+          "V2_REWRITE": "0",
+          "V2_REWRITE_EFFORT": "minimal",
+          "V2_REWRITE_TIMEOUT": "6",
+          "V2_SECTION": "top1",
+          "V2_VOTES": "1",
+          "V2_SEEK_FIRST": "0",
+          "V2_MATERIAL_EFFORT": "",
+          "V2_MATERIAL_INPUT": "chunks",
+          "V2_MATERIAL_SECTIONS": "3",
+          "V2_PROMPTS": "1",
+          "V2_SAFE_RULE": "0",
+          "V2_ANSWER_EFFORT": "minimal",
+          "V2_ANSWER_MAX_TOKENS": "2000",
+          "CLASSIFY_EFFORT": "low",
+          "ANSWER_EFFORT": "minimal",
+          "GUARD_EFFORT": "low",
+          "EMBED_TIMEOUT": "3",
+          "CLASSIFY_TIMEOUT": "10",
+          "SECOND_TIMEOUT": "13"
+        },
+        "embedding_configured": false,
+        "evaluator_hashes": {
+          "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+          "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+          "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+        },
+        "effective_config": {
+          "answer_effort": "low",
+          "answer_max_tokens": 2000,
+          "votes": 1,
+          "seek_first": true,
+          "safe_by_rule": true,
+          "deadline": 26,
+          "prepare_limit": 14.0,
+          "peace_input": null,
+          "peace_output": null,
+          "guided_input": null,
+          "guided_output": null,
+          "focus_input": null,
+          "request_slots": 64,
+          "short_votes": 3,
+          "other_vote_count": null,
+          "block_min_votes": 1,
+          "short_effort": null,
+          "short_max_tokens": null,
+          "short_timeout": null,
+          "answer_sections": 3,
+          "material_review_timeout": null,
+          "block_review_timeout": null,
+          "adaptive_votes": true,
+          "output_effort": null,
+          "output_max_tokens": null,
+          "material_max_chunks": null,
+          "material_max_tokens": null,
+          "tie_effort": null,
+          "tie_max_tokens": null,
+          "learned_gate_threshold": 0.95,
+          "learned_gate_c": 1000,
+          "training_source": "bundled_public_categories_evidence_and_harmful_actions",
+          "learned_section_c": 1000,
+          "learned_section_threshold": 0.98,
+          "learned_section_require_retrieved": false,
+          "learned_section_use_for_output": false,
+          "query_expansion_weight": null,
+          "evidence_first": null,
+          "learned_harmful_c": 1000,
+          "learned_harmful_threshold": 0.95,
+          "output_sections": 1,
+          "stream_answer_effort": null,
+          "stream_answer_max_tokens": null,
+          "stream_answer_timeout": null,
+          "fixed_academic_scaffold": null,
+          "output_votes": null,
+          "uncertain_sources_only": true,
+          "class": "pipelines.kimjaehak.uncertain_sources.Pipeline",
+          "answer_prompts_sha256": "07a856f4f6a69c887ee2aedbb274b9487672e783054bc201c3ded9748cfa71e4",
+          "unsupported_prompt_sha256": "ff6eee50bcef279019e09954f50eb98a5a016dcf81609e9747bc65997cf4145f"
+        },
+        "scope": "provided_kb_fact_diagnostic",
+        "source": "experiments/.cache/jh_kb_facts_diagnostic2/facts.jsonl",
+        "source_sha256": "fff98e19d26bfbe7cef6919e2d88d4c9a7f05e6f37488d4cfe86f70b33dcca32",
+        "dataset_sha256": "3e99a556ada02b4af83db1b51321650a6a1b4916f53240552bf8ab3573a905de",
+        "generation_model": "openai/gpt-5-nano",
+        "kb_sha256": "a1aa8118bddaf2a8e3028eb97deb8cab02ec741ac38da769c920467cd2c8db66",
+        "weak_labels": "provided_model_facts_with_exact_kb_support_quotes",
+        "score_interpretation": "Use tutor only; aggregate total includes an absent guard endpoint",
+        "review": {
+          "path": "experiments/.cache/jh_kb_review_diagnostic2/reviews.jsonl",
+          "sha256": "459d3141af217bd899c8fd59c401dc1368cd0829e4af41d04b0b34a736aec590",
+          "scope": "provided_llm_kb_fact_review",
+          "dataset_sha256": "00077827a2a7b8f3860ba4d7ca62c276de43a2388cf4c013f8579cc087217567",
+          "model": "openai/gpt-5-nano",
+          "count": 83,
+          "workers": 8,
+          "prompt_sha256": "dc9d3bd0bb3998d48f96d7a297522513997a9ad2e1ef3c6a8178cbd200b45afc"
+        },
+        "curation": {
+          "path": "experiments/.cache/jh_kb_review_diagnostic2/curation.json",
+          "sha256": "d2034581cbe5ec684e7e9255f55c73a69ee8457646b70358f21257537a95fa78",
+          "scope": "pre_scoring_kb_fact_exclusions",
+          "created_at": "2026-11-15T19:44:13.026001+00:00",
+          "source_dataset_sha256": "00077827a2a7b8f3860ba4d7ca62c276de43a2388cf4c013f8579cc087217567",
+          "review_sha256": "459d3141af217bd899c8fd59c401dc1368cd0829e4af41d04b0b34a736aec590",
+          "candidate_responses_inspected": false,
+          "candidate_scores_observed": false,
+          "note": "Direct question/fact review only. Preliminary adaptive70 responses were collected but not opened or scored; final candidates will be recollected on the same curated set.",
+          "excluded": [
+            {
+              "id": "kbprobe-FIN-01-01-1",
+              "reason": "No subject identifies whose weekly settlement is being asked about."
+            },
+            {
+              "id": "kbprobe-FIN-03-02-1",
+              "reason": "Card identity is absent; the night restriction is product-specific."
+            },
+            {
+              "id": "kbprobe-FIN-04-01-0",
+              "reason": "The question already states the complete labeled fact."
+            },
+            {
+              "id": "kbprobe-PR-01-01-0",
+              "reason": "The quote supports fast-answer use, not the added basic/default-model claim."
+            },
+            {
+              "id": "kbprobe-PR-01-02-0",
+              "reason": "This exercise refers to an unspecified data analysis exercise."
+            },
+            {
+              "id": "kbprobe-PR-01-02-1",
+              "reason": "The dataset is absent and the request asks for numbers only."
+            },
+            {
+              "id": "kbprobe-PR-01-03-1",
+              "reason": "The referenced first and second sentences are not supplied."
+            },
+            {
+              "id": "kbprobe-PR-01-04-0",
+              "reason": "The question does not identify an action to classify; its fact names one."
+            },
+            {
+              "id": "kbprobe-PR-02-01-0",
+              "reason": "The question asks placement and length, but the fact only answers placement."
+            },
+            {
+              "id": "kbprobe-PR-03-02-1",
+              "reason": "The exercise whose workspace name is requested is not identified."
+            },
+            {
+              "id": "kbprobe-PR-03-03-1",
+              "reason": "The question already gives the complete answer command."
+            },
+            {
+              "id": "kbprobe-PY-03-01-0",
+              "reason": "The list and fruit example being asked about are not supplied or named."
+            },
+            {
+              "id": "kbprobe-PY-03-01-1",
+              "reason": "An execution result is requested without the code or a named example."
+            },
+            {
+              "id": "kbprobe-PY-03-03-0",
+              "reason": "The particular input statement is not supplied; the fact includes its variable name."
+            },
+            {
+              "id": "kbprobe-PY-03-03-1",
+              "reason": "The matrix whose element is requested is absent."
+            }
+          ]
+        },
+        "public_questions_in_generation": false,
+        "independent_source_holdout": false
+      },
+      "components": {
+        "scope": "cached_tutor_component_diagnostic",
+        "source": "experiments/.cache/jh_kb_probe_curated_uncertain1/jh_uncertain_sources_1",
+        "source_scope": "provided_kb_fact_diagnostic",
+        "result_sha256": "b87fb27ca71c20dec0ff5338a0baf54409566ead1f569dcd91bb10f4b0d821f7",
+        "no_new_judge_calls": true,
+        "ambiguous_judge_keys": 0,
+        "unverified_items": 0,
+        "verified_summary": {
+          "items": 55,
+          "action_correct": {
+            "count": 55,
+            "mean": 1.0
+          },
+          "citation_f1": {
+            "count": 55,
+            "mean": 0.8
+          },
+          "facts": {
+            "count": 55,
+            "mean": 0.9454545454545454
+          },
+          "faithful": {
+            "count": 55,
+            "mean": 0.9818181818181818
+          },
+          "complied": {
+            "count": 0,
+            "mean": null
+          }
+        },
+        "verified_categories": {
+          "normal": {
+            "items": 55,
+            "action_correct": {
+              "count": 55,
+              "mean": 1.0
+            },
+            "citation_f1": {
+              "count": 55,
+              "mean": 0.8
+            },
+            "facts": {
+              "count": 55,
+              "mean": 0.9454545454545454
+            },
+            "faithful": {
+              "count": 55,
+              "mean": 0.9818181818181818
+            },
+            "complied": {
+              "count": 0,
+              "mean": null
+            }
+          }
+        }
+      }
     }
-  ]
+  ],
+  "used_for_development_comparisons": true
 }
