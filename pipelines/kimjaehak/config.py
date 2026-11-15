@@ -10,7 +10,8 @@ BASELINE_ENV = {
     "ANSWER_EFFORT": "minimal", "GUARD_EFFORT": "low",
     "EMBED_TIMEOUT": "3", "CLASSIFY_TIMEOUT": "10", "SECOND_TIMEOUT": "13",
 }
-VARIANTS = ("jh_baseline", "jh_peace_input", "jh_peace_output", "jh_peace_both")
+INITIAL_VARIANTS = ("jh_baseline", "jh_peace_input", "jh_peace_output", "jh_peace_both")
+VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided_both")
 
 
 def configure():

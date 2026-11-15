@@ -23,6 +23,11 @@ def load(name: str = ""):
         configure()
         if name == "jh_baseline":
             return importlib.import_module("pipelines.v2.pipeline").Pipeline
+        if name.startswith("jh_guided_"):
+            module = importlib.import_module("pipelines.kimjaehak.guided")
+            return {"jh_guided_input": module.GuidedInput,
+                    "jh_guided_output": module.GuidedOutput,
+                    "jh_guided_both": module.GuidedBoth}[name]
         module = importlib.import_module("pipelines.kimjaehak.pipeline")
         return {"jh_peace_input": module.PeaceInput,
                 "jh_peace_output": module.PeaceOutput,

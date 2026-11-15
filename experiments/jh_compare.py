@@ -25,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from pipelines.kimjaehak.config import BASELINE_ENV, VARIANTS
+from pipelines.kimjaehak.config import BASELINE_ENV, INITIAL_VARIANTS, VARIANTS
 from harness.score_local import score_local, load_kb_dir, as_scoring_input
 from grader.judge import make_judge
 from grader import scoring
@@ -218,7 +218,7 @@ def main():
     from dotenv import load_dotenv
     load_dotenv(ROOT / ".env", override=True)
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--variants", nargs="+", choices=(*VARIANTS, "v4"), default=list(VARIANTS))
+    ap.add_argument("--variants", nargs="+", choices=(*VARIANTS, "v4"), default=list(INITIAL_VARIANTS))
     ap.add_argument("--repeat", type=int, default=1)
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=8)

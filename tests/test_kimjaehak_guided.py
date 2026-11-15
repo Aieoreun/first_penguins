@@ -1,0 +1,63 @@
+import asyncio
+import unittest
+
+from core.schema import Decision, Label
+from pipelines.kimjaehak.pipeline import PeaceState
+from pipelines.kimjaehak.guided import (
+    GuidedInput, GuidedOutput, GuidedBoth, INPUT_SYSTEM, GROUND_SYSTEM, SAFE_SYSTEM,
+)
+from tests.test_pipeline import FakeLLM, QUESTION
+from tests.test_pipeline_v2 import SEARCHER, TOP1
+
+
+class GuidedTests(unittest.TestCase):
+    def test_harmful_speech_keeps_redirect_subtype(self):
+        llm = FakeLLM({INPUT_SYSTEM: '{"category":"harmful_speech","section":"","quote":""}'})
+        state = asyncio.run(GuidedInput(SEARCHER, llm).tutor({"messages": QUESTION}))
+        self.assertEqual(state.to_tutor_response()["action"], "redirect")
+        self.assertEqual(state.decision, Decision.BLOCK)
+
+    def test_input_has_material_and_rejects_untrusted_section(self):
+        def reply(payload):
+            self.assertIn('material', payload)
+            self.assertIn(TOP1, payload)
+            return '{"category":"out_of_material","section":{},"quote":""}'
+        llm = FakeLLM({INPUT_SYSTEM: reply})
+        state = asyncio.run(GuidedInput(SEARCHER, llm).guard({"messages": QUESTION}))
+        self.assertEqual(state.label, Label.OUT_OF_MATERIAL)
+        self.assertEqual(state.section, TOP1)
+
+    def test_grounding_returns_only_original_short_phrases(self):
+        llm = FakeLLM({GROUND_SYSTEM: '{"unsupported":["다섯 권", "정답은 세 권"]}',
+                       SAFE_SYSTEM: '{"safe":true}'})
+        state = PeaceState(messages=QUESTION, candidate_answer="다섯 권을 빌릴 수 있어요.", section=TOP1)
+        asyncio.run(GuidedOutput(SEARCHER, llm)._check_output(state))
+        self.assertEqual(state.unsupported, ["다섯 권"])
+        self.assertFalse(state.grounded)
+        self.assertTrue(state.safe)
+
+    def test_blocked_refusal_is_safe_and_skips_grounding(self):
+        llm = FakeLLM({SAFE_SYSTEM: '{"safe":true}'})
+        state = PeaceState(messages=QUESTION, candidate_answer="도울 수 없어요.",
+                           label=Label.HARMFUL_REQUEST)
+        asyncio.run(GuidedBoth(SEARCHER, llm)._check_output(state))
+        self.assertTrue(state.safe)
+        self.assertTrue(state.grounded)
+        self.assertEqual(len(llm.calls), 1)
+
+    def test_allowed_input_does_not_force_candidate_safe(self):
+        llm = FakeLLM({GROUND_SYSTEM: '{"unsupported":[]}', SAFE_SYSTEM: '{"safe":false}'})
+        state = PeaceState(messages=QUESTION, candidate_answer="후보", section=TOP1)
+        asyncio.run(GuidedBoth(SEARCHER, llm)._check_output(state))
+        self.assertFalse(state.safe)
+
+    def test_one_stage_failure_preserves_successful_safety(self):
+        llm = FakeLLM({GROUND_SYSTEM: TimeoutError(), SAFE_SYSTEM: '{"safe":true}'})
+        state = PeaceState(messages=QUESTION, candidate_answer="후보", section=TOP1)
+        asyncio.run(GuidedBoth(SEARCHER, llm)._check_output(state))
+        self.assertTrue(state.safe)
+        self.assertEqual(state.errors, ["guided_grounding:TimeoutError"])
+
+
+if __name__ == "__main__":
+    unittest.main()
