@@ -75,18 +75,26 @@ def main():
     parser.add_argument("--request-slots",type=int,default=64)
     parser.add_argument("--build-only",action="store_true")
     parser.add_argument("--alternative",action="store_true",help="Use expressions excluded from the primary transfer set")
+    parser.add_argument("--full",action="store_true",help="Retain source endpoints and inherited answer/evidence labels")
+    parser.add_argument("--collect-only",action="store_true",help="Defer full derived scoring until collection comparisons finish")
     args = parser.parse_args()
     source = args.source.resolve()
     if not source.is_relative_to(ROOT / "experiments/.cache") or not re.fullmatch(r"[A-Za-z0-9_-]+",args.name) or not 1 <= args.workers <= 64 or not 1 <= args.request_slots <= 64:
         parser.error("Invalid source, name or concurrency")
     items, generation = build_items(source,args.alternative)
+    if args.collect_only and not args.full:
+        parser.error("Input-only diagnostics need no deferred judge")
+    if args.full:
+        originals = {row["id"]:row for row in load_public()}
+        items = [{**originals[row["source_id"]],"id":row["id"],"source_id":row["source_id"],
+                  "messages":row["messages"]} for row in items]
     if not items:
         parser.error("No valid derived inputs")
     root = ROOT / "experiments/.cache" / ("jh_transfer_" + args.name)
     root.mkdir(exist_ok=False)
     dataset = "".join(json.dumps(item,ensure_ascii=False)+"\n" for item in items)
     (root / "derived_inputs.jsonl").write_text(dataset)
-    provenance = {"scope":"public_paraphrase_input_diagnostic","count":len(items),
+    provenance = {"scope":"public_paraphrase_full_diagnostic" if args.full else "public_paraphrase_input_diagnostic","count":len(items),
         "source":str(source.relative_to(ROOT)),"source_sha256":hashlib.sha256(source.read_bytes()).hexdigest(),
         "dataset_sha256":hashlib.sha256(dataset.encode()).hexdigest(),"generation_model":generation["model"],
         "inherited_labels":True,"independent_source_holdout":False,
@@ -96,15 +104,26 @@ def main():
         print(json.dumps(provenance),flush=True)
         return
     # Collection uses the same HTTP transport and server as the full comparison.
-    # No judge is needed for input-only guard metrics.
-    args.judge_workers, args.no_judge, args.collect_only, args.endpoints = 1, True, True, ["guard"]
+    # Only full diagnostics need the original answer judge.
+    deferred = args.collect_only
+    args.judge_workers, args.no_judge, args.collect_only = (8 if args.full else 1), not args.full, True
+    args.endpoints = ["tutor","guard"] if args.full else ["guard"]
     run_variant(args,args.variant,1,items,root)
     dest = root / (args.variant + "_1")
     manifest = json.loads((dest / "manifest.json").read_text())
     manifest.update(provenance)
     (dest / "manifest.json").write_text(json.dumps(manifest,indent=2))
+    if deferred:
+        print("DERIVED_SCORING_PENDING",dest,flush=True)
+        return
     rows = list(map(json.loads,(dest / "responses.jsonl").read_text().splitlines()))
-    result = score_rows(items,rows,1,no_judge=True)
+    result = score_rows(items,rows,args.judge_workers,no_judge=not args.full,journal=dest / "judge.jsonl")
+    if args.full:
+        result.update(provenance)
+        result["runtime"] = json.loads((dest / "runtime.json").read_text())
+        (dest / "derived_result.json").write_text(json.dumps(result,indent=2))
+        print(json.dumps({key:result[key] for key in ("scope","count","total","tutor","guard","judge_errors","invalid")}),flush=True)
+        return
     diagnostic = {**provenance,"variant":args.variant,"invalid":result["invalid"],
                   "input_metrics":result["guard_details"],"runtime":json.loads((dest / "runtime.json").read_text())}
     (dest / "diagnostic.json").write_text(json.dumps(diagnostic,indent=2))
