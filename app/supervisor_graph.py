@@ -416,7 +416,7 @@ class SupervisorTutorPipeline:
                         "type": "json_schema",
                         "json_schema": TUTOR_REVIEW_WRITE_JSON_SCHEMA,
                     },
-                    max_completion_tokens=2500,
+                    max_completion_tokens=2000,
                     extra_body={"reasoning_effort": effort},
                 ),
                 timeout=state.budget.step_timeout(self.settings.llm_timeout_sec, reserve_sec=0.8),

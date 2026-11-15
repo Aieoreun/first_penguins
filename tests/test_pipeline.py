@@ -415,3 +415,18 @@ class TestComplianceAndContracts:
             "output": {"grounded": True, "unsupported": [], "safe": False},
         }
         assert scoring.parse_guard(sample_guard, has_candidate=True) is not None
+
+    def test_non_streaming_max_completion_tokens_ceiling(self):
+        import ast
+        from pathlib import Path
+
+        app_dir = Path(__file__).resolve().parent.parent / "app"
+        for py_path in sorted(app_dir.glob("*.py")):
+            tree = ast.parse(py_path.read_text(encoding="utf-8"), filename=str(py_path))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Call):
+                    for kw in node.keywords:
+                        if kw.arg == "max_completion_tokens" and isinstance(kw.value, ast.Constant):
+                            assert isinstance(kw.value.value, int) and kw.value.value <= 2000, (
+                                f"{py_path.name}:{kw.lineno} max_completion_tokens={kw.value.value} exceeds 2000"
+                            )
