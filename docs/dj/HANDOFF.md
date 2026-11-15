@@ -1,57 +1,51 @@
-# HANDOFF — 석동진 남은 일
+# HANDOFF — 석동진 현재 상태 및 다음 할 일
 
-- 갱신: 2026-11-15
-- 코드 브랜치: `expert/bsuk1` (`e0c65a1`, `dev`에 아직 병합되지 않음)
-- 문서 위치: `docs/dj/` (`README.md`, `01_설계_메모.md`, `02_실험_결과.md`, `HANDOFF.md`)
-
----
-
-## 1. 현재 상태 요약
-
-- **완료된 것**
-  - 하이브리드 RAG(`/tutor`) + 입력·출력 가드(`/guard`) 1차 파이프라인 구현 및 GitHub `origin/expert/bsuk1` 푸시 (`e0c65a1`).
-  - 오프라인 단위 테스트(`11/11` 통과) 및 64 동시성 부하 테스트(`64/64` 통과, `2.278s`).
-  - 5-fold OOF 교차검증을 통한 TF-IDF in-sample 누수(`81.03` vs `54.12`) 진단 및 `gpt-5-nano` + kNN 경로 전환.
-  - 엘리스 런박스 1차 공식 제출 완료: **총점 74.19 (튜터 70.0, 가드 78.37)**, `67.980s`, 오류 0건.
-  - 멘토링 질문지 작성 및 멘토 피드백 확보 (긴 응답시간 처리, `Supervisor` 패턴, `Search -> Review -> Write`, 출처의 명시, Evaluation, 하네스 엔지니어링).
-- **미완료 / 확인 필요**
-  - `expert/bsuk1`의 `dev` 병합 PR.
-  - 런박스에서 `scripts/build_offline_assets.py` 실행 후 임베딩 사전 계산(`app/assets/kb_embeddings.npz`) 적용 여부 확인.
-  - `docs/submissions.md` 공용 제출표에 1차 제출 시각 및 런박스 `commit` 해시 기록.
+- 갱신: 2026-11-16
+- 문서 브랜치: `expert/bsuk1` (`docs/dj/` 최신 정리 완료)
+- 코드 실험 브랜치: `feature/step6-dual-supervisor` (최고 총점 커밋 `102cb2d`, 최신 실험 커밋 `cc1aa25`)
+- 참고 팀원 브랜치: `origin/experiment/seungwon` (`bef5614` / `6ec111d`, `v4`)
 
 ---
 
-## 2. 우선순위별 다음 작업
+## 1. 검증된 최고 성능 기준선 정리
 
-1. **[긴급 버그 수정 — 즉시 점수 개선 대상]**
-   - [ ] `app/tutor_pipeline.py` (`_run_guard`): `GuardClassifier.classify` 메서드명 불일치 수정 (현재 `/tutor` 사전 가드 우회 상태 해소).
-   - [ ] `app/guard_verifier.py` (`verify`): `raw_grounded=False`인데 `unsupported` 스팬이 비었을 때 `grounded=True`로 강제 덮어쓰는 로직 수정.
-2. **[하네스 엔지니어링 — 정량 평가 체계 구축]**
-   - [ ] `harness/score_local.py` 결과를 `action` 일치율, 인용 F1, 범주별 정확도, `span_f1`, `safe` 일치율 등으로 분해 출력하는 평가 스크립트 작성 및 실험 이력 자동 누적 체계 구축.
-3. **[아키텍처 고도화 — 멘토 피드백 반영]**
-   - [ ] `Supervisor` 기반 `Search -> Review -> Write` 파이프라인 도입 검토 (데드라인 예산 기반 긴 응답시간 폴백, Review 단계에서 불필요 인용 제거 및 조건부 재검색으로 출처 정확도 개선).
-   - [ ] 경계 범주(`out_of_material` vs `off_topic`, `answer_seeking` vs `academic_dishonesty`) 분류 기준 보강 후 2차 런박스 제출.
+| 목적 | 권장 기준 코드 | 런박스 공식 점수 |
+| --- | --- | --- |
+| **현재 보유 최고 총점** | `feature/step6-dual-supervisor` @ **`102cb2d`** | **총점 `80.18`** (튜터 `73.22`, 가드 `87.14`, `85.336s`) |
+| **`/tutor` 최고 구성** | `102cb2d` (단일패스 + Kiwi/Dense RRF + `public/tutor.jsonl` `exemplars` + 안전 후처리) | `72.75 ~ 73.67` (4연속 무수정 기준 평균 ~`73.2`) |
+| **`/guard` 최고 구성 (팀내)** | `origin/experiment/seungwon` @ **`bef5614` (`v4`)** | **가드 `88.14`** (`v4` 3분할+예시+1500tok+`safe_by_rule`+`locate_all`) |
 
 ---
 
-## 3. 실행 및 검증 명령어 (`expert/bsuk1` 기준)
+## 2. 핵심 교훈 요약 (재시도 금지 사항)
+
+1. **`gpt-5-nano`에서 `reasoning_effort="low"` 시 `max_completion_tokens`는 최소 `1200~1800` 확보** (`850/950`으로 깎으면 `minimal` 폴백으로 정확도 급락).
+2. **`public/guard.jsonl` 및 `public/tutor.jsonl` 동적 k-NN `exemplars`를 제거하지 않는다.** 제거 시 Step 6c(`/tutor -2.25p`)와 Step 8(`/guard -3.14p`) 모두 하락.
+3. **`GUARD_OUTPUT_SYSTEM_PREFIX`에 "계산·비교 결론 허용" 완화 문구/예시를 넣지 않는다.** `34e1607`에서 이 변경만으로 `Guard 87.14 → 81.67 (-5.47p)` 하락, 원복 직후 `86.25 (+4.58p)` 회복.
+4. **Tie-Breaker 게이트에 `_OOM_DETAIL_CUE_RE` 단독 `OR` 조건을 걸지 않는다.** `금리/한도/얼마` 등 정상 금융 질문 대부분에서 2차 호출이 발동해 `+7.4s` 지연과 오역전을 유발.
+
+---
+
+## 3. 다음 유망 실행 안 (우선순위)
+
+- **안 A (가장 높은 기대 점수 ~`80.8+`): 검증된 챔피언 1:1 직결**
+  - `/tutor`: **`102cb2d` 그대로 유지 (`73.2~73.7`)**
+  - `/guard`: 승원 `origin/experiment/seungwon` **`v4` 원본 코드·프롬프트 그대로(`# 예시` 포함 원문 4종 프롬프트, `max_tokens=1500`, `candidate_answer` 포함 검색, `locate_all`, `safe_by_rule=True`)** 이식 + 우리 `BadRequestError -> minimal` 재시도만 결합.
+- **안 B (`102cb2d` 경량 정밀 튜닝, `~85s` 유지)**
+  - `cc1aa25`에서 과잉 발동한 `_OOM_DETAIL_CUE_RE` Tie-Breaker와 `2,200자 × 3섹션` 장문 주입(`top_k=3`)만 `102cb2d`(`top_k=2, 700자`) 수준으로 원복.
+  - 로컬 감사에서 무오탐(`FP=0`)이 입증된 **`NFKC` 정규화 + `_precheck_claims` 백틱 코드 대조(`TP 7/35 → 10/35, FP 0/32`) + `enforce_high_precision_signals` 7종**만 남김.
+
+---
+
+## 4. 브랜치 전환 및 실행 명령어
 
 ```bash
-# 1. 의존성 설치 및 환경변수 로드
-pip install -r requirements.txt
+# 최고 총점(80.18) 코드로 복귀해 바로 배포/실험할 때
+git checkout feature/step6-dual-supervisor
+git reset --hard 102cb2d   # 또는 cc1aa25에서 안 B 적용
+
+# 런박스 배포 및 서버 기동
 set -a; source .env; set +a
-
-# 2. (권장) KB 및 공개 세트 임베딩 사전 생성
-python3 scripts/build_offline_assets.py
-
-# 3. 서버 기동 (포트 8000)
+python3 scripts/submission_helper.py preflight
 python3 -m uvicorn server:app --host 0.0.0.0 --port 8000
-
-# 4. 로컬 채점기 및 64 동시성 테스트
-python3 harness/score_local.py \
-  --tutor-url http://localhost:8000/tutor \
-  --guard-url http://localhost:8000/guard \
-  --token "$TEAM_TOKEN" --public public --kb kb
-
-python3 scripts/stress_test.py --base-url http://localhost:8000 --token "$TEAM_TOKEN" --concurrency 64 --total 64
 ```
