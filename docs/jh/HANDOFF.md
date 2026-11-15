@@ -4,11 +4,11 @@
 
 ## 현재 선택
 
-반복 확인된 공개 최고 후보는 **`jh_candidate` / 내부 slots 64**다. 공개 400문항 전체 점수 **96.90 / 97.11, 평균 97.005**다. 두 번째 실행은 tutor 97.00 / guard 97.22, 수집 17.36초, 요청 p95 5.983초 / 최대 9.418초였다. 두 실행 모두 HTTP·형식·채점 오류 0, 내부 material parse 실패는 각각 1 / 2요청이다.
+반복 확인된 공개 최고 후보는 **`jh_context_policy` / 내부 slots 64**다. 공개 400문항 전체 점수 **97.56 / 97.20, 평균 97.38**다. 두 번째는 tutor 97.62 / guard 96.78, 수집 19.45초, p95 6.402 / 최대 12.966초였다. HTTP·형식·채점 오류 0, 내부 실패는 4 / 2요청이다. 기존 `jh_candidate`는 추가 반복까지 합쳐 **네 번 평균 96.78**이며, 초기 두 번 평균 97.005만 보고 고르지 않는다.
 
 공개 category와 tutor evidence·harmful action 라벨로 처음부터 학습한 TF-IDF + LogisticRegression 분류기를 포함한다. **위 점수는 학습 데이터 내 점수이며 비공개 성능이 아니다.** 질문→답 표, reference_answer 조회, 요청 ID 비교, 비공개 요청 저장·학습은 없다. 입력 C=1000 / 확률 기준 0.95, 튜터 섹션 기준 0.98, harmful 세부 action 기준 0.95다. 불확실하면 기존 LLM 경로로 간다.
 
-여기에 간결한 일반 답변, 교재 밖 질문의 짧은 안내, 대화 맥락을 포함한 출력 가드를 결합했다. 출력에는 원래 BM25 top1 섹션을 쓰며 학습 섹션 선택은 튜터에만 적용한다. 통합 전 `jh_concise_fitted`는 95.72 / 96.00(평균 95.86), `jh_learned_sections_tutor`는 95.26 / 95.78(평균 95.52)이었다.
+유해 요청·발언에는 실제 대상에 맞춘 거절과 예방 학습 안내를 생성하고, 실패하면 기존 고정 거절로 복귀한다. 여기에 간결한 일반 답변, 교재 밖 질문의 짧은 안내, 대화 맥락을 포함한 출력 가드를 결합했다. 출력에는 원래 BM25 top1 섹션을 쓰며 학습 섹션 선택은 튜터에만 적용한다. 통합 전 `jh_concise_fitted`는 95.72 / 96.00(평균 95.86), `jh_learned_sections_tutor`는 95.26 / 95.78(평균 95.52)이었다.
 
 공개 라벨로 학습하지 않는 대안은 `jh_adaptive` / slots 64이다. 전체 **89.72 / 88.19, 평균 88.96**, 수집 54~60초다. `jh_voted` / slots 32는 **89.30 / 88.78, 평균 89.04**지만 수집 89~95초였다. 양쪽 모두 공개 프롬프트 튜닝을 거쳤다.
 
@@ -37,8 +37,8 @@
 
 ```bash
 uv pip install --python .venv/bin/python -r requirements-jh-research.txt
-.venv/bin/python experiments/jh_server.py --variant jh_candidate --request-slots 64 --port 8000
-.venv/bin/python experiments/jh_compare.py --name candidate_NEW --variants jh_candidate --workers 64 --request-slots 64 --judge-workers 8
+.venv/bin/python experiments/jh_server.py --variant jh_context_policy --request-slots 64 --port 8000
+.venv/bin/python experiments/jh_compare.py --name candidate_NEW --variants jh_context_policy --workers 64 --request-slots 64 --judge-workers 8
 .venv/bin/python -m unittest discover -s tests -q
 ```
 
@@ -70,6 +70,8 @@ uv pip install --python .venv/bin/python -r requirements-jh-research.txt
 
 통합 C=3000의 공개 반복은 97.31 / 96.19, 평균 96.75로 현재 후보보다 낮았다. OOF·교재 진단도 불리해 C=1000을 유지한다. 짧은 정책 문구의 36건 구성요소 비교는 1회 개선, 1회 동률이었다. 문구·학습 안내·일반 답변 추론량 변경을 각각 전체 평가 중이다. medium 답변 첫 실행의 JSON 모드 설정 오류는 채점에서 제외했고 `1173ff2`로 수정 후 새 이름으로 재수집한다.
 
-최근 전체 테스트 153개 통과. 이후 조건부 교재 선택·맥락 거절의 관련 검증도 통과했다. 주최측 평가기, SPEC, public, KB, core와 기본 server는 그대로 유지한다. 사용량은 마지막 조회 기준 **19% 남음**이다. 15% 이하를 확인하면 새 실험을 중단하고 진행 중 채점·결과·인수인계를 마무리해 커밋한다. 계정 사용량은 다른 작업과 공유된다. 현재 문서는 종료 보고가 아니다.
+최근 전체 테스트 161개 통과. 주최측 평가기, SPEC, public, KB, core와 기본 server는 그대로 유지한다. 사용량은 마지막 조회 기준 **18% 남음**이다. 15% 이하를 확인하면 새 실험을 중단하고 진행 중 채점·결과·인수인계를 마무리해 커밋한다. 계정 사용량은 다른 작업과 공유된다. 현재 문서는 종료 보고가 아니다.
 
 출력 세 번 합의는 고정 입력 두 번 모두 개선됐으며 첫 전체 97.16, 두 번째 채점 중이다. 불확실한 normal·pii 질문만 세 교재로 답하는 후보는 별도 55문항에서 tutor 93.18(기존 90.00)이었다. 원본·공개 파생 전체 비교 중이다. 모든 결과는 `01_experiments.md` 15차와 각 JSON에 기록한다.
+
+새 공개 구절 학습 추출기를 단독 판정에 쓰는 것은 OOF가 나빠 제외했다. LLM과 겹치는 오류의 경계만 고신뢰 보정하는 `jh_learned_output`과 다섯 번 합의 결합을 전체 반복 평가 중이다. 학습 내 이점이며, 기존 파생 데이터는 후보 답변이 원본과 같아 새 출력 일반화 검증이 아니다. `01_experiments.md` 16·17차 참조.
