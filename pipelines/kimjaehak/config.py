@@ -19,7 +19,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_medium_output", "jh_thin_material", "jh_adaptive_thin", "jh_adaptive_explicit",
                               "jh_brief_material", "jh_concise_answer", "jh_reasoned_tie", "jh_learned_gate",
                               "jh_learned_gate98", "jh_learned_gate95", "jh_learned_sections", "jh_learned_sections_all",
-                              "jh_learned_sections_tutor")
+                              "jh_learned_sections_tutor", "jh_kb_expand", "jh_kb_expand_fitted")
 
 
 def configure():
