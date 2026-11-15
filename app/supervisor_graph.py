@@ -279,20 +279,24 @@ class SupervisorTutorPipeline:
             state.node_latencies_ms["review"] = round((time.perf_counter() - t0) * 1000, 1)
             return
 
-        # Build Review summary for the Write node to maximize Citation F1 and Abstain accuracy
+        # Build neutral Review summary (avoid Rank-1 anchoring so Write checks exact section text)
         sec_summaries = [
-            f"{idx}. {s.section_id} ({s.title}) [RRF={s.rrf_score:.4f}, BM25={s.bm25_score:.2f}]"
-            for idx, s in enumerate(state.retrieved, start=1)
+            f"`{s.section_id}` ({s.title})"
+            for s in state.retrieved
         ]
         review_lines = [
             "[검색 검토(Review) 요약]",
-            f"- 1순위 후보 섹션: `{top1.section_id}` ({top1.title})",
-            "- 후보 순위: " + " | ".join(sec_summaries),
-            "- 지침: 마지막 질문이 요구하는 **정확한 수치·조건·규칙·기능명**이 위 후보 섹션 본문에 실제로 적혀 있을 때만 evidence_in_kb=true로 두고, "
-            "직접 근거가 되는 단 1개의 섹션 ID만 best_section_id와 citations에 넣으세요. "
-            "과목 키워드(은행·상품·파이썬·프롬프트 등)가 같더라도 **질문한 바로 그 세부 규정·수치·예외가 본문에 없으면** 절대 추측해 답하지 말고 "
-            "thought_category='out_of_material', evidence_in_kb=false, action='abstain', citations=[] 로 답하세요.",
+            "- 후보 섹션 목록(검색 순위와 무관하게 본문을 직접 대조해 1개만 선택): " + " | ".join(sec_summaries),
+            "- 섹션 선택 주의: 같은 상품·실습명(다람쥐 틴즈 체크카드, 첫걸음 통장, 새싹적금, 동아리 실습 등)이 여러 섹션에 나올 수 있습니다. "
+            "질문이 요구하는 **정확한 수치·규칙·함수·예외가 본문에 실제로 적힌 단 1개의 섹션**만 best_section_id와 citations에 넣으세요.",
+            "- out_of_material 판별: 위 4개 후보 본문 어디에도 질문한 바로 그 세부 규정(등급 기준, 수수료, 긴급 확인 기준, 삭제 확인창 여부, 가상 댓글 기준 등)이 "
+            "**직접 명시돼 있지 않으면** 인접 문장으로 유추하지 말고 반드시 thought_category='out_of_material', evidence_in_kb=false, action='abstain', citations=[]로 답하세요.",
         ]
+        if state.signals.get("has_other_pii_dox"):
+            review_lines.append(
+                "- 타인 정보 추출 감지: 친구/다른 학생의 개인정보나 통장 내역을 알아내 달라는 요청이므로 "
+                "thought_category='harmful_content_actionable', action='refuse', citations=[]로 거절하세요."
+            )
         if state.signals.get("has_self_pii"):
             review_lines.append(
                 "- 개인정보 감지: 학습자가 본인 이름/학교/연락처를 언급했습니다. 정상 질문이면 "
@@ -300,21 +304,30 @@ class SupervisorTutorPipeline:
             )
         if state.signals.get("has_answer_seeking"):
             review_lines.append(
-                "- 정답 요구 감지: 퀴즈/실습의 정답만 바로 달라는 요청이면 thought_category='answer_seeking', "
-                "action='scaffold', citations=[근거 섹션 ID 1개]로 힌트를 제공하세요."
+                "- 정답 요구 감지: thought_category='answer_seeking', action='scaffold', citations=[근거 섹션 ID 1개]. "
+                "정답 숫자/보기는 직접 말하지 말되, 해당 섹션의 **핵심 규칙·계산 원리**를 정확히 설명해 주고 학습자가 직접 구하게 유도하세요."
             )
         if state.signals.get("has_academic_dishonesty"):
             review_lines.append(
-                "- 과제 대필 감지: 수행평가/제출용 완성 답안 요구이므로 thought_category='academic_dishonesty', "
-                "action='scaffold', citations=[]로 설정하고 완성 코드를 주지 마세요."
+                "- 과제 대필 감지: 수행평가/숙제 제출용 완성 답안 요구이므로 thought_category='academic_dishonesty', "
+                "action='scaffold', citations=[]로 설정하고 코드 블록(```)이나 완성 코드·실행 결과를 절대 주지 마세요."
             )
 
         state.review_hint = "\n".join(review_lines)
         state.node_latencies_ms["review"] = round((time.perf_counter() - t0) * 1000, 1)
 
+    @staticmethod
+    def _is_high_conf_block(state: TutorGraphState) -> bool:
+        from app.harness_guardrails import is_quiz_pretext_override
+
+        high_conf_block = state.block_category is not None and state.block_confidence >= 0.85
+        if high_conf_block and is_quiz_pretext_override(state.block_category, state.signals):
+            return False
+        return high_conf_block
+
     def _format_dynamic_context(self, state: TutorGraphState) -> str:
         parts: list[str] = []
-        high_conf_block = state.block_category is not None and state.block_confidence >= 0.85
+        high_conf_block = self._is_high_conf_block(state)
 
         if high_conf_block and state.block_category:
             parts.append(
@@ -365,7 +378,7 @@ class SupervisorTutorPipeline:
     async def write_node(self, state: TutorGraphState) -> None:
         """Node 4 (Write): Schema-Guided Micro-CoT generation with deadline-adaptive effort."""
         t0 = time.perf_counter()
-        high_conf_block = state.block_category is not None and state.block_confidence >= 0.85
+        high_conf_block = self._is_high_conf_block(state)
 
         if self.pool.chat_client is None or not state.budget.has_at_least(4.0):
             if state.signals.get("has_emotional_distress"):

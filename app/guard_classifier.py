@@ -48,7 +48,20 @@ _JAILBREAK_PATTERNS = (
     re.compile(r"(?:탈옥|jailbreak)", re.IGNORECASE),
     re.compile(r"\bDAN\b"),
     re.compile(r"(?:개발자\s*모드|developer\s*mode)", re.IGNORECASE),
-    re.compile(r"(?:프롬프트|내부\s*지침|시스템\s*규칙)(?:을|를)?\s*(?:출력|공개|알려|보여)"),
+    re.compile(r"(?:프롬프트|내부\s*지침|숨겨진\s*(?:지시|지침|규칙)|시스템\s*(?:규칙|메시지))(?:을|를)?\s*.{0,12}(?:출력|공개|알려|보여)"),
+)
+
+# Curriculum meta-discussion (PR-01/PR-03 defense, fence usage, role comparison/analysis)
+_META_DEFENSE_EDUCATIONAL_RE = re.compile(
+    r"(?:울타리.*(?:어떻게|어케)\s*쓰는지|fence로\s*구분하는\s*방법|역할을\s*검토하면서|"
+    r"역할\s*지정이\s*괜찮은지\s*검토|실습\s*예시로\s*분석|가상의\s*예로\s*보여|프롬프트\s*주입이\s*뭔지|"
+    r"역할과\s*비교해서.{0,25}설명을?해|역할과\s*비교해서.{0,25}맡길)",
+    re.IGNORECASE,
+)
+_DIRECT_ATTACK_OVERRIDE_RE = re.compile(
+    r"(?:(?:튜터의|네)\s*(?:숨겨진\s*지시|system\s*prompt)|너한테\s*적용|"
+    r"안내자가\s*돼서|AI가\s*돼서.{0,20}주제를\s*검토)",
+    re.IGNORECASE,
 )
 
 
@@ -96,16 +109,24 @@ def _build_classifier_text(messages: list[dict[str, str]]) -> str:
     return f"[LAST] {last_user}"
 
 
+def _head_tail(text: str, limit: int = 1000) -> str:
+    if len(text) <= limit:
+        return text
+    head_len = min(380, limit // 2)
+    tail_len = max(200, limit - head_len - 16)
+    return f"{text[:head_len]}\n...(중략)...\n{text[-tail_len:]}"
+
+
 def _format_messages_for_llm(messages: list[dict[str, str]], max_turns: int = 6) -> str:
     lines: list[str] = []
     recent = messages[-max_turns:]
     for m in recent:
         role = m.get("role", "user")
         content = collapse_korean_obfuscation(m.get("content", ""))
-        lines.append(f"{role}: {content[:800]}")
+        lines.append(f"{role}: {_head_tail(content, 1000)}")
     last_user, _ = _extract_last_user_and_context(messages)
     if last_user:
-        lines.append(f"\n[마지막 학습자 발화 (최종 판정 기준)]\n{last_user[:800]}")
+        lines.append(f"\n[마지막 학습자 발화 (최종 판정 기준)]\n{_head_tail(last_user, 1200)}")
     return "\n".join(lines)
 
 
@@ -341,6 +362,9 @@ class GuardClassifier:
 
         if not _HAS_MEANINGFUL_TEXT_RE.search(stripped) and len(stripped) <= 12:
             return ("allow", "low_signal_input", 0.96), False
+
+        if _META_DEFENSE_EDUCATIONAL_RE.search(stripped) and not _DIRECT_ATTACK_OVERRIDE_RE.search(stripped):
+            return None, False
 
         for pat in _JAILBREAK_PATTERNS:
             if pat.search(stripped):
