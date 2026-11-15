@@ -58,3 +58,11 @@ class TutorOnly(WholeKB):
 
 class WideTutor(TutorOnly):
     learned_section_threshold = .95
+
+
+class Stronger(TutorOnly):
+    learned_gate_c = 3000
+
+
+class StrongerConservative(Stronger):
+    learned_gate_threshold = .98

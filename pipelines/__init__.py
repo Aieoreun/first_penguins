@@ -71,6 +71,9 @@ def load(name: str = ""):
             return {"jh_learned_sections":module.Pipeline, "jh_learned_sections_all":module.WholeKB,
                     "jh_learned_sections_tutor":module.TutorOnly,
                     "jh_learned_sections_tutor95":module.WideTutor}[name]
+        if name in {"jh_stronger95", "jh_stronger98"}:
+            module = importlib.import_module("pipelines.kimjaehak.learned_sections")
+            return module.Stronger if name.endswith("95") else module.StrongerConservative
         if name in {"jh_kb_expand", "jh_kb_expand_fitted"}:
             module = importlib.import_module("pipelines.kimjaehak.kb_expanded")
             return module.Fitted if name.endswith("_fitted") else module.Pipeline
