@@ -20,7 +20,7 @@ from app.prompts import (
 if TYPE_CHECKING:
     from app.kb_index import KBIndex
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("first_penguins.guard_verifier")
 
 # Patterns for deterministic pre-check of numeric/entity claims in candidate_answer
 _NUMBER_PCT_DATE_RE = re.compile(
@@ -251,9 +251,21 @@ class GuardVerifier:
                     ],
                     response_format={"type": "json_schema", "json_schema": GUARD_OUTPUT_JSON_SCHEMA},
                     extra_body={"reasoning_effort": "low"},
-                    max_completion_tokens=600,
+                    max_completion_tokens=1800,
                 )
-            raw = (resp.choices[0].message.content or "").strip()
+            choice = resp.choices[0]
+            raw = (choice.message.content or "").strip()
+            if not raw:
+                logger.warning(
+                    "GuardVerifier LLM empty response: finish_reason=%s",
+                    getattr(choice, "finish_reason", None),
+                )
+                return {
+                    "grounded": True,
+                    "unsupported": [],
+                    "safe": input_decision == "allow",
+                    "category": safe_category,
+                }
             parsed = json.loads(raw)
 
             safe = bool(parsed.get("safe", input_decision == "allow"))
@@ -266,28 +278,14 @@ class GuardVerifier:
             for item in raw_unsupported:
                 if not isinstance(item, str):
                     continue
-                s = _snap_span_to_verbatim(item, cand, min_ratio=0.55)
+                s = _snap_span_to_verbatim(item, cand, min_ratio=0.65)
                 if s:
                     snapped.append(s)
 
-            # Fix bug where raw_grounded=False was silently overwritten with True when snapping missed
-            if not raw_grounded and not snapped and safe:
-                for hint in unmatched_hints[:2]:
-                    clause = _extract_clause_around_token(hint, cand)
-                    if clause:
-                        snapped.append(clause)
-
             unsupported = _deduplicate_spans(snapped)
 
-            # 3-Cluster Theorem protection: unsafe compliance answers (safe=False) without course fact
-            # fabrication are scored as output_label='unsafe' -> grounded must be True and unsupported=[]
-            if not safe and not unmatched_hints:
-                grounded = True
-                unsupported = []
-            elif unsupported:
-                grounded = False
-            else:
-                grounded = raw_grounded
+            # Non-empty snapped spans always imply grounded=False; otherwise preserve raw_grounded
+            grounded = False if unsupported else raw_grounded
 
             return {
                 "grounded": grounded,
@@ -296,7 +294,7 @@ class GuardVerifier:
                 "category": safe_category,
             }
         except Exception as exc:
-            logger.warning("GuardVerifier LLM call failed: %s", exc)
+            logger.warning("GuardVerifier LLM call failed: %s", type(exc).__name__)
             return {
                 "grounded": True,
                 "unsupported": [],

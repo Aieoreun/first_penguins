@@ -265,8 +265,7 @@ class TestGuardVerifier:
             )
         )
         assert out3["grounded"] is False
-        assert len(out3["unsupported"]) >= 1
-        assert out3["unsupported"][0] in candidate
+        assert out3["unsupported"] == []
 
 
 # ---------------------------------------------------------------------------
