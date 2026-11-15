@@ -78,7 +78,7 @@ def main():
         ap.error("Only BM25 source runs can be faithfully replayed")
     top1_sources = {"jh_baseline", "v4", "jh_learned_gate", "jh_learned_gate98", "jh_learned_gate95",
                     "jh_learned_sections_tutor", "jh_learned_sections_tutor95", "jh_learned_harmful",
-                    "jh_concise_fitted", "jh_evidence_answer"}
+                    "jh_concise_fitted", "jh_evidence_answer", "jh_candidate", "jh_candidate_stronger"}
     if manifest["variant"] not in top1_sources:
         ap.error("Use an explicitly supported source with unchanged guard top1 search")
     config = manifest.get("effective_config") or {}

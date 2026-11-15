@@ -23,7 +23,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_kb_expand", "jh_kb_expand_fitted", "jh_concise_fitted", "jh_evidence_answer",
                               "jh_learned_harmful", "jh_context_output", "jh_context_output3", "jh_plain_abstain",
                               "jh_stronger95", "jh_stronger98", "jh_candidate", "jh_candidate_stronger", "jh_brief_policy",
-                              "jh_medium_answer", "jh_clear_policy")
+                              "jh_medium_answer", "jh_clear_policy", "jh_voted_output")
 
 
 def configure():
