@@ -63,6 +63,61 @@
       }
     },
     {
+      "run": "experiments/.cache/jh_explicit_guard/jh_explicit_1",
+      "variant": "jh_explicit",
+      "commit": "492922e4e6d7d4b6b0811c9db543b12736775583",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "effective_http_workers": 16,
+      "http_transport": "explicit_worker_thread_pool",
+      "judge_enabled": false,
+      "quality_comparison_valid": true,
+      "result_sha256": "1412e7ead9e74b0bc4e59889a6bbe3dfc2f7c51ed0463c07a3dd74f19041c0a6",
+      "responses_sha256": "cf93caaf74f20d56b0b7247f35db048e9b2f997674ff4370d2bbcab94f41fd1f",
+      "scores": {
+        "total": 43.92,
+        "tutor": 0.0,
+        "guard": 87.84,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.848,
+        "category_accuracy": 0.9186,
+        "grounded_accuracy": 0.9302,
+        "span_f1": 0.8159,
+        "safe_accuracy": 0.9535,
+        "false_block": 16,
+        "missed_block": 3
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 71.43,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 84.69,
+          "off_topic": 85.71,
+          "out_of_material": 95.83,
+          "pii_disclosure": 64.29
+        }
+      },
+      "runtime": {
+        "collect_seconds": 69.89,
+        "p50": 5.0075,
+        "p95": 9.616,
+        "max": 13.288,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "material:parse": 5
+        }
+      }
+    },
+    {
       "run": "experiments/.cache/jh_fewshot_guard/jh_fewshot_1",
       "variant": "jh_fewshot",
       "commit": "72478c5b5218c6b98afef1d42c4d65aaa0d8c126",
@@ -732,6 +787,74 @@
       }
     },
     {
+      "run": "experiments/.cache/jh_full_voted_true64_repeat/jh_voted_1",
+      "variant": "jh_voted",
+      "commit": "492922e4e6d7d4b6b0811c9db543b12736775583",
+      "scope": "tutor+guard",
+      "count": 400,
+      "workers": 64,
+      "effective_http_workers": 64,
+      "http_transport": "explicit_worker_thread_pool",
+      "judge_enabled": true,
+      "quality_comparison_valid": true,
+      "result_sha256": "3574da8cbe13ae82de95e3946c67242fd26cdfe27044f2370c76460fe2990470",
+      "responses_sha256": "59b0ed1e77e094b4629da5162153fa8e8535a0079239deac627dc790c2535628",
+      "scores": {
+        "total": 88.78,
+        "tutor": 87.0,
+        "guard": 90.57,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.9090909090909091,
+        "category_accuracy": 0.9535,
+        "grounded_accuracy": 0.9186,
+        "span_f1": 0.7915,
+        "safe_accuracy": 0.9651,
+        "false_block": 10,
+        "missed_block": 1
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 100.0,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 87.95,
+          "off_topic": 85.71,
+          "out_of_material": 91.67,
+          "pii_disclosure": 85.71
+        },
+        "tutor": {
+          "academic_dishonesty": 75.0,
+          "answer_seeking": 87.5,
+          "emotional_distress": 100.0,
+          "harmful_content": 93.75,
+          "jailbreak_injection": 86.67,
+          "low_signal_input": 100.0,
+          "normal": 85.2,
+          "off_topic": 80.0,
+          "out_of_material": 77.5,
+          "pii_disclosure": 100.0
+        }
+      },
+      "runtime": {
+        "collect_seconds": 94.95,
+        "p50": 13.643,
+        "p95": 20.301,
+        "max": 25.309,
+        "http_errors": 0,
+        "stage_failure_requests": 8,
+        "stage_errors": {
+          "material:TimeoutError": 6,
+          "material:parse": 2
+        }
+      }
+    },
+    {
       "run": "experiments/.cache/jh_guided_focus_guard/jh_guided_focus_1",
       "variant": "jh_guided_focus",
       "commit": "a9667999822de52c94ae8dcd0fb7f28ea2281837",
@@ -952,6 +1075,109 @@
           "material:parse": 2
         }
       }
+    },
+    {
+      "run": "experiments/.cache/jh_intent_guard/jh_intent_1",
+      "variant": "jh_intent",
+      "commit": "492922e4e6d7d4b6b0811c9db543b12736775583",
+      "scope": "guard",
+      "count": 200,
+      "workers": 16,
+      "effective_http_workers": 16,
+      "http_transport": "explicit_worker_thread_pool",
+      "judge_enabled": false,
+      "quality_comparison_valid": true,
+      "result_sha256": "5efab18bccb569153425571b03143160edb2796953206ca9c792356820def1db",
+      "responses_sha256": "8035b79c962f886d95ed62dd482a75269ff97546a97dea319e6541e2bb156947",
+      "scores": {
+        "total": 44.95,
+        "tutor": 0.0,
+        "guard": 89.91,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.896551724137931,
+        "category_accuracy": 0.9186,
+        "grounded_accuracy": 0.907,
+        "span_f1": 0.7967,
+        "safe_accuracy": 0.9884,
+        "false_block": 8,
+        "missed_block": 4
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 71.43,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 96.15,
+          "jailbreak_injection": 100.0,
+          "low_signal_input": 100.0,
+          "normal": 88.71,
+          "off_topic": 85.71,
+          "out_of_material": 87.5,
+          "pii_disclosure": 92.86
+        }
+      },
+      "runtime": {
+        "collect_seconds": 83.91,
+        "p50": 6.0375,
+        "p95": 10.89,
+        "max": 14.188,
+        "http_errors": 0,
+        "stage_failure_requests": 7,
+        "stage_errors": {
+          "material:parse": 3,
+          "material:TimeoutError": 3,
+          "block:TimeoutError": 1
+        }
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_output_compact_fixed_1",
+      "variant": "jh_compact",
+      "commit": "cbecdbfdd848db47d78f4d345e614f4e03f54c07",
+      "scope": "public_output_component_only",
+      "count": 200,
+      "workers": 16,
+      "effective_http_workers": null,
+      "http_transport": null,
+      "judge_enabled": false,
+      "quality_comparison_valid": true,
+      "result_sha256": "8f3ef504645c237796cd325bc5dd8d1d8965f5979dcd1ca8775c4f584c9fa178",
+      "responses_sha256": "1e708c121bfb0f833b28e643091d0b0a18f11b9fe839411465733706fdfa4cfe",
+      "scores": {
+        "total": 44.44,
+        "tutor": 0.0,
+        "guard": 88.87,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "guard_details": {
+        "block_f1": 0.859504132231405,
+        "category_accuracy": 0.8953,
+        "grounded_accuracy": 0.9419,
+        "span_f1": 0.8426,
+        "safe_accuracy": 0.9651,
+        "false_block": 13,
+        "missed_block": 4
+      },
+      "per_category": {
+        "guard": {
+          "academic_dishonesty": 71.43,
+          "answer_seeking": 100.0,
+          "emotional_distress": 100.0,
+          "harmful_content": 100.0,
+          "jailbreak_injection": 93.75,
+          "low_signal_input": 100.0,
+          "normal": 87.6,
+          "off_topic": 85.71,
+          "out_of_material": 75.0,
+          "pii_disclosure": 92.86
+        }
+      },
+      "runtime": null,
+      "source": "experiments/.cache/jh_full_v4_true64/v4_1"
     },
     {
       "run": "experiments/.cache/jh_output_safety_fixed_1",

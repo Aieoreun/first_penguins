@@ -4,7 +4,7 @@
 
 ## 현재 확인한 최고 전체 점수
 
-관측 최고는 **jh_voted 87.19** (tutor 86.12 / guard 88.27), 비교 기준은 **v4 86.28** (83.38 / 89.17)이다. 아직 반복 검증 전이다. 공개 400문항, 실제 동시 HTTP 최대 16, 원본 평가기 및 모델 판정 사용. 비공개 공식 점수가 아니다. 최초 v2 기준선은 82.20이다. 후보별 결과는 `01_experiments.md`, 집계는 `results.json`, 초기 네 버전의 고정 기록은 `01_four_way.json`에 있다.
+현재 가장 유망한 후보는 **jh_voted**다. 실제 HTTP 동시성 64, 공개 400문항 전체 평가를 두 번 반복해 **89.30 / 88.78 (평균 89.04)**을 기록했다. 각각 tutor 86.50 / 87.00, guard 92.10 / 90.57이다. 같은 실제 동시성의 v4는 85.80이었다. 원본 평가기 및 모델 판정을 사용한 로컬 점수이며 비공개 공식 점수가 아니다. 최초 v2 기준선은 82.20이다. 후보별 결과는 `01_experiments.md`, 집계는 `results.json`, 초기 네 버전의 고정 기록은 `01_four_way.json`에 있다.
 
 초기 네 버전은 모두 유지한다. Peace 원본 단순 교체는 77.25 / 81.03 / 77.64로 기준선을 넘지 못했다. `.env`는 출력·커밋하지 않았고, 주최측 평가 코드·SPEC·KB·public은 변경하지 않았다.
 
@@ -13,7 +13,8 @@
 프로젝트 루트에서 실행한다. `.venv`와 사용자 공통 `.env`를 그대로 사용한다.
 
 ```bash
-.venv/bin/python experiments/jh_server.py --variant v4 --port 8000
+.venv/bin/python experiments/jh_server.py --variant jh_voted --port 8000
+.venv/bin/python experiments/jh_compare.py --name voted_repeat_NEW --variants jh_voted --workers 64 --judge-workers 8
 .venv/bin/python experiments/jh_compare.py --name v4_repeat_NEW --variants v4 --workers 16 --judge-workers 8
 .venv/bin/python experiments/jh_compare.py --name load64_NEW --variants v4 --workers 64 --no-judge
 .venv/bin/python -m unittest discover -s tests -q
@@ -37,12 +38,14 @@
 
 ## 남은 검증
 
-짧은 분류만 세 번 투표하는 `jh_voted`가 guard 200건에서 91.35, 전체 400건에서 87.19를 기록했다. 첫 64 부하 실험은 클라이언트 기본 스레드 풀이 16개여서 실제로 64개를 보내지 못했다. `305ea02`에서 수정했고 기존 기록은 보존한다. 기존 workers 16 비교에는 영향이 없다. 실제 64개 조건에서 원래 v4를 채점 중이며 voted도 재검증한다. 무거운 material은 한 번만 부르고 내부 동시 요청 32개, 대기 포함 26초 제한을 쓴다. 어느 새 후보도 아직 최종 채택하지 않았다.
+짧은 분류만 세 번 투표하는 `jh_voted`는 무거운 material을 한 번만 부르고 내부 동시 요청 32개, 대기 포함 26초 제한을 쓴다. 실제 동시성 64의 두 실행은 HTTP·형식·채점 오류 0, 최대 지연 24.897 / 25.309초였다. material timeout/parse는 각각 9 / 8요청에 발생했으나 정상 형식 fallback을 반환했다.
 
-`3bb7168`의 `jh_reasoned`는 block·other 두 호출만 streaming / medium / 최대 4000토큰 / 12초로 바꾼 후보다. material·답변·출력은 calibrated와 같다. 연결부터 스트림 끝까지 제한 시간을 적용한다. 아직 API 검증 전이며 기본 선택이 아니다.
+첫 voted 64 부하 실험의 87.19는 클라이언트 기본 풀이 16개라 실제 64개를 보내지 못했다. `305ea02`에서 수정했고 기록을 보존한다. 기존 workers 16 비교에는 영향이 없다.
 
-출력 구성요소 비교와 공개 예시 참고, 자체 분류기 교차검증은 유의미한 우위를 확인하지 못했다. 자체 분류기는 서버에 배포하지 않았으며 선택 의존성 `requirements-jh-research.txt`와 `jh_classical_cv.py`로 결과만 재현할 수 있다.
+`jh_reasoned`는 streaming medium으로 짧은 분류의 추론을 강화했으나 guard 88.87, 과잉 차단 17로 미채택이다. `jh_explicit`는 87.84로 미채택이다. `jh_intent`는 89.91이었고, 실제 목적을 요약하는 판정을 기존 판정과 섞은 `jh_diverse`의 입력 투표 진단이 진행 중이다. `jh_multiground`는 voted의 답변 생성에서 상위 세 섹션 중 실제 근거 하나를 선택하는 후보이며 아직 API 검증 전이다.
 
-유망한 후보는 전체 400문항, 반복 실행, 실제 HTTP 동시성 64에서 확인해야 한다. 현재 최고 점수는 단일 실행이며, 1점 안팎의 차이는 모델 변동일 수 있다. 공식 비공개 평가는 제출하지 않았다.
+출력 구성요소 비교와 공개 예시 참고, 자체 분류기 교차검증은 유의미한 우위를 확인하지 못했다. `jh_compact`의 짧은 오류 구절 추출은 같은 입력의 v4 88.48 대비 88.87이었으나 반복 확인 전이다. 자체 분류기는 학습 문항 100%까지 적합되더라도 grouped OOF 약 74%였으며, 확신이 높은 경우에만 사용해도 기존 LLM과 결합한 입력 점수가 개선되지 않아 배포하지 않았다. 선택 의존성 `requirements-jh-research.txt`와 `jh_classical_cv.py`, `jh_gate_cv.py`로 재현한다.
 
-Codex 잔여 사용량 15% 이하를 확인하면 새 실험을 시작하지 않고 진행 중 결과·코드·이 문서를 정리해 커밋한다. 마지막 조회는 잔여 30%였다. 원격 push는 하지 않았다.
+새 후보도 전체 400문항, 반복 실행, 실제 HTTP 동시성 64에서 확인해야 한다. 1점 안팎의 차이는 모델 변동일 수 있다. 공식 비공개 평가는 제출하지 않았다. 현재 테스트 110개 통과.
+
+Codex 잔여 사용량 15% 이하를 확인하면 새 실험을 시작하지 않고 진행 중 결과·코드·이 문서를 정리해 커밋한다. 마지막 조회는 잔여 29%였다. 원격 push는 하지 않았다.
