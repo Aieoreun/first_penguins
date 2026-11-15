@@ -47,6 +47,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.diverse").Pipeline
         if name == "jh_multiground":
             return importlib.import_module("pipelines.kimjaehak.multiground").Pipeline
+        if name == "jh_material_review":
+            return importlib.import_module("pipelines.kimjaehak.material_review").Pipeline
         if name.startswith("jh_guided_"):
             module = importlib.import_module("pipelines.kimjaehak.guided")
             return {"jh_guided_input": module.GuidedInput,
