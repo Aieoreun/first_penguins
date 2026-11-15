@@ -404,7 +404,7 @@ class GuardClassifier:
                         {"role": "user", "content": user_prompt},
                     ],
                     response_format={"type": "json_schema", "json_schema": GUARD_INPUT_JSON_SCHEMA},
-                    extra_body={"reasoning_effort": "minimal"},
+                    extra_body={"reasoning_effort": "low"},
                     max_completion_tokens=1024,
                 )
             choice = resp.choices[0]
@@ -483,6 +483,12 @@ class GuardClassifier:
         if self.pool.chat_client is not None:
             llm_res = await self._llm_classify(messages, similar_examples, query_text)
             if llm_res is not None:
-                return llm_res
+                llm_dec, llm_cat, _ = llm_res
+                if llm_dec == "block":
+                    agreed = bool(jb_boost or cpu_decision == "block")
+                    conf = 0.95 if agreed else 0.72
+                else:
+                    conf = 0.92 if cpu_decision == "allow" else 0.78
+                return llm_dec, llm_cat, conf
 
         return cpu_decision, cpu_category, float(round(cpu_conf, 4))

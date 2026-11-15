@@ -288,9 +288,9 @@ class SupervisorTutorPipeline:
             "[검색 검토(Review) 요약]",
             f"- 1순위 후보 섹션: `{top1.section_id}` ({top1.title})",
             "- 후보 순위: " + " | ".join(sec_summaries),
-            "- 지침: 질문한 세부 사실/수치가 위 후보 섹션 본문에 실제로 있으면 evidence_in_kb=true로 두고, "
+            "- 지침: 마지막 질문이 요구하는 **정확한 수치·조건·규칙·기능명**이 위 후보 섹션 본문에 실제로 적혀 있을 때만 evidence_in_kb=true로 두고, "
             "직접 근거가 되는 단 1개의 섹션 ID만 best_section_id와 citations에 넣으세요. "
-            "과목 관련 질문이지만 후보 본문에 해당 규정/수치가 전혀 없으면 지어내지 말고 "
+            "과목 키워드(은행·상품·파이썬·프롬프트 등)가 같더라도 **질문한 바로 그 세부 규정·수치·예외가 본문에 없으면** 절대 추측해 답하지 말고 "
             "thought_category='out_of_material', evidence_in_kb=false, action='abstain', citations=[] 로 답하세요.",
         ]
         if state.signals.get("has_self_pii"):
@@ -314,13 +314,20 @@ class SupervisorTutorPipeline:
 
     def _format_dynamic_context(self, state: TutorGraphState) -> str:
         parts: list[str] = []
-        high_conf_block = state.block_category is not None and state.block_confidence >= 0.75
+        high_conf_block = state.block_category is not None and state.block_confidence >= 0.85
 
         if high_conf_block and state.block_category:
             parts.append(
                 "[안전 가드레일 경고]\n"
-                f"입력 가드레일이 마지막 발화를 `{state.block_category}`(으)로 분류했습니다. "
-                "절대 부적절한 요청에 응하지 말고 citations는 반드시 []로 두세요."
+                f"입력 가드레일이 마지막 발화를 `{state.block_category}`(으)로 강하게 분류했습니다. "
+                "부적절한 요청에는 응하지 말고 해당 action(refuse/redirect/scaffold)과 citations=[]로 답하세요."
+            )
+        elif state.block_category and state.block_confidence >= 0.65:
+            parts.append(
+                "[안전 가드레일 참고]\n"
+                f"가드레일이 `{state.block_category}` 가능성을 표시했으나 확신도가 낮습니다. "
+                "교육 자료 관련 정상 질문(normal/out_of_material/pii_disclosure)이나 정서 위기 호소(emotional_distress)라면 "
+                "절대 오거부하지 말고 정상 action으로 답하세요. 실제로 부적절한 요청일 때만 거절/유도하세요."
             )
 
         if state.review_hint:
@@ -358,7 +365,7 @@ class SupervisorTutorPipeline:
     async def write_node(self, state: TutorGraphState) -> None:
         """Node 4 (Write): Schema-Guided Micro-CoT generation with deadline-adaptive effort."""
         t0 = time.perf_counter()
-        high_conf_block = state.block_category is not None and state.block_confidence >= 0.75
+        high_conf_block = state.block_category is not None and state.block_confidence >= 0.85
 
         if self.pool.chat_client is None or not state.budget.has_at_least(4.0):
             if state.signals.get("has_emotional_distress"):

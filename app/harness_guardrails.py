@@ -19,7 +19,7 @@ _SELF_PII_RE = re.compile(
 
 # Hate speech / group slur / tutor insult vs actionable harm
 _HATE_INSULT_RE = re.compile(
-    r"(?:쫓아내|사기꾼|배울\s*자격|쓸모없는\s*존재|존재할\s*가치|무식한|바보|멍청|쓰레기|혐오|차별|열등)"
+    r"(?:다\s*쫓아내|다\s*사기꾼|배울\s*자격이\s*없|쓸모없는\s*존재|존재할\s*가치|열등한|혐오스럽|꺼져|멍청한\s*(?:AI|튜터|놈|년))"
 )
 
 # Academic dishonesty keywords
@@ -100,7 +100,7 @@ def enforce_tutor_invariants(
 ) -> dict[str, Any]:
     """Enforce all competition scoring invariants on Tutor output before returning."""
     signals = detect_deterministic_signals(last_query)
-    high_conf_block = guard_block_category is not None and guard_confidence >= 0.75
+    high_conf_block = guard_block_category is not None and guard_confidence >= 0.85
 
     if action not in ACTIONS:
         action = "answer"

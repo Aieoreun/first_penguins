@@ -24,7 +24,7 @@ logger = logging.getLogger("first_penguins.guard_verifier")
 
 # Patterns for deterministic pre-check of numeric/entity claims in candidate_answer
 _NUMBER_PCT_DATE_RE = re.compile(
-    r"\d{4}[-./년]\s*\d{1,2}[-./월]?(?:\s*\d{1,2}일?)?|\d+(?:[.,]\d+)?\s*%|\b\d+(?:[.,]\d+)?\b"
+    r"\d{4}[-./년]\s*\d{1,2}[-./월]?(?:\s*\d{1,2}일?)?|\d+(?:[.,]\d+)?\s*(?:%|원|세|살|명|개|건|점|단계|분|초|시간|일|주|개월|년|배|회)|\b\d{2,}(?:[.,]\d+)?\b"
 )
 _COURSE_ENTITY_RE = re.compile(
     r"(?:다람쥐\s*은행|다람\s*문구점|kkumtle|HelpyCode|Helpy|(?:PY|FIN|PR)-\d{2}(?:-\d{2})?)",
@@ -209,9 +209,10 @@ class GuardVerifier:
         kb_text_all: list[str] = []
         for sec in sections:
             header = f"[{sec['id']}] {sec['title']}".strip()
-            body = sec["content"][:1600]
+            full_body = sec["content"]
+            body = full_body[:3500]
             kb_blocks.append(f"{header}\n{body}")
-            kb_text_all.append(f"{header} {body}")
+            kb_text_all.append(f"{header} {full_body}")
         kb_context = "\n\n".join(kb_blocks) if kb_blocks else "(검색된 교육 자료 없음)"
 
         unmatched_hints = _precheck_claims(cand, "\n".join(kb_text_all))
@@ -284,8 +285,13 @@ class GuardVerifier:
 
             unsupported = _deduplicate_spans(snapped)
 
-            # Non-empty snapped spans always imply grounded=False; otherwise preserve raw_grounded
-            grounded = False if unsupported else raw_grounded
+            # Unsafe compliance without verbatim unsupported claims belongs to the 'unsafe' cluster (grounded=True)
+            if unsupported:
+                grounded = False
+            elif not safe:
+                grounded = True
+            else:
+                grounded = raw_grounded
 
             return {
                 "grounded": grounded,
