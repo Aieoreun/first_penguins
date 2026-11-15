@@ -4,7 +4,7 @@
 
 ## 현재 확인한 최고 전체 점수
 
-현재 가장 유망한 후보는 **jh_voted**다. 실제 HTTP 동시성 64, 공개 400문항 전체 평가를 두 번 반복해 **89.30 / 88.78 (평균 89.04)**을 기록했다. 각각 tutor 86.50 / 87.00, guard 92.10 / 90.57이다. 같은 실제 동시성의 v4는 85.80이었다. 원본 평가기 및 모델 판정을 사용한 로컬 점수이며 비공개 공식 점수가 아니다. 최초 v2 기준선은 82.20이다. 후보별 결과는 `01_experiments.md`, 집계는 `results.json`, 초기 네 버전의 고정 기록은 `01_four_way.json`에 있다.
+현재 반복 검증된 후보는 **jh_voted / 내부 slots 32**와 **jh_adaptive / 내부 slots 64**다. 실제 HTTP 동시성 64, 공개 400문항 전체 평가에서 voted는 **89.30 / 88.78 (평균 89.04)**, adaptive는 **89.72 / 88.19 (평균 88.96)**다. 단일 최고점은 adaptive지만 평균 점수 차이는 작고, adaptive의 수집 시간은 54~60초로 voted / slots 32의 89~95초보다 짧았다. 원본 평가기 및 모델 판정을 사용한 로컬 점수이며 비공개 공식 점수가 아니다. 최초 v2 기준선은 82.20이다. 후보별 결과는 `01_experiments.md`, 집계는 `results.json`, 초기 네 버전의 고정 기록은 `01_four_way.json`에 있다.
 
 초기 네 버전은 모두 유지한다. Peace 원본 단순 교체는 77.25 / 81.03 / 77.64로 기준선을 넘지 못했다. `.env`는 출력·커밋하지 않았고, 주최측 평가 코드·SPEC·KB·public은 변경하지 않았다.
 
@@ -46,16 +46,19 @@
 
 `jh_adaptive`는 결과를 바꿀 수 없는 세 번째 투표를 생략한다. 전체 88.59 (87.38 / 89.79), 내부 실패 15요청이었다. 지연 변동을 줄여 비교하기 위해 같은 시점의 부하 비교를 진행한다. `jh_adaptive_thin`은 교재 판정에만 검색 조각 5개를 제공하는 후보다. `jh_reconsider`와 `jh_medium_output`도 아직 진단을 마치지 않았다.
 
-현재 `jh_batch_adaptive_s32/jh_adaptive_1` 응답 수집 중이다. `--collect-only`로 수집한 폴더는 채점을 하지 않은 상태이므로, 수집 완료 후 아래 명령으로 원본 평가기를 실행해야 한다. 이후 내부 동시성 64와 짧은 교재 문맥 조건의 수집을 연속 비교할 계획이다.
+같은 시점의 네 부하 조건은 모두 채점 완료했다. adaptive / slots 32는 86.81, adaptive / slots 64는 89.72, adaptive_thin / slots 64는 87.22, voted / slots 64는 88.41이다. adaptive / slots 64의 새 반복은 88.19, adaptive_unanimous / slots 64는 88.17, adaptive_explicit / slots 64는 88.78이었다.
 
 ```bash
-.venv/bin/python experiments/jh_resume_score.py experiments/.cache/jh_batch_adaptive_s32/jh_adaptive_1
+.venv/bin/python experiments/jh_server.py --variant jh_adaptive --request-slots 64 --port 8000
+.venv/bin/python experiments/jh_compare.py --name adaptive_NEW --variants jh_adaptive --request-slots 64 --workers 64 --judge-workers 8
 ```
 
-`--request-slots`는 서버 내부 동시성이다. `--workers`는 HTTP 클라이언트 동시성이며 서로 다르다. 기본 추천 명령은 검증된 voted / 내부 32 그대로다. 아직 점수가 없는 후보를 최종 선택으로 취급하지 않는다.
+`--request-slots`는 서버 내부 동시성이다. `--workers`는 HTTP 클라이언트 동시성이며 서로 다르다. 기본값은 여전히 32이므로 adaptive의 위 결과를 재현하려면 64를 명시한다. 아직 점수가 없는 후보를 최종 선택으로 취급하지 않는다.
+
+차단 후 재검토는 guard 이진 F1 0.90→0.8317로 악화돼 미채택이다. medium 출력 검사도 고정 입력 guard 88.48→87.26, 내부 실패 14요청으로 미채택이다. 다음 준비 후보는 `jh_brief_material`(검색 문맥은 유지하고 교재 판정 출력만 축소)과 `jh_concise_answer`(일반 답변의 사실 누락·불필요한 추측 완화)다. 아직 실제 API 실험 전이다.
 
 출력 구성요소 비교와 공개 예시 참고, 자체 분류기 교차검증은 유의미한 우위를 확인하지 못했다. `jh_compact`의 짧은 오류 구절 추출은 같은 입력의 v4 88.48 대비 88.87이었으나 반복 확인 전이다. 자체 분류기는 학습 문항 100%까지 적합되더라도 grouped OOF 약 74%였으며, 확신이 높은 경우에만 사용해도 기존 LLM과 결합한 입력 점수가 개선되지 않아 배포하지 않았다. 선택 의존성 `requirements-jh-research.txt`와 `jh_classical_cv.py`, `jh_gate_cv.py`로 재현한다.
 
-새 후보도 전체 400문항, 반복 실행, 실제 HTTP 동시성 64에서 확인해야 한다. 1점 안팎의 차이는 모델 변동일 수 있다. 공식 비공개 평가는 제출하지 않았다. 현재 테스트 127개 통과.
+새 후보도 전체 400문항, 반복 실행, 실제 HTTP 동시성 64에서 확인해야 한다. 1점 안팎의 차이는 모델 변동일 수 있다. 공식 비공개 평가는 제출하지 않았다. 현재 테스트 130개 통과.
 
-Codex 잔여 사용량 15% 이하를 확인하면 새 실험을 시작하지 않고 진행 중 결과·코드·이 문서를 정리해 커밋한다. 마지막 조회는 잔여 28%였다. 원격 push는 하지 않았다.
+Codex 잔여 사용량 15% 이하를 확인하면 새 실험을 시작하지 않고 진행 중 결과·코드·이 문서를 정리해 커밋한다. 마지막 조회는 잔여 26%였다. 원격 push는 하지 않았다.
