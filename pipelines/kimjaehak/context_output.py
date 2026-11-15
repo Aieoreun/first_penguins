@@ -15,15 +15,18 @@ class Pipeline(TutorOnly):
                                    effort=GUARD_EFFORT, max_tokens=1500,
                                    timeout=SECOND_TIMEOUT, json_mode=True)
 
+    def _ground_payload(self, state):
+        ids = ([state.section] if state.section else []) + [chunk.section_id for chunk in state.chunks]
+        ids = list(dict.fromkeys(ids))[:self.output_sections]
+        return {"교재": [{"section": sid, "text": self.searcher.section_text(sid)} for sid in ids],
+                "대화": state.messages, "후보 답변": state.candidate_answer or ""}
+
     async def _check_output(self, state):
         if state.decision is Decision.BLOCK:
             return await super()._check_output(state)
         state.safe = True
-        ids = ([state.section] if state.section else []) + [chunk.section_id for chunk in state.chunks]
-        ids = list(dict.fromkeys(ids))[:self.output_sections]
         candidate = state.candidate_answer or ""
-        payload = {"교재": [{"section": sid, "text": self.searcher.section_text(sid)} for sid in ids],
-                   "대화": state.messages, "후보 답변": candidate}
+        payload = self._ground_payload(state)
         try:
             raw = await self._ground_response(payload)
             phrases = (_json_object(raw) or {}).get("unsupported")

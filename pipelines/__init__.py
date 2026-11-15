@@ -82,6 +82,8 @@ def load(name: str = ""):
         if name in {"jh_context_grounding", "jh_context_grounding_medium"}:
             module = importlib.import_module("pipelines.kimjaehak.context_grounding")
             return module.Reasoned if name.endswith("_medium") else module.Pipeline
+        if name == "jh_hybrid_output":
+            return importlib.import_module("pipelines.kimjaehak.hybrid_output").Pipeline
         if name in {"jh_context_output", "jh_context_output3"}:
             module = importlib.import_module("pipelines.kimjaehak.context_output")
             return module.ThreeSections if name.endswith("3") else module.Pipeline
