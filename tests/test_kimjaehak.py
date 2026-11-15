@@ -2,6 +2,8 @@
 import asyncio
 import json
 import unittest
+import tempfile
+from pathlib import Path
 from types import SimpleNamespace
 
 from core.schema import Decision, Label
@@ -107,6 +109,22 @@ class AdapterTests(unittest.TestCase):
         from experiments.jh_compare import load_public, request_key
         items = load_public()
         self.assertEqual(len(items), len({request_key(p['endpoint'], p) for p in items}))
+
+    def test_public_judge_checkpoint_reuses_only_identical_calls(self):
+        from experiments.jh_compare import journal_judge
+        calls = []
+        def judge(kind, payload):
+            calls.append((kind, payload))
+            return {"ok": True}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "judge.jsonl"
+            first = journal_judge(judge, path)
+            first("faithful", {"answer": "one"})
+            resumed = journal_judge(judge, path)
+            self.assertEqual(resumed("faithful", {"answer": "one"}), {"ok": True})
+            resumed("faithful", {"answer": "two"})
+            resumed("complied", {"answer": "one"})
+        self.assertEqual(len(calls), 3)
 
 
 if __name__ == "__main__":

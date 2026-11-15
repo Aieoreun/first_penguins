@@ -17,6 +17,7 @@ import statistics
 import subprocess
 import sys
 import time
+import threading
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -99,7 +100,32 @@ def wait_ready(proc, port):
     raise TimeoutError("Server did not become ready")
 
 
-def score_rows(items, rows, workers, no_judge=False):
+def journal_judge(judge, path):
+    """Checkpoint identical PUBLIC scoring calls, without changing judge prompts."""
+    cached = {}
+    if path.exists():
+        for line in path.read_text().splitlines():
+            entry = json.loads(line)
+            cached[entry["key"]] = entry["result"]
+    lock = threading.Lock()
+    def call(kind, payload):
+        key = hashlib.sha256(json.dumps([kind, payload], ensure_ascii=False,
+                                       sort_keys=True).encode()).hexdigest()
+        with lock:
+            if key in cached:
+                return cached[key]
+        result = judge(kind, payload)
+        with lock:
+            cached[key] = result
+            with path.open("a") as stream:
+                stream.write(json.dumps({"key": key, "result": result}) + "\n")
+            if len(cached) % 25 == 0:
+                print(f"judge calls checkpointed: {len(cached)}", flush=True)
+        return result
+    return call
+
+
+def score_rows(items, rows, workers, no_judge=False, journal=None):
     by_id = {r["id"]: r for r in rows}
     if set(by_id) != {p["id"] for p in items}:
         raise ValueError("Missing or duplicate public responses; refusing partial scoring")
@@ -108,6 +134,8 @@ def score_rows(items, rows, workers, no_judge=False):
         return cache[request_key(endpoint, payload)]
     judge = None if no_judge else make_judge(os.environ["OPENAI_BASE_URL"],
                                            os.environ["OPENAI_MODEL"], os.environ["OPENAI_API_KEY"])
+    if judge is not None and journal is not None:
+        judge = journal_judge(judge, journal)
     # Official implementation and judge prompts are used verbatim.
     result = score_local(items, call, judge, load_kb_dir(ROOT / "kb"), workers=workers)
     guards = []
@@ -165,15 +193,17 @@ def run_variant(args, variant, repetition, items, root):
                 proc.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 proc.kill(); proc.wait()
-    print(f"SCORING {variant} (official scorer, judge={'off' if args.no_judge else 'on'})", flush=True)
-    result = score_rows(items, rows, args.judge_workers, args.no_judge)
     secs = sorted(r["seconds"] for r in rows)
     errors = re.findall(r"errors=([^\s]+)", (dest / "server.log").read_text())
-    result["runtime"] = {"collect_seconds": collect_seconds, "p50": statistics.median(secs),
+    runtime = {"collect_seconds": collect_seconds, "p50": statistics.median(secs),
         "p95": secs[min(len(secs)-1, int(len(secs)*0.95))], "max": max(secs),
         "http_errors": sum(bool(r["error"]) for r in rows),
         "stage_failure_requests": sum(e != "-" for e in errors),
         "stage_errors": dict(__import__('collections').Counter(e for es in errors if es != "-" for e in es.split(',')))}
+    (dest / "runtime.json").write_text(json.dumps(runtime, indent=2))
+    print(f"SCORING {variant} (official scorer, judge={'off' if args.no_judge else 'on'})", flush=True)
+    result = score_rows(items, rows, args.judge_workers, args.no_judge, dest / "judge.jsonl")
+    result["runtime"] = runtime
     if evaluator_hashes() != manifest["evaluator_hashes"]:
         raise RuntimeError("Official evaluator files changed during experiment")
     (dest / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2))
