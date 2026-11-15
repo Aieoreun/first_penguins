@@ -66,7 +66,7 @@ class Guided(Pipeline):
         return [{"section_id": sid, "text": self.searcher.section_text(sid)}
                 for sid in list(dict.fromkeys(ids))[:3]]
 
-    async def _json(self, system, payload, timeout, max_tokens=2400):
+    async def _json(self, system, payload, timeout, max_tokens=2000):
         text = await self.llm.chat(system, json.dumps(payload, ensure_ascii=False),
                                    effort="low", max_tokens=max_tokens, timeout=timeout, json_mode=True)
         obj = _json_object(text)

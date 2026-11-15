@@ -11,6 +11,14 @@ from tests.test_pipeline_v2 import SEARCHER, TOP1
 
 
 class GuidedTests(unittest.TestCase):
+    def test_nonstreaming_proxy_token_ceiling(self):
+        class BoundedLLM(FakeLLM):
+            async def chat(inner, system, user, **kwargs):
+                self.assertLessEqual(kwargs["max_tokens"], 2000)
+                return await super().chat(system, user, **kwargs)
+        llm = BoundedLLM({INPUT_SYSTEM: '{"category":"normal","section":"","quote":""}'})
+        asyncio.run(GuidedInput(SEARCHER, llm).guard({"messages": QUESTION}))
+
     def test_harmful_speech_keeps_redirect_subtype(self):
         llm = FakeLLM({INPUT_SYSTEM: '{"category":"harmful_speech","section":"","quote":""}'})
         state = asyncio.run(GuidedInput(SEARCHER, llm).tutor({"messages": QUESTION}))
