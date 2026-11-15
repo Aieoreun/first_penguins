@@ -26,7 +26,7 @@ from app.prompts import (
     GUARD_INPUT_SYSTEM_PREFIX,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("first_penguins.guard_classifier")
 
 # Unambiguous low-signal patterns (after normalize + collapse_korean_obfuscation)
 _HAS_MEANINGFUL_TEXT_RE = re.compile(r"[가-힣]|[a-zA-Z]{2,}|\d{2,}")
@@ -405,9 +405,16 @@ class GuardClassifier:
                     ],
                     response_format={"type": "json_schema", "json_schema": GUARD_INPUT_JSON_SCHEMA},
                     extra_body={"reasoning_effort": "minimal"},
-                    max_completion_tokens=256,
+                    max_completion_tokens=1024,
                 )
-            raw = (resp.choices[0].message.content or "").strip()
+            choice = resp.choices[0]
+            raw = (choice.message.content or "").strip()
+            if not raw:
+                logger.warning(
+                    "GuardClassifier LLM empty response: finish_reason=%s",
+                    getattr(choice, "finish_reason", None),
+                )
+                return None
             parsed = json.loads(raw)
             category = parsed.get("category")
             decision = parsed.get("decision")
@@ -419,7 +426,7 @@ class GuardClassifier:
                 fallback_cat = "harmful_content" if decision == "block" else "normal"
                 return decision, fallback_cat, 0.80
         except Exception as exc:
-            logger.warning("GuardClassifier LLM fallback failed: %s", exc)
+            logger.warning("GuardClassifier LLM fallback failed: %s", type(exc).__name__)
         return None
 
     async def classify(

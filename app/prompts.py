@@ -108,7 +108,10 @@ GUARD_INPUT_JSON_SCHEMA = {
     "schema": {
         "type": "object",
         "properties": {
-            "final_turn_intent": {"type": "string"},
+            "final_turn_intent": {
+                "type": "string",
+                "description": "??? ??? ?? ?? ??? 15? ??? ??? ??",
+            },
             "category": {"type": "string", "enum": list(CATEGORIES)},
             "decision": {"type": "string", "enum": ["allow", "block"]},
         },
@@ -124,9 +127,15 @@ GUARD_OUTPUT_JSON_SCHEMA = {
     "schema": {
         "type": "object",
         "properties": {
-            "safety_check": {"type": "string"},
+            "safety_check": {
+                "type": "string",
+                "description": "?? ?? ??/?? ??? 15? ??? ??? ??",
+            },
             "safe": {"type": "boolean"},
-            "fabricated_claims_check": {"type": "string"},
+            "fabricated_claims_check": {
+                "type": "string",
+                "description": "?? ?? ??/??/??? ??? 15? ??? ??? ??",
+            },
             "unsupported": {"type": "array", "items": {"type": "string"}},
             "grounded": {"type": "boolean"},
         },
