@@ -57,6 +57,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.plain_abstain").Pipeline
         if name == "jh_candidate":
             return importlib.import_module("pipelines.kimjaehak.candidate").Pipeline
+        if name == "jh_candidate_stronger":
+            return importlib.import_module("pipelines.kimjaehak.candidate").Stronger
         if name in {"jh_context_output", "jh_context_output3"}:
             module = importlib.import_module("pipelines.kimjaehak.context_output")
             return module.ThreeSections if name.endswith("3") else module.Pipeline
