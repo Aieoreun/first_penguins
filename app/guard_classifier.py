@@ -98,10 +98,14 @@ def _build_classifier_text(messages: list[dict[str, str]]) -> str:
 
 def _format_messages_for_llm(messages: list[dict[str, str]], max_turns: int = 6) -> str:
     lines: list[str] = []
-    for m in messages[-max_turns:]:
+    recent = messages[-max_turns:]
+    for m in recent:
         role = m.get("role", "user")
-        content = normalize_text(m.get("content", ""))
+        content = collapse_korean_obfuscation(m.get("content", ""))
         lines.append(f"{role}: {content[:800]}")
+    last_user, _ = _extract_last_user_and_context(messages)
+    if last_user:
+        lines.append(f"\n[마지막 학습자 발화 (최종 판정 기준)]\n{last_user[:800]}")
     return "\n".join(lines)
 
 
@@ -264,7 +268,6 @@ class GuardClassifier:
             clf.fit(X_tr, y_block[train_idx], sample_weight=weights[train_idx])
             oof_probs[val_idx] = clf.predict_proba(X_va)[:, 1]
 
-        # Prefer primary guard.jsonl rows (weight > 1.0) if present
         primary_mask = weights > 1.0
         eval_y = y_block[primary_mask] if np.any(primary_mask) else y_block
         eval_p = oof_probs[primary_mask] if np.any(primary_mask) else oof_probs
@@ -303,7 +306,6 @@ class GuardClassifier:
             self._embed_cat_clf = LogisticRegression(C=3.0, class_weight="balanced", max_iter=1000, random_state=42)
             self._embed_cat_clf.fit(embs, y_cat)
 
-            # Fit Mahalanobis OOD parameters (centroids per category + shared regularized precision)
             centroids: dict[str, np.ndarray] = {}
             centered: list[np.ndarray] = []
             for cat in np.unique(y_cat):
@@ -407,10 +409,15 @@ class GuardClassifier:
                 )
             raw = (resp.choices[0].message.content or "").strip()
             parsed = json.loads(raw)
-            decision = parsed.get("decision")
             category = parsed.get("category")
-            if decision in ("allow", "block") and category in CATEGORIES:
-                return decision, category, 0.90
+            decision = parsed.get("decision")
+            if category in CATEGORIES:
+                # Strictly enforce the 6-allow / 4-block partition from category
+                reconciled_dec = "block" if category in BLOCK_CATEGORIES else "allow"
+                return reconciled_dec, category, 0.90
+            if decision in ("allow", "block"):
+                fallback_cat = "harmful_content" if decision == "block" else "normal"
+                return decision, fallback_cat, 0.80
         except Exception as exc:
             logger.warning("GuardClassifier LLM fallback failed: %s", exc)
         return None
@@ -460,15 +467,12 @@ class GuardClassifier:
 
         # Reconcile CPU decision & category
         if cpu_decision == "block" and cpu_category not in BLOCK_CATEGORIES:
-            # Find best block category if available
             cpu_category = "harmful_content"
         elif cpu_decision == "allow" and cpu_category in BLOCK_CATEGORIES:
             cpu_category = "normal"
 
         cpu_conf = max(p_block, 1.0 - p_block)
 
-        # When gpt-5-nano is available, use LLM + dynamic kNN exemplars directly
-        # (avoiding TF-IDF overfitting/short-circuiting on unseen grading inputs).
         if self.pool.chat_client is not None:
             llm_res = await self._llm_classify(messages, similar_examples, query_text)
             if llm_res is not None:

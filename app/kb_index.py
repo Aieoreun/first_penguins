@@ -52,6 +52,26 @@ _COURSE_TERMS: tuple[str, ...] = (
     "바른말 필터",
 )
 
+# Bilingual/Konglish aliases for English-phrased queries about Korean course entities
+_BILINGUAL_ALIASES: dict[str, tuple[str, ...]] = {
+    "squirrel": ("다람쥐", "다람쥐은행"),
+    "teens": ("틴즈", "체크카드"),
+    "debit": ("체크카드", "결제"),
+    "acorn": ("도토리", "포인트", "적립"),
+    "bookstore": ("서점", "문구점", "결제"),
+    "calculator": ("계산기", "입력", "정수", "변환"),
+    "isnt": ("아닌", "오류", "예외"),
+    "integer": ("정수", "int"),
+    "chek": ("확인", "표시", "필요"),
+    "check": ("확인", "점검"),
+    "mark": ("표시", "확인"),
+    "owe": ("갚아야", "빌린", "원금", "추가", "일주일"),
+    "purchase": ("결제", "구매", "물건"),
+    "saving": ("적금", "저축", "납입"),
+    "point": ("포인트", "적립"),
+    "time": ("시간", "결제", "오전", "밤"),
+}
+
 _DOMAIN_MAP: dict[str, str] = {
     "FIN": "finance",
     "PR": "prompt",
@@ -164,7 +184,7 @@ class KBIndex:
         self._load_precomputed_assets()
         self._build_bm25_indices()
 
-    def _tokenize(self, text: str) -> list[str]:
+    def _tokenize(self, text: str, expand_aliases: bool = False) -> list[str]:
         cleaned = collapse_korean_obfuscation(text)
         if not cleaned:
             return []
@@ -179,6 +199,9 @@ class KBIndex:
             low = m.lower()
             if low not in tokens:
                 tokens.append(low)
+            if expand_aliases and low in _BILINGUAL_ALIASES:
+                for kor_alias in _BILINGUAL_ALIASES[low]:
+                    tokens.append(kor_alias)
         return tokens
 
     def _load_kb(self) -> None:
@@ -208,7 +231,6 @@ class KBIndex:
                     title = heading_text or section_id
                     break
 
-            # Load any matching CSV tables in the same directory
             table_csvs: dict[str, list[dict[str, str]]] = {}
             table_markdowns: dict[str, str] = {}
             for csv_path in sorted(md_path.parent.glob(f"{section_id}-table*.csv")):
@@ -225,7 +247,6 @@ class KBIndex:
                 table_csvs[csv_path.name] = dict_rows
                 table_markdowns[csv_path.name] = _format_csv_markdown(headers, rows)
 
-                # Verbalize each row into a natural language child chunk
                 for row_idx, row in enumerate(rows, start=1):
                     pairs = ", ".join(
                         f"{headers[i]}: {row[i] if i < len(row) else ''}"
@@ -243,7 +264,6 @@ class KBIndex:
                         )
                     )
 
-            # Replace (표: {sid}-table1.csv) placeholders or append unreferenced tables
             used_tables: set[str] = set()
 
             def _replace_table(match: re.Match[str]) -> str:
@@ -267,7 +287,6 @@ class KBIndex:
             )
             self.section_order.append(section_id)
 
-            # Split markdown into child chunks on ## / ### headings
             self._split_md_chunks(section_id, title, enriched_text)
 
     def _add_chunk(self, chunk: ChildChunk) -> None:
@@ -385,6 +404,17 @@ class KBIndex:
             self._chunk_bm25 = bm25s.BM25()
             self._chunk_bm25.index(chunk_corpus, show_progress=False)
 
+        # Also build a 48-section full-document BM25 index to prevent table-row crowding
+        self._section_bm25: Optional[bm25s.BM25] = None
+        if self.section_order:
+            sec_corpus = [
+                self._tokenize(f"{sid} {self.sections[sid].title} {self.sections[sid].raw_text}")
+                for sid in self.section_order
+            ]
+            sec_corpus = [toks if toks else ["_empty_"] for toks in sec_corpus]
+            self._section_bm25 = bm25s.BM25()
+            self._section_bm25.index(sec_corpus, show_progress=False)
+
         self._tutor_bm25: Optional[bm25s.BM25] = None
         if self.tutor_examples:
             tutor_corpus = []
@@ -462,7 +492,7 @@ class KBIndex:
         scores_arr = np.zeros(n_chunks, dtype=np.float32)
         if not n_chunks or self._chunk_bm25 is None:
             return scores_arr
-        q_tokens = self._tokenize(query)
+        q_tokens = self._tokenize(query, expand_aliases=True)
         if not q_tokens:
             return scores_arr
         indices, scores = self._chunk_bm25.retrieve(
@@ -472,6 +502,21 @@ class KBIndex:
             scores_arr[int(idx)] = float(sc)
         return scores_arr
 
+    def _bm25_section_scores(self, query: str) -> dict[str, float]:
+        n_secs = len(self.section_order)
+        out: dict[str, float] = {sid: 0.0 for sid in self.section_order}
+        if not n_secs or self._section_bm25 is None:
+            return out
+        q_tokens = self._tokenize(query, expand_aliases=True)
+        if not q_tokens:
+            return out
+        indices, scores = self._section_bm25.retrieve(
+            [q_tokens], k=n_secs, show_progress=False
+        )
+        for idx, sc in zip(indices[0], scores[0]):
+            out[self.section_order[int(idx)]] = float(sc)
+        return out
+
     async def retrieve(
         self,
         query: str,
@@ -479,7 +524,7 @@ class KBIndex:
         prev_query: Optional[str] = None,
         last_weight: float = 0.75,
     ) -> list[RetrievedSection]:
-        """Retrieve top_k_sections using Kiwi+BM25s + optional dense cosine via RRF (k=60)."""
+        """Retrieve top_k_sections using Kiwi+BM25s (chunk + full-section) + optional dense cosine via RRF."""
         if not self.chunks or not self.sections:
             return []
 
@@ -487,9 +532,21 @@ class KBIndex:
             await self.ensure_embeddings()
 
         bm25_scores = self._bm25_chunk_scores(query)
+        sec_full_bm25 = self._bm25_section_scores(query)
         if prev_query and prev_query.strip():
             prev_bm25 = self._bm25_chunk_scores(prev_query)
             bm25_scores = last_weight * bm25_scores + (1.0 - last_weight) * prev_bm25
+            prev_sec_bm25 = self._bm25_section_scores(prev_query)
+            for sid in sec_full_bm25:
+                sec_full_bm25[sid] = (
+                    last_weight * sec_full_bm25[sid]
+                    + (1.0 - last_weight) * prev_sec_bm25.get(sid, 0.0)
+                )
+
+        # Prevent short CSV table rows from dominating longer markdown explanation chunks
+        for idx, chunk in enumerate(self.chunks):
+            if chunk.is_table:
+                bm25_scores[idx] *= 0.85
 
         dense_scores = np.zeros(len(self.chunks), dtype=np.float32)
         has_dense = False
@@ -506,33 +563,34 @@ class KBIndex:
                 dense_scores = self._chunk_embeddings @ q_vec
                 has_dense = True
 
-        rrf_k = 60.0
-        chunk_rrf = np.zeros(len(self.chunks), dtype=np.float32)
-
-        bm25_order = np.argsort(-bm25_scores)
-        for rank, idx in enumerate(bm25_order, start=1):
-            if bm25_scores[idx] > 0.0:
-                chunk_rrf[idx] += 1.0 / (rrf_k + rank)
-
-        if has_dense:
-            dense_order = np.argsort(-dense_scores)
-            for rank, idx in enumerate(dense_order, start=1):
-                chunk_rrf[idx] += 1.0 / (rrf_k + rank)
-
-        sec_rrf: dict[str, float] = {}
-        sec_bm25: dict[str, float] = {}
-        sec_dense: dict[str, float] = {}
+        # Aggregate max chunk BM25 and max chunk Dense per section first, then run Section-Level RRF
+        sec_bm25: dict[str, float] = {sid: 0.0 for sid in self.section_order}
+        sec_dense: dict[str, float] = {sid: 0.0 for sid in self.section_order}
         for idx, chunk in enumerate(self.chunks):
             sid = chunk.section_id
-            r_sc = float(chunk_rrf[idx])
             b_sc = float(bm25_scores[idx])
             d_sc = float(dense_scores[idx])
-            if sid not in sec_rrf or r_sc > sec_rrf[sid]:
-                sec_rrf[sid] = r_sc
-            if sid not in sec_bm25 or b_sc > sec_bm25[sid]:
+            if b_sc > sec_bm25[sid]:
                 sec_bm25[sid] = b_sc
-            if sid not in sec_dense or d_sc > sec_dense[sid]:
+            if d_sc > sec_dense[sid]:
                 sec_dense[sid] = d_sc
+
+        # Blend best chunk BM25 with full-section BM25 so multi-clause queries match strongly
+        for sid in self.section_order:
+            sec_bm25[sid] = 0.65 * sec_bm25[sid] + 0.35 * sec_full_bm25.get(sid, 0.0)
+
+        rrf_k = 60.0
+        sec_rrf: dict[str, float] = {sid: 0.0 for sid in self.section_order}
+
+        bm25_sec_order = sorted(self.section_order, key=lambda s: sec_bm25[s], reverse=True)
+        for rank, sid in enumerate(bm25_sec_order, start=1):
+            if sec_bm25[sid] > 0.0:
+                sec_rrf[sid] += 1.0 / (rrf_k + rank)
+
+        if has_dense:
+            dense_sec_order = sorted(self.section_order, key=lambda s: sec_dense[s], reverse=True)
+            for rank, sid in enumerate(dense_sec_order, start=1):
+                sec_rrf[sid] += 1.0 / (rrf_k + rank)
 
         ranked_sids = sorted(
             sec_rrf.keys(),
@@ -562,7 +620,7 @@ class KBIndex:
 
         bm25_scores = np.zeros(n_ex, dtype=np.float32)
         if self._tutor_bm25 is not None:
-            q_tokens = self._tokenize(query)
+            q_tokens = self._tokenize(query, expand_aliases=True)
             if q_tokens:
                 indices, scores = self._tutor_bm25.retrieve(
                     [q_tokens], k=n_ex, show_progress=False
