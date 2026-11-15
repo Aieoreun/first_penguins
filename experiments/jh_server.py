@@ -46,9 +46,11 @@ def main():
               "stream_answer_effort", "stream_answer_max_tokens", "stream_answer_timeout",
               "fixed_academic_scaffold", "output_votes", "uncertain_sources_only", "contextual_refusal",
               "retry_source_failure", "learned_span_c", "learned_span_threshold", "guard_category_without_subtype",
-              "output_timeout", "hybrid_output")
+              "output_timeout", "hybrid_output", "refusal_review", "refusal_timeout", "guard_only_c")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
+    if hasattr(pipeline, "refusal_pattern"):
+        effective["refusal_pattern"] = pipeline.refusal_pattern.pattern
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(
         {k.value: v for k, v in pipeline.answer_systems.items()}, sort_keys=True).encode()).hexdigest()
     effective["unsupported_prompt_sha256"] = hashlib.sha256(pipeline.unsupported_system.encode()).hexdigest()
