@@ -1,16 +1,25 @@
 import asyncio
+import json
 import unittest
 
 from core.schema import Decision, Label
 from pipelines.kimjaehak.pipeline import PeaceState
 from pipelines.kimjaehak.guided import (
-    GuidedInput, GuidedOutput, GuidedBoth, INPUT_SYSTEM, GROUND_SYSTEM, SAFE_SYSTEM,
+    GuidedInput, GuidedOutput, GuidedBoth, FocusInput, INPUT_SYSTEM, GROUND_SYSTEM, SAFE_SYSTEM,
 )
 from tests.test_pipeline import FakeLLM, QUESTION
 from tests.test_pipeline_v2 import SEARCHER, TOP1
 
 
 class GuidedTests(unittest.TestCase):
+    def test_focus_places_actual_last_request_after_evidence(self):
+        def reply(payload):
+            obj = json.loads(payload)
+            self.assertEqual(list(obj)[-1], "classify_this_last_user_message")
+            self.assertEqual(obj["classify_this_last_user_message"], QUESTION[-1]["content"])
+            return '{"category":"normal","section":"","quote":""}'
+        asyncio.run(FocusInput(SEARCHER, FakeLLM({INPUT_SYSTEM: reply})).guard({"messages": QUESTION}))
+
     def test_nonstreaming_proxy_token_ceiling(self):
         class BoundedLLM(FakeLLM):
             async def chat(inner, system, user, **kwargs):

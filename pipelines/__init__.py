@@ -27,7 +27,8 @@ def load(name: str = ""):
             module = importlib.import_module("pipelines.kimjaehak.guided")
             return {"jh_guided_input": module.GuidedInput,
                     "jh_guided_output": module.GuidedOutput,
-                    "jh_guided_both": module.GuidedBoth}[name]
+                    "jh_guided_both": module.GuidedBoth,
+                    "jh_guided_focus": module.FocusInput}[name]
         module = importlib.import_module("pipelines.kimjaehak.pipeline")
         return {"jh_peace_input": module.PeaceInput,
                 "jh_peace_output": module.PeaceOutput,

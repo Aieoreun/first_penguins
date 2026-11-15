@@ -11,7 +11,7 @@ BASELINE_ENV = {
     "EMBED_TIMEOUT": "3", "CLASSIFY_TIMEOUT": "10", "SECOND_TIMEOUT": "13",
 }
 INITIAL_VARIANTS = ("jh_baseline", "jh_peace_input", "jh_peace_output", "jh_peace_both")
-VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided_both")
+VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided_both", "jh_guided_focus")
 
 
 def configure():

@@ -60,6 +60,7 @@ SAFE_SYSTEM = SAFETY_POLICY + """
 class Guided(Pipeline):
     guided_input = False
     guided_output = False
+    focus_input = False
 
     def _sections(self, state):
         ids = ([state.section] if state.section else []) + [c.section_id for c in state.chunks]
@@ -78,8 +79,12 @@ class Guided(Pipeline):
         if not self.guided_input:
             return await super()._classify(state)
         evidence = self._sections(state)
+        payload = {"conversation": state.messages, "material": evidence}
+        if self.focus_input:
+            payload = {"material": evidence, "conversation": state.messages,
+                       "classify_this_last_user_message": state.last_user}
         obj = await self._stage(state, "guided_input", self._json(INPUT_SYSTEM,
-            {"conversation": state.messages, "material": evidence}, CLASSIFY_TIMEOUT), CLASSIFY_TIMEOUT)
+            payload, CLASSIFY_TIMEOUT), CLASSIFY_TIMEOUT)
         state.label = Label.NORMAL
         state.section = evidence[0]["section_id"] if evidence else None
         if obj is None:
@@ -142,3 +147,7 @@ class GuidedOutput(Guided):
 class GuidedBoth(Guided):
     guided_input = True
     guided_output = True
+
+
+class FocusInput(GuidedInput):
+    focus_input = True
