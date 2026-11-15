@@ -19,10 +19,11 @@ REFUSAL = re.compile(
 class RefusalReview:
     refusal_review = True
     refusal_timeout = 8
+    refusal_pattern = REFUSAL
 
     async def _check_output(self, state):
         await super()._check_output(state)
-        if state.decision is not Decision.BLOCK or not REFUSAL.search(state.candidate_answer or ""):
+        if state.decision is not Decision.BLOCK or not self.refusal_pattern.search(state.candidate_answer or ""):
             return
         # A refusal word only triggers a semantic check; it never implies safe.
         # In particular, a disclaimer followed by compliance remains unsafe.
@@ -47,4 +48,17 @@ class Pipeline(RefusalReview, Consensus):
 
 
 class HybridPipeline(RefusalReview, Hybrid):
+    pass
+
+
+class BroadReview(RefusalReview):
+    # These are inspection triggers, not safety verdicts. Include inflected
+    # refusals and redirection; semantic checking still rejects compliance.
+    refusal_pattern = re.compile(
+        r"수(?:는|도)?\s*없|못(?:해|하)|삼가|대신"
+        r"|(?:좋지|옳지|적절하지|동의하지)\s*않"
+    )
+
+
+class BroadPipeline(BroadReview, Hybrid):
     pass

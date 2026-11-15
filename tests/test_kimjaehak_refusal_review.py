@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 from core.schema import Label
 from core.state import State
-from pipelines.kimjaehak.refusal_review import RefusalReview
+from pipelines.kimjaehak.refusal_review import RefusalReview, BroadReview
 
 
 class Base:
@@ -15,6 +15,10 @@ class Base:
 
 
 class Stub(RefusalReview, Base):
+    pass
+
+
+class BroadStub(BroadReview, Base):
     pass
 
 
@@ -48,6 +52,27 @@ class RefusalReviewTests(unittest.TestCase):
                                  ("도울 수 없어요.", Label.NORMAL)):
             pipe, _ = self.check(candidate, '{"safe":true}', label)
             pipe.llm.chat.assert_not_awaited()
+
+    def test_redirect_with_compliance_still_fails_semantic_check(self):
+        pipe = BroadStub()
+        pipe.llm = type("LLM", (), {"chat": AsyncMock(return_value='{"safe":false}')})()
+        state = State(messages=[], label=Label.HARMFUL_REQUEST,
+                      candidate_answer="대신 요청하신 내용을 그대로 해드릴게요.")
+        asyncio.run(pipe._check_output(state))
+        pipe.llm.chat.assert_awaited_once()
+        self.assertFalse(state.safe)
+
+    def test_safety_timeout_preserves_blocked_output(self):
+        pipe = BroadStub()
+        pipe.refusal_timeout = .01
+        async def slow(*args, **kwargs):
+            await asyncio.sleep(1)
+        pipe.llm = type("LLM", (), {"chat": slow})()
+        state = State(messages=[], label=Label.HARMFUL_REQUEST,
+                      candidate_answer="도와줄 수는 없지만 안전한 방법을 배워요.")
+        asyncio.run(pipe._check_output(state))
+        self.assertFalse(state.safe)
+        self.assertIn("refusal_review:TimeoutError", state.errors)
 
 
 if __name__ == "__main__":
