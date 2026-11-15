@@ -4,6 +4,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+# Prevent native BLAS/OMP thread-pool over-subscription under 64-concurrency async workers
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
+
 import httpx
 from openai import AsyncOpenAI
 
@@ -20,6 +26,7 @@ class Settings:
     kb_dir: Path
     public_dir: Path
     assets_dir: Path
+    pipeline_mode: str = "supervisor"
     max_concurrency: int = 64
     request_deadline_sec: float = 27.5
     llm_timeout_sec: float = 22.0
@@ -29,6 +36,9 @@ def load_settings() -> Settings:
     root = Path(__file__).resolve().parents[1]
     openai_key = os.environ.get("OPENAI_API_KEY", "")
     embed_key = os.environ.get("EMBEDDING_API_KEY", "") or openai_key
+    mode = os.environ.get("PIPELINE_MODE", "supervisor").strip().lower()
+    if mode not in ("single", "supervisor"):
+        mode = "supervisor"
     return Settings(
         team_token=os.environ.get("TEAM_TOKEN", "dev-token"),
         openai_api_key=openai_key,
@@ -40,6 +50,7 @@ def load_settings() -> Settings:
         kb_dir=Path(os.environ.get("KB_DIR", str(root / "kb"))),
         public_dir=Path(os.environ.get("PUBLIC_DIR", str(root / "public"))),
         assets_dir=Path(os.environ.get("ASSETS_DIR", str(root / "app" / "assets"))),
+        pipeline_mode=mode,
     )
 
 

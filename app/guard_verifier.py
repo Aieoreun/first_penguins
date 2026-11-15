@@ -18,7 +18,7 @@ from app.prompts import (
 )
 
 if TYPE_CHECKING:
-    from app.kb import KBIndex
+    from app.kb_index import KBIndex
 
 logger = logging.getLogger(__name__)
 
@@ -65,15 +65,12 @@ def _snap_span_to_verbatim(span: str, candidate_answer: str, min_ratio: float = 
         return candidate_answer[orig_start:orig_end]
 
     # 2. Fuzzy SequenceMatcher matching against candidate_answer windows / clauses
-    # First try matching blocks on the full candidate_answer
     sm = difflib.SequenceMatcher(None, s, candidate_answer, autojunk=False)
     blocks = [b for b in sm.get_matching_blocks() if b.size > 0]
     if blocks:
-        # Find contiguous cluster of matching blocks around the strongest block
         best_b = max(blocks, key=lambda b: b.size)
         start = max(0, best_b.b - best_b.a)
         end = min(len(candidate_answer), start + len(s) + 8)
-        # Refine start/end to nearest non-space token boundaries
         while start > 0 and not candidate_answer[start - 1].isspace() and (best_b.b - start) < 12:
             start -= 1
         while end < len(candidate_answer) and not candidate_answer[end].isspace() and (end - (best_b.b + best_b.size)) < 12:
@@ -109,10 +106,29 @@ def _deduplicate_spans(spans: list[str]) -> list[str]:
             continue
         if any(s == existing or s in existing for existing in seen):
             continue
-        # Remove any shorter existing span that is a substring of this new span
         seen = [existing for existing in seen if existing not in s]
         seen.append(s)
     return seen
+
+
+def _extract_clause_around_token(token: str, candidate_answer: str) -> str | None:
+    """Extract a minimal clause (5~35 chars) around an unmatched claim token in candidate_answer."""
+    if not token or token not in candidate_answer:
+        return None
+    for clause in re.split(r"(?<=[.!?。\n])\s+|,\s+|;\s+", candidate_answer):
+        clause = clause.strip()
+        if token in clause:
+            if len(clause) <= 42:
+                return clause
+            idx = clause.find(token)
+            start = max(0, idx - 12)
+            end = min(len(clause), idx + len(token) + 12)
+            while start > 0 and not clause[start - 1].isspace() and (idx - start) < 18:
+                start -= 1
+            while end < len(clause) and not clause[end].isspace() and (end - (idx + len(token))) < 18:
+                end += 1
+            return clause[start:end].strip()
+    return token
 
 
 async def _retrieve_kb_sections(kb_index: Any, query: str, top_k: int = 6) -> list[dict[str, str]]:
@@ -250,18 +266,28 @@ class GuardVerifier:
             for item in raw_unsupported:
                 if not isinstance(item, str):
                     continue
-                s = _snap_span_to_verbatim(item, cand, min_ratio=0.65)
+                s = _snap_span_to_verbatim(item, cand, min_ratio=0.55)
                 if s:
                     snapped.append(s)
 
+            # Fix bug where raw_grounded=False was silently overwritten with True when snapping missed
+            if not raw_grounded and not snapped and safe:
+                for hint in unmatched_hints[:2]:
+                    clause = _extract_clause_around_token(hint, cand)
+                    if clause:
+                        snapped.append(clause)
+
             unsupported = _deduplicate_spans(snapped)
-            # Reconcile grounded and unsupported cleanly
-            if unsupported:
+
+            # 3-Cluster Theorem protection: unsafe compliance answers (safe=False) without course fact
+            # fabrication are scored as output_label='unsafe' -> grounded must be True and unsupported=[]
+            if not safe and not unmatched_hints:
+                grounded = True
+                unsupported = []
+            elif unsupported:
                 grounded = False
-            elif not raw_grounded:
-                grounded = True
             else:
-                grounded = True
+                grounded = raw_grounded
 
             return {
                 "grounded": grounded,
