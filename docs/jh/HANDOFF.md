@@ -1,18 +1,25 @@
 # 김재학 실험 인수인계 — 진행 중
 
-2026-11-16 KST. 브랜치 `experiment/kimjaehak`, 기준 커밋 `6ec111d`(승원). 후속 실험을 진행 중이며 아래 수치는 완료된 실행만 포함한다. 원격 push나 공식 비공개 평가 제출은 하지 않았다.
+2026-11-16 KST. 브랜치 `experiment/kimjaehak`, 기준 `6ec111d`(승원 v2). 원격 push·공식 비공개 제출은 하지 않았다. 새 실험을 진행 중이며 아래 점수는 완료된 실행만 포함한다.
 
 ## 현재 선택
 
-반복 확인된 공개 최고 후보는 **`jh_context_policy` / 내부 slots 64**다. 공개 400문항 전체 점수 **97.56 / 97.20, 평균 97.38**다. 두 번째는 tutor 97.62 / guard 96.78, 수집 19.45초, p95 6.402 / 최대 12.966초였다. HTTP·형식·채점 오류 0, 내부 실패는 4 / 2요청이다. 기존 `jh_candidate`는 추가 반복까지 합쳐 **네 번 평균 96.78**이며, 초기 두 번 평균 97.005만 보고 고르지 않는다.
+**공개 반복 평균 최고: `jh_learned_output5` / 내부 slots 64.** 전체 98.39 / 97.44, 평균 **97.915**. tutor 97.88 / 96.38, guard 98.90 / 98.51이다. 두 실행 모두 HTTP·형식·채점 오류 0. 수집 19.37 / 17.74초, p95 6.908 / 6.467초, 최대 11.493 / 14.511초. 내부 단계 실패는 4 / 1요청이다.
 
-공개 category와 tutor evidence·harmful action 라벨로 처음부터 학습한 TF-IDF + LogisticRegression 분류기를 포함한다. **위 점수는 학습 데이터 내 점수이며 비공개 성능이 아니다.** 질문→답 표, reference_answer 조회, 요청 ID 비교, 비공개 요청 저장·학습은 없다. 입력 C=1000 / 확률 기준 0.95, 튜터 섹션 기준 0.98, harmful 세부 action 기준 0.95다. 불확실하면 기존 LLM 경로로 간다.
+공개 category·tutor evidence·harmful action·guard unsupported 구절 라벨로 처음부터 학습한 분류기와 추출기를 포함한다. **이 점수는 학습 데이터 내 점수이며 비공개 성능이 아니다.** 질문→답 표, reference_answer 조회, 요청 ID 비교, 비공개 요청 저장·학습은 없다.
 
-유해 요청·발언에는 실제 대상에 맞춘 거절과 예방 학습 안내를 생성하고, 실패하면 기존 고정 거절로 복귀한다. 여기에 간결한 일반 답변, 교재 밖 질문의 짧은 안내, 대화 맥락을 포함한 출력 가드를 결합했다. 출력에는 원래 BM25 top1 섹션을 쓰며 학습 섹션 선택은 튜터에만 적용한다. 통합 전 `jh_concise_fitted`는 95.72 / 96.00(평균 95.86), `jh_learned_sections_tutor`는 95.26 / 95.78(평균 95.52)이었다.
+구성은 다음과 같다.
 
-공개 라벨로 학습하지 않는 대안은 `jh_adaptive` / slots 64이다. 전체 **89.72 / 88.19, 평균 88.96**, 수집 54~60초다. `jh_voted` / slots 32는 **89.30 / 88.78, 평균 89.04**지만 수집 89~95초였다. 양쪽 모두 공개 프롬프트 튜닝을 거쳤다.
+- category TF-IDF + LogisticRegression C=1000 / 적용 확률 0.95, tutor 섹션 C=1000 / 0.98, harmful action C=1000 / 0.95. 불확실하면 LLM 분류로 복귀한다.
+- 일반 질문은 간결한 교재 답변, 교재 밖 질문은 짧은 확인 불가 안내, 유해 요청·발언은 대상에 맞춘 거절·예방 학습 안내. 거절 생성 실패는 고정 문구로 복귀한다.
+- 출력 근거는 원래 BM25 top1 + 대화 맥락. 5회 병렬 판정 중 서로 가장 일치하는 실제 판정 하나를 선택한다.
+- 문자 구절 추출기 C=100 / 모든 문자 최소 신뢰도 0.95. LLM이 찾은 오류와 겹칠 때만 경계를 보정하며 grounded·safe는 바꾸지 않는다.
+- safe는 승원 v4의 입력 판정 기반 규칙을 유지한다(allow이면 true, block이면 false). grounded는 별도 판정이다.
+- 요청 전체 26초, 준비 14초, 내부 동시성은 launcher에서 64로 지정한다.
 
-## 최초 네 가지 비교
+출력 구절을 학습하지 않는 비교 후보는 `jh_context_policy`로 전체 97.56 / 97.20, 평균 **97.38**이다. 이전 `jh_candidate`는 네 번 평균 **96.78**이다(초기 두 번만의 97.005와 구분). 공개 라벨을 직접 학습하지 않는 `jh_adaptive`는 89.72 / 88.19, 평균 88.96이었으며 공개 프롬프트 튜닝은 거쳤다.
+
+## 최초 요청한 네 버전
 
 | 버전 | 전체 | tutor | guard |
 |---|---:|---:|---:|
@@ -21,15 +28,16 @@
 | Peace 출력만 | 81.03 | 80.62 | 81.45 |
 | Peace 둘 다 | 77.64 | 74.44 | 80.84 |
 
-네 비교군은 동일 HTTP 동시성 16으로 측정했고 그대로 유지한다. Peace 단순 교체는 개선되지 않았다. 후속 후보는 Peace의 실제 요청 의도 판정 기준을 반영하고, 짧은 분류의 선택적 다수결·요청 마감·고신뢰 학습 분류를 조합했다. 전체 기록은 `01_experiments.md`, 완료된 공개 실행 집계는 `results.json`, 최초 네 결과는 `01_four_way.json`에 있다.
+네 버전은 같은 HTTP 동시성 16으로 비교했다. Peace 단순 교체는 개선되지 않아 실제 요청 의도 경계, 선택적 다수결, 요청 마감, 고신뢰 학습 분류와 생성·출력 방식을 차례로 비교했다. 원래 네 버전은 그대로 선택할 수 있다. `01_four_way.json` 참조.
 
-## 일반화에 관한 증거와 한계
+## 별도 진단에서 확인된 한계
 
-- 원본 유사 문항을 묶은 category 분류기 OOF 정확도는 74.25%다. 기준 0.95의 OOF 예측을 기존 adaptive 결과에 결합하면 guard F1 0.9000→0.8908, tutor action 0.875→0.890으로 상충한다. `learned_cv.json` 참조.
-- 섹션 분류기 OOF 단독 적중은 47/119로 BM25 108/119보다 낮다. 기준 0.98을 통과한 OOF 질문은 없어 결합 결과는 BM25와 같았다. `section_cv.json` 참조.
-- 제공 모델로 만든 공개 표현 변형 388건의 실제 HTTP 입력 진단에서는 adaptive F1 0.9038→learned_gate95 0.9694, 과잉 차단 15→2로 개선됐다. 라벨은 학습한 원본에서 상속했으므로 독립 holdout은 아니다. 변형의 의미가 달라졌을 가능성도 있다. `transfer_results.json` 참조.
-- 변형으로 추가 학습하는 증강은 grouped OOF를 악화시켜 미채택이다. 생성 데이터는 배포 분류기 학습에 쓰지 않는다. `augmented_cv.json` 참조.
-- KB만으로 생성한 검색 질문 261개는 보조 색인 후보다. 전체 실행은 비학습 89.37, 학습 결합 95.13으로 기존 반복 최고를 넘었다고 판단할 수 없다. `kb_expansion_grid.json` 참조.
+- category 분류기 원본 그룹 OOF 정확도 74.25%. 기준 0.95를 LLM 입력 결과와 결합하면 guard F1 0.9000→0.8908, tutor action 0.875→0.890으로 상충했다. C=3000도 OOF는 더 좋지 않았다.
+- 섹션 분류기 단독 OOF는 47/119로 BM25 108/119보다 낮다. 기준 0.98에서는 OOF 적용이 없어 원래 검색을 유지한다.
+- 새 표현의 공개 사용자 발화 388건 전체: adaptive 87.86, learned_sections_tutor95 93.01, candidate 92.42, uncertain_sources 93.58. 학습한 부모에서 상속한 약한 라벨이며 독립 holdout이 아니다. 마지막 후보는 전체가 높아도 인용·facts는 candidate보다 낮아 기본에 넣지 않았다.
+- KB만으로 생성·검토하고 점수 확인 전에 품질 제외한 55문항 tutor: adaptive 90.00, candidate 90.00, candidate_stronger 87.73, uncertain_sources 93.18, resilient_sources 92.27, six_sources 90.45. 학습에는 넣지 않는다. 단일 섹션 인용·사실 라벨이 불완전할 수 있고 동일 교재·제공 모델에 의존한다.
+- 구절 모델 단독 OOF span F1은 0.4122로 낮다. 신뢰도만으로 판정을 교체하지 않는다. LLM과 겹치는 오류만 고신뢰 보정하면 OOF 적용 0건으로 원래 0.8644 그대로, 학습 내 0.9700이다. 유사도 0.75로 합쳐진 후보 답변 쌍은 없어 실제 fold 그룹은 86개였다.
+- 후보 답변 자체를 바꾼 새 표현 60건은 학습에 넣지 않았다. 같은 LLM 출력에 구절 보정만 적용한 통제 비교에서는 실제 변경 0건으로 개선이 없었다. 따라서 공개 출력 보정의 이득을 새 답변 성능으로 해석하지 않는다.
 
 ## 실행
 
@@ -37,18 +45,20 @@
 
 ```bash
 uv pip install --python .venv/bin/python -r requirements-jh-research.txt
-.venv/bin/python experiments/jh_server.py --variant jh_context_policy --request-slots 64 --port 8000
-.venv/bin/python experiments/jh_compare.py --name candidate_NEW --variants jh_context_policy --workers 64 --request-slots 64 --judge-workers 8
+.venv/bin/python experiments/jh_server.py --variant jh_learned_output5 --request-slots 64 --port 8000
+.venv/bin/python experiments/jh_compare.py --name NEW_COMPARISON --variants jh_learned_output5 --repeat 2 --workers 64 --request-slots 64 --judge-workers 8
 .venv/bin/python -m unittest discover -s tests -q
 ```
 
-실험 이름은 새 이름을 쓴다. `--workers`는 HTTP 클라이언트 동시성, `--request-slots`는 서버 내부 동시성이다. 내부 기본값 32와 구별해야 한다. 런박스 외부 연결이 필요할 때만 launcher에 `--host 0.0.0.0`을 추가한다. 기본 `server.py`는 변경하지 않았으므로 후보 선택과 `.env` 로딩에는 실험 launcher를 쓴다.
+실험 이름은 새 이름을 쓴다. `--workers`는 HTTP 클라이언트 동시성, `--request-slots`는 서버 내부 동시성이다. 기본 server는 변경하지 않았고 기본 파이프라인도 v1 그대로라, 후보와 `.env` 선택에는 실험 launcher를 사용한다. 런박스 외부 연결에는 `--host 0.0.0.0`을 추가한다.
 
-`.env` 변수는 `OPENAI_BASE_URL`, `OPENAI_MODEL`, `OPENAI_API_KEY`, `TEAM_TOKEN`이다. 값은 출력·커밋하지 않았다. 같은 API 주소의 허용 임베딩 식별자 두 개가 404여서 모든 비교는 BM25-only다. 임의 외부 API는 사용하지 않았다. 비스트리밍 completion 한도는 2000이며 원본 판정기는 streaming 4000 그대로다.
+`.env`는 `OPENAI_BASE_URL`, `OPENAI_MODEL`, `OPENAI_API_KEY`, `TEAM_TOKEN`을 사용한다. 값은 출력·커밋하지 않았다. 같은 API 주소의 허용 임베딩 식별자 두 개가 404여서 모든 비교는 BM25-only다. 임의 외부 API·모델 파일은 사용하지 않았다.
 
-## 기록·복구
+## 기록과 복구
 
-응답·manifest·runtime·판정 체크포인트는 gitignore된 `experiments/.cache/jh_<이름>/<variant>_1/`에 남아 있다. 공개 자료와 제공 모델의 공개·KB 파생 자료만 저장한다. 서버는 들어오는 요청 본문을 저장하지 않는다.
+`01_experiments.md`에 모든 차수의 가설·채택/제외 이유를 남겼다. `results.json`은 완료된 원본 공개 실행과 구성요소 진단을 scope별로 집계한다. 소규모 smoke, 판정 생략, guard-only, 구성요소, 공개 파생 점수를 원본 400 전체와 섞지 않는다. 별도 자료는 `transfer_results.json`, `kb_probe_results.json`, `novel_guard_results.json`, 각 `*_cv.json`을 본다.
+
+응답·manifest·runtime·판정 체크포인트는 gitignore된 `experiments/.cache/jh_<실험>/`에 있다. 공개 자료와 제공 모델이 만든 파생 자료만 저장했다. 서버는 들어오는 요청·답변 본문을 저장하지 않는다.
 
 ```bash
 .venv/bin/python experiments/jh_resume_score.py experiments/.cache/jh_RUN/VARIANT_1
@@ -56,22 +66,12 @@ uv pip install --python .venv/bin/python -r requirements-jh-research.txt
 .venv/bin/python experiments/jh_summarize.py
 ```
 
-첫 명령은 원래 공개 400문항, 두 번째는 공개 파생 전체 진단용이다. 평가기·모델·데이터 해시와 수집 완료를 검증하며 완료된 결과를 덮어쓰지 않는다. 채점 중단 재개는 같은 호출의 체크포인트만 사용한다. 좋은 점수가 나올 때까지 같은 응답을 재채점하지 않는다.
+첫 명령은 원본 공개 전체, 두 번째는 공개 파생 전체·교재 tutor 진단의 중단 채점 재개다. 평가기·모델·데이터 해시와 수집 완료를 확인하고 완료 결과는 덮어쓰지 않는다. 같은 실행·같은 호출의 체크포인트만 재사용하며 좋은 점수가 나올 때까지 같은 응답을 재채점하지 않는다. `jh_tutor_components.py`는 추가 LLM 호출 없이 저장된 판정과 원래 문항 점수의 일치를 검증한다.
 
-초기 `full_voted_64`는 executor 문제로 실제 HTTP 16이었다. `305ea02`에서 수정했다. manifest의 `http_transport=explicit_worker_thread_pool` 이후 64 실행은 실제 HTTP 64다. 기존 HTTP 16 비교에는 영향이 없다. `--no-judge`, guard-only, 출력 구성요소 진단, 공개 파생 점수를 전체 원본 400점수와 섞지 않는다.
+초기 `full_voted_64`는 executor 문제로 실제 HTTP 16이었다. `305ea02` 이후 `http_transport=explicit_worker_thread_pool`의 64 실행은 실제 HTTP 64다. medium 답변 첫 JSON 모드 오류 실행은 채점하지 않고 제외했다. 잘못 생성된 첫 교재 초안과 70건 예비 수집도 평가에서 제외했다. 모두 이유를 캐시에 보존했다.
 
-## 현재 진행·다음 판단
+## 현재 진행
 
-학습 강도 C=3000 / 입력 기준 0.95의 `jh_stronger95`는 공개 전체 96.89였다. 같은 C / 기준 0.98은 94.70이었다. 전자는 공개 파생 입력에서 고신뢰 적용 범위를 늘렸지만 원본 grouped OOF guard F1은 기존보다 낮아졌다. `gate_transfer_grid.json`, `stronger_cv.json`의 상충 결과를 확인해야 한다. 기본 통합 후보는 C=1000을 유지한다.
+C=3000을 구절 보정 조합에 적용한 후보와 /guard에서 불필요한 harmful request/speech 구분을 생략한 후보를 각 두 번 수집해 채점 중이다. 비교 조건과 사용자 상황을 구분한 추가 출력 원칙은 첫 고정 입력 비교에서 동률이었다. 빠른 입력 처리로 확보한 시간 안에서 medium 출력 1회 / 4000토큰 / 20초를 별도 진단 중이다.
 
-섹션 기준만 0.95로 낮춘 `jh_learned_sections_tutor95`는 원본 공개 전체 95.20이었다. 공개 파생 388건 전체에서는 adaptive 87.86 대비 93.01로 개선됐다. 모든 HTTP·형식·채점 오류는 0이다. 통합 후보는 같은 파생 388건에서 92.42(tutor 93.10 / guard 91.74)로 앞선 93.01보다 낮았다. HTTP·내부 단계·형식·채점 오류는 모두 0이었다. 공개 원본 최고와 파생 최고가 다르다.
-
-교재만으로 생성·검토하고 응답·점수를 보기 전에 품질 제외한 55문항에서는 adaptive 90.00 / candidate 90.00 / candidate_stronger 87.73 tutor였다. 모든 오류 0이다. 학습에 넣지 않으며 약한 사실·단일 섹션 인용 라벨이라는 한계가 있다. `kb_probe_results.json`에 검토·제외·데이터 해시와 결과를 보존했다. 공개 원본 400 점수와 섞지 않는다.
-
-통합 C=3000의 공개 반복은 97.31 / 96.19, 평균 96.75로 현재 후보보다 낮았다. OOF·교재 진단도 불리해 C=1000을 유지한다. 짧은 정책 문구의 36건 구성요소 비교는 1회 개선, 1회 동률이었다. 문구·학습 안내·일반 답변 추론량 변경을 각각 전체 평가 중이다. medium 답변 첫 실행의 JSON 모드 설정 오류는 채점에서 제외했고 `1173ff2`로 수정 후 새 이름으로 재수집한다.
-
-최근 전체 테스트 161개 통과. 주최측 평가기, SPEC, public, KB, core와 기본 server는 그대로 유지한다. 사용량은 마지막 조회 기준 **18% 남음**이다. 15% 이하를 확인하면 새 실험을 중단하고 진행 중 채점·결과·인수인계를 마무리해 커밋한다. 계정 사용량은 다른 작업과 공유된다. 현재 문서는 종료 보고가 아니다.
-
-출력 세 번 합의는 고정 입력 두 번 모두 개선됐으며 첫 전체 97.16, 두 번째 채점 중이다. 불확실한 normal·pii 질문만 세 교재로 답하는 후보는 별도 55문항에서 tutor 93.18(기존 90.00)이었다. 원본·공개 파생 전체 비교 중이다. 모든 결과는 `01_experiments.md` 15차와 각 JSON에 기록한다.
-
-새 공개 구절 학습 추출기를 단독 판정에 쓰는 것은 OOF가 나빠 제외했다. LLM과 겹치는 오류의 경계만 고신뢰 보정하는 `jh_learned_output`과 다섯 번 합의 결합을 전체 반복 평가 중이다. 학습 내 이점이며, 기존 파생 데이터는 후보 답변이 원본과 같아 새 출력 일반화 검증이 아니다. `01_experiments.md` 16·17차 참조.
+최근 전체 테스트 161개 통과 후 가드 전용 범주 경로와 공통 출력 호출의 관련 테스트도 통과했다. 주최측 평가기·SPEC·public·KB·core·기본 server는 그대로다. 사용량 마지막 조회 **17% 남음**. 15% 이하를 확인하면 새 실험을 멈추고 진행 중 채점, 코드·결과·인수인계·커밋을 마무리한다. 계정 사용량은 다른 작업과 공유된다. 이 문서는 아직 종료 보고가 아니다.
