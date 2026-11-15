@@ -24,11 +24,27 @@ from core.schema import POLICY, parse_label
 BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off_topic"}
 
 
-def run(source=None, exclude_harmful=False):
+def run(source=None, exclude_harmful=False, augmentation=None):
     paths = [ROOT / "public" / f"{e}.jsonl" for e in ("tutor", "guard")]
     rows = [p for path in paths for p in map(json.loads, path.read_text().splitlines())]
     texts = [next(m["content"] for m in reversed(p["messages"]) if m["role"] == "user") for p in rows]
     y = np.array([p["labels"]["category"] for p in rows])
+    augmented, augmentation_meta = {}, None
+    if augmentation:
+        metadata = json.loads((augmentation.parent / "manifest.json").read_text())
+        expected = {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+        if metadata.get("scope") != "provided_llm_public_paraphrases" or metadata["public_hashes"] != expected:
+            raise ValueError("Augmentation provenance does not match bundled public data")
+        categories = {row["id"]:row["labels"]["category"] for row in rows}
+        for row in map(json.loads,augmentation.read_text().splitlines()):
+            if row["source_id"] not in categories or categories[row["source_id"]] != row["category"]:
+                raise ValueError("Augmented source/category mismatch")
+            if row["source_id"] in augmented:
+                raise ValueError("Duplicate augmented source")
+            augmented[row["source_id"]] = row["paraphrases"] if row["error"] is None else []
+        augmentation_meta = {"path":str(augmentation.relative_to(ROOT)),
+            "sha256":hashlib.sha256(augmentation.read_bytes()).hexdigest(),"model":metadata["model"],
+            "examples":sum(map(len,augmented.values())),"sample_weight":.5}
     size = len(rows)
     groups = list(range(size))
     def find(i):
@@ -64,10 +80,19 @@ def run(source=None, exclude_harmful=False):
     for c in (10, 100, 300, 1000):
         predicted, confidence = np.empty(size, dtype=object), np.zeros(size)
         def fit(indices):
+            fit_texts = [texts[i] for i in indices]
+            fit_labels = [y[i] for i in indices]
+            weights = [1.] * len(indices)
+            # Only descendants of the training indices enter this fold.
+            for i in indices:
+                additions = augmented.get(rows[i]["id"], [])
+                fit_texts.extend(additions)
+                fit_labels.extend([y[i]] * len(additions))
+                weights.extend([.5] * len(additions))
             vectorizer = TfidfVectorizer(analyzer="char", ngram_range=(2, 5), min_df=2,
                                          max_features=60000, sublinear_tf=True)
-            x = vectorizer.fit_transform([texts[i] for i in indices])
-            model = LogisticRegression(C=c, max_iter=500, class_weight="balanced").fit(x, y[indices])
+            x = vectorizer.fit_transform(fit_texts)
+            model = LogisticRegression(C=c, max_iter=500, class_weight="balanced").fit(x, fit_labels, sample_weight=weights)
             return vectorizer, model
         for train, test in folds:
             vectorizer, model = fit(train)
@@ -97,6 +122,7 @@ def run(source=None, exclude_harmful=False):
         print(json.dumps(report), flush=True)
     return {"scope": "public_grouped_oof_gate_diagnostic", "groups": len(set(groups)),
             "exclude_harmful": exclude_harmful,
+            "augmentation":augmentation_meta,
             "baseline": metrics(baseline), "source": str(source.relative_to(ROOT)),
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
             "public_hashes": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}, "reports": reports}
@@ -106,13 +132,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path)
     parser.add_argument("--exclude-harmful", action="store_true")
+    parser.add_argument("--augmentation", type=Path)
     parser.add_argument("--output", type=Path, default=ROOT / "experiments/.cache/jh_gate_cv")
     args = parser.parse_args()
     source = args.source.resolve() if args.source else None
+    augmentation = args.augmentation.resolve() if args.augmentation else None
     if source and not source.is_relative_to(ROOT / "experiments/.cache"):
         parser.error("Only local public recordings are supported")
+    if augmentation and not augmentation.is_relative_to(ROOT / "experiments/.cache"):
+        parser.error("Only recorded public augmentations are supported")
     with threadpool_limits(limits=1):
-        data = run(source, args.exclude_harmful)
+        data = run(source, args.exclude_harmful, augmentation)
     dest = args.output
     dest.mkdir(exist_ok=True)
     (dest / "result.json").write_text(json.dumps(data, indent=2) + "\n")
