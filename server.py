@@ -11,6 +11,7 @@ from app.config import ClientPool, load_settings
 from app.guard_classifier import GuardClassifier
 from app.guard_verifier import GuardVerifier
 from app.kb_index import KBIndex
+from app.supervisor_graph import SupervisorTutorPipeline
 from app.tutor_pipeline import TutorPipeline
 
 # SPEC.md §8: Log ONLY non-content metadata (timing, lengths, status, error type).
@@ -29,7 +30,7 @@ class AppState:
     kb_index: Optional[KBIndex] = None
     guard_classifier: Optional[GuardClassifier] = None
     guard_verifier: Optional[GuardVerifier] = None
-    tutor_pipeline: Optional[TutorPipeline] = None
+    tutor_pipeline: Any = None
 
 
 state = AppState()
@@ -44,7 +45,15 @@ def _init_sync_components() -> None:
     guard_classifier = GuardClassifier(settings, pool)
     guard_classifier.load_or_train()
     guard_verifier = GuardVerifier(settings, pool, kb_index)
-    tutor_pipeline = TutorPipeline(settings, pool, kb_index, guard_classifier=guard_classifier)
+
+    if settings.pipeline_mode == "single":
+        tutor_pipeline: Any = TutorPipeline(
+            settings, pool, kb_index, guard_classifier=guard_classifier
+        )
+    else:
+        tutor_pipeline = SupervisorTutorPipeline(
+            settings, pool, kb_index, guard_classifier=guard_classifier
+        )
 
     state.settings = settings
     state.pool = pool
@@ -63,7 +72,11 @@ async def lifespan(_app: FastAPI):
             await state.kb_index.ensure_embeddings()
         except Exception as exc:
             logger.warning("startup_embedding_skipped err=%s", type(exc).__name__)
-    logger.info("startup_ready elapsed_ms=%.1f", (time.perf_counter() - t0) * 1000)
+    logger.info(
+        "startup_ready mode=%s elapsed_ms=%.1f",
+        state.settings.pipeline_mode if state.settings else "unknown",
+        (time.perf_counter() - t0) * 1000,
+    )
     try:
         yield
     finally:
@@ -113,7 +126,8 @@ async def tutor(req: TutorRequest):
         }
     latency_ms = (time.perf_counter() - t0) * 1000
     logger.info(
-        "endpoint=/tutor status=200 latency_ms=%.1f msg_count=%d answer_len=%d action=%s citations_cnt=%d err=%s",
+        "endpoint=/tutor mode=%s status=200 latency_ms=%.1f msg_count=%d answer_len=%d action=%s citations_cnt=%d err=%s",
+        state.settings.pipeline_mode if state.settings else "supervisor",
         latency_ms,
         len(req.messages),
         len(res.get("answer", "")),

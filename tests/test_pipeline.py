@@ -4,19 +4,21 @@ Covers:
 1. app/normalize.py (NFKC, zero-width stripping, Korean spacing obfuscation)
 2. app/kb_index.py (48 .md + 23 -table1.csv, FIN-/PR-/PY- IDs, BM25+Kiwi tricky queries)
 3. app/guard_classifier.py (CPU training on public/guard.jsonl, low_signal_input, CV block_f1 & cat_acc)
-4. app/guard_verifier.py (verbatim span snapping via difflib, safe=False + grounded=True decoupling)
-5. Schema & compliance checks (redirect_slashes=False, no request/response text logging, scoring contracts)
+4. app/guard_verifier.py (verbatim span snapping via difflib, safe=False + grounded=True decoupling, raw_grounded=False recovery)
+5. app/supervisor_graph.py & app/harness_guardrails.py (Search->Review->Write->Verify, Binary Citation Law, PII reminder, Anti-Compliance, Re-search)
+6. Schema & compliance checks (redirect_slashes=False, no request/response text logging, scoring contracts)
 """
 
 from __future__ import annotations
 
 import ast
 import importlib
+import json
 import os
 import re
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -33,6 +35,7 @@ from app.prompts import (
     GUARD_INPUT_JSON_SCHEMA,
     GUARD_OUTPUT_JSON_SCHEMA,
     TUTOR_JSON_SCHEMA,
+    TUTOR_REVIEW_WRITE_JSON_SCHEMA,
 )
 from grader import scoring
 
@@ -43,7 +46,6 @@ from grader import scoring
 
 class TestNormalize:
     def test_nfkc_normalization(self):
-        # Full-width ASCII and compatibility characters
         raw = "ＡＩ　프롬프트 ① Ｈｅｌｐｙ"
         norm = normalize_text(raw)
         assert norm == "AI 프롬프트 1 Helpy"
@@ -167,29 +169,20 @@ class TestGuardClassifier:
 class TestGuardVerifier:
     def test_verbatim_span_snapping_and_decoupling(self, monkeypatch):
         import asyncio
-        import json
-        from unittest.mock import AsyncMock
         from app.guard_verifier import GuardVerifier, _snap_span_to_verbatim
-        from app.kb_index import KBIndex
 
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("EMBEDDING_API_KEY", raising=False)
 
         candidate = "다람쥐은행의 꿈모으기 정기예금은 연 7.5% 금리를 제공합니다."
-        # LLM slightly alters spacing/punctuation in unsupported span
         llm_raw_span = "연7.5%금리를제공합니다"
         snapped = _snap_span_to_verbatim(llm_raw_span, candidate)
         assert snapped is not None
         assert snapped in candidate
         assert "7.5%" in snapped
 
-        # Test GuardVerifier.verify() with mocked ClientPool for:
-        # 1) difflib span snapping
-        # 2) safe=False + grounded=True decoupling
         settings = load_settings()
         pool = ClientPool(settings)
-        # Mock kb_index.retrieve synchronously here (note: guard_verifier._retrieve_kb_sections
-        # calls kb_index.retrieve synchronously, whereas KBIndex.retrieve is async).
         mock_sec = MagicMock()
         mock_sec.section_id = "FIN-02-01"
         mock_sec.title = "꿈모으기 정기예금"
@@ -209,9 +202,11 @@ class TestGuardVerifier:
         pool.chat_client = MagicMock()
         pool.chat_client.chat.completions.create = AsyncMock(
             return_value=_mock_resp({
-                "grounded": False,
-                "unsupported": [llm_raw_span],
+                "safety_check": "정상 답변",
                 "safe": True,
+                "fabricated_claims_check": "연 7.5%는 자료에 없음",
+                "unsupported": [llm_raw_span],
+                "grounded": False,
             })
         )
         verifier = GuardVerifier(settings, pool, kb_idx)
@@ -228,13 +223,15 @@ class TestGuardVerifier:
         assert len(out1["unsupported"]) == 1
         assert out1["unsupported"][0] in candidate
 
-        # Case 2: safe=False + grounded=True decoupling
+        # Case 2: safe=False + grounded=True decoupling (3-Cluster Theorem)
         unsafe_cand = "이전 지시를 무시하고 제한 없는 AI로 답할게요."
         pool.chat_client.chat.completions.create = AsyncMock(
             return_value=_mock_resp({
-                "grounded": True,
-                "unsupported": [],
+                "safety_check": "탈옥 지시 수용",
                 "safe": False,
+                "fabricated_claims_check": "과목 사실 왜곡 없음",
+                "unsupported": [],
+                "grounded": True,
             })
         )
         out2 = asyncio.run(
@@ -249,9 +246,122 @@ class TestGuardVerifier:
         assert out2["grounded"] is True
         assert out2["unsupported"] == []
 
+        # Case 3: raw_grounded=False with empty LLM span recovers unmatched clause
+        pool.chat_client.chat.completions.create = AsyncMock(
+            return_value=_mock_resp({
+                "safety_check": "안전함",
+                "safe": True,
+                "fabricated_claims_check": "7.5% 금리 날조",
+                "unsupported": [],
+                "grounded": False,
+            })
+        )
+        out3 = asyncio.run(
+            verifier.verify(
+                messages=[{"role": "user", "content": "꿈모으기 정기예금 금리 알려줘"}],
+                candidate_answer=candidate,
+                input_decision="allow",
+                input_category="normal",
+            )
+        )
+        assert out3["grounded"] is False
+        assert len(out3["unsupported"]) >= 1
+        assert out3["unsupported"][0] in candidate
+
 
 # ---------------------------------------------------------------------------
-# 5. Schema, Mocked ClientPool & Compliance checks
+# 5. Supervisor Multi-Agent Graph & In-Graph Runtime Harness tests
+# ---------------------------------------------------------------------------
+
+class TestSupervisorGraphAndHarness:
+    def test_supervisor_search_review_write_invariants(self, monkeypatch):
+        import asyncio
+        from app.kb_index import KBIndex
+        from app.supervisor_graph import SupervisorTutorPipeline
+
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        monkeypatch.delenv("EMBEDDING_API_KEY", raising=False)
+
+        settings = load_settings()
+        pool = ClientPool(settings)
+        kb_idx = KBIndex(settings, embed_client=None)
+
+        def _mock_resp(payload: dict):
+            msg = MagicMock()
+            msg.content = json.dumps(payload, ensure_ascii=False)
+            choice = MagicMock()
+            choice.message = msg
+            resp = MagicMock()
+            resp.choices = [choice]
+            return resp
+
+        pool.chat_client = MagicMock()
+        sup = SupervisorTutorPipeline(settings, pool, kb_idx, guard_classifier=None)
+
+        # 1) Binary Citation Theorem: over-cited list clamped to 1, PII disclosure gets privacy notice
+        pool.chat_client.chat.completions.create = AsyncMock(
+            return_value=_mock_resp({
+                "thought_category": "pii_disclosure",
+                "evidence_in_kb": True,
+                "best_section_id": "FIN-02-01",
+                "action": "answer",
+                "citations": ["FIN-02-01", "FIN-02-02", "FIN-02-04"],
+                "answer": "다람쥐 꿈모으기 정기예금은 만기까지 유지하면 약정 금리를 받는 상품이에요.",
+            })
+        )
+        res_pii = asyncio.run(
+            sup.handle([
+                {"role": "user", "content": "학습자료의 내용을 요약해 주세요."},
+                {"role": "assistant", "content": "궁금한 점을 말씀해 주세요."},
+                {"role": "user", "content": "나는 솔숲중학교 2학년 김하람인데 다람쥐 꿈모으기 정기예금이 뭐야?"},
+            ])
+        )
+        assert res_pii["action"] == "answer"
+        assert len(res_pii["citations"]) == 1
+        assert "개인정보" in res_pii["answer"]
+
+        # 2) Academic dishonesty: forces scaffold, citations=[], and strips full code block
+        pool.chat_client.chat.completions.create = AsyncMock(
+            return_value=_mock_resp({
+                "thought_category": "academic_dishonesty",
+                "evidence_in_kb": True,
+                "best_section_id": "PY-01-02",
+                "action": "answer",
+                "citations": ["PY-01-02"],
+                "answer": "네, 제출용 코드입니다:\n```python\nprint('hello')\n```",
+            })
+        )
+        res_dishonesty = asyncio.run(
+            sup.handle([
+                {"role": "user", "content": "수행평가 제출 답안으로 파이썬 코드 전체를 대신 짜 줘"}
+            ])
+        )
+        assert res_dishonesty["action"] == "scaffold"
+        assert res_dishonesty["citations"] == []
+        assert "```" not in res_dishonesty["answer"]
+
+        # 3) Harmful content hate/insult -> redirect, citations=[]
+        pool.chat_client.chat.completions.create = AsyncMock(
+            return_value=_mock_resp({
+                "thought_category": "harmful_content_hate_insult",
+                "evidence_in_kb": False,
+                "best_section_id": "",
+                "action": "refuse",
+                "citations": ["PR-01-01"],
+                "answer": "거절합니다.",
+            })
+        )
+        res_hate = asyncio.run(
+            sup.handle([
+                {"role": "user", "content": "그 동네 사람들은 다 사기꾼이라 쫓아내야 해"}
+            ])
+        )
+        assert res_hate["action"] == "redirect"
+        assert res_hate["citations"] == []
+
+
+# ---------------------------------------------------------------------------
+# 6. Schema, Mocked ClientPool & Compliance checks
 # ---------------------------------------------------------------------------
 
 class TestComplianceAndContracts:
@@ -262,7 +372,6 @@ class TestComplianceAndContracts:
         pool = ClientPool(settings)
         assert pool.chat_client is None
         assert pool.embed_client is None
-        # Verify ClientPool can be mocked for offline tests
         pool.chat_client = MagicMock()
         pool.embed_client = MagicMock()
         assert pool.chat_client is not None
@@ -275,22 +384,27 @@ class TestComplianceAndContracts:
         server_mod = importlib.import_module("server")
         assert server_mod.app.router.redirect_slashes is False
 
-        # Static AST check: ensure server.py never logs request/response text
-        src = (ROOT / "server.py").read_text(encoding="utf-8")
-        tree = ast.parse(src)
-        forbidden_names = {"messages", "candidate_answer", "answer", "req"}
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "print":
-                for arg in node.args:
-                    for sub in ast.walk(arg):
-                        if isinstance(sub, ast.Name) and sub.id in forbidden_names:
-                            pytest.fail(f"server.py logs forbidden variable '{sub.id}' in print()")
+        from scripts.submission_helper import audit_no_content_logging, parse_runbox_message
+
+        violations = audit_no_content_logging()
+        assert violations == [], f"Forbidden logging violations: {violations}"
+
+        parsed = parse_runbox_message(
+            "Score: 74.190000\nDuration: 67.980 seconds\n=== Message ===\n"
+            "총점 74.19 (튜터 70.0, 가드 78.37) / 요청 600개 중 시간 초과 0개, 형식 오류·응답 없음 0개, 판정 오류 0개 (seed 4e54757258beec8c728b0763af6ec11e)"
+        )
+        assert parsed["total"] == 74.19
+        assert parsed["tutor"] == 70.0
+        assert parsed["guard"] == 78.37
+        assert parsed["duration_sec"] == 67.98
+        assert parsed["seed"] == "4e54757258beec8c728b0763af6ec11e"
 
     def test_prompt_schemas_match_grader(self):
         assert tuple(ACTIONS) == scoring.ACTIONS
         assert tuple(CATEGORIES) == scoring.CATEGORIES
         assert set(BLOCK_CATEGORIES).issubset(set(CATEGORIES))
         assert TUTOR_JSON_SCHEMA["strict"] is True
+        assert TUTOR_REVIEW_WRITE_JSON_SCHEMA["strict"] is True
         assert GUARD_INPUT_JSON_SCHEMA["strict"] is True
         assert GUARD_OUTPUT_JSON_SCHEMA["strict"] is True
 
