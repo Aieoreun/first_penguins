@@ -22,6 +22,7 @@ class Pipeline(Calibrated):
     short_votes = 3
     other_vote_count = None  # None preserves the same count as block votes.
     block_min_votes = 1
+    material_max_chunks = None
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
@@ -51,7 +52,7 @@ class Pipeline(Calibrated):
         if low_signal(state.last_user):
             return await super()._classify(state)
         check = prompts.check_user(state.request, state.history, state.last_user)
-        material = prompts.material_user(state.chunks, state.request, state.history, state.last_user)
+        material = prompts.material_user(state.chunks[:self.material_max_chunks], state.request, state.history, state.last_user)
         blocks, others, material = await self._collect_checks(state, check, material)
         block_votes = [x["category"] for x in blocks
                        if isinstance(x.get("category"), str) and x["category"] in BLOCKS]

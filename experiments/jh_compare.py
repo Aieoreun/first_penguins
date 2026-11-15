@@ -176,6 +176,7 @@ def run_variant(args, variant, repetition, items, root):
         "variant": variant, "repeat": repetition, "workers": args.workers,
         "judge_workers": args.judge_workers, "count": len(items), "judge_enabled": not args.no_judge,
         "http_transport": "explicit_worker_thread_pool",
+        "request_slots_override": args.request_slots,
         "endpoints": args.endpoints,
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
@@ -187,8 +188,10 @@ def run_variant(args, variant, repetition, items, root):
     (dest / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
     print(f"START {variant} repeat={repetition} public={len(items)} workers={args.workers}", flush=True)
     with (dest / "server.log").open("w") as log:
-        proc = subprocess.Popen([sys.executable, "-u", "experiments/jh_server.py", "--variant", variant,
-                                 "--port", str(port)], cwd=ROOT, stdout=log, stderr=log)
+        server_command = [sys.executable, "-u", "experiments/jh_server.py", "--variant", variant, "--port", str(port)]
+        if args.request_slots is not None:
+            server_command.extend(["--request-slots", str(args.request_slots)])
+        proc = subprocess.Popen(server_command, cwd=ROOT, stdout=log, stderr=log)
         try:
             wait_ready(proc, port)
             start = time.monotonic()
@@ -233,6 +236,7 @@ def main():
     ap.add_argument("--repeat", type=int, default=1)
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=8)
+    ap.add_argument("--request-slots", type=int, help="Candidate internal concurrency override (1..64)")
     ap.add_argument("--endpoints", nargs="+", choices=("tutor", "guard"), default=["tutor", "guard"],
                     help="Single endpoint is diagnostic only; its total is not a full-set score")
     ap.add_argument("--limit", type=int, default=0, help="Smoke test: items per endpoint; 0 means all 400")
@@ -243,6 +247,8 @@ def main():
         ap.error("name must contain only letters, digits, underscore or hyphen")
     if min(args.workers, args.judge_workers, args.repeat) < 1 or args.limit < 0:
         ap.error("workers and repeat must be positive; limit must be nonnegative")
+    if args.request_slots is not None and not 1 <= args.request_slots <= 64:
+        ap.error("request-slots must be between 1 and 64")
     if len(set(args.endpoints)) != len(args.endpoints):
         ap.error("endpoints must not repeat")
     for key in ("OPENAI_BASE_URL", "OPENAI_MODEL", "OPENAI_API_KEY", "TEAM_TOKEN"):

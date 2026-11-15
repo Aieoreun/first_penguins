@@ -16,7 +16,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_fewshot", "jh_reasoned", "jh_compact", "jh_explicit", "jh_intent",
                               "jh_diverse", "jh_multiground", "jh_material_review", "jh_block5", "jh_reconsider",
                               "jh_unanimous", "jh_token_output", "jh_adaptive", "jh_adaptive_unanimous",
-                              "jh_medium_output")
+                              "jh_medium_output", "jh_thin_material", "jh_adaptive_thin")
 
 
 def configure():

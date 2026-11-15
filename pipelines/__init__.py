@@ -62,6 +62,9 @@ def load(name: str = ""):
             return module.Unanimous if name.endswith("_unanimous") else module.Pipeline
         if name == "jh_medium_output":
             return importlib.import_module("pipelines.kimjaehak.medium_output").Pipeline
+        if name in {"jh_thin_material", "jh_adaptive_thin"}:
+            module = importlib.import_module("pipelines.kimjaehak.thin_material")
+            return module.AdaptivePipeline if name == "jh_adaptive_thin" else module.Pipeline
         if name.startswith("jh_guided_"):
             module = importlib.import_module("pipelines.kimjaehak.guided")
             return {"jh_guided_input": module.GuidedInput,

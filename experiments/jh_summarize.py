@@ -38,6 +38,7 @@ def summarize(root=ROOT):
             "scope": m.get("scope", r.get("score_scope")), "count": count,
             "workers": requested, "effective_http_workers": effective,
             "http_transport": None if component else transport,
+            "request_slots_override": m.get("request_slots_override"),
             "judge_enabled": m.get("judge_enabled", False),
             "quality_comparison_valid": run.parent.name != "jh_guided_input_guard",
             "result_sha256": digest(path), "responses_sha256": digest(run / "responses.jsonl"),

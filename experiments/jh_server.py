@@ -18,7 +18,10 @@ def main():
     parser.add_argument("--variant", choices=(*VARIANTS, "v4"), required=True)
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--request-slots", type=int, help="Override the candidate's internal request slots (1..64)")
     args = parser.parse_args()
+    if args.request_slots is not None and not 1 <= args.request_slots <= 64:
+        parser.error("request-slots must be between 1 and 64")
     load_dotenv(ROOT / ".env", override=True)
     os.environ["PIPELINE"] = args.variant
     for key in ("TEAM_TOKEN", "OPENAI_API_KEY", "OPENAI_BASE_URL", "OPENAI_MODEL"):
@@ -26,11 +29,15 @@ def main():
             raise SystemExit(f"Missing setting: {key}")
     from pipelines import load
     pipeline = load(args.variant)
+    if args.request_slots is not None:
+        if not hasattr(pipeline, "request_slots"):
+            parser.error("This pipeline has no configurable request semaphore")
+        pipeline.request_slots = args.request_slots
     fields = ("answer_effort", "answer_max_tokens", "votes", "seek_first", "safe_by_rule",
               "deadline", "prepare_limit", "peace_input", "peace_output",
               "guided_input", "guided_output", "focus_input", "request_slots", "short_votes", "other_vote_count", "block_min_votes",
               "short_effort", "short_max_tokens", "short_timeout", "answer_sections", "material_review_timeout",
-              "block_review_timeout", "adaptive_votes", "output_effort", "output_max_tokens")
+              "block_review_timeout", "adaptive_votes", "output_effort", "output_max_tokens", "material_max_chunks")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(
