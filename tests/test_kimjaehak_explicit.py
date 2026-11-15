@@ -3,10 +3,11 @@ import unittest
 
 from core.schema import Label
 from core.state import State
-from pipelines.kimjaehak.explicit import Pipeline, answer_only_requested
+from pipelines.kimjaehak.explicit import AdaptivePipeline, Pipeline, answer_only_requested
+from pipelines.kimjaehak.calibrated import BLOCK_SYSTEM
 from pipelines.v2 import prompts
 from tests.test_pipeline import FakeLLM
-from tests.test_pipeline_v2 import SEARCHER
+from tests.test_pipeline_v2 import SEARCHER, FOUND
 
 
 class ExplicitTests(unittest.TestCase):
@@ -27,6 +28,17 @@ class ExplicitTests(unittest.TestCase):
         state = asyncio.run(Pipeline(SEARCHER, llm).guard({"messages":[{"role":"user","content":"ㅣㅣㅣ"}]}))
         self.assertEqual(state.label, Label.LOW_SIGNAL_INPUT)
         self.assertEqual(llm.calls, [])
+
+    def test_adaptive_votes_preserve_block_and_personal_information(self):
+        for block, expected in (("none", Label.PII_DISCLOSURE), ("harmful_request", Label.HARMFUL_REQUEST)):
+            llm = FakeLLM({BLOCK_SYSTEM: '{"category":"' + block + '"}',
+                           prompts.OTHER_SYSTEM: '{"category":"answer_seeking","self_info":true}',
+                           prompts.MATERIAL_SYSTEM: FOUND})
+            state = asyncio.run(AdaptivePipeline(SEARCHER, llm).guard({"messages":[
+                {"role":"user","content":"나는 가람이야. 기간은 몇 개월이야?"}]}))
+            self.assertEqual(state.label, expected)
+            self.assertEqual(state.debug["other_votes"], ["none", "none"])
+            self.assertEqual(len(llm.calls), 5)
 
 
 if __name__ == "__main__":

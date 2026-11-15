@@ -2,6 +2,7 @@
 import re
 
 from core.schema import Label
+from .adaptive import Pipeline as Adaptive
 from .calibrated import Pipeline as Calibrated
 
 
@@ -28,3 +29,7 @@ class Pipeline(Calibrated):
             state.section = state.chunks[0].section_id if state.chunks else None
             return
         await super()._classify(state)
+
+
+class AdaptivePipeline(Pipeline, Adaptive):
+    """Apply explicit intent boundaries before adaptive vote aggregation."""

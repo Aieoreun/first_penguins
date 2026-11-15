@@ -41,6 +41,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.compact").Pipeline
         if name == "jh_explicit":
             return importlib.import_module("pipelines.kimjaehak.explicit").Pipeline
+        if name == "jh_adaptive_explicit":
+            return importlib.import_module("pipelines.kimjaehak.explicit").AdaptivePipeline
         if name == "jh_intent":
             return importlib.import_module("pipelines.kimjaehak.intent").Pipeline
         if name == "jh_diverse":
