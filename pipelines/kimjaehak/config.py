@@ -43,7 +43,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r3_tutor_ranked",
                               "jh_r3_quote_answer", "jh_r3_complete_answer", "jh_r3_resolved_query",
                               "jh_r3_answer_longest", "jh_r3_query_gate", "jh_r3_resolved_minimal",
-                              "jh_r3_checked_answer", "jh_r3_sentence_answer")
+                              "jh_r3_checked_answer", "jh_r3_sentence_answer", "jh_r3_topic_select")
 
 
 def configure():

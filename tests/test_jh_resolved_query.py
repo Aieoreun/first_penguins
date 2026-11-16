@@ -87,3 +87,19 @@ class ResolvedQueryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.pipeline.llm.chat.call_args.kwargs['timeout'], 4)
         for method in ('guard', '_classify', '_check_output', '_generate'):
             self.assertIs(getattr(minimal, method), getattr(ContextFast, method))
+
+    async def test_topic_selector_preserves_original_text_and_default_context(self):
+        from pipelines import load
+        self.pipeline.__class__ = load('jh_r3_topic_select')
+        self.pipeline.llm.chat.return_value = '{"choice":"full"}'
+        await self.run_search()
+        self.assertEqual(self.state.chunks[0].section_id, 'old')
+        self.assertEqual(self.state.errors, [])
+        self.pipeline.llm.chat.return_value = '{"choice":"last"}'
+        self.assertEqual(await self.pipeline._resolve_query(self.state), self.state.last_user)
+        await self.run_search()
+        self.assertEqual(self.state.chunks[0].section_id, 'new')
+        self.pipeline.llm.chat.return_value = '{"choice":"rewrite"}'
+        await self.run_search()
+        self.assertEqual(self.state.chunks[0].section_id, 'old')
+        self.assertIn('query_resolve:ValueError', self.state.errors)

@@ -23,8 +23,10 @@ def load(name: str = ""):
         configure()
         if name == "jh_r3_query_gate":
             return importlib.import_module("pipelines.kimjaehak.query_gate").Pipeline
-        if name in {"jh_r3_resolved_query", "jh_r3_resolved_minimal"}:
+        if name in {"jh_r3_resolved_query", "jh_r3_resolved_minimal", "jh_r3_topic_select"}:
             module = importlib.import_module("pipelines.kimjaehak.resolved_query")
+            if name == "jh_r3_topic_select":
+                return module.TopicSelect
             return module.Minimal if name.endswith('_minimal') else module.Pipeline
         if name in {"jh_r3_quote_answer", "jh_r3_complete_answer", "jh_r3_checked_answer", "jh_r3_sentence_answer"}:
             module = importlib.import_module("pipelines.kimjaehak.answer_style")
