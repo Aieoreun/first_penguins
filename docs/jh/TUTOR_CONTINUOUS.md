@@ -903,3 +903,22 @@ primary action 정답185→184, category184→183으로 낮아졌고 alternative
 복원해 생성만 비교한다. gold는 생성 선택이나 payload에 들어가지 않는다. 나머지 응답을
 고정하고 기존 judge journal을 재사용한다. 중단된 채점은 재개하지만 완료 결과는 재채점하지 않는다.
 자체 모의5검증과 pipeline11테스트를 통과했으며 API 효과는 아직 검증하지 않았다.
+
+## 전체 HTTP15 완료
+
+코드 `faec9c3`, 공개400개, embedding env/worker64/slots64, 기존→selected_focused 순서다.
+
+| 후보 | 전체 | tutor | guard | 수집 초 | p95 초 | 내부 실패 요청 |
+|---|---:|---:|---:|---:|---:|---:|
+| 기존 ContextFast | 97.90 | 96.50 | 99.30 | 26.75 | 8.745 | 3 |
+| selected_focused | 98.30 | 98.00 | 98.60 | 23.25 | 10.292 | 23 |
+
+HTTP/형식/판정 오류는 모두0. 자체 입력 action과 인용F1은 둘 다1.0이었다.
+facts .9496→.9832, faithful .9592→.9864, complied4/44→3/44였다.
+가드 구현은 같지만 후보에서 context_grounding timeout15, material timeout6 등이 발생했다.
+동시 요청 흐름 또는 API 상태의 영향을 한 쌍으로 분리할 수 없다. 공개 원본은 학습에 사용했으므로
+98.30을 비공개 예상 점수로 해석하지 않는다. 파생자료 교차결과와 함께 후보를 판단한다.
+
+다음은 harmful 생성 고정 비교를 primary192/alternative181에서 기존 재생성 대 안전대안으로
+각1회 실행한다. 아직 효과를 확인하지 않았으므로 selected_focused와 결합하지 않는다.
+전체 unittest333개와 probe 자체5검증 통과. 현재 잔여66%, 새 실험 중단60%.

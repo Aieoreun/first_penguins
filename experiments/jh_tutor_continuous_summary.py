@@ -10,7 +10,9 @@ def main():
     cache=ROOT/'experiments/.cache'
     report={'scope':'tutor_continuous_development','stop_remaining_percent':60,
             'generation':[],'draft_selection':[],'ranker':[],'pending':[]}
-    for pattern,key in [('jh_generation_r3_*/manifest.json','generation'),('jh_draft_r3_*/manifest.json','draft_selection')]:
+    report['refusal_generation'] = []
+    for pattern,key in [('jh_generation_r3_*/manifest.json','generation'),('jh_draft_r3_*/manifest.json','draft_selection'),
+                        ('jh_refusal_generation_r3_*/manifest.json','refusal_generation')]:
         for meta in sorted(cache.glob(pattern)):
             p=meta.parent/'result.json'
             if not p.exists():
@@ -19,7 +21,7 @@ def main():
             r=json.loads(p.read_text())
             fields=('scope','variant','method','count','source','source_selection','commit','baseline_tutor','revised_tutor',
                     'first_valid_tutor','source_first_valid_tutor','tutor','attempted','error_requests',
-                    'compared','changed_from_selected','invalid','judge_errors')
+                    'compared','changed_from_selected','invalid','judge_errors','scoring_status')
             entry={k:r[k] for k in fields if k in r}
             entry.update(result_path=str(p.relative_to(ROOT)),result_sha256=hashlib.sha256(p.read_bytes()).hexdigest())
             report[key].append(entry)
