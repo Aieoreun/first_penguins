@@ -17,7 +17,7 @@ def main():
                 report['pending'].append({'run':str(meta.parent.relative_to(ROOT)),'phase':'generation_or_scoring'})
                 continue
             r=json.loads(p.read_text())
-            fields=('scope','variant','method','count','source','commit','baseline_tutor','revised_tutor',
+            fields=('scope','variant','method','count','source','source_selection','commit','baseline_tutor','revised_tutor',
                     'first_valid_tutor','source_first_valid_tutor','tutor','attempted','error_requests',
                     'compared','changed_from_selected','invalid','judge_errors')
             entry={k:r[k] for k in fields if k in r}

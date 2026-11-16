@@ -67,7 +67,26 @@ def eligible(response, allowed):
             and len(citations) == 1 and citations[0] in allowed)
 
 
-async def collect(items, prior, variant, workers, dest):
+def section_changes(items, prior, vectorizer, model, allowed):
+    """Choose interventions from own predictions; diagnostic gold is never read."""
+    changes = {}
+    for item in items:
+        old = prior[item['id']]
+        response = old.get('response') or {}
+        if old.get('error') or not eligible(response, allowed):
+            continue
+        query = next(m['content'] for m in reversed(item['messages']) if m['role']=='user')
+        probabilities = model.predict_proba(vectorizer.transform([query]))[0]
+        index = probabilities.argmax()
+        predicted = str(model.classes_[index])
+        if (.90 <= probabilities[index] < .98 and predicted in allowed
+                and predicted != response['citations'][0]):
+            changes[item['id']] = {'old':response['citations'][0], 'new':predicted,
+                                   'confidence':float(probabilities[index])}
+    return changes
+
+
+async def collect(items, prior, variant, workers, dest, source_selection='frozen', changed_sources=None):
     cls = load(variant)
     # No classification or retraining is needed: predictions come from the
     # source's own responses, not from the evaluator's labels.
@@ -85,13 +104,18 @@ async def collect(items, prior, variant, workers, dest):
             response = row.get("response") or {}
             row.update(generation_attempted=False, generation_errors=[], generation_debug={}, seconds=0,
                        source_seconds=old["seconds"])
-            if not old["error"] and eligible(response, allowed):
+            selected = source_selection == 'frozen' or item['id'] in (changed_sources or {})
+            if not old["error"] and eligible(response, allowed) and selected:
                 async with slots:
                     current = copy.copy(pipeline)
                     current.llm = CaptureChoices(pipeline.llm, getattr(pipeline, 'answer_choice_system', None))
                     state = current._new_state({"messages": item["messages"]}, False)
                     # NORMAL/PII use the same generation prompt in these variants.
                     state.label, state.section = Label.NORMAL, response["citations"][0]
+                    if source_selection != 'frozen':
+                        row['source_change_prediction'] = changed_sources[item['id']]
+                        if source_selection == 'section90_changed':
+                            state.section = changed_sources[item['id']]['new']
                     row["generation_attempted"] = True
                     start = time.monotonic()
                     try:
@@ -155,6 +179,7 @@ def main():
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=32)
     ap.add_argument("--collect-only", action="store_true")
+    ap.add_argument('--source-selection',choices=('frozen','section90_control','section90_changed'),default='frozen')
     ap.add_argument("--resume", type=Path)
     args = ap.parse_args()
     if args.resume:
@@ -171,6 +196,16 @@ def main():
     if not source.is_relative_to(ROOT / "experiments/.cache"):
         ap.error("Only local public diagnostics")
     manifest, items, prior, old_result = source_data(source)
+    changed_sources = None
+    if args.source_selection != 'frozen':
+        if args.variant != 'jh_guard_fitted_contextfast':
+            ap.error('Section interventions use the unchanged base answer generator')
+        from pipelines.kimjaehak.learned_sections import train_section_classifier
+        vectorizer, model = train_section_classifier(1000)
+        allowed = set(Searcher(load_chunks(ROOT/'kb')).section_ids())
+        changed_sources = section_changes(items, prior, vectorizer, model, allowed)
+        if not changed_sources:
+            ap.error('No eligible own source predictions change; no API calls made')
     dest = ROOT / "experiments/.cache" / ("jh_generation_" + args.name)
     dest.mkdir(exist_ok=False)
     cls = load(args.variant)
@@ -187,8 +222,11 @@ def main():
                 "runtime_limit":"generation_only_26s_not_end_to_end",
                 "record_candidate_comparison":True,
                 "runtime_labels":"own_answer_action_and_own_citation_never_gold"}
+    metadata['source_selection'] = args.source_selection
+    if changed_sources is not None:
+        metadata['source_change_predictions'] = changed_sources
     (dest/'manifest.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n')
-    asyncio.run(collect(items,prior,args.variant,args.workers,dest))
+    asyncio.run(collect(items,prior,args.variant,args.workers,dest,args.source_selection,changed_sources))
     if args.collect_only:
         print('SCORING_PENDING',dest,flush=True)
     else:
