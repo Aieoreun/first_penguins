@@ -12,13 +12,13 @@
   "guard": "unchanged_ContextFast",
   "branch": "experiment/kimjaehak",
   "resume_authorized_by_user": true,
-  "completed_http": 24,
+  "completed_http": 28,
   "pending_http": 0,
   "recommended_variant": "jh_r3_selected_focused",
   "next_experiments": [
-    "material_budget_repeat",
     "source_stream"
   ],
-  "last_observed_used_percent": 54,
-  "last_observed_remaining_percent": 46
+  "last_observed_used_percent": 56,
+  "last_observed_remaining_percent": 44,
+  "stream_rule_checked": true
 }

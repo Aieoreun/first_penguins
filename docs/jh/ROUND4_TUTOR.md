@@ -1,139 +1,251 @@
-# 튜터 개선 재개 — 잔여40%까지
+# 튜터 개선 4차 기록 — 완료 28개, 스트리밍 비교 준비
 
-2026-11-17 사용자 재개 지시에 따라 시작했다. 시작 시 계정 used43%/remaining57%,
-새 실험 중단은 remaining40%다. 이전60% 중단 기록은 역사로 보존하고 로컬 중단 표식만 해제했다.
-목표는 정직한 실제 제출 점수 향상이며100점을 지향하되 달성이나 재현을 보장하지 않는다.
+**현재 추천은 `jh_r3_selected_focused`를 유지한다.** 사용자가 보고한 실제 비공개 제출 점수는 전체 **83.99 / 84.68**이며, 최신 관측값은 **84.68**이다. `material_budget`의 **98.18**은 공개 파생 자료에서 얻은 개발 단회 점수다. 실제 비공개 점수와 비교하거나, 후보의 성능 우위가 확인된 것으로 해석하지 않는다.
 
-## 기준선과 제약
+이 문서는 **완료된 HTTP 실행 28개**까지 정리한다. R4-08 반복 비교는 완료했고, R4-09 source streaming 비교는 규정 문구를 재확인한 뒤 시작한다. 아직 완료되지 않은 점수는 기재하지 않는다.
 
-- 기준선: `jh_r3_selected_focused`, embedding env, request slots64.
-- 사용자 실제 제출: 전체83.99/84.68, tutor79.17/81.58, guard88.81/87.78.
-- guard ContextFast와 주최측 평가기·public·kb·core는 유지한다.
-- 비공개 질문·응답을 수집하거나 학습/규칙/캐시에 사용하지 않는다.
-- 제공 모델만 호출하며, 공개/교재 진단의 금값은 runtime 선택에 전달하지 않는다.
-- 모든 성공·실패·부정 결과를 보존한다. 수집과 원본 채점을 분리하고 완료 판정은 재채점하지 않는다.
-- 실제 제출은 사용자 보고로만 기록한다. 공개 점수와 비공개 점수를 섞어 평균 내지 않는다.
-- SPEC의 설명상 로컬 판정 모델은 실제 채점 판정 모델과 다르다. 로컬의 작은 판정 변동을
-  실제 오답 개선으로 과장하지 않고 의미적 정확성도 함께 검토한다.
+- 실행별 원자료는 [round4_results.json](round4_results.json)의 `http` 전체 28개 레코드다. 아래 표는 그 요약이며 전체 레코드를 대체하지 않는다.
+- 운영 상태와 중단 기준은 [ROUND4_STATE.json](ROUND4_STATE.json)에 기록한다. 완료된 실행과 다음 비교 계획을 구분한다.
 
-## 시작 가설
+## 기준선과 운영 제약
 
-1. **학습 분류용 질의의 보호 정규화.** 정상 질문에 붙은 standaloneㅋㅋ/ㅠㅠ 때문에
-   고신뢰 gate가 빠지는 현상을 줄일 수 있는지 본다. tutor category 모델의 입력만 바꾸며
-   원 대화·LLM payload·검색·section/harmful 모델·guard는 유지한다. 코드/따옴표/URL 보호와
-   정서표현만 있는 입력 보존을 검증한 뒤 원본과 잡음 진단을 비교한다.
-2. **오답 원인 감사.** selected_focused의 공개 파생/교재 진단에서 올바른 출처의 facts 실패와
-   잘못된 출처·action 오류·판정 변동을 구분한다. 계산/비교 설명 부족이라는 가설은 감사 결과를
-   보고 채택한다. 기존 fullsection에 답이 명시된 사례에 무조건 생성 단계를 더하지 않는다.
-3. **불확실한 출처 후보의 구성.** 이전 최대8개 확대는 성능이 나빠졌다. 후보 개수6은 유지하며,
-   전체 대화 검색에 가려진 마지막 질문의 의미 검색이 도움이 되는지 검토한다. 정답을 아는 상태로
-   출처를 넣지 않고 제공 임베딩의 자체 검색 결과만 사용한다. 시간 예산과 fallback을 먼저 설계한다.
+2026-11-17 사용자 지시로 실험을 재개했다. 재개 당시 계정 사용량은 used 43% / remaining 57%였으며, **remaining 40%에서 새 실험을 중단**한다. 이전의 remaining 60% 중단 기록은 역사로 보존하고 로컬 중단 표식만 해제했다. 목표는 정직한 실제 제출 점수 향상이다. 100점을 지향하지만 달성이나 재현을 보장하지 않는다.
 
-## 운영 기록
+| 항목 | 고정 기준 |
+|---|---|
+| 추천 기준선 | `jh_r3_selected_focused` |
+| 실행 설정 | embedding `env`, request slots 64 |
+| 실제 비공개 관측 1 | 전체 83.99 / tutor 79.17 / guard 88.81 |
+| 실제 비공개 관측 2 | 전체 84.68 / tutor 81.58 / guard 87.78 |
+| 보호 대상 | guard ContextFast, 주최측 평가기, public, KB, 공유 core |
 
-초기 코드·별도 모의 테스트와 CPU 감사를 준비 중이다. 아직 R4 API 수집은 시작하지 않았다.
-새 후보는 등록·검증·커밋 뒤에 수집한다. 기존 제출 후보와 기본값을 자동 교체하지 않는다.
-상태는 [ROUND4_STATE.json](ROUND4_STATE.json), 결과 집계는 `round4_results.json`에 기록한다.
+비공개 질문과 응답은 수집하거나 학습·규칙·캐시에 사용하지 않는다. 운영진 제공 모델만 호출하며, 공개·교재 진단의 정답 라벨은 runtime 선택에 전달하지 않는다. 실제 제출 결과는 사용자 보고로만 기록하고 공개 점수와 섞어 평균 내지 않는다.
 
-## R4-01 사전 등록
+성공·실패·부정 결과를 모두 보존한다. 수집과 원본 채점을 분리하고, 완료된 판정은 재채점하지 않는다. SPEC 설명상 로컬 판정 모델과 실제 채점 판정 모델은 다르므로, 작은 로컬 판정 변동을 실제 오답 개선으로 과장하지 않는다. 의미적 정확성도 함께 검토한다.
 
-- 기존 실패 감사: 저장 점수1,251개 복원 일치. 자체 answer+인용1개855회 중 facts/faithful 실패33회는 잘못된 출처21, 비canonical 동일 사실3, 올바른 교재 사실 보존9였다. 올바른 교재9회 모두 같은 judge payload가 다른 완료 실행에서 통과했다. 따라서 계산 설명 생성보다 출처 후보를 먼저 실험한다. 전체 대상에는 별도 action 오류58회가 있다. 캐시 감사 원본 `experiments/.cache/jh_r4_failure_audit/AUDIT.md`.
-- 정규화: `jh_r4_normalized_tutor`. 원본 tutor200개와 normal/PII에 고정 prefix/suffix를 붙인 잡음222개를 기준선과 각1회 비교한다. 잡음은 합성 스트레스 진단이며 실제 분포나 정서 recall 개선으로 해석하지 않는다. 원본은 baseline→candidate, 잡음은 candidate→baseline 순서.
-- 마지막 질문 의미검색: `jh_r4_last_dense`. 기존출처후보 첫2개 다음에 마지막질문 dense 상위2개를 넣고 중복제거, 최대6개. 불확실한 정상/PII만 호출하며 3초 제한, 잔여4초미만 생략, 실패시 기존풀. topic/followup 각각114개를 기준선과 비교하고 이득이 있으면 primary/alternative로 회귀를 확인한다.
-- 두 후보 모두 독립 variant이며 추천/기본값을 바꾸지 않는다. collection workers64/slots64/env, judge32, 수집과 판정 직렬.
+## 완료 실행과 코드 이력
 
-## R4-01/02 결과 — 8개 실행 완료
+아래 수치는 모두 **개발용 tutor-only 점수**다. guard를 수집하지 않은 실행의 aggregate total은 tutor 점수의 절반이므로 비교에 사용하지 않는다. 수집 시간은 로컬 부하 측정이며 실제 제출 약 600개 요청의 duration과 직접 비교할 수 없다.
 
-모든 수집 코드 `ab39eaf`, clean, env/64/32. tutor-only 점수이며 total은 guard 미수집으로 절반이므로 비교에 쓰지 않는다. HTTP/형식/원본judge 오류 모두0. 수집 초는 로컬 부하 시간이며 실제 제출600개 duration과 비교할 수 없다.
+| 단계 | 새 HTTP 실행 | 누적 완료 | 수집 commit | 주요 내용 |
+|---|---:|---:|---|---|
+| R4-01/02 | 8 | 8 | `ab39eaf` | category 정규화, 마지막 질문 dense 후보 |
+| R4-03/04 | 7 | 15 | `d3c35a9` | 조건부 dense, structured BLOCK |
+| R4-05 | 4 | 19 | `9501351` | source payload 키 순서 |
+| R4-06/07 | 5 | 24 | `aac7100` | 새 관계 진단 16개, material 시간 배분 |
 
-| 자료 | 기준선 tutor / 수집초 | 후보 tutor / 수집초 | 차이 |
+네 수집 시점 모두 clean 상태였다. 완료된 24개 실행의 **HTTP·형식·원본 judge 오류는 모두 0**이다. 내부 단계 오류와 fallback은 별도로 보존하며 점수에서 제외하지 않는다. 기본 수집 설정은 workers 64 / slots 64 / embedding env, judge workers 32이고, 수집과 판정은 직렬로 진행했다.
+
+문서의 각 “사전 등록”은 **해당 실험을 시작하기 전 당시의 계획과 상태**다. 당시의 “API 시작 전” 표현을 현재 상태로 읽지 않도록, 완료 결과와 함께 정리했다. 후보는 등록·검증·커밋 후 수집하며 기존 추천이나 기본값을 자동 교체하지 않는다.
+
+## 시작 전 실패 감사와 가설 선택
+
+저장 점수 **1,251개**를 복원해 원본과 일치함을 확인했다. 자체 응답이 answer이고 인용이 1개인 **855회** 중 facts/faithful 실패 **33회**를 다음과 같이 분류했다.
+
+| 실패 유형 | 횟수 |
+|---|---:|
+| 잘못된 출처 | 21 |
+| canonical 출처와 다르지만 동일한 사실 | 3 |
+| 올바른 교재 사실을 보존한 응답 | 9 |
+
+올바른 교재 사실을 보존한 9회는 모두 **동일 judge payload가 다른 완료 실행에서 통과**했다. 따라서 계산·비교 설명 생성 단계를 먼저 추가하지 않고 출처 후보를 우선 실험했다. 전체 대상에는 이와 별도로 action 오류 **58회**가 있었다. 상세 원본은 [실패 감사](../../experiments/.cache/jh_r4_failure_audit/AUDIT.md)에 보존했다.
+
+초기 가설은 세 가지였다.
+
+1. standalone `ㅋㅋ`·`ㅠㅠ`가 붙은 정상 질문에서 category 고신뢰 gate 이탈을 줄일 수 있는지 확인한다.
+2. 올바른 출처의 facts 실패, 잘못된 출처, action 오류, 판정 변동을 구분한다. full section에 답이 명시된 사례에 생성 단계를 무조건 추가하지 않는다.
+3. 이전 최대 8개 후보 확대가 실패했으므로 후보 수는 6개로 유지하고, 전체 대화 검색에 가려진 마지막 질문의 의미 검색이 도움이 되는지 확인한다.
+
+## R4-01/02 — category 보호 정규화와 마지막 질문 dense
+
+### 사전 등록한 변경 범위
+
+`jh_r4_normalized_tutor`는 **tutor category 모델 입력만** 보호 정규화한다. 원 대화, LLM payload, 검색, section/harmful 모델, guard는 유지한다. 코드·따옴표·URL 보호와 정서 표현만 있는 입력 보존을 검증했다. 원본 tutor 200개와 normal/PII에 고정 prefix/suffix를 붙인 잡음 222개를 각각 1회 비교했다. 실행 순서는 원본 baseline→candidate, 잡음 candidate→baseline이었다.
+
+잡음은 합성 스트레스 진단이며 실제 분포나 정서 recall 개선을 뜻하지 않는다.
+
+`jh_r4_last_dense`는 기존 출처 후보 첫 2개 다음에 마지막 질문 dense 상위 2개를 넣고 중복을 제거해 최대 6개를 유지한다. 불확실한 normal/PII 출처 선택에서만 호출한다. 제한은 3초이며 남은 시간이 4초 미만이면 생략하고, 오류가 나면 기존 후보 목록으로 돌아간다. topic/followup 각 114개에서 이득이 있으면 primary/alternative 회귀를 확인하는 계획이었다. 정답을 보고 후보를 넣지 않는다.
+
+### 결과
+
+| 자료 | 기준선 tutor / 수집 초 | 후보 tutor / 수집 초 | 점수 차이 |
 |---|---:|---:|---:|
-| 원본 tutor200 |98.12 /12.75|정규화97.00 /12.04|-1.12|
-| normal/PII 잡음222 |99.66 /11.90|정규화98.76 /12.78|-0.90|
-| 주제전환114 |89.69 /25.20|last-dense89.25 /24.52|-0.44|
-| 후속질문114 |92.11 /28.76|last-dense91.89 /27.54|-0.22|
+| 원본 tutor 200 | 98.12 / 12.75 | 정규화 97.00 / 12.04 | -1.12 |
+| normal/PII 잡음 222 | 99.66 / 11.90 | 정규화 98.76 / 12.78 | -0.90 |
+| 주제 전환 114 | 89.69 / 25.20 | last-dense 89.25 / 24.52 | -0.44 |
+| 후속 질문 114 | 92.11 / 28.76 | last-dense 91.89 / 27.54 | -0.22 |
 
-- 정규화는 원본 public200/primary192/alternative181 입력을 하나도 바꾸지 않는다. 원본 점수 차이를 정규화 효과라고 해석할 수 없다. 원본 같은 응답2개에서도 facts/faithful 판정이 달랐고, 다른 action/응답 변동도 있었다.
-- 잡음 진단 개선 없음. 기준선 action221/222→후보219/222, citation 평균1→.9865. 관측쌍111 source cluster bootstrap95 delta[-2.365,.338]. 정규화는 보류, section 정규화 확장도 CPU 근거 없어 하지 않는다.
-- topic last-dense는 action105/114동일, citation91/114→87/114, facts102/114→101/114. 일부출처를복구했지만다른정답출처를잃었다. paired delta CI[-4.167,3.289]. 후속은CI[-3.947,3.289]. 이는관측된응답쌍만의기술통계이며반복/비공개불확실성을추정하지않는다.
-- 내부오류요청 topic기준선10/후보4, followup40/10. 실제HTTP실패는없고fallback을포함한점수다. 부하변동이커서수집시간차이를후보의고유속도이득으로단정하지않는다.
-- baseline원본후 첫후보는 driver의 동일부모폴더 생성충돌로 API전중단했다. `r4_01_original_norm`으로분리해정상수집했고 완료된기준선을재실행하지않았다. 해당오류로그보존.
-- 결정: 기존 `jh_r3_selected_focused` 추천유지. 고정 last-dense와정규화는개선확인못함. 새로운실제제출점수는없다.
+정규화는 원본 public 200 / primary 192 / alternative 181의 입력을 **하나도 바꾸지 않았다**. 따라서 원본 점수 차이를 정규화 효과로 볼 수 없다. 원본의 동일 응답 2개에서도 facts/faithful 판정이 달랐고, 별도의 action·응답 변동도 있었다.
 
-## R4-03/04 사전 등록 — 사용자 조건부 검색 아이디어 반영
+잡음 진단 역시 개선되지 않았다. action 정답은 **221/222→219/222**, citation 평균은 **1→.9865**였다. 관측쌍 111개 source cluster bootstrap의 95% delta 구간은 **[-2.365, .338]**이었다. 정규화는 보류했고, section 정규화 확대도 CPU 근거가 없어 진행하지 않았다.
 
-사용자는 BM25중심, 임베딩으로누락근거보완,질의별비중조절을제안했다. RRF재시도보다fixed6 후보에서추가dense의적용조건을제어한다.
+topic last-dense는 action **105/114로 동일**, citation **91/114→87/114**, facts **102/114→101/114**였다. 일부 출처를 복구했지만 기존의 올바른 출처도 잃었다. 관측 paired delta CI는 topic **[-4.167, 3.289]**, followup **[-3.947, 3.289]**였다. 이 구간은 관측 응답쌍의 기술통계이며 반복 실행이나 비공개 평가의 불확실성을 추정하지 않는다.
 
-1. `jh_r4_conditional_dense`: KB 제목·인라인코드의 한글4자이상/영문identifier3자이상 anchor중 전체48section본문의최대2곳에만있는329개를사용. 마지막질문에서해당anchor가일치하고 distinctsection BM25 1위가2위의1.5배이상이면추가last-dense를생략해기존pool유지. 그렇지않으면last-dense와동일. 기준과anchor는gold없이정의했고 threshold튜닝안함. 정책/action을바꾸지않음. CPU strong비율 public5%,primary5.2%,alternative5%,topic8.8%,followup0%. gold있는35행top1모두정답이지만19행은기존sectiongate와중복, 실제효과범위는작다. topic은앞선base/dense와조건부를비교하고 primary는base/dense/conditional각1회비교. 효과가있어야반복검증한다.
-2. `jh_r4_structured_block`: source/투표/시간/토큰수는그대로. tutor fallback BLOCK의기존규칙을모두보존하고 speech_act/target/request_span을category전에짧게구조화한다. 별도호출없음. guard는기존프롬프트. calibrated의기존프롬프트선택을기본동작동일hook으로바꿔전역변경을피한다. primary192,alternative181에서각기준선과비교. 보조필드는강제판정에쓰지않는다. 고신뢰ML우회오류에는효과없으며토큰/파싱실패위험을측정한다.
+내부 오류가 있는 요청은 topic **10→4**, followup **40→10**이었다. HTTP 실패는 없었고 fallback을 포함한 점수다. 부하 변동이 커서 수집 시간 차이를 후보 고유의 속도 이득으로 단정하지 않는다.
 
-캐시action감사58회: 같은오분류반복24,같은입력action변동20,단회14. action은원본평가기의문자열비교라judge변동이아니다. 모델/검색/내부API실패원인은개별확정불가. CPU56회는fallback,학업부정2회는normal .9972 gate우회. 감사자체는API없음.
+원본 baseline 수집 후 첫 후보 실행은 driver의 동일 부모 폴더 생성 충돌로 **API 호출 전에 중단**됐다. 경로를 `r4_01_original_norm`으로 분리해 정상 수집했고, 완료된 baseline은 재실행하지 않았다. 오류 로그도 보존했다.
 
-두후보등록후전체390개테스트통과. conditional의gold감사재현테스트는캐시에만두고, 저장소테스트는합성입력으로검증해캐시없이재현된다. 평가기·core·server·SPEC·public·KB는원본동일.
+**결정:** 정규화와 고정 last-dense 모두 개선을 확인하지 못했다. `jh_r3_selected_focused` 추천을 유지하며 새 실제 제출 점수는 없다.
 
-## R4-03/04 결과 — 누적15개 HTTP 실행 완료
+## R4-03/04 — 조건부 dense와 structured BLOCK
 
-새7개수집 `d3c35a9` clean, env/64/32, HTTP/형식/judge오류0. primary 기준선은두가설공유이며각후보와동일commit/자료다.
+### 사전 등록한 변경 범위
 
-| 자료 | 기준선 | 고정dense | 조건부dense | structured BLOCK |
+사용자는 BM25를 중심으로 쓰되 임베딩으로 누락 근거를 보완하고 질의별 비중을 조절하는 아이디어를 제안했다. RRF를 다시 시도하기보다 고정 6개 후보 안에서 추가 dense의 적용 조건을 제어했다.
+
+`jh_r4_conditional_dense`는 KB 제목·인라인 코드에서 한글 4자 이상 또는 영문 identifier 3자 이상인 anchor를 추출한다. 전체 48개 section 본문 중 최대 2곳에만 등장하는 anchor는 **329개**였다. 마지막 질문에 anchor가 일치하고 distinct section BM25 1위 점수가 2위의 **1.5배 이상**이면 추가 last-dense를 생략해 기존 pool을 유지한다. 그 외에는 last-dense와 같다. 기준과 anchor는 gold 없이 정의했고 threshold를 튜닝하지 않았다. 정책·action은 바꾸지 않는다.
+
+CPU strong 비율은 public **5%**, primary **5.2%**, alternative **5%**, topic **8.8%**, followup **0%**였다. gold가 있는 35행의 top1은 모두 정답이었지만 **19행은 기존 section gate와 겹쳐** 실제 영향 범위가 작았다. topic은 앞선 base/dense와 조건부를 비교하고, primary는 base/dense/conditional을 각 1회 비교했다. 이득이 있어야 반복 검증하는 계획이었다.
+
+`jh_r4_structured_block`은 tutor fallback BLOCK의 기존 규칙을 모두 보존하면서 `speech_act` / `target` / `request_span`을 category 앞에 짧게 구조화한다. source·투표·시간·토큰 수와 호출 수는 유지한다. guard는 기존 프롬프트를 사용한다. calibrated의 프롬프트 선택을 기본 동작이 같은 hook으로 추출해 전역 변경을 피했다. primary 192와 alternative 181에서 각각 기준선과 비교했고, 보조 필드를 강제 판정에 사용하지 않았다. 고신뢰 ML 우회 오류에는 영향을 주지 못하므로 토큰·파싱 실패 위험도 확인했다.
+
+action 오류 58회의 cache 감사에서는 같은 오분류 반복 **24회**, 같은 입력의 action 변동 **20회**, 단회 오류 **14회**가 있었다. action은 원본 평가기의 문자열 비교라 judge 변동이 아니다. 다만 모델·검색·내부 API 실패 중 개별 원인은 확정하지 못했다. CPU 감사에서 56회는 fallback이고, 학업 부정 2회는 normal **.9972** gate로 우회했다. 감사 자체에는 API를 사용하지 않았다.
+
+두 후보 등록 후 전체 **390개 테스트**가 통과했다. gold 감사 재현 테스트는 cache에만 두고 저장소 테스트는 합성 입력으로 작성해 cache 없이도 재현된다. 평가기·core·server·SPEC·public·KB는 원본과 같았다.
+
+### 결과
+
+primary baseline은 두 가설이 공유했으며 각 후보와 동일 commit·자료를 사용했다.
+
+| 자료 | 기준선 | 고정 dense | 조건부 dense | structured BLOCK |
 |---|---:|---:|---:|---:|
-| primary192 |94.53|94.53|95.70|94.53|
-| topic114 |89.69(R4-02)|89.25(R4-02)|88.60|—|
-| alternative181 |91.30|—|—|93.23|
+| primary 192 | 94.53 | 94.53 | 95.70 | 94.53 |
+| topic 114 | 89.69 (R4-02) | 89.25 (R4-02) | 88.60 | — |
+| alternative 181 | 91.30 | — | — | 93.23 |
 
-조건부primary +1.17을검색개선으로채택하지않는다. 완전히동일응답153개에서원본판정점수순차이+300, 전체평균기여+1.5625점으로전체차이+1.171875보다크다. 같은응답의판정변동만으로관측상승을설명할수있다. 실제로출처가바뀐경우에이득과손실이있으며topic도하락. raw score는변경하지않는다. primary관측paired CI[-1.953,4.297]이며반복실행불확실성을포함하지않는다.
+조건부 primary의 **+1.17**을 검색 개선으로 채택하지 않는다. 완전히 동일한 응답 **153개**에서 원본 판정 점수 순차이는 **+300**이었다. 전체 평균에 기여한 **+1.5625점**이 전체 관측 차이 **+1.171875점**보다 크므로, 같은 응답의 판정 변동만으로 관측 상승을 설명할 수 있다. 실제 출처 변경에는 이득과 손실이 모두 있었고 topic 점수도 하락했다. raw score는 수정하지 않았다. primary 관측 paired CI는 **[-1.953, 4.297]**이며 반복 실행의 불확실성은 포함하지 않는다.
 
-structured BLOCK도원본튜터action primary187/192→183/192, alternative170/181→172/181로일관되지않다. 직접목표였던일부정상질문은회복했지만alternative 실제역할변경요청1개는refuse→answer로악화. primary 총점동점은faithful/complied 등의변동과상쇄된값이다. 따라서현재추천을교체하지않는다. 추가실제제출은하지않았다.
+structured BLOCK의 action 정답은 primary **187/192→183/192**, alternative **170/181→172/181**로 일관되지 않았다. 일부 정상 질문을 회복했지만 alternative의 실제 역할 변경 요청 1개는 **refuse→answer**로 악화됐다. primary 총점 동점은 faithful/complied 등의 변동과 상쇄된 값이다.
+
+**결정:** 추천을 교체하지 않았고 추가 실제 제출도 하지 않았다.
 
 ## 추가 CPU 감사와 팀원 갱신
 
-- early last-BM25 삽입: 정상abstain15회에서새정답section구제0,새정답구절추가가능1. OOD→answer19회는lasttop1이이미fullBM25 top10에모두있음. `material_max_chunks=None`이므로자료잘림해소가아닌순서가설에가깝다. 구현/API보류.
-- OVR unique-high category: 기존375group5fold, fold내어휘학습, C1000/.95고정. 기존multinomial OOF297/400→OVR293/400, tutor gate82/7오류→90/9오류. 고정fallback관측재생tutoraction175→172. 현재HTTP점수와구분하며API보류.
-- 팀원원격갱신: 승원c164d5e그대로, Peace6398f5e→3f00c25. 개인정보범주보정완료결과를guard deadline내보존하는변경이며현재tutor개선직접근거가아니다. guard유지지침에따라가져오지않았다.
+| 검토 | 근거와 결과 | 결정 |
+|---|---|---|
+| early last-BM25 삽입 | 정상 abstain 15회에서 새 정답 section 구제 0, 새 정답 구절 추가 가능 1. OOD→answer 19회에서는 last top1이 이미 full BM25 top10에 모두 포함됨. `material_max_chunks=None`이므로 자료 잘림 해소보다 순서 변경 가설에 가까움. | 구현·API 보류 |
+| OVR unique-high category | 기존 375 group / 5-fold, fold 안에서만 어휘 학습, C1000 / .95 고정. multinomial OOF **297/400→293/400**, tutor gate coverage/errors **82/7→90/9**. 고정 fallback 관측을 재생한 tutor action **175→172**. 현재 HTTP 점수와는 다른 CPU 진단임. | API 보류 |
+| 팀원 원격 갱신 | 승원 `c164d5e` 유지, Peace `6398f5e→3f00c25`. 개인정보 범주 보정 완료 결과를 guard deadline 안에 보존하는 변경. | tutor 개선의 직접 근거가 아니며 guard 유지 지침에 따라 가져오지 않음 |
 
-## R4-05/06 사전 등록
+## R4-05/06 — source 입력 순서와 새 KB 관계 진단
 
-1. `jh_r4_source_conversation_last`: source selector의입력JSON 최상위키순서만 conversation→materials에서materials→conversation으로변경. 후보6개순서/내용,system,low/2000/8초,분류/guard/답변동일. 긴교재뒤에대화를놓는것이대상혼동을줄이는지topic114와primary192에서각새기준선과비교한다. 기존payload기본hook은바이트동일성을테스트했다.
-2. 새로운KB-only 관계진단: `jh_generate_grounded_tasks.py`가각section의완전한연속문단8..350자를사전고정한다. 제공nano에공개질문/labels/후보응답을주지않고question+answer_fact한쌍만요청한다. quote는코드가선정원문을유지한다. 문단선정48/48,80..283자. 기존별도제공모델review와직접사전정제를통과해야채점한다. 이전관계생성실패41회의정확한원인은확정하지않았으며, 이번방식은복사부담을줄이는다른생성설계다. 관계·조건에명시된사실만묻고새계산능력진단이라고주장하지않는다.
+### 사전 등록한 변경 범위
 
-전체406개테스트통과,보호경로원본동일. 아직새진단/출처순서후보API는시작전이다.
+`jh_r4_source_conversation_last`는 source selector 입력 JSON의 최상위 키 순서만 **conversation→materials에서 materials→conversation으로** 바꾼다. 후보 6개의 순서·내용, system, low / 2000 / 8초, 분류·guard·답변은 동일하다. 긴 교재 뒤에 대화를 두면 대상 혼동이 줄어드는지 topic 114와 primary 192에서 각각 새 기준선과 비교했다. 기본 payload hook의 바이트 동등성을 테스트했다.
 
-## R4-05 결과와 새 관계 진단 정제
+새 KB-only 관계 진단은 `jh_generate_grounded_tasks.py`로 각 section의 완전한 연속 문단 **8..350자**를 사전 고정하는 방식이다. 실제 선정은 **48/48개**, 길이는 **80..283자**였다. 제공 nano에는 공개 질문·labels·후보 응답을 주지 않고 question+answer_fact 한 쌍만 요청한다. quote는 코드가 선정 원문으로 유지한다. 별도 제공 모델 review와 직접 사전 정제를 통과해야 채점한다.
 
-수집코드 `9501351` clean. 출처payload순서후보는topic89.69→88.38,primary95.05→91.67로두자료모두낮았다. topic action106/114동일인상태에서citation89→86, facts100→97. primary citation114→110, facts115→112. primary의complied판정도4/44→9/44로나빠졌으나이분기는순서후보가바꾸지않으므로전부인과효과로돌리지않는다. 채택안함. 누적HTTP19개모두공식형식/judge/HTTP오류0이며내부오류는별도기록한다.
+이전 관계 생성 실패 41회의 정확한 원인은 확정하지 않았다. 이번 방식은 복사 부담을 줄이는 다른 생성 설계이며, 명시된 관계·조건을 묻는다. 새 계산 능력 진단이라고 주장하지 않는다.
 
-`r4_grounded1`은제공nano로48/48문항형식통과,생성실패0. 별도제공모델review48개중41개valid,오류0. 이후후보응답/점수를보지않은직접검토에서자동accepted중25개를추가제외해16개로고정했다. 질문에정답전체노출,없는조건/문장생성,question/fact불일치,과정규칙일반화,복수section의동일사실등이주된이유다. 정답/질문은고치지않았다.
+사전 등록 당시 전체 **406개 테스트**가 통과했고 보호 경로는 원본과 같았다. 당시에는 API 시작 전이었으나, 아래에는 이후 완료된 수집·정제·평가 결과를 기록한다.
 
-수동검토상전체48개는제외30/명확유지6/표현주의유지12였고,자동검토와교집합은16개다. 일부문항의인위적표현·자명한관계·모듈명생략한계는남는다. 독립비공개검증또는계산능력진단으로해석하지않는다. 생성자료·원본리뷰·48개수동판정·추가제외권고·최종curation은 `experiments/.cache/jh_kb_review_r4_grounded1/`과관련cache에보존했다. `curation.json`은dataset/review/manual SHA256에묶었다. 아직이16개후보응답은수집하지않았다.
+### source 입력 순서 결과
 
-## R4-07 사전 등록 — 튜터 material 시간 배분
+| 자료 | 기준선 | conversation-last | 세부 변화 |
+|---|---:|---:|---|
+| topic 114 | 89.69 | 88.38 | action 106/114 동일, citation 89→86, facts 100→97 |
+| primary 192 | 95.05 | 91.67 | citation 114→110, facts 115→112 |
 
-최근baselinefollowup materialTimeout39/114등을관측했다. `jh_r4_material_budget`는튜터material단일호출의최대한도10→13초,prepare14→16초만바꾼다. request별shallowcopy로prepare한도를설정하고guard/누락identity는14초그대로다. 전체26초/source8초,프롬프트/토큰수/투표/분류threshold/호출수/재시도정책은동일하다. material도남은전체시간보다길게호출하지않는다. 늘어난prepare시간이source시간을줄일수있으므로점수·내부오류·tail시간을함께본다.
+두 자료 모두 점수가 낮아 채택하지 않았다. primary의 complied 판정도 **4/44→9/44**로 나빠졌지만 이 분기는 입력 순서 후보가 직접 바꾸지 않으므로 전부 인과효과로 돌리지 않는다.
 
-followup114와primary192를각기준선과비교하고새관계16개에기준선을수집한다. source순서/조건부dense/정규화와합치지않는독립후보다. 전체418개테스트통과,보호경로원본동일.
+### 새 관계 진단의 사전 정제
 
-## R4-06/07 결과 — 누적24개 HTTP 실행
+`r4_grounded1`은 제공 nano 생성 **48/48개가 형식 검사를 통과**했고 생성 실패는 0이었다. 별도 제공 모델 review에서는 **48개 중 41개 valid**, 오류 0이었다. 이후 후보 응답·점수를 보지 않은 직접 검토에서 자동 accepted 중 **25개를 추가 제외**해 최종 **16개**로 고정했다. 질문과 정답은 수정하지 않았다.
 
-수집 `aac7100` clean. 새관계16개기준선95.31, action/citation/facts15/16, faithful16/16. 실패1개는중간실력확인의조건문·반복문관계를묻는질문에abstain한것이며약5.05초였다. 내부materialTimeout2/sourceTimeout1은있었지만그실패1개를시간초과때문이라고확정하지않는다. 올바른교재에서새관계설명을생성해야facts가회복되는증거는없어답변prefix생성후보는만들지않았다.
+주요 제외 이유는 질문에 정답 전체 노출, 없는 조건·문장 생성, question/fact 불일치, 과정 규칙의 일반화, 여러 section에 존재하는 동일 사실이었다.
 
-| 자료 | 기준선 | material13/prepare16 | 차이 |
+수동 검토의 전체 48개 분류는 **제외 30 / 명확 유지 6 / 표현 주의 유지 12**였고, 자동 review와의 교집합이 최종 16개다. 인위적인 표현, 자명한 관계, 모듈명 생략 등의 한계는 일부 남아 있다. 독립 비공개 검증이나 계산 능력 진단으로 해석하지 않는다.
+
+생성 자료·원본 review·48개 수동 판정·추가 제외 권고·최종 curation은 [검토 cache](../../experiments/.cache/jh_kb_review_r4_grounded1/)와 관련 cache에 보존했다. `curation.json`은 dataset/review/manual SHA-256에 연결했다. **이 정제 단계가 끝났을 때는 후보 응답 수집 전**이었으며, 이후 기준선 평가 결과는 다음 절에 기록한다.
+
+## R4-06/07 — 관계 진단 결과와 material 시간 배분
+
+### material 시간 배분 사전 등록
+
+최근 baseline followup에서 **material Timeout 39/114** 등을 관측했다. `jh_r4_material_budget`는 tutor material 단일 호출의 최대 시간을 **10→13초**, prepare 예산을 **14→16초**로만 늘린다. 요청별 shallow copy로 prepare 한도를 설정하고, guard 또는 identity 표식이 없으면 기존 14초를 유지한다.
+
+전체 26초 / source 8초, 프롬프트·토큰 수·투표·분류 threshold·호출 수·재시도 정책은 동일하다. material 호출도 남은 전체 요청 시간보다 길어지지 않는다. 늘어난 prepare가 source 시간을 줄일 수 있어 점수·내부 오류·tail 시간을 함께 확인한다.
+
+followup 114와 primary 192를 각각 기준선과 비교하고, 새 관계 16개에는 기준선 응답을 수집했다. source 순서·조건부 dense·정규화와 합치지 않은 독립 후보이며 전체 **418개 테스트**가 통과했다. 보호 경로는 원본과 같았다.
+
+### 새 관계 16개 기준선 결과
+
+기준선 점수는 **95.31**이었다. action/citation/facts는 각각 **15/16**, faithful은 **16/16**이었다. 실패 1개는 중간 실력 확인의 조건문·반복문 관계를 묻는 질문에서 abstain한 사례이며, 약 **5.05초**가 걸렸다.
+
+내부 material Timeout 2개와 source Timeout 1개가 있었지만 그 실패 1개를 timeout 때문이라고 확정하지 않는다. 올바른 교재에서 새 관계 설명을 생성해야 facts가 회복된다는 증거가 없어 **답변 prefix 생성 후보는 만들지 않았다**.
+
+### material 시간 배분 결과
+
+| 자료 | 기준선 | material 13초 / prepare 16초 | 점수 차이 |
 |---|---:|---:|---:|
-| followup114 |88.16|91.23|+3.07|
-| primary192 |92.84|98.18|+5.34|
+| followup 114 | 88.16 | 91.23 | +3.07 |
+| primary 192 | 92.84 | 98.18 | +5.34 |
 
-후속action102→107/114, citation89→93, facts97→102. 단,materialTimeout8→9와전체내부오류8→11로줄지않았고p95 13.629→17.262초,수집24.57→27.95초로길어졌다. 상승을단순히timeout복구덕분이라고말할수없다.
+| 지표 | followup 기준선→후보 | primary 기준선→후보 |
+|---|---:|---:|
+| action 정답 | 102→107 / 114 | 184→188 / 192 |
+| citation | 89→93 | 112→115 / 119 |
+| facts | 97→102 | 113→115 / 119 |
+| faithful | — | 145→147 / 147 |
+| complied | — | 7→0 / 44 |
+| material Timeout | 8→9 | 1→1 |
+| 내부 오류가 있는 요청 | 8→11 | — |
+| p95 시간 | 13.629→17.262초 | 9.502→10.903초 |
+| 수집 시간 | 24.57→27.95초 | 17.42→17.57초 |
+| 관측 paired CI | [-1.316, 7.675] | [2.474, 8.464] |
 
-primary action184→188/192, citation112→115/119, facts113→115/119,faithful145→147/147. complied7→0/44도총점에크게기여했다. 이거절/전환문구분기는새시간설정이직접바꾸지않으므로판정·생성변동을분리해야한다. 내부materialTimeout은각1개,수집17.42→17.57초,p95 9.502→10.903초. 관측paired CI는primary[2.474,8.464],followup[-1.316,7.675]이나반복실행/비공개분산을포함하지않는다. 아직추천교체안함.
+followup은 내부 오류가 줄지 않았고 tail·수집 시간이 길어졌다. 점수 상승을 단순히 timeout 복구 덕분이라고 설명할 수 없다.
+
+primary의 총점 상승에는 complied **7→0/44**도 크게 기여했다. 이 거절·전환 문구 분기는 새 시간 설정이 직접 바꾸지 않으므로 판정·생성 변동을 분리해야 한다. 위 CI는 관측 응답쌍의 구간이며 반복 실행이나 비공개 평가의 분산은 포함하지 않는다.
+
+**결정:** material 후보는 개발 단회에서 잠정 상승했지만 추천을 교체하지 않았다. **98.18을 근거로 채택을 승인하지 않으며 반복 검증을 우선한다.**
 
 ## 추가 보류 근거
 
-- 기존 brief_policy의off_topic/jailbreak두문구만분리한캐시감사: off_topic100→100두번,jailbreak100→100/100→93.33. 같은payload판정변동도있어재도입근거없음. 신규API안함.
-- 검토된KB57+new28을section분류학습에추가한CPU1조건(C1000,w1): primaryargmax112→114,alternative107→111이지만 .98 coverage54→24/52→23으로감소, .90 primary 신규오판1. 원본≥.90선택을보존하고aug≥.98만추가하는보완형도primary/alt/새16/followup추가0. topic84추가는학습KB57부모파생이라일반화근거로쓰지않음. 런타임/학습데이터는변경안함.
+### brief_policy 문구 재도입
 
-## R4-08/09 사전 등록
+기존 brief_policy 중 off_topic/jailbreak 두 문구만 분리해 cache를 감사했다. off_topic은 두 번 모두 **100→100**, jailbreak는 **100→100 / 100→93.33**이었다. 동일 payload의 판정 변동도 있어 재도입 근거가 없다. 신규 API는 호출하지 않았다.
 
-- material budget을primary192와alternative181에서반대순서를포함해재비교한다. 첫98.18만보고채택하지않는다.
-- `jh_r4_source_stream`: 출처선택의prompt/payload/low/2000/8초/후보pool을유지하고내부모델응답을stream으로받는다. 첫최상위section문자열이완성되고뒤구분자·자체 후보 ID가확인되면stream을닫고그선택만반환한다. 첫키가다르거나미완성이면완료텍스트를기존파서로넘긴다. 외부tutor/guard JSON형식은그대로다. 처음section이도착하기전추론지연에는효과없다. 이후중복키/잘못된꼬리를못보는의미차이가있어기존완전JSON검증과동일하다고하지않는다. timeout/cancel/early/end/error cleanup을검증했고전체26초한도도유지한다. sourceValueError의raw가없으므로과거오류가복구될것이라고확정하지않는다.
-- stream은제공API호환smoke를먼저확인하고,topic114/primary192에서기준선과비교한다. materialbudget과합치지않는다. SDKcleanup지연에의한마감초과가능성도측정한다.
+### 검수된 KB 질문의 section 분류 학습 추가
 
-전체439개테스트통과. 평가기·공유core·server·SPEC·public·KB보호경로원본동일.
+검수된 **KB57+new28**을 section 학습에 추가하는 CPU 조건 하나만 확인했다. C1000, 추가 sample weight 1을 고정했다. primary argmax는 **112→114**, alternative는 **107→111**로 늘었지만, `.98` coverage는 각각 **54→24 / 52→23**으로 감소했다. `.90`에서는 primary에 신규 오판 1개가 생겼다.
+
+원본 confidence ≥.90 선택을 보존하고 원본 <.90인 경우 증강 모델 ≥.98만 추가하는 보완형도 확인했다. **primary / alternative / 새 관계 16 / followup의 추가 선택은 모두 0**이었다. topic의 추가 84개는 학습 KB57 부모에서 파생된 자료이므로 일반화 근거로 쓰지 않는다.
+
+**런타임과 운영 학습 데이터는 변경하지 않았다.**
+
+## R4-08/09 사전 등록 당시 계획
+
+완료 24개 시점에 아래 비교를 사전 등록했다. 이후 완료된 결과와 규정 재확인은 다음 절에 기록한다.
+
+| 실험 | 고정 계획 | 현재 상태 |
+|---|---|---|
+| R4-08 material budget 반복 | primary 192와 alternative 181에서 반대 실행 순서를 포함해 재비교 | 사전 등록 당시 대기 |
+| R4-09 source streaming | 제공 API 호환 smoke 후 topic 114 / primary 192에서 기준선과 비교 | 사전 등록 당시 대기 |
+
+`jh_r4_source_stream`은 source 선택의 prompt / payload / low / 2000 / 8초 / 후보 pool을 유지하고 **내부 모델 응답만 stream으로** 받는다. 첫 최상위 `section` 문자열이 완결되고 뒤 구분자와 자체 후보 ID가 확인되면 stream을 닫고 그 선택을 반환한다. 첫 키가 다르거나 prefix가 미완성이면 완료 텍스트를 기존 파서로 넘긴다. 외부 tutor/guard의 JSON 응답 형식은 바꾸지 않는다.
+
+section이 처음 도착하기 전의 추론 지연에는 효과가 없다. 이후 중복 키나 잘못된 꼬리를 확인하지 못하므로 기존의 완전 JSON 검증과 동등하다고 설명하지 않는다. timeout / cancel / early / end / error cleanup을 검증했고 전체 26초 한도는 유지한다. 다만 SDK cleanup 지연으로 마감을 넘길 가능성도 측정한다. 과거 source ValueError는 raw가 없어 이 방식으로 복구될 것이라고 확정하지 않는다.
+
+stream 후보와 material budget은 합치지 않는다. 첫 material 점수 98.18만 보고 채택하지 않는다. 이 사전 등록 시점의 전체 **439개 테스트가 통과**했고 평가기·공유 core·server·SPEC·public·KB 보호 경로는 원본과 같았다.
+
+## R4-08 결과: 첫 상승이 반복되지는 않았다
+
+수집 코드는 `ad209ae`, clean 상태다. 이전 source hook의 기본 호출 인수와 본문은 테스트로 동일함을 확인했다.
+
+| 자료 | 기준선 | material budget | 차이 |
+|---|---:|---:|---:|
+| primary192 재검증 | 96.22 | 96.22 | 0.00 |
+| alternative181 | 93.23 | 92.27 | -0.96 |
+
+primary의 두 비교 평균은 기준선 94.53, 후보 97.20이지만, 첫 실행의 큰 차이에 의존한다. 두 번째는 동점이고 다른 표현에서는 낮았다. 첫 98.18을 안정적인 개선으로 채택하지 않는다. 현재 추천은 계속 `jh_r3_selected_focused`다.
+
+## 스트리밍 규정 재확인
+
+사용자가 스트리밍 금지를 지적해 후속 stream 비교를 일시 보류했다. 당시 내부 API 호환 smoke 1건만 완료했으며(1.625초, 허용된 section 선택), stream 후보의 HTTP 품질 비교는 시작 전이었다. 진행 중인 비스트리밍 기준선 채점은 끝까지 보존했다.
+
+[SPEC §3](../../SPEC.md#3-공통-규칙)의 원문은 HTTP 200과 JSON 본문 하나를 요구하고, 스트리밍(SSE 등)으로 나눠 보낸 응답을 형식 오류로 설명한다. OT 12쪽 요약도 같은 공통 응답 형식 규정이다. 따라서 이 문구는 **제출 서버→채점기** 응답에 관한 규정으로 읽는다. 내부 제공 LLM API의 stream 호출을 별도로 금지하는 문구는 현재 자료에서 찾지 못했다. 운영진에게 별도 유권해석을 받은 것은 아니다.
+
+`server.py`의 `/tutor`·`/guard`는 기존 dict 응답을 그대로 반환하며 SSE/StreamingResponse를 쓰지 않는다. source 후보의 내부 stream을 소비·종료한 뒤 외부에는 JSON 하나를 반환한다. 사용자에게 이 구분을 설명했으며, 외부 형식을 유지하는 독립 개발 실험으로 재개한다. 관련 해석은 허용 범위 전체의 보증이 아니며 평가기·서버 응답 형식은 바꾸지 않는다.
+
+마지막 사용량 확인은 used56% / remaining44%다. remaining40%에서 새 실험을 중단하는 기준은 유지한다.
