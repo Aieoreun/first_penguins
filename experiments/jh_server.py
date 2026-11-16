@@ -61,7 +61,7 @@ def main():
               "tutor_topic_selection", "tutor_query_gate", "tutor_section_threshold",
               "tutor_dual_query", "tutor_answer_support", "tutor_extract_scope", "tutor_material_source", "material_quote_min_chars",
               "source_extraction_selector", "source_extract_timeout", "source_extract_sections",
-              "tutor_other_boundary", "tutor_material_boundary", "source_extract_quote_required")
+              "tutor_other_boundary", "tutor_material_boundary", "source_extract_quote_required", "tutor_material_votes")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode
