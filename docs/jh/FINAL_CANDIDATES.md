@@ -128,3 +128,6 @@ flowchart TD
 - 검색: [core/search.py](../../core/search.py)
 
 이번 작업은 후보와 구조의 기록이다. 실행 코드·모델 설정·평가기·submission.json을 변경하거나 추가 API 실험·제출을 실행하지 않았다. 자동 실험 중단 상태도 유지한다.
+
+
+교재 분할·검색·후보 결합·출처 선택을 확대한 그림은 [RETRIEVAL_STRUCTURE.md](RETRIEVAL_STRUCTURE.md)에 보관했다.
