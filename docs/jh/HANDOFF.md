@@ -1,5 +1,10 @@
 # 김재학 실험 인수인계
 
+> **후속 실제 제출 보고:** 전체 83.22 / tutor 76.75 / guard 89.69, 79.810초, 오류 0.
+> 사용자가 실행 명령과 시작 로그로 확인한 조건은 `jh_guard_fitted_contextfast`, 내부 64,
+> 기본 embedding mode `env`, 교재 219조각의 임베딩 색인 로드 성공이다.
+> `jh_r2_dense10`을 제출한 결과는 아니다. 상세 비교와 해석 범위는 [ROUND2.md](ROUND2.md)의 후속 실제 제출 절에 있다.
+
 > **2차 실험 진행 기록은 [ROUND2.md](ROUND2.md)와 [round2_results.json](round2_results.json)을 먼저 확인한다.** 아래는 1차 종료 시점의 기록이다. 이후 `bac0c44`까지 사용자의 요청으로 push했고 실제 제출 82.48점을 전달받았다. 2차에서 임베딩 전용 주소 연결에 성공해 `.env`에 반영했으므로, 아래 1차 BM25 조건을 재현하려면 launcher/compare에 **`--embedding-mode off`**를 명시한다. 2차 중단 기준은 잔여 사용량 50%이며 이전 `STOP.json`의 15% 기록과 구분한다.
 
 2026-11-16 KST. 브랜치 `experiment/kimjaehak`, 기준 `6ec111d`(승원 v2). **06:14에 계정 잔여 사용량 15%를 확인해 새 실험을 중단했다.** 이미 시작한 실행의 채점까지 완료했다. 원격 push·공식 비공개 제출은 하지 않았다. 중단 근거는 `STOP.json`에 있다.
