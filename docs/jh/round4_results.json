@@ -791,6 +791,111 @@
       "unverified_components": 0
     },
     {
+      "run": "experiments/.cache/jh_topic_r4_09_topic_base/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 114,
+      "commit": "1f1afd05eddd588994b60e25dbbe2ab387fa8766",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "provided_kb_fact_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "41347b7478d3b07fb9fdd0f88a09b4cc19e5dac6bb243305cca5297fc1ec337e",
+      "runtime": {
+        "collect_seconds": 24.11,
+        "p50": 9.7075,
+        "p95": 13.751,
+        "max": 14.901,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "material:TimeoutError": 5
+        }
+      },
+      "tutor": 90.35,
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 114,
+        "action_correct": {
+          "count": 114,
+          "mean": 0.9298245614035088
+        },
+        "citation_f1": {
+          "count": 114,
+          "mean": 0.7894736842105263
+        },
+        "facts": {
+          "count": 114,
+          "mean": 0.8947368421052632
+        },
+        "faithful": {
+          "count": 114,
+          "mean": 1.0
+        },
+        "complied": {
+          "count": 0,
+          "mean": null
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r4_09_topic_stream/jh_r4_source_stream_1",
+      "variant": "jh_r4_source_stream",
+      "count": 114,
+      "commit": "1f1afd05eddd588994b60e25dbbe2ab387fa8766",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "provided_kb_fact_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "56e8e46a8be4f276f4cc4def92eaea2d3522ee54aa49c9a09dc429a0573bcc56",
+      "runtime": {
+        "collect_seconds": 22.03,
+        "p50": 8.9375,
+        "p95": 13.039,
+        "max": 15.676,
+        "http_errors": 0,
+        "stage_failure_requests": 7,
+        "stage_errors": {
+          "material:TimeoutError": 5,
+          "material:parse": 2
+        }
+      },
+      "tutor": 91.01,
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 114,
+        "action_correct": {
+          "count": 114,
+          "mean": 0.956140350877193
+        },
+        "citation_f1": {
+          "count": 114,
+          "mean": 0.7982456140350878
+        },
+        "facts": {
+          "count": 114,
+          "mean": 0.8859649122807017
+        },
+        "faithful": {
+          "count": 114,
+          "mean": 1.0
+        },
+        "complied": {
+          "count": 0,
+          "mean": null
+        }
+      },
+      "unverified_components": 0
+    },
+    {
       "run": "experiments/.cache/jh_transfer_r4_03_primary_base/jh_r3_selected_focused_1",
       "variant": "jh_r3_selected_focused",
       "count": 192,
@@ -1693,6 +1798,132 @@
         "complied": {
           "count": 44,
           "mean": 0.045454545454545456
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r4_09_primary_base/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 192,
+      "commit": "1f1afd05eddd588994b60e25dbbe2ab387fa8766",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "public_paraphrase_full_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "3b4ed02412c9e9ebb0ff0ab705b117768222d0e5a365403b191282b3d1e1d878",
+      "runtime": {
+        "collect_seconds": 18.11,
+        "p50": 1.0385,
+        "p95": 10.842,
+        "max": 14.98,
+        "http_errors": 0,
+        "stage_failure_requests": 0,
+        "stage_errors": {}
+      },
+      "total": 48.3,
+      "tutor": 96.61,
+      "guard": 0.0,
+      "guard_details": {
+        "block_f1": 1.0,
+        "category_accuracy": null,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {}
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 192,
+        "action_correct": {
+          "count": 192,
+          "mean": 0.96875
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9831932773109243
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9747899159663865
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9931972789115646
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.045454545454545456
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r4_09_primary_stream/jh_r4_source_stream_1",
+      "variant": "jh_r4_source_stream",
+      "count": 192,
+      "commit": "1f1afd05eddd588994b60e25dbbe2ab387fa8766",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "public_paraphrase_full_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "7c2e9abfd3db461d912df1da5905857a855f3e545d00e7196e5a2bb489728635",
+      "runtime": {
+        "collect_seconds": 15.76,
+        "p50": 1.1385,
+        "p95": 9.304,
+        "max": 13.608,
+        "http_errors": 0,
+        "stage_failure_requests": 3,
+        "stage_errors": {
+          "material:TimeoutError": 3
+        }
+      },
+      "total": 48.44,
+      "tutor": 96.88,
+      "guard": 0.0,
+      "guard_details": {
+        "block_f1": 1.0,
+        "category_accuracy": null,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {}
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 192,
+        "action_correct": {
+          "count": 192,
+          "mean": 0.9895833333333334
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.957983193277311
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9747899159663865
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 1.0
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.06818181818181818
         }
       },
       "unverified_components": 0
