@@ -24,6 +24,8 @@ def load(name: str = ""):
         if name in {"jh_r3_extract_section", "jh_r3_extract_chunk"}:
             module = importlib.import_module("pipelines.kimjaehak.extractive_answer")
             return module.Section if name == "jh_r3_extract_section" else module.Chunk
+        if name == "jh_r3_material_source":
+            return importlib.import_module("pipelines.kimjaehak.material_source").Pipeline
         if name == "jh_r3_dual_section90":
             return importlib.import_module("pipelines.kimjaehak.dual_section").Pipeline
         if name == "jh_r3_answer_support":
