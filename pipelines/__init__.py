@@ -21,6 +21,8 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_r3_dual_query":
+            return importlib.import_module("pipelines.kimjaehak.dual_query").Pipeline
         if name == "jh_r3_section90":
             return importlib.import_module("pipelines.kimjaehak.tutor_section_gate").Pipeline
         if name == "jh_r3_query_gate":
