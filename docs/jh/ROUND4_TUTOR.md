@@ -97,3 +97,17 @@ structured BLOCK도원본튜터action primary187/192→183/192, alternative170/1
 2. 새로운KB-only 관계진단: `jh_generate_grounded_tasks.py`가각section의완전한연속문단8..350자를사전고정한다. 제공nano에공개질문/labels/후보응답을주지않고question+answer_fact한쌍만요청한다. quote는코드가선정원문을유지한다. 문단선정48/48,80..283자. 기존별도제공모델review와직접사전정제를통과해야채점한다. 이전관계생성실패41회의정확한원인은확정하지않았으며, 이번방식은복사부담을줄이는다른생성설계다. 관계·조건에명시된사실만묻고새계산능력진단이라고주장하지않는다.
 
 전체406개테스트통과,보호경로원본동일. 아직새진단/출처순서후보API는시작전이다.
+
+## R4-05 결과와 새 관계 진단 정제
+
+수집코드 `9501351` clean. 출처payload순서후보는topic89.69→88.38,primary95.05→91.67로두자료모두낮았다. topic action106/114동일인상태에서citation89→86, facts100→97. primary citation114→110, facts115→112. primary의complied판정도4/44→9/44로나빠졌으나이분기는순서후보가바꾸지않으므로전부인과효과로돌리지않는다. 채택안함. 누적HTTP19개모두공식형식/judge/HTTP오류0이며내부오류는별도기록한다.
+
+`r4_grounded1`은제공nano로48/48문항형식통과,생성실패0. 별도제공모델review48개중41개valid,오류0. 이후후보응답/점수를보지않은직접검토에서자동accepted중25개를추가제외해16개로고정했다. 질문에정답전체노출,없는조건/문장생성,question/fact불일치,과정규칙일반화,복수section의동일사실등이주된이유다. 정답/질문은고치지않았다.
+
+수동검토상전체48개는제외30/명확유지6/표현주의유지12였고,자동검토와교집합은16개다. 일부문항의인위적표현·자명한관계·모듈명생략한계는남는다. 독립비공개검증또는계산능력진단으로해석하지않는다. 생성자료·원본리뷰·48개수동판정·추가제외권고·최종curation은 `experiments/.cache/jh_kb_review_r4_grounded1/`과관련cache에보존했다. `curation.json`은dataset/review/manual SHA256에묶었다. 아직이16개후보응답은수집하지않았다.
+
+## R4-07 사전 등록 — 튜터 material 시간 배분
+
+최근baselinefollowup materialTimeout39/114등을관측했다. `jh_r4_material_budget`는튜터material단일호출의최대한도10→13초,prepare14→16초만바꾼다. request별shallowcopy로prepare한도를설정하고guard/누락identity는14초그대로다. 전체26초/source8초,프롬프트/토큰수/투표/분류threshold/호출수/재시도정책은동일하다. material도남은전체시간보다길게호출하지않는다. 늘어난prepare시간이source시간을줄일수있으므로점수·내부오류·tail시간을함께본다.
+
+followup114와primary192를각기준선과비교하고새관계16개에기준선을수집한다. source순서/조건부dense/정규화와합치지않는독립후보다. 전체418개테스트통과,보호경로원본동일.
