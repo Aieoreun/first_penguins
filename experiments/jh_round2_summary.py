@@ -8,12 +8,16 @@ from jh_tutor_components import explain
 
 
 def summarize():
-    records, pending = [], []
+    records, pending, failed = [], [], []
     cache = ROOT / "experiments/.cache"
     for manifest_path in sorted(cache.glob("*r2*/*/manifest.json")):
         run = manifest_path.parent
         manifest = json.loads(manifest_path.read_text())
         if "variant" not in manifest:
+            continue
+        if (run / "failure.json").exists():
+            failed.append({"run":str(run.relative_to(ROOT)),
+                           **json.loads((run / "failure.json").read_text())})
             continue
         if not (run / "runtime.json").exists():
             pending.append({"run":str(run.relative_to(ROOT)),"phase":"collection"})
@@ -47,7 +51,7 @@ def summarize():
             record["tutor_components"] = component_result["verified_summary"]
             record["unverified_components"] = component_result["unverified_items"]
         records.append(record)
-    return {"scope":"round2_development_summary_not_private_evaluation", "records":records,"pending":pending,
+    return {"scope":"round2_development_summary_not_private_evaluation", "records":records,"pending":pending,"failed":failed,
             "official_user_report":{"total":82.48,"tutor":76.75,"guard":88.21,"duration":57.039,
                                     "count":600,"seed":"24eecaf226f952687cf1f8dfea58b696",
                                     "runbox_commit_independently_verified":False}}
