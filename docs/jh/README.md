@@ -1,7 +1,9 @@
 # 김재학 실험 — 승원 v2 + Peace 가드
 
 **최신 종료: [ROUND4_TUTOR.md](ROUND4_TUTOR.md).** 잔여40% 기준으로 종료했고 48회·8,118요청 채점을 완료했다.
-추천은 실제84.68 관측의 `jh_r3_selected_focused / env / slots64` 유지다. 이번 신규 후보는 미채택.
+로컬 종료 당시에는 focused를 유지했다. 이후 실제 제출 반복을 반영한 현재 추천은 **`jh_r4_material_budget / env / slots64`**다.
+1번 두 번 평균84.505, focused 세 번 평균84.183이며 작은 관측 차이로 통계적 우월성을 주장하지 않는다.
+[최신 실제 제출 비교](PRIVATE_SUBMISSIONS_R4_20261117.md)를 우선한다.
 [중단 근거](ROUND4_STOP.json), [결과 집계](round4_results.json), [인수인계](HANDOFF.md)를 우선한다.
 아래60%·50%·15% 기준은 이전 라운드의 이력이다.
 
