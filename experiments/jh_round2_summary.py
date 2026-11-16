@@ -12,15 +12,18 @@ def summarize():
     cache = ROOT / "experiments/.cache"
     for manifest_path in sorted(cache.glob("*r2*/*/manifest.json")):
         run = manifest_path.parent
-        if not (run / "runtime.json").exists():
-            continue
         manifest = json.loads(manifest_path.read_text())
+        if "variant" not in manifest:
+            continue
+        if not (run / "runtime.json").exists():
+            pending.append({"run":str(run.relative_to(ROOT)),"phase":"collection"})
+            continue
         if manifest["evaluator_hashes"] != evaluator_hashes():
             raise ValueError("Evaluator changed")
         completed = next((run / name for name in ("result.json", "derived_result.json", "diagnostic.json")
                           if (run / name).exists()), None)
         if completed is None:
-            pending.append(str(run.relative_to(ROOT)))
+            pending.append({"run":str(run.relative_to(ROOT)),"phase":"scoring"})
             continue
         result = json.loads(completed.read_text())
         record = {"run": str(run.relative_to(ROOT)),
