@@ -75,6 +75,7 @@ class Pipeline(V1Pipeline):
     safe_by_rule = SAFE_RULE
     votes = VOTES            # 각 확인을 몇 번 불러 다수결할지
     seek_first = SEEK_FIRST  # 정답만 요구를 과제 대행보다 앞에 둘지
+    material_timeout = CLASSIFY_TIMEOUT  # 교재 확인 호출의 제한 시간(초). 세 확인 중 가장 느리다
 
     async def _ask(self, state: State, name: str, system: str, user: str, effort: str, timeout: float) -> dict:
         try:
@@ -113,7 +114,7 @@ class Pipeline(V1Pipeline):
                 self._ask(state, "block", prompts.BLOCK_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
                 self._ask(state, "other", prompts.OTHER_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
                 self._ask(state, "material", prompts.MATERIAL_SYSTEM, material_user,
-                          MATERIAL_EFFORT or CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
+                          MATERIAL_EFFORT or CLASSIFY_EFFORT, self.material_timeout),
             ]
         answers = await asyncio.gather(*calls)
         blocks, others, materials = answers[0::3], answers[1::3], answers[2::3]

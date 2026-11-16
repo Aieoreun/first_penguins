@@ -45,6 +45,8 @@ async def run(args):
     judge = None if args.no_judge else make_judge(
         os.environ["OPENAI_BASE_URL"], os.environ["OPENAI_MODEL"], os.environ["OPENAI_API_KEY"])
     items = load_items(args.split)
+    if args.endpoint:
+        items = [p for p in items if p["endpoint"] == args.endpoint]
     sem = asyncio.Semaphore(args.workers)
     pool = ThreadPoolExecutor(args.workers)
     loop = asyncio.get_running_loop()
@@ -138,6 +140,7 @@ if __name__ == "__main__":
     ap.add_argument("--split", default="dev", choices=["dev", "holdout", "all"])
     ap.add_argument("--name", default="run")
     ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--endpoint", default="", choices=["", "tutor", "guard"], help="한쪽 문항만 돌린다")
     ap.add_argument("--no-judge", action="store_true")
     ap.add_argument("--report", action="store_true", help="저장된 결과로 표만 다시 찍는다")
     a = ap.parse_args()

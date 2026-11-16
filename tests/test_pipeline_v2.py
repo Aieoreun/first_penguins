@@ -245,5 +245,37 @@ class V5Test(unittest.TestCase):
         self.assertEqual(state.errors, [])
 
 
+class V6Test(unittest.TestCase):
+    """v6는 v5에서 정상 답변 프롬프트를 바꾸고, 교재에 없는 질문에 고정 문장을 낸다."""
+
+    def setUp(self):
+        from pipelines.v6 import prompts as v6_prompts
+        from pipelines.v6.pipeline import Pipeline as V6
+        self.V6, self.p = V6, v6_prompts
+
+    def test_out_of_material_uses_fixed_sentence_without_model_call(self):
+        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
+                       prompts.MATERIAL_SYSTEM: '{"asked": "x", "quote": "", "section": ""}'})
+        state = asyncio.run(self.V6(SEARCHER, llm).tutor({"messages": QUESTION}))
+        response = parse_tutor(state.to_tutor_response())
+        self.assertEqual((response["action"], response["answer"], response["citations"]),
+                         ("abstain", self.p.ABSTAIN_ANSWER, []))
+        self.assertEqual(len(llm.calls), 3)  # 확인 셋뿐. 답변 호출이 없다
+
+    def test_time_limits(self):
+        from pipelines.v4.pipeline import Pipeline as V4
+        self.assertEqual((V4.material_timeout, V4.prepare_limit, V4.deadline), (10, 14, 24))  # v4는 그대로다
+        self.assertEqual((self.V6.material_timeout, self.V6.prepare_limit, self.V6.deadline), (13, 14.5, 26))
+
+    def test_normal_uses_short_answer_prompt(self):
+        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+                       self.p.ANSWER_SYSTEM: "하루 이체 한도는 5만 원이에요."})
+        state = asyncio.run(self.V6(SEARCHER, llm).tutor({"messages": QUESTION}))
+        response = parse_tutor(state.to_tutor_response())
+        self.assertEqual(response["action"], "answer")
+        self.assertIn("5만 원", response["answer"])
+        self.assertEqual(state.errors, [])
+
+
 if __name__ == "__main__":
     unittest.main()
