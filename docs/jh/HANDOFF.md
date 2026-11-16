@@ -1,5 +1,8 @@
 # 김재학 실험 인수인계
 
+> **최종 후보 보관:** [FINAL_CANDIDATES.md](FINAL_CANDIDATES.md) — 우선 material_budget, 백업 focused. 정확한 실행 명령·시간 배분 차이·전체 구조도를 함께 기록했다.
+
+
 > **최신 실제 제출:** 새1번 재제출 `jh_r4_material_budget` 전체84.47 / tutor80.58 / guard88.37 / 64.816초, 공식 오류0.
 > **현재 실제 제출 추천: `jh_r4_material_budget / env / slots64`.** 두 번 평균84.505로 focused 세 번 평균84.183보다 소폭 높다. 통계적 우월성이 확정된 것은 아니다.
 > [R4 제출 기록과 비교](PRIVATE_SUBMISSIONS_R4_20261117.md)를 우선한다. 기존 최고84.68과 최신84.47은 구분하며, 아래 최신/추천 문구는 각 기록 당시의 판단이다.

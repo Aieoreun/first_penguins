@@ -1,5 +1,8 @@
 # 김재학 실험 — 승원 v2 + Peace 가드
 
+> **최종 후보 보관:** [FINAL_CANDIDATES.md](FINAL_CANDIDATES.md) — 우선 material_budget, 백업 focused. 정확한 실행 명령·시간 배분 차이·전체 구조도를 함께 기록했다.
+
+
 **최신 종료: [ROUND4_TUTOR.md](ROUND4_TUTOR.md).** 잔여40% 기준으로 종료했고 48회·8,118요청 채점을 완료했다.
 로컬 종료 당시에는 focused를 유지했다. 이후 실제 제출 반복을 반영한 현재 추천은 **`jh_r4_material_budget / env / slots64`**다.
 1번 두 번 평균84.505, focused 세 번 평균84.183이며 작은 관측 차이로 통계적 우월성을 주장하지 않는다.
