@@ -26,6 +26,18 @@ from core.search import Searcher
 from pipelines import load
 
 
+class CaptureChoices:
+    """Development-only recording of our own public draft candidates."""
+    def __init__(self, llm, selection_system):
+        self.llm, self.selection_system = llm, selection_system
+        self.answers = []
+
+    async def chat(self, system, user, **kwargs):
+        if self.selection_system and system == self.selection_system:
+            self.answers = json.loads(user)["후보"]
+        return await self.llm.chat(system, user, **kwargs)
+
+
 def source_data(source):
     manifest = json.loads((source / "manifest.json").read_text())
     if manifest["evaluator_hashes"] != evaluator_hashes() or manifest["model"] != os.environ.get("OPENAI_MODEL"):
@@ -75,18 +87,21 @@ async def collect(items, prior, variant, workers, dest):
                        source_seconds=old["seconds"])
             if not old["error"] and eligible(response, allowed):
                 async with slots:
-                    state = pipeline._new_state({"messages": item["messages"]}, False)
+                    current = copy.copy(pipeline)
+                    current.llm = CaptureChoices(pipeline.llm, getattr(pipeline, 'answer_choice_system', None))
+                    state = current._new_state({"messages": item["messages"]}, False)
                     # NORMAL/PII use the same generation prompt in these variants.
                     state.label, state.section = Label.NORMAL, response["citations"][0]
                     row["generation_attempted"] = True
                     start = time.monotonic()
                     try:
-                        await asyncio.wait_for(pipeline._generate(state), pipeline.deadline)
+                        await asyncio.wait_for(current._generate(state), current.deadline)
                     except TimeoutError:
                         state.answer, state.citations = FALLBACK_ANSWER, []
                         state.errors.append("generation_probe:Deadline")
                     row.update(response=state.to_tutor_response(), generation_errors=state.errors,
-                               generation_debug=state.debug, seconds=round(time.monotonic()-start, 3))
+                               generation_debug=state.debug, seconds=round(time.monotonic()-start, 3),
+                               generation_candidates=current.llm.answers or [state.answer])
             stream.write(json.dumps(row, ensure_ascii=False)+"\n")
             stream.flush()
             completed += 1
@@ -112,12 +127,20 @@ def score(dest):
         shutil.copyfile(source / "judge.jsonl", journal)
     baseline = score_rows(items, [prior[i["id"]] for i in items], meta["judge_workers"], journal=journal)
     revised = score_rows(items, rows, meta["judge_workers"], journal=journal)
+    first_valid = None
+    if meta.get('record_candidate_comparison'):
+        first_rows = copy.deepcopy(rows)
+        for row in first_rows:
+            if row.get('generation_candidates'):
+                row['response']['answer'] = row['generation_candidates'][0]
+        first_valid = score_rows(items, first_rows, meta["judge_workers"], journal=journal)
     report = {**meta, "baseline_tutor": baseline["tutor"], "revised_tutor": revised["tutor"],
               "attempted": sum(r["generation_attempted"] for r in rows),
               "error_requests": sum(bool(r["generation_errors"]) for r in rows),
-              "baseline": baseline, "revised": revised}
+              "baseline": baseline, "revised": revised,
+              "first_valid_tutor":first_valid['tutor'] if first_valid else None, "first_valid":first_valid}
     (dest / "result.json").write_text(json.dumps(report, ensure_ascii=False, indent=2)+"\n")
-    print(json.dumps({k:report[k] for k in ("variant","baseline_tutor","revised_tutor","attempted","error_requests")}), flush=True)
+    print(json.dumps({k:report[k] for k in ("variant","baseline_tutor","revised_tutor","first_valid_tutor","attempted","error_requests")}), flush=True)
 
 
 def main():
@@ -160,6 +183,7 @@ def main():
                 "answer_prompt_sha256":hashlib.sha256(cls.answer_systems[Label.NORMAL].encode()).hexdigest(),
                 "selection_prompt_sha256":hashlib.sha256(getattr(cls,'answer_choice_system','').encode()).hexdigest(),
                 "runtime_limit":"generation_only_26s_not_end_to_end",
+                "record_candidate_comparison":True,
                 "runtime_labels":"own_answer_action_and_own_citation_never_gold"}
     (dest/'manifest.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n')
     asyncio.run(collect(items,prior,args.variant,args.workers,dest))
