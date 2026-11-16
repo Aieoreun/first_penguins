@@ -78,6 +78,8 @@ def main():
     parser.add_argument("--build-only",action="store_true")
     parser.add_argument("--alternative",action="store_true",help="Use expressions excluded from the primary transfer set")
     parser.add_argument("--full",action="store_true",help="Retain source endpoints and inherited answer/evidence labels")
+    parser.add_argument("--endpoints", nargs="+", choices=("tutor", "guard"),
+                        help="With --full, select endpoint diagnostics; total is not a full-set score")
     parser.add_argument("--collect-only",action="store_true",help="Defer full derived scoring until collection comparisons finish")
     args = parser.parse_args()
     if not 1 <= args.judge_workers <= 64:
@@ -88,10 +90,14 @@ def main():
     items, generation = build_items(source,args.alternative)
     if args.collect_only and not args.full:
         parser.error("Input-only diagnostics need no deferred judge")
+    if args.endpoints and (not args.full or len(set(args.endpoints)) != len(args.endpoints)):
+        parser.error("Endpoint selection needs --full and distinct endpoints")
+    args.endpoints = args.endpoints or (["tutor", "guard"] if args.full else ["guard"])
     if args.full:
         originals = {row["id"]:row for row in load_public()}
         items = [{**originals[row["source_id"]],"id":row["id"],"source_id":row["source_id"],
                   "messages":row["messages"]} for row in items]
+        items = [item for item in items if item["endpoint"] in args.endpoints]
     if not items:
         parser.error("No valid derived inputs")
     root = ROOT / "experiments/.cache" / ("jh_transfer_" + args.name)
@@ -102,7 +108,8 @@ def main():
         "source":str(source.relative_to(ROOT)),"source_sha256":hashlib.sha256(source.read_bytes()).hexdigest(),
         "dataset_sha256":hashlib.sha256(dataset.encode()).hexdigest(),"generation_model":generation["model"],
         "inherited_labels":True,"independent_source_holdout":False,
-        "paraphrase_partition":"alternative" if args.alternative else "primary"}
+        "paraphrase_partition":"alternative" if args.alternative else "primary",
+        "score_scope":"+".join(args.endpoints)}
     (root / "derivation.json").write_text(json.dumps(provenance,indent=2))
     if args.build_only:
         print(json.dumps(provenance),flush=True)
@@ -111,7 +118,6 @@ def main():
     # Only full diagnostics need the original answer judge.
     deferred = args.collect_only
     args.judge_workers, args.no_judge, args.collect_only = (args.judge_workers if args.full else 1), not args.full, True
-    args.endpoints = ["tutor","guard"] if args.full else ["guard"]
     run_variant(args,args.variant,1,items,root)
     dest = root / (args.variant + "_1")
     manifest = json.loads((dest / "manifest.json").read_text())
