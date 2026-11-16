@@ -12,6 +12,10 @@
 공개 원본400개 대조 두 쌍의 평균 전체97.805→98.540, tutor96.310→98.125였다.
 실제 비공개 제출 점수와 구분하며 실행 명령·후속 판단은 [HANDOFF.md](HANDOFF.md)를 우선한다.
 
+후속 실제 제출은 안내한1→2→3 순서 기준 focused83.99, ContextFast82.65,
+selected_extract83.53이었다. 최종 추천은 focused이며 서로 다른 seed의 한 번 관측이다.
+시간 비교·해석의 한계·다음 개선 계획은 [실제 제출 비교](PRIVATE_SUBMISSIONS_20261117.md)에 기록했다.
+
 ## 출처와 범위
 
 - 기준 코드: `experiment/seungwon`의 `6ec111d` (v2 사용).
