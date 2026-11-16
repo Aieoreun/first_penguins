@@ -21,6 +21,8 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_r3_safe_menu":
+            return importlib.import_module("pipelines.kimjaehak.safe_menu").Pipeline
         if name == "jh_r3_safe_alternative":
             return importlib.import_module("pipelines.kimjaehak.safe_alternative").Pipeline
         if name == "jh_r3_material_vote3":

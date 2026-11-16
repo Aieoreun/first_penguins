@@ -29,7 +29,7 @@ from pipelines import load
 
 
 BASE = 'jh_guard_fitted_contextfast'
-VARIANTS = (BASE, 'jh_r3_safe_alternative')
+VARIANTS = (BASE, 'jh_r3_safe_alternative', 'jh_r3_safe_menu')
 SCOPE = 'frozen_own_harmful_generation_full_tutor_component_not_http'
 GENERATION_TIMEOUT = 26
 HARMFUL = {Label.HARMFUL_REQUEST, Label.HARMFUL_SPEECH}
@@ -37,6 +37,20 @@ NONHARMFUL_FIXED = frozenset(
     policy.fixed_answer.strip() for label, policy in POLICY.items()
     if label not in HARMFUL and policy.fixed_answer is not None
 )
+
+
+def policy_budget(variant):
+    if variant == 'jh_r3_safe_menu':
+        return {'effort': 'low', 'max_tokens': 300, 'timeout': 4, 'json_mode': True}
+    if variant in VARIANTS:
+        return {'effort': 'low', 'max_tokens': 1500, 'timeout': 8}
+    raise ValueError('Unknown refusal generation variant')
+
+
+def runtime_limit(variant):
+    budget = policy_budget(variant)
+    return (f"generation_only_{GENERATION_TIMEOUT}s; policy_call_{budget['effort']}_"
+            f"{budget['max_tokens']}_tokens_{budget['timeout']}s")
 
 
 def predicted_harmful(response):
@@ -234,6 +248,9 @@ def self_test():
     from pipelines.kimjaehak.calibrated import FIXED
     from pipelines.kimjaehak.guard_fitted import ContextFast
     from pipelines.kimjaehak.safe_alternative import Pipeline as SafeAlternative
+    from pipelines.kimjaehak.safe_menu import (
+        ALTERNATIVES, DEFAULT_ID, FIRST_SENTENCE, Pipeline as SafeMenu, menu_id,
+    )
 
     class Tests(unittest.IsolatedAsyncioTestCase):
         def test_policy_recovery(self):
@@ -270,20 +287,47 @@ def self_test():
             prior['FROZEN'] = {**copy.deepcopy(prior[items[0]['id']]), 'id': 'FROZEN',
                               'response': {'action': 'redirect', 'citations': [],
                               'answer': POLICY[Label.OFF_TOPIC].fixed_answer}}
-            for cls in (ContextFast, SafeAlternative):
+            for variant, cls, raw in (
+                    (BASE, ContextFast, '가상 자료로 학습해요'),
+                    ('jh_r3_safe_alternative', SafeAlternative, '가상 자료로 학습해요'),
+                    ('jh_r3_safe_menu', SafeMenu, '{"id":"code","answer":"UNSAFE_BODY_SENTINEL"}')):
                 pipeline = cls.__new__(cls)
                 pipeline.llm = type('FakeLLM', (), {})()
-                pipeline.llm.chat = AsyncMock(return_value='가상 자료로 학습해요')
+                pipeline.llm.chat = AsyncMock(return_value=raw)
                 with tempfile.TemporaryDirectory() as temp:
-                    rows = await collect(items, prior, BASE, 16, Path(temp), pipeline)
+                    rows = await collect(items, prior, variant, 16, Path(temp), pipeline)
                 validate_collection(items, prior, rows)
                 pipeline.llm.chat.assert_awaited_once()
                 args, kwargs = pipeline.llm.chat.call_args
                 for sentinel in ('OWN_ID_SENTINEL', 'GOLD_SENTINEL', 'GOLD_SOURCE'):
                     self.assertNotIn(sentinel, str(args))
-                self.assertEqual(kwargs, {'effort': 'low', 'max_tokens': 1500, 'timeout': 8})
+                self.assertEqual(kwargs, policy_budget(variant))
+                if variant == 'jh_r3_safe_menu':
+                    self.assertEqual(rows[0]['response']['answer'],
+                                     FIRST_SENTENCE[Label.HARMFUL_REQUEST] + ' ' + ALTERNATIVES['code'])
+                    self.assertNotIn('UNSAFE_BODY_SENTINEL', rows[0]['response']['answer'])
                 self.assertEqual(rows[1]['response'], prior['FROZEN']['response'])
                 self.assertEqual(rows[0]['generation_label'], Label.HARMFUL_REQUEST.value)
+
+        async def test_menu_validation_fallback_and_budget_metadata(self):
+            self.assertEqual(runtime_limit(BASE), 'generation_only_26s; policy_call_low_1500_tokens_8s')
+            self.assertEqual(runtime_limit('jh_r3_safe_alternative'), runtime_limit(BASE))
+            self.assertEqual(runtime_limit('jh_r3_safe_menu'), 'generation_only_26s; policy_call_low_300_tokens_4s')
+            for selected in ALTERNATIVES:
+                self.assertEqual(menu_id(json.dumps({'id': selected})), selected)
+            for raw in ('not JSON', '[]', '{"id":"unknown"}', '{"id":[]}', '{"id":true}'):
+                with self.assertRaises(ValueError):
+                    menu_id(raw)
+            pipeline = SafeMenu.__new__(SafeMenu)
+            pipeline.llm = type('FakeLLM', (), {})()
+            pipeline.llm.chat = AsyncMock(return_value='{"id":"unknown"}')
+            state = pipeline._new_state({'messages': []}, False)
+            state.label = Label.HARMFUL_REQUEST
+            await pipeline._generate(state)
+            self.assertEqual(state.to_tutor_response()['answer'],
+                             FIRST_SENTENCE[state.label] + ' ' + ALTERNATIVES[DEFAULT_ID])
+            self.assertEqual(state.errors, ['safe_menu:ValueError'])
+            pipeline.llm.chat.assert_awaited_once()
 
         async def test_cancellation_and_length(self):
             item = {'id': 'own', 'endpoint': 'tutor', 'messages': [{'role': 'user', 'content': '학습'}]}
@@ -407,11 +451,13 @@ def main():
                 'model': manifest['model'], 'evaluator_hashes': evaluator_hashes(),
                 'source_tutor_score': old_result['tutor'], 'count': len(items),
                 'selected_count': selected, 'workers': args.workers, 'judge_workers': args.judge_workers,
-                'runtime_limit': 'generation_only_26s; policy_call_low_1500_tokens_8s',
+                'runtime_limit': runtime_limit(args.variant),
+                'policy_generation': policy_budget(args.variant),
                 'runtime_labels': 'own_action_empty_citations_excluding_fixed_nonharmful_never_gold',
                 'code_hashes': {str(p.relative_to(ROOT)): sha256(p) for p in (
                     Path(__file__).resolve(), ROOT / 'pipelines/kimjaehak/context_policy.py',
-                    ROOT / 'pipelines/kimjaehak/safe_alternative.py', ROOT / 'pipelines/kimjaehak/calibrated.py')},
+                    ROOT / 'pipelines/kimjaehak/safe_alternative.py', ROOT / 'pipelines/kimjaehak/safe_menu.py',
+                    ROOT / 'pipelines/kimjaehak/calibrated.py')},
                 'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                 'dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip())}
     dest.mkdir(exist_ok=False)

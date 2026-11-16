@@ -49,7 +49,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r3_tutor_other_boundary", "jh_r3_tutor_material_boundary",
                               "jh_r3_extract_focused", "jh_r3_grounded_extract", "jh_r3_material_vote3",
                               "jh_r3_selected_focused", "jh_r3_grounded_focused", "jh_r3_quote_selected_focused",
-                              "jh_r3_safe_alternative", "jh_r3_expanded_focused")
+                              "jh_r3_safe_alternative", "jh_r3_safe_menu", "jh_r3_expanded_focused")
 
 
 def configure():
