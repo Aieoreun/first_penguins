@@ -1,5 +1,7 @@
 # 김재학 실험 인수인계
 
+> **R5 별도 비교 완료:** [짧은·긴 청크 실험](DUAL_GRANULARITY.md) — 세 후보 × 두 자료 × 두 번, HTTP1,836요청 채점 완료. 신규 `dual6`·`dual_all` 분리, 기존 최종 후보 보존. 신규 제출 시험은 dual_all 우선이나 실제 비공개 점수는 아직 없음. 아래 R4 종료·사용량 기록은 과거 이력이다.
+
 > **최종 후보 보관:** [FINAL_CANDIDATES.md](FINAL_CANDIDATES.md) — 우선 material_budget, 백업 focused. 정확한 실행 명령·시간 배분 차이·전체 구조도를 함께 기록했다.
 
 

@@ -64,4 +64,137 @@ workers64, request-slots64, embedding-mode env, judge-workers32를 고정한다.
 
 ## 결과
 
-수집 전. 결과와 판단은 실행 완료 뒤 아래에 추가한다.
+두 자료 × 세 후보 × 두 번 = **서버 실행12회·HTTP 1,836요청**, 미채점0.
+코드 추가 커밋 `7adcd01`, 1차 실행 체크포인트 `1c70a67`, 역순 반복 `5c1bceb`.
+두 체크포인트 사이에는 공개 검색 진단 도구 추가만 있으며 후보 파이프라인은 동일하다.
+모든 manifest가 clean 상태이고 같은 자료의 데이터 해시와 원본 평가기 해시가 일치한다.
+신규 후보8회는 동일한 짧은 색인 해시·1,536차원·slots64를 사용했다.
+
+[실행별 결과·설정·평가기 해시](dual_granularity_results.json) /
+[검색 단계 진단](dual_granularity_retrieval.json).
+
+### 튜터 점수와 응답 수집 시간
+
+각 칸은 **1차 / 역순 반복 → 평균**이다. 시간은 해당 개발 세트의 HTTP 응답 수집 총시간으로,
+시작 준비와 별도 채점 시간은 제외한다. 공식600개 제출의 Duration과 직접 비교하지 않는다.
+
+| 자료 | 후보 | 튜터 점수 | 수집 시간(초) |
+|---|---|---|---|
+| 공개 파생192 | 기존 material_budget | 94.66 / 94.53 → **94.595** | 20.44 / 17.31 → 18.875 |
+| 공개 파생192 | dual6 | 93.23 / 95.31 → **94.270** | 19.61 / 17.05 → 18.330 |
+| 공개 파생192 | dual_all | 94.40 / 95.31 → **94.855** | 19.21 / 18.92 → 19.065 |
+| 주제 전환114 | 기존 material_budget | 85.75 / 88.16 → **86.955** | 26.38 / 24.37 → 25.375 |
+| 주제 전환114 | dual6 | 88.60 / 89.69 → **89.145** | 23.14 / 23.87 → 23.505 |
+| 주제 전환114 | dual_all | 89.91 / 88.16 → **89.035** | 24.16 / 25.10 → 24.630 |
+
+- dual6: 기준선 대비 공개 파생 **−0.325점**, 주제 전환 **+2.190점**.
+- dual_all: 기준선 대비 공개 파생 **+0.260점**, 주제 전환 **+2.080점**.
+- 전체 후보 대비6개 제한의 우열은 자료에 따라 다르다. 전체 후보가 항상 더 높은 점수라는 가설은
+  확인되지 않았다. 주제 전환에서는 dual6가 두 번 모두 기준선보다 높았다.
+- HTTP 오류0, 규격 오류0, 채점 오류0. **내부 단계 실패는19요청**에서 발생했다.
+  종류별로 교재 timeout4·parse6, 임베딩 연결1, 출처 선택 ValueError5, other timeout2,
+  generate timeout1이다. 규격 응답으로 복구됐다고 모든 내부 단계가 성공한 것은 아니다.
+- 가드는 코드/경로 보존 테스트로 검증했다. 이번 HTTP 평가 범위는 튜터이므로 새 가드 점수나
+  대회 전체 점수 상승을 주장하지 않는다.
+
+### 짧은 청크가 보완한 근거
+
+게이트 적용 전 검색 목록을 같은 질의 벡터로 재계산했다. 비교 양쪽에 마지막 질문 BM25 1위도
+포함했다. 정답 섹션 중 하나 이상이 목록에 있으면 hit로 센다. 실제6개 목록은 입력 판정 섹션에
+의존하므로 아래 숫자를 실제6개 목록의 recall이나 실제 출처 LLM 호출 통계로 해석하지 않는다.
+
+| 자료 | 근거가 있는 normal 질문 | 기존 검색 hit | 짧은 검색 포함 hit | 새로 확보 |
+|---|---:|---:|---:|---:|
+| 공개 파생 | 98 | 97 | 98 | 1 |
+| 주제 전환 | 114 | 108 | 110 | 2 |
+
+전체 raw 후보 수는 공개 파생 평균8.74·중앙9·최대17, 주제 전환 평균8.48·중앙8·최대15다.
+섹션 원문 총길이는 각각 평균18,205자·17,493자다. 게이트로 건너뛰는 요청도 포함한 검색 통계이며,
+전체48섹션을 매번 보내는 구현은 아니다.
+
+1차 실행에서 새로 검색된 세 사례를 확인했다.
+
+| 공개 개발 사례 | 관측 |
+|---|---|
+| `pub-bd7cc5d8-p0` / FIN-02-03 | 세 후보 모두 정답 인용. 기존 출처 분류기 신뢰도0.929가 tutor 게이트0.90을 넘어 이미 보완했다. raw 검색 hit 증가는 곧바로 점수 증가가 아니다. |
+| `kbprobe-FIN-04-01-1-switch-same_subject` | 새 목록에 정답이 들어왔지만 두 신규 후보의 최종 인용도 오답이었다. |
+| `kbprobe-PR-01-04-1-switch-same_subject` | 기존 후보의 오답 인용이 두 신규 후보에서 정답 인용으로 바뀌었다. |
+
+입력 판정 단계가 원래 검색 근거를 사용하므로, 짧은 근거를 찾더라도 그 전에 abstain 등으로
+분류되면 새 출처 선택의 혜택을 받지 못할 수 있다. 잘못된 최종 인용의 원인이 출처 선택 자체인지
+실패 대체인지까지는 현재 개별 추적 기록으로 분리하지 않았다.
+
+### 해석과 후보 보관
+
+**기존 최종 추천 `jh_r4_material_budget`와 백업 focused는 그대로 보존한다.**
+신규 비공개 제출 시험은 `jh_r5_dual_all`을 우선해 볼 만하다. 두 개발 자료의 평균이 모두 기준선보다
+높고 추가 수집 시간이 작았다. 다만 공개 파생 +0.260점은 작고, 주제 전환 역순 반복은 기준선과
+동점이었다. `jh_r5_dual6`도 주제 전환에서 더 일정하고 조금 빨라 비교 후보로 남긴다.
+
+비공개 제출 결과는 아직 없다. 각각2회뿐이며 자료도 개발에 사용한 공개 파생 자료다.
+두 신규 후보의 코드 차이는6개 제한뿐이지만, 실제 실행에서는 입력 LLM 판정·서비스 실패·채점 LLM이
+변동한다. 1차 비교의 동일한 응답조차 일부 문항의 채점 점수가 달랐다. 따라서 전체 점수 차이를
+순수한 후보 수의 인과 효과나 통계적으로 확정된 우위라고 해석하지 않는다.
+
+다음 실험은 가드를 유지하면서 튜터의 교재 판정 단계에도 짧은 검색 근거를 제한적으로 반영하는
+방식이 타당하다. 이번에는 최종 출처 선택만 확장했기 때문이다. 원문 검색 누락이 적어졌으므로
+검색된 정답을 실제 판정과 최종 인용으로 연결하는 데 초점을 맞춘다. 이 추가 실험은 아직 구현하지 않았다.
+
+## 제출 서버 실행
+
+기존 서버를 종료한 뒤 저장소 루트에서 하나씩 실행한다. `.env`는 기존 제공 모델 설정 그대로이고,
+추가 패키지나 새 모델 변수는 필요 없다. 최초 실행은 공개 교재의 짧은 임베딩을 자동 구축한다.
+서버 실행에는 개발용 `.cache` 데이터가 필요 없다.
+
+```bash
+.venv/bin/python experiments/jh_server.py \
+  --variant jh_r5_dual6 --embedding-mode env \
+  --request-slots 64 --host 0.0.0.0 --port 8000
+```
+
+```bash
+.venv/bin/python experiments/jh_server.py \
+  --variant jh_r5_dual_all --embedding-mode env \
+  --request-slots 64 --host 0.0.0.0 --port 8000
+```
+
+시작의 `EXPERIMENT_CONFIG`에서 `short_chunks: 608`, `short_dimension: 1536`,
+`source_dual_granularity: true`를 확인한다. `source_extract_sections`는6 또는null이다.
+기존 `준비 끝 ... 조각219개, 임베딩 있음`은 긴 색인의 개수이므로 함께 표시되는 것이 정상이다.
+주최측 제출 JSON/HTTP 형식은 그대로다. 비스트리밍 응답을 사용한다.
+
+## 개발 비교 재현
+
+개발 진단은 기존 로컬 `experiments/.cache`의 공개 파생/검토 완료 자료가 필요하다. 이 캐시와
+질문별 응답·채점 기록은 gitignore 대상이며 푸시되지 않는다. 집계와 데이터 해시는 위 JSON에 남겼다.
+새 이름으로 다음 명령을 세 후보에 각각 적용하고, 수집을 모두 끝낸 뒤 채점한다.
+
+```bash
+.venv/bin/python -B experiments/jh_transfer_probe.py \
+  --source experiments/.cache/jh_augment_public2_1/paraphrases.jsonl \
+  --variant jh_r5_dual_all --name r5_recheck_primary_all \
+  --full --endpoints tutor --collect-only \
+  --workers 64 --request-slots 64 --judge-workers 32 --embedding-mode env
+
+.venv/bin/python -B experiments/jh_resume_transfer.py \
+  experiments/.cache/jh_transfer_r5_recheck_primary_all/jh_r5_dual_all_1
+```
+
+```bash
+.venv/bin/python -B experiments/jh_topic_switch_probe.py \
+  --source experiments/.cache/jh_kb_probe_r2_split_kb57_1_jh_guard_fitted_contextfast/derived_inputs.jsonl \
+  --variant jh_r5_dual_all --name r5_recheck_topic_all \
+  --workers 64 --request-slots 64 --judge-workers 32 --embedding-mode env
+
+.venv/bin/python -B experiments/jh_resume_transfer.py \
+  experiments/.cache/jh_topic_r5_recheck_topic_all/jh_r5_dual_all_1
+```
+
+검색 단독 진단은 이번 실행 목록을 사용한다. 런타임에 정답을 전달하지 않고, 제공 API에 질의 본문만
+임베딩한 뒤 로컬에서 공개 정답과 비교한다.
+
+```bash
+.venv/bin/python -B experiments/jh_dual_retrieval_probe.py \
+  --runs experiments/.cache/jh_r5_runs_a.json \
+  --output experiments/.cache/jh_r5_retrieval_recheck.json
+```
