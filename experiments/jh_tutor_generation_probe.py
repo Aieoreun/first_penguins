@@ -167,6 +167,23 @@ def score(dest):
     print(json.dumps({k:report[k] for k in ("variant","baseline_tutor","revised_tutor","first_valid_tutor","attempted","error_requests")}), flush=True)
 
 
+def reuse_journal(reference, metadata, dest):
+    """Reuse exact local judge payloads for a controlled follow-up, not HTTP runs."""
+    reference = reference.resolve()
+    if not reference.is_relative_to(ROOT / 'experiments/.cache'):
+        raise ValueError('Expected local generation reference')
+    prior = json.loads((reference / 'manifest.json').read_text())
+    if (prior.get('scope') != metadata['scope'] or not (reference / 'result.json').exists()
+            or any(prior.get(key) != metadata[key] for key in
+                   ('source', 'source_response_sha256', 'evaluator_hashes'))
+            or prior.get('source_manifest', {}).get('model') != metadata['source_manifest']['model']):
+        raise ValueError('Judge reference source/model/evaluator differs or is incomplete')
+    journal = reference / 'judge.jsonl'
+    metadata['judge_reused_from'] = str(reference.relative_to(ROOT))
+    metadata['judge_reused_sha256'] = hashlib.sha256(journal.read_bytes()).hexdigest()
+    shutil.copyfile(journal, dest / 'judge.jsonl')
+
+
 def main():
     from dotenv import load_dotenv
     load_dotenv(ROOT / ".env", override=True)
@@ -176,10 +193,13 @@ def main():
     ap.add_argument("--variant", choices=("jh_guard_fitted_contextfast", "jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r2_english_answer",
                                           "jh_r3_quote_answer", "jh_r3_complete_answer",
                                           "jh_r3_checked_answer", "jh_r3_sentence_answer", "jh_r3_answer_support",
-                                          "jh_r3_extract_section", "jh_r3_extract_chunk"))
+                                          "jh_r3_extract_section", "jh_r3_extract_chunk",
+                                          "jh_r3_extract_union", "jh_r3_extract_union_tables"))
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=32)
     ap.add_argument("--collect-only", action="store_true")
+    ap.add_argument('--judge-cache-from', type=Path,
+                    help='Completed component run with the same own source; reuse identical judge calls')
     ap.add_argument('--source-selection',choices=('frozen','section90_control','section90_changed'),default='frozen')
     ap.add_argument("--resume", type=Path)
     args = ap.parse_args()
@@ -227,6 +247,8 @@ def main():
     metadata['source_selection'] = args.source_selection
     if changed_sources is not None:
         metadata['source_change_predictions'] = changed_sources
+    if args.judge_cache_from:
+        reuse_journal(args.judge_cache_from, metadata, dest)
     (dest/'manifest.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n')
     asyncio.run(collect(items,prior,args.variant,args.workers,dest,args.source_selection,changed_sources))
     if args.collect_only:

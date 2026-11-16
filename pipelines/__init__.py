@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_r3_extract_union", "jh_r3_extract_union_tables"}:
+            module = importlib.import_module("pipelines.kimjaehak.extractive_answer")
+            return module.QueryUnion if name == "jh_r3_extract_union" else module.QueryUnionTables
         if name in {"jh_r3_extract_section", "jh_r3_extract_chunk"}:
             module = importlib.import_module("pipelines.kimjaehak.extractive_answer")
             return module.Section if name == "jh_r3_extract_section" else module.Chunk
