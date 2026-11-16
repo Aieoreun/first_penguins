@@ -50,6 +50,7 @@ def main():
     parser.add_argument("--name", required=True)
     parser.add_argument("--variant", choices=VARIANTS, required=True)
     parser.add_argument("--workers", type=int, default=64)
+    parser.add_argument("--judge-workers", type=int, default=8)
     parser.add_argument("--request-slots", type=int, default=64)
     parser.add_argument("--embedding-mode", choices=("env", "off"), default="env")
     parser.add_argument("--build-only", action="store_true")
@@ -59,7 +60,7 @@ def main():
     source = args.source.resolve()
     if not source.is_relative_to(ROOT / "experiments/.cache") or not re.fullmatch(r"[A-Za-z0-9_-]+", args.name):
         parser.error("Invalid source or name")
-    if not 1 <= args.workers <= 64 or not 1 <= args.request_slots <= 64:
+    if not 1 <= args.workers <= 64 or not 1 <= args.request_slots <= 64 or not 1 <= args.judge_workers <= 64:
         parser.error("Invalid concurrency")
     items, meta = build_items(source)
     review_provenance = None
@@ -110,7 +111,7 @@ def main():
     if args.build_only:
         print(json.dumps(provenance), flush=True)
         return
-    args.judge_workers, args.no_judge, args.collect_only, args.endpoints = 8, False, True, ["tutor"]
+    args.no_judge, args.collect_only, args.endpoints = False, True, ["tutor"]
     run_variant(args, args.variant, 1, items, root)
     dest = root / (args.variant + "_1")
     manifest = json.loads((dest / "manifest.json").read_text())
