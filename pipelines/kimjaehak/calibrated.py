@@ -56,9 +56,12 @@ def low_signal(text):
 class Pipeline(V4):
     answer_systems = {**prompts.ANSWER_SYSTEMS, Label.ANSWER_SEEKING: SEEK_SYSTEM}
 
+    def _block_system(self, state):
+        return BLOCK_SYSTEM
+
     async def _ask(self, state, name, system, user, effort, timeout):
         if name == "block":
-            system = BLOCK_SYSTEM
+            system = self._block_system(state)
         return await super()._ask(state, name, system, user, effort, timeout)
 
     async def _classify(self, state):

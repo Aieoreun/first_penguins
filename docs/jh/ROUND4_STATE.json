@@ -11,5 +11,12 @@
   ],
   "guard": "unchanged_ContextFast",
   "branch": "experiment/kimjaehak",
-  "resume_authorized_by_user": true
+  "resume_authorized_by_user": true,
+  "completed_http": 8,
+  "pending_http": 0,
+  "recommended_variant": "jh_r3_selected_focused",
+  "next_experiments": [
+    "conditional_dense",
+    "structured_block"
+  ]
 }

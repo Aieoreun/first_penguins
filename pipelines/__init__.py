@@ -21,6 +21,10 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_r4_conditional_dense":
+            return importlib.import_module("pipelines.kimjaehak.conditional_dense_source").Pipeline
+        if name == "jh_r4_structured_block":
+            return importlib.import_module("pipelines.kimjaehak.structured_block").Pipeline
         if name == "jh_r4_last_dense":
             return importlib.import_module("pipelines.kimjaehak.last_dense_source").Pipeline
         if name == "jh_r4_normalized_tutor":
