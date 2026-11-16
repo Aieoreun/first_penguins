@@ -54,7 +54,8 @@ def main():
               "span_decision_threshold", "retrieval_fusion", "tutor_example_count",
               "input_example_count", "dense_input_examples", "example_check_names", "joint_input", "joint_input_timeout", "joint_block_only",
               "source_choice", "source_choice_timeout", "source_choice_sections", "all_blocked_policy_review",
-              "complied_policy_review", "chat_slots", "answer_review", "review_timeout", "review_min_remaining", "factual_scaffold", "english_answer")
+              "complied_policy_review", "chat_slots", "answer_review", "review_timeout", "review_min_remaining", "factual_scaffold", "english_answer",
+              "answer_choices", "answer_choice_timeout")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode
@@ -77,6 +78,8 @@ def main():
         effective["source_choice_prompt_sha256"] = hashlib.sha256(pipeline.source_choice_system.encode()).hexdigest()
     if hasattr(pipeline, "review_system"):
         effective["answer_review_prompt_sha256"] = hashlib.sha256(pipeline.review_system.encode()).hexdigest()
+    if hasattr(pipeline, "answer_choice_system"):
+        effective["answer_choice_prompt_sha256"] = hashlib.sha256(pipeline.answer_choice_system.encode()).hexdigest()
     print("EXPERIMENT_CONFIG " + json.dumps(effective), flush=True)
     uvicorn.run("server:app", host=args.host, port=args.port, access_log=False)
 
