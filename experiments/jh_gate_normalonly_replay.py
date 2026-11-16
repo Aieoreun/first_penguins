@@ -1,0 +1,80 @@
+"""Replay already nested-fitted NORMAL thresholds; other classes retain .95.
+
+No training, threshold search, label-driven cutoff adjustment, or API calls.
+This is a narrower policy ablation of the same class-threshold hypothesis.
+"""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+sys.dont_write_bytecode=True
+ROOT=Path(__file__).resolve().parents[1]
+CACHE=(ROOT/'experiments/.cache').resolve()
+from jh_tutor_gate_cpu_screen import EXPECTED_HASHES, SOURCE_PATHS, metrics, sha
+
+
+def replay(source):
+    source=source.resolve()
+    if source==CACHE or not source.is_relative_to(CACHE) or not source.is_dir():
+        raise ValueError('Expected an existing local CPU screening cache directory')
+    destination=source/'normal_only_replay.json'
+    script_copy=source/'normal_only_replay.py'
+    if destination.exists() or script_copy.exists():raise FileExistsError('Never overwrite replay')
+    manifest_path=source/'manifest.json'
+    manifest=json.loads(manifest_path.read_text())
+    if manifest.get('scope')!='offline_tutor_gate_cpu_development_not_holdout':
+        raise ValueError('Unexpected parent diagnostic scope')
+    if (manifest.get('groups'),manifest.get('outer_folds'),manifest.get('inner_folds'))!=(375,5,4):
+        raise ValueError('Unexpected nested fold construction')
+    for name,rel in SOURCE_PATHS.items():
+        recorded=manifest['sources'].get(name,{})
+        if recorded.get('path')!=rel or recorded.get('sha256')!=EXPECTED_HASHES[name]:
+            raise ValueError('Parent source provenance mismatch')
+        path=(ROOT/rel).resolve()
+        if not path.is_relative_to(ROOT) or sha(path.read_bytes())!=EXPECTED_HASHES[name]:
+            raise ValueError('Frozen source dataset mismatch')
+    predictions_path=(source/'predictions.jsonl').resolve()
+    audit_path=(source/'threshold_audit.json').resolve()
+    if any(not p.is_relative_to(source) for p in (predictions_path,audit_path,manifest_path.resolve())):
+        raise ValueError('Diagnostic artifacts escape source directory')
+    prediction_bytes=predictions_path.read_bytes();audit_bytes=audit_path.read_bytes()
+    if (sha(prediction_bytes)!=manifest.get('predictions_sha256')
+            or sha(audit_bytes)!=manifest.get('threshold_audit_sha256')):
+        raise ValueError('Parent predictions/audit hash mismatch; rerun the tracked screening script')
+    audit=json.loads(audit_bytes)
+    fold_thresholds={a['outer_fold']:a['thresholds']['normal']['threshold'] for a in audit}
+    if set(fold_thresholds)!=set(range(5)):raise ValueError('Incomplete nested thresholds')
+    full_threshold=manifest['thresholds_for_full_public_model']['normal']['threshold']
+    raw=[r for r in map(json.loads,prediction_bytes.decode().splitlines()) if r['mode']=='raw']
+    expected_counts={'public_oof':400,'public_in_sample':400,'primary388':388,'alternative365':365}
+    for scope,count in expected_counts.items():
+        rows=[r for r in raw if r['scope']==scope]
+        if len(rows)!=count or len({r['id'] for r in rows})!=count:raise ValueError('Incomplete/duplicate parent predictions')
+    if len(raw)!=sum(expected_counts.values()):raise ValueError('Unexpected parent scope')
+    replayed=[];changes=[]
+    for record in raw:
+        r={**record,'mode':'nested_normal_only'}
+        cutoff=fold_thresholds[r['fold']] if r['scope']=='public_oof' else full_threshold
+        if r['prediction']=='normal':
+            r['gate_threshold']=cutoff
+            r['gate_applies']=cutoff is not None and r['confidence']>=cutoff
+        replayed.append(r)
+        if r['gate_applies']!=record['gate_applies']:changes.append({'raw':record,'candidate':r})
+    results={scope:metrics([r for r in replayed if r['scope']==scope]) for scope in expected_counts}
+    out={'scope':'nested_normal_only_gate_policy_ablation_not_new_fit','parent_predictions_sha256':sha(prediction_bytes),
+         'parent_manifest_sha256':sha(manifest_path.read_bytes()),'parent_threshold_audit_sha256':sha(audit_bytes),
+         'script_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+         'rule':'Only predicted normal uses thresholds already selected from inner training-fold OOF; other classes keep .95 and harmful excluded.',
+         'outer_normal_thresholds':fold_thresholds,'full_model_normal_threshold':full_threshold,'results':results,'changes':changes,
+         'limitations':'Same inspected development data. Gate abstention does not prove fallback/end-to-end benefit. No retuning after replay.'}
+    destination.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+    script_copy.write_bytes(Path(__file__).read_bytes())
+    for scope,m in results.items():print(scope,m['by_original_endpoint']['tutor'])
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source',type=Path,required=True,help='Cache directory generated by jh_tutor_gate_cpu_screen.py')
+    replay(parser.parse_args().source)

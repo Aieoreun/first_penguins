@@ -693,6 +693,9 @@ OTHER 지시를 보완한다. 일상적 걱정 단어만으로 장기 심한 고
 alternative125/1→85/1로 오류가 유지됐다. 맞힌40건도 LLM으로 넘기므로 실제 교정이 아니다.
 남은 오판은 academic_dishonesty를 normal .99716으로 예측해 선택 기준 .99296도 통과했다.
 두 후보 모두 운영 이식·API 실험 없이 보류한다. 공개/파생 자료는 이미 개발에 사용된 자료다.
+재현 스크립트 `experiments/jh_tutor_gate_cpu_screen.py`, `jh_gate_normalonly_replay.py`를 보존했다.
+CPU2 재실행의 전체 예측·지표·비시간 fold/임계값·normal 재생은 CPU1과 동일했다(33검증).
+`jh_tutor_gate_r3_cpu2/reproduction_verification.json`에 근거를 남겼다.
 
 ### 출처 후보 범위 CPU 점검
 
