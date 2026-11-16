@@ -16,7 +16,9 @@ def main():
     load_dotenv(ROOT / ".env",override=True)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name",required=True)
-    parser.add_argument("--variant",choices=("jh_adaptive","jh_r2_joint_ungated","jh_r2_joint_block_ungated"),default="jh_adaptive")
+    parser.add_argument("--variant",choices=("jh_adaptive","jh_r2_joint_ungated","jh_r2_joint_block_ungated",
+                                            "jh_r2_dense_ungated"),default="jh_adaptive")
+    parser.add_argument("--embedding-mode", choices=("off", "env"), default="off")
     args = parser.parse_args()
     if not args.name.replace("_", "").isalnum():
         parser.error("Invalid name")
@@ -32,13 +34,14 @@ def main():
     args.no_judge = True
     args.collect_only = False
     args.endpoints = ["guard"]
-    args.embedding_mode = "off"
     run_variant(args,args.variant,1,items,root)
     for name in ("manifest.json","result.json"):
         path = root / (args.variant + "_1") / name
         data = json.loads(path.read_text())
         data["scope"] = "public_ungated_input_fallback_for_oof_diagnostic"
         data["no_tutor_or_output_score"] = True
+        if args.variant == "jh_r2_dense_ungated":
+            data["example_scope"] = "full_public_examples_excluding_normalized_identical_last_turn_not_fold_isolated"
         path.write_text(json.dumps(data,ensure_ascii=False,indent=2))
 
 

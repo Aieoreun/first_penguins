@@ -110,3 +110,8 @@ class Dense(Lexical):
             state.errors.append(f"embed:{type(exc).__name__}")
         found = self.searcher.search(query, vector)
         state.chunks = [Chunk(c.section_id, c.text) for c in found]
+
+
+class DenseUngated(Dense):
+    # Diagnose the example-guided LLM fallback without the public-fitted gates.
+    learned_gate_threshold = 1.01

@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_r2_ground2", "jh_r2_ground3"}:
+            module = importlib.import_module("pipelines.kimjaehak.ground_sections")
+            return module.Two if name.endswith("2") else module.Three
         if name in {"jh_r2_policy_review", "jh_r2_policy_explained", "jh_r2_policy_complied"}:
             module = importlib.import_module("pipelines.kimjaehak.policy_review")
             if name.endswith("_complied"):
@@ -39,8 +42,10 @@ def load(name: str = ""):
             return module.Threshold98 if name == "jh_r2_gate98" else module.Threshold995
         if name == "jh_r2_candidate":
             return importlib.import_module("pipelines.kimjaehak.round2_candidate").Pipeline
-        if name in {"jh_r2_input_examples", "jh_r2_dense_input"}:
+        if name in {"jh_r2_input_examples", "jh_r2_dense_input", "jh_r2_dense_ungated"}:
             module = importlib.import_module("pipelines.kimjaehak.input_examples")
+            if name == "jh_r2_dense_ungated":
+                return module.DenseUngated
             return module.Dense if name == "jh_r2_dense_input" else module.Lexical
         if name.startswith("jh_r2_"):
             module = importlib.import_module("pipelines.kimjaehak.round2")
