@@ -99,6 +99,81 @@
     },
     {
       "scope": "frozen_own_routing_source_generation_component_not_http",
+      "variant": "jh_r3_extract_chunk",
+      "count": 57,
+      "source": "experiments/.cache/jh_kb_probe_r2_split_kb57_1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "source_selection": "frozen",
+      "commit": "58ae12f833263bb00934b7fc2d61c68079035340",
+      "baseline_tutor": 92.11,
+      "revised_tutor": 92.98,
+      "first_valid_tutor": 92.98,
+      "attempted": 55,
+      "error_requests": 0,
+      "result_path": "experiments/.cache/jh_generation_r3_extract7_kb57_jh_r3_extract_chunk/result.json",
+      "result_sha256": "d547544cb0c118217b5278f33154bc13e56c2932c6174fb5d0b60f57a6910668"
+    },
+    {
+      "scope": "frozen_own_routing_source_generation_component_not_http",
+      "variant": "jh_r3_extract_section",
+      "count": 57,
+      "source": "experiments/.cache/jh_kb_probe_r2_split_kb57_1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "source_selection": "frozen",
+      "commit": "58ae12f833263bb00934b7fc2d61c68079035340",
+      "baseline_tutor": 92.11,
+      "revised_tutor": 92.98,
+      "first_valid_tutor": 92.98,
+      "attempted": 55,
+      "error_requests": 0,
+      "result_path": "experiments/.cache/jh_generation_r3_extract7_kb57_jh_r3_extract_section/result.json",
+      "result_sha256": "30d2539f784ade404a89e467e1d72e17ae207bad7e2305bea8d62b4be866c0c2"
+    },
+    {
+      "scope": "frozen_own_routing_source_generation_component_not_http",
+      "variant": "jh_r3_extract_chunk",
+      "count": 28,
+      "source": "experiments/.cache/jh_kb_probe_r3_misconception28_1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "source_selection": "frozen",
+      "commit": "58ae12f833263bb00934b7fc2d61c68079035340",
+      "baseline_tutor": 95.54,
+      "revised_tutor": 95.54,
+      "first_valid_tutor": 95.54,
+      "attempted": 28,
+      "error_requests": 0,
+      "result_path": "experiments/.cache/jh_generation_r3_extract7_new28_jh_r3_extract_chunk/result.json",
+      "result_sha256": "61d7ccda4bb7bd66551310b851d8e77616bab75904d292b09f07cf57bd39f890"
+    },
+    {
+      "scope": "frozen_own_routing_source_generation_component_not_http",
+      "variant": "jh_r3_extract_section",
+      "count": 28,
+      "source": "experiments/.cache/jh_kb_probe_r3_misconception28_1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "source_selection": "frozen",
+      "commit": "58ae12f833263bb00934b7fc2d61c68079035340",
+      "baseline_tutor": 95.54,
+      "revised_tutor": 95.54,
+      "first_valid_tutor": 95.54,
+      "attempted": 28,
+      "error_requests": 0,
+      "result_path": "experiments/.cache/jh_generation_r3_extract7_new28_jh_r3_extract_section/result.json",
+      "result_sha256": "b4763ca56b78eec07a7c9a5768e286e2ad9002bb08d429f5a337d62be7514edb"
+    },
+    {
+      "scope": "frozen_own_routing_source_generation_component_not_http",
+      "variant": "jh_r3_extract_chunk",
+      "count": 192,
+      "source": "experiments/.cache/jh_transfer_r2_split_english_transfer1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "source_selection": "frozen",
+      "commit": "58ae12f833263bb00934b7fc2d61c68079035340",
+      "baseline_tutor": 93.23,
+      "revised_tutor": 94.4,
+      "first_valid_tutor": 94.4,
+      "attempted": 115,
+      "error_requests": 0,
+      "result_path": "experiments/.cache/jh_generation_r3_extract7_primary_jh_r3_extract_chunk/result.json",
+      "result_sha256": "fe010f8031392f1f54e8b968caa913253314456d1df7a4fde0dfdd1f0a8f463e"
+    },
+    {
+      "scope": "frozen_own_routing_source_generation_component_not_http",
       "variant": "jh_r3_extract_section",
       "count": 192,
       "source": "experiments/.cache/jh_transfer_r2_split_english_transfer1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
@@ -605,28 +680,7 @@
       "result_sha256": "866e2c54bb5717000c9e2890191af268758921d350a93bbe6416ec8c1321ce25"
     }
   ],
-  "pending": [
-    {
-      "run": "experiments/.cache/jh_generation_r3_extract7_kb57_jh_r3_extract_chunk",
-      "phase": "generation_or_scoring"
-    },
-    {
-      "run": "experiments/.cache/jh_generation_r3_extract7_kb57_jh_r3_extract_section",
-      "phase": "generation_or_scoring"
-    },
-    {
-      "run": "experiments/.cache/jh_generation_r3_extract7_new28_jh_r3_extract_chunk",
-      "phase": "generation_or_scoring"
-    },
-    {
-      "run": "experiments/.cache/jh_generation_r3_extract7_new28_jh_r3_extract_section",
-      "phase": "generation_or_scoring"
-    },
-    {
-      "run": "experiments/.cache/jh_generation_r3_extract7_primary_jh_r3_extract_chunk",
-      "phase": "generation_or_scoring"
-    }
-  ],
+  "pending": [],
   "http": [
     {
       "run": "experiments/.cache/jh_kb_probe_r3_followup_kb57_1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
