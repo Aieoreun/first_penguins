@@ -774,6 +774,34 @@
   "refusal_generation": [
     {
       "scope": "frozen_own_harmful_generation_full_tutor_component_not_http",
+      "variant": "jh_r3_safe_menu",
+      "count": 181,
+      "source": "experiments/.cache/jh_transfer_r3_cross14_alternative_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "commit": "cbaeb2a121b4caf68c8da37daf3c29260760b425",
+      "baseline_tutor": 92.13,
+      "revised_tutor": 90.47,
+      "attempted": 17,
+      "error_requests": 5,
+      "scoring_status": "complete",
+      "result_path": "experiments/.cache/jh_refusal_generation_r3_menu19_alternative/result.json",
+      "result_sha256": "59479d439da312b0f6360d43fbeae606ba652a447c8960efa40c4d26c450c299"
+    },
+    {
+      "scope": "frozen_own_harmful_generation_full_tutor_component_not_http",
+      "variant": "jh_r3_safe_menu",
+      "count": 192,
+      "source": "experiments/.cache/jh_transfer_r3_select13_primary_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "commit": "cbaeb2a121b4caf68c8da37daf3c29260760b425",
+      "baseline_tutor": 94.14,
+      "revised_tutor": 93.1,
+      "attempted": 16,
+      "error_requests": 7,
+      "scoring_status": "complete",
+      "result_path": "experiments/.cache/jh_refusal_generation_r3_menu19_primary/result.json",
+      "result_sha256": "c82ddd032aef48d0d25864acfffea955d8036ff6a95a7225617f32a579d116e4"
+    },
+    {
+      "scope": "frozen_own_harmful_generation_full_tutor_component_not_http",
       "variant": "jh_guard_fitted_contextfast",
       "count": 181,
       "source": "experiments/.cache/jh_transfer_r3_cross14_alternative_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
