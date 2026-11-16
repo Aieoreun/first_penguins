@@ -21,6 +21,8 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_r2_chat128":
+            return importlib.import_module("pipelines.kimjaehak.chat_budget").Pipeline
         if name in {"jh_r2_ground2", "jh_r2_ground3"}:
             module = importlib.import_module("pipelines.kimjaehak.ground_sections")
             return module.Two if name.endswith("2") else module.Three
