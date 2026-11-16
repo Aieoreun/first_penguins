@@ -21,9 +21,6 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
-        if name in {"jh_r2_answer_low", "jh_r2_source_low"}:
-            module = importlib.import_module("pipelines.kimjaehak.answer_effort")
-            return module.SourceLow if name == "jh_r2_source_low" else module.Low
         if name in {"jh_r2_policy_review", "jh_r2_policy_explained", "jh_r2_policy_complied"}:
             module = importlib.import_module("pipelines.kimjaehak.policy_review")
             if name.endswith("_complied"):
