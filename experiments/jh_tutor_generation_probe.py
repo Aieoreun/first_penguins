@@ -149,7 +149,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--source", type=Path)
     ap.add_argument("--name")
-    ap.add_argument("--variant", choices=("jh_guard_fitted_contextfast", "jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r2_english_answer"))
+    ap.add_argument("--variant", choices=("jh_guard_fitted_contextfast", "jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r2_english_answer",
+                                          "jh_r3_quote_answer", "jh_r3_complete_answer"))
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=32)
     ap.add_argument("--collect-only", action="store_true")
