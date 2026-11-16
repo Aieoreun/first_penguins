@@ -21,6 +21,8 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_r2_source_choice":
+            return importlib.import_module("pipelines.kimjaehak.source_choice").Pipeline
         if name in {"jh_r2_joint_input", "jh_r2_joint_gate98", "jh_r2_joint_ungated",
                     "jh_r2_joint_block", "jh_r2_joint_block_ungated"}:
             module = importlib.import_module("pipelines.kimjaehak.joint_input")
@@ -82,8 +84,6 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.brief_policy").Pipeline
         if name == "jh_clear_policy":
             return importlib.import_module("pipelines.kimjaehak.brief_policy").ClearScaffold
-        if name == "jh_r2_source_choice":
-            return importlib.import_module("pipelines.kimjaehak.source_choice").Pipeline
         if name == "jh_medium_answer":
             return importlib.import_module("pipelines.kimjaehak.medium_answer").Pipeline
         if name in {"jh_voted_output", "jh_voted_output5"}:

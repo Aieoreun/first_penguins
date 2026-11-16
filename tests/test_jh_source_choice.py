@@ -9,6 +9,10 @@ from pipelines.kimjaehak.source_choice import ContextFast, Pipeline
 
 
 class SourceChoiceTests(unittest.IsolatedAsyncioTestCase):
+    def test_variant_loader_selects_source_choice(self):
+        from pipelines import load
+        self.assertIs(load("jh_r2_source_choice"), Pipeline)
+
     def setUp(self):
         self.pipeline = Pipeline.__new__(Pipeline)
         self.pipeline.searcher = object()
