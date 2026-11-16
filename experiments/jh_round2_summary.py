@@ -37,6 +37,7 @@ def summarize():
                   "judge_workers": manifest["judge_workers"],
                   "scope": result.get("scope", "bundled_public_in_sample"),
                   "score_scope": result.get("score_scope", "+".join(manifest.get("endpoints", []))),
+                  "category_filter": manifest.get("category_filter"),
                   "result_sha256": hashlib.sha256(completed.read_bytes()).hexdigest(),
                   "runtime": json.loads((run / "runtime.json").read_text())}
         if record["scope"] == "public_paraphrase_input_diagnostic":

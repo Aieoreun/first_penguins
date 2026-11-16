@@ -80,6 +80,8 @@ def main():
     parser.add_argument("--full",action="store_true",help="Retain source endpoints and inherited answer/evidence labels")
     parser.add_argument("--endpoints", nargs="+", choices=("tutor", "guard"),
                         help="With --full, select endpoint diagnostics; total is not a full-set score")
+    parser.add_argument("--category", choices=sorted({r["labels"]["category"] for r in load_public()}),
+                        help="Public-derived category component diagnostic only")
     parser.add_argument("--collect-only",action="store_true",help="Defer full derived scoring until collection comparisons finish")
     args = parser.parse_args()
     if not 1 <= args.judge_workers <= 64:
@@ -98,6 +100,8 @@ def main():
         items = [{**originals[row["source_id"]],"id":row["id"],"source_id":row["source_id"],
                   "messages":row["messages"]} for row in items]
         items = [item for item in items if item["endpoint"] in args.endpoints]
+    if args.category:
+        items = [item for item in items if item["labels"]["category"] == args.category]
     if not items:
         parser.error("No valid derived inputs")
     root = ROOT / "experiments/.cache" / ("jh_transfer_" + args.name)
@@ -109,7 +113,7 @@ def main():
         "dataset_sha256":hashlib.sha256(dataset.encode()).hexdigest(),"generation_model":generation["model"],
         "inherited_labels":True,"independent_source_holdout":False,
         "paraphrase_partition":"alternative" if args.alternative else "primary",
-        "score_scope":"+".join(args.endpoints)}
+        "score_scope":"+".join(args.endpoints), "category_filter":args.category}
     (root / "derivation.json").write_text(json.dumps(provenance,indent=2))
     if args.build_only:
         print(json.dumps(provenance),flush=True)

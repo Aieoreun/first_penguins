@@ -181,6 +181,7 @@ def run_variant(args, variant, repetition, items, root):
         "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "scoring_deferred": args.collect_only,
         "endpoints": args.endpoints,
+        "category_filter": getattr(args, "category", None),
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
         "model": os.environ["OPENAI_MODEL"],
@@ -254,6 +255,8 @@ def main():
     ap.add_argument("--endpoints", nargs="+", choices=("tutor", "guard"), default=["tutor", "guard"],
                     help="Single endpoint is diagnostic only; its total is not a full-set score")
     ap.add_argument("--limit", type=int, default=0, help="Smoke test: items per endpoint; 0 means all 400")
+    ap.add_argument("--category", choices=sorted({r["labels"]["category"] for r in load_public()}),
+                    help="Public category component diagnostic only; never changes server inputs")
     scoring_mode = ap.add_mutually_exclusive_group()
     scoring_mode.add_argument("--no-judge", action="store_true", help="Schema/load only; not comparable full tutor scores")
     scoring_mode.add_argument("--collect-only", action="store_true", help="Checkpoint responses; score later with jh_resume_score.py")
@@ -273,6 +276,10 @@ def main():
     root = ROOT / "experiments/.cache" / ("jh_" + args.name)
     root.mkdir(parents=True, exist_ok=False)
     items = load_public(args.limit, args.endpoints)
+    if args.category:
+        items = [item for item in items if item["labels"]["category"] == args.category]
+    if not items:
+        ap.error("No public items matched the selected scope")
     results = []
     for repetition in range(1, args.repeat + 1):
         for variant in args.variants:
