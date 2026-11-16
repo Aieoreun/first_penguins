@@ -1,5 +1,6 @@
 """Keep the entire selected section, but show relevant subsections first."""
 from .extractive_answer import Section
+from .source_extract import GroundedSelected, SelectedSection
 
 
 class Pipeline(Section):
@@ -24,3 +25,11 @@ class Pipeline(Section):
         parts = [chunks[i].text.split('\n', 1)[1] if '\n' in chunks[i].text else ''
                  for i in ordered]
         return title + '\n' + '\n\n'.join(part for part in parts if part)
+
+
+class Selected(SelectedSection, Pipeline):
+    pass
+
+
+class Grounded(GroundedSelected, Pipeline):
+    pass

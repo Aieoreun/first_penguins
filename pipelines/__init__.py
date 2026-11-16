@@ -23,8 +23,10 @@ def load(name: str = ""):
         configure()
         if name == "jh_r3_material_vote3":
             return importlib.import_module("pipelines.kimjaehak.material_votes").Pipeline
-        if name == "jh_r3_extract_focused":
-            return importlib.import_module("pipelines.kimjaehak.focused_excerpt").Pipeline
+        if name in {"jh_r3_extract_focused", "jh_r3_selected_focused", "jh_r3_grounded_focused"}:
+            module = importlib.import_module("pipelines.kimjaehak.focused_excerpt")
+            return {"jh_r3_extract_focused":module.Pipeline, "jh_r3_selected_focused":module.Selected,
+                    "jh_r3_grounded_focused":module.Grounded}[name]
         if name in {"jh_r3_tutor_other_boundary", "jh_r3_tutor_material_boundary"}:
             module = importlib.import_module("pipelines.kimjaehak.tutor_boundaries")
             return module.Other if name == "jh_r3_tutor_other_boundary" else module.Material

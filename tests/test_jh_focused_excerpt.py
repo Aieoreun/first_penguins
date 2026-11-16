@@ -9,7 +9,8 @@ from core.schema import ANSWER_MAX_CHARS, Label
 from core.search import Searcher
 from core.state import Chunk, State
 from pipelines.kimjaehak.extractive_answer import Section
-from pipelines.kimjaehak.focused_excerpt import Pipeline
+from pipelines.kimjaehak.focused_excerpt import Grounded, Pipeline, Selected
+from pipelines.kimjaehak.source_extract import GroundedSelected, SelectedSection
 
 
 class FocusedExcerptTests(unittest.IsolatedAsyncioTestCase):
@@ -44,6 +45,22 @@ class FocusedExcerptTests(unittest.IsolatedAsyncioTestCase):
         self.assertIs(load('jh_r3_extract_focused'), Pipeline)
         for name in ('_generate', '_new_state', '_classify', '_search', '_check_output', 'guard'):
             self.assertIs(getattr(Pipeline, name), getattr(Section, name))
+
+    def test_selector_compositions_keep_excerpt_hook_and_guard_identity(self):
+        from pipelines import load
+        for name, cls, parent in [('jh_r3_selected_focused', Selected, SelectedSection),
+                                  ('jh_r3_grounded_focused', Grounded, GroundedSelected)]:
+            self.assertIs(load(name), cls)
+            self.assertIs(cls._excerpt, Pipeline._excerpt)
+            self.assertIs(cls._generate, parent._generate)
+            self.assertIs(cls._validate_source, parent._validate_source)
+            self.assertEqual(cls.tutor_extract_scope, 'relevance_ordered_section')
+            p = cls.__new__(cls)
+            state = p._new_state({'messages': []}, True)
+            self.assertTrue(state._extract_guard)
+            self.assertTrue(state._section_gate_guard)
+            for method in ('guard', '_check_output', '_classify'):
+                self.assertIs(getattr(cls, method), getattr(parent, method))
 
 
 if __name__ == '__main__':
