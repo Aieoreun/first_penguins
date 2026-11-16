@@ -420,3 +420,45 @@ HTTP·형식·judge 오류는 모두 0. 수집 시간은 원본 기존/dense10 2
 전체 점수 차이가 .02/.03에 그쳐 입력 전용 진단의 이득이 재현됐다고 단정하지 않는다.
 현재 추천은 `jh_guard_fitted_contextfast --embedding-mode off`로 유지한다.
 실제 제출 82.48점과 이 개발 자료 점수를 직접 비교하지 않는다.
+
+## 새 후보를 런박스에서 제출하는 방법
+
+이번 전체 비교를 마친 새 실험 후보는 `jh_r2_dense10`이다. 기존 contextfast에 의미 기반 공개 입력
+판정 예시 검색과 material 검색 문맥 10개 제한을 적용한다. 실제 제출 우위는 아직 확인되지 않았다.
+코드는 이미 원격 `9b4c852`에 포함돼 있다. 후속 제출 기록만 담은 문서 커밋은 실행에 필수 사항이 아니다.
+
+기존 서버 터미널에서 Ctrl+C로 중지한 뒤, 앞서 서버를 실행한 저장소 루트에서 실행한다.
+현재 `.env`는 유지한다. 기존 제출에서 임베딩 색인 로드 성공을 확인했다.
+
+```bash
+git fetch origin
+git switch experiment/kimjaehak
+git pull --ff-only origin experiment/kimjaehak
+.venv/bin/python experiments/jh_server.py \
+  --variant jh_r2_dense10 \
+  --embedding-mode env \
+  --request-slots 64 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+`준비 끝: 흐름 jh_r2_dense10, 조각 219개, 임베딩 있음`과 startup complete를 확인한다.
+EXPERIMENT_CONFIG의 dense_input_examples는 true, material_max_chunks는 10이어야 한다.
+다른 터미널에서 저장소 루트로 이동해 기존 submission.json의 주소·토큰을 유지하고 커밋만 갱신한다.
+
+```bash
+.venv/bin/python - <<'PY'
+import json
+import subprocess
+from pathlib import Path
+p = Path('/home/elicer/competition/submission.json')
+d = json.loads(p.read_text())
+d['commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+p.write_text(json.dumps(d, ensure_ascii=False, indent=2) + '\n')
+print('submission.json commit:', d['commit'])
+PY
+```
+
+이 절차는 직전 성공한 제출과 같은 런박스 주소·포트·TEAM_TOKEN을 유지하는 조건이다.
+서버를 켜 둔 채 제출 버튼을 누르고 채점 완료까지 런박스 탭을 유지한다.
+기존 83.22 관측 조건으로 돌아갈 때는 variant를 `jh_guard_fitted_contextfast`로 바꾸고 env/64를 유지한다.
