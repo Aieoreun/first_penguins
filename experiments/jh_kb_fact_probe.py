@@ -102,6 +102,8 @@ def main():
     provenance = {"scope": "provided_kb_fact_diagnostic", "count": len(items),
                   "source": str(source.relative_to(ROOT)), "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
                   "dataset_sha256": hashlib.sha256(dataset.encode()).hexdigest(), "generation_model": meta["model"],
+                  "generation_prompt_sha256": meta['prompt_sha256'],
+                  "question_style": meta.get('question_style','fact'),
                   "kb_sha256": meta["kb_sha256"], "weak_labels": "provided_model_facts_with_exact_kb_support_quotes",
                   "score_interpretation": "Use tutor only; aggregate total includes an absent guard endpoint",
                   "review": review_provenance,

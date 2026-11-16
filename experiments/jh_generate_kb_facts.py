@@ -71,7 +71,20 @@ def valid_examples(values, sid, material):
     return result
 
 
-async def generate(sections, dest, workers, completed):
+COUNTERCLAIM_SYSTEM = SYSTEM + """
+
+이번 문항의 특별 조건:
+두 question 모두 학생이 교재 내용을 잘못 이해한 부분 하나를 확인해 달라는 실제 학습 질문으로 쓰세요.
+교재에 명확히 적힌 값·조건·동작 중 하나를 틀리게 말하고, 교재 기준으로 바로잡아 설명해 달라고 요청하세요.
+단순 사실 질문이나 질문을 작성하라는 메타 지시로 만들지 마세요. 학생의 질문 문장 자체를 쓰세요.
+오해가 왜 틀렸는지는 quote에서 분명히 확인할 수 있어야 해요. 다른 조건이라면 맞을 수도 있는 주장은 피하세요.
+예를 들어 사용 기간이 8일인 경우 9일로 이해했다고 말할 수 있지만, 교재에 없는 상품을 새로 만들면 안 돼요.
+question에는 올바른 정답 값을 함께 쓰지 마세요. answer_fact에는 틀린 주장이 아니라 바로잡은 올바른 사실을 쓰세요.
+논란이 생길 해석·의도 추측·개인정보·과제 대행·유해한 요청을 넣지 마세요. 정상 개념 학습 요청만 만드세요.
+"""
+
+
+async def generate(sections, dest, workers, completed, system=SYSTEM):
     from core.llm import LLM
     from pipelines.v1.pipeline import _json_object
     llm, sem = LLM(), asyncio.Semaphore(workers)
@@ -84,7 +97,7 @@ async def generate(sections, dest, workers, completed):
         async with sem:
             start = time.monotonic()
             try:
-                raw = await llm.chat(SYSTEM, json.dumps({"material": material}, ensure_ascii=False),
+                raw = await llm.chat(system, json.dumps({"material": material}, ensure_ascii=False),
                                      effort="low", max_tokens=2000, timeout=25, json_mode=True)
                 row["examples"] = valid_examples((_json_object(raw) or {}).get("examples"), sid, material)
                 if not row["examples"]:
@@ -109,15 +122,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", required=True)
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--question-style", choices=('fact','counterclaim'), default='fact')
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.name) or not 1 <= args.workers <= 8:
         parser.error("Invalid name or concurrency")
     sections, digest = sections_and_hash()
     dest = ROOT / "experiments/.cache" / ("jh_kb_facts_" + args.name)
     dest.mkdir(exist_ok=True)
+    system = COUNTERCLAIM_SYSTEM if args.question_style == 'counterclaim' else SYSTEM
     manifest = {"scope": "provided_llm_kb_only_facts_v2", "model": os.environ["OPENAI_MODEL"],
                 "workers": args.workers, "sections": list(sections), "kb_sha256": digest,
-                "prompt_sha256": hashlib.sha256(SYSTEM.encode()).hexdigest()}
+                "prompt_sha256": hashlib.sha256(system.encode()).hexdigest()}
+    if args.question_style != 'fact':
+        manifest['question_style'] = args.question_style
     path = dest / "manifest.json"
     if path.exists():
         old = json.loads(path.read_text())
@@ -130,7 +147,7 @@ def main():
     completed = [row["section"] for row in map(json.loads, records.read_text().splitlines())] if records.exists() else []
     if len(set(completed)) != len(completed) or not set(completed).issubset(sections):
         parser.error("Invalid checkpoint sections")
-    asyncio.run(generate(sections, dest, args.workers, set(completed)))
+    asyncio.run(generate(sections, dest, args.workers, set(completed), system))
     rows = list(map(json.loads, records.read_text().splitlines()))
     result = {"sections": len(rows), "examples": sum(len(row["examples"]) for row in rows),
               "failures": sum(row["error"] is not None for row in rows)}
