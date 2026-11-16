@@ -3,7 +3,7 @@ import json
 import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
-from guard_classifier import classify_input, INPUT_POLICY
+from guard_classifier import _classify_input_base as classify_input, INPUT_POLICY
 from guard_output import check_grounding, check_safety, GROUNDING_POLICY, SAFETY_POLICY
 
 def client(content):
