@@ -26,9 +26,10 @@ def load(name: str = ""):
         if name in {"jh_r3_resolved_query", "jh_r3_resolved_minimal"}:
             module = importlib.import_module("pipelines.kimjaehak.resolved_query")
             return module.Minimal if name.endswith('_minimal') else module.Pipeline
-        if name in {"jh_r3_quote_answer", "jh_r3_complete_answer"}:
+        if name in {"jh_r3_quote_answer", "jh_r3_complete_answer", "jh_r3_checked_answer", "jh_r3_sentence_answer"}:
             module = importlib.import_module("pipelines.kimjaehak.answer_style")
-            return module.Quote if name == "jh_r3_quote_answer" else module.Complete
+            return {"jh_r3_quote_answer": module.Quote, "jh_r3_complete_answer": module.Complete,
+                    "jh_r3_checked_answer": module.Checked, "jh_r3_sentence_answer": module.Sentence}[name]
         if name == "jh_r3_tutor_ranked":
             return importlib.import_module("pipelines.kimjaehak.tutor_ranked").Pipeline
         if name in {"jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r3_answer_longest"}:
