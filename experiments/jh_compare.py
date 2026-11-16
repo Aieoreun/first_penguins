@@ -19,7 +19,7 @@ import time
 import threading
 import urllib.error
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,19 +112,33 @@ def journal_judge(judge, path):
             entry = json.loads(line)
             cached[entry["key"]] = entry["result"]
     lock = threading.Lock()
+    inflight = {}
     def call(kind, payload):
         key = hashlib.sha256(json.dumps([kind, payload], ensure_ascii=False,
                                        sort_keys=True).encode()).hexdigest()
         with lock:
             if key in cached:
                 return cached[key]
-        result = judge(kind, payload)
+            owner = key not in inflight
+            pending = inflight.setdefault(key, Future())
+        if not owner:
+            return pending.result()
+        try:
+            result = judge(kind, payload)
+            with lock:
+                with path.open("a") as stream:
+                    stream.write(json.dumps({"key": key, "result": result}) + "\n")
+                cached[key] = result
+                if len(cached) % 25 == 0:
+                    print(f"judge calls checkpointed: {len(cached)}", flush=True)
+        except BaseException as exc:
+            pending.set_exception(exc)
+            with lock:
+                del inflight[key]
+            raise
+        pending.set_result(result)
         with lock:
-            cached[key] = result
-            with path.open("a") as stream:
-                stream.write(json.dumps({"key": key, "result": result}) + "\n")
-            if len(cached) % 25 == 0:
-                print(f"judge calls checkpointed: {len(cached)}", flush=True)
+            del inflight[key]
         return result
     return call
 
