@@ -12,14 +12,14 @@
   "guard": "unchanged_ContextFast",
   "branch": "experiment/kimjaehak",
   "resume_authorized_by_user": true,
-  "completed_http": 42,
+  "completed_http": 46,
   "pending_http": 0,
   "recommended_variant": "jh_r3_selected_focused",
   "next_experiments": [
-    "source_disambiguated_alternative",
-    "source_disambiguated_topic"
+    "source_minimal_topic"
   ],
   "last_observed_used_percent": 59,
   "last_observed_remaining_percent": 41,
-  "stream_rule_checked": true
+  "stream_rule_checked": true,
+  "total_requests": 7890
 }

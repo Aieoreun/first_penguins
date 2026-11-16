@@ -1,10 +1,10 @@
-# 튜터 개선 4차 기록 — 완료 42개, 실습 구분 지침 비교 준비
+# 튜터 개선 4차 기록 — 완료 46개, 최종 분석
 
 **현재 추천은 `jh_r3_selected_focused`를 유지한다.** 사용자가 보고한 실제 비공개 제출 점수는 전체 **83.99 / 84.68**이며, 최신 관측값은 **84.68**이다. `material_budget`의 **98.18**은 공개 파생 자료에서 얻은 개발 단회 점수다. 실제 비공개 점수와 비교하거나, 후보의 성능 우위가 확인된 것으로 해석하지 않는다.
 
-이 문서는 **완료된 HTTP 실행 42개**까지 정리한다. R4-08/09와 R4-10 조합 비교를 완료했다. 아직 완료되지 않은 점수는 기재하지 않는다.
+이 문서는 **완료된 HTTP 실행 46개**까지 정리한다. R4-12까지 비교를 완료했다. 아직 완료되지 않은 점수는 기재하지 않는다.
 
-- 실행별 원자료는 [round4_results.json](round4_results.json)의 `http` 전체 42개 레코드다. 아래 표는 그 요약이며 전체 레코드를 대체하지 않는다.
+- 실행별 원자료는 [round4_results.json](round4_results.json)의 `http` 전체 46개 레코드다. 아래 표는 그 요약이며 전체 레코드를 대체하지 않는다.
 - 운영 상태와 중단 기준은 [ROUND4_STATE.json](ROUND4_STATE.json)에 기록한다. 완료된 실행과 다음 비교 계획을 구분한다.
 
 ## 기준선과 운영 제약
@@ -37,8 +37,9 @@
 | R4-09 | 4 | 32 | `1f1afd0` | source stream |
 | R4-10 | 6 | 38 | `940d02e` | material + stream 조합 |
 | R4-11 | 4 | 42 | `5645691` | source ID-only |
+| R4-12 | 4 | 46 | `6448ed0` | 실습 구분 지침 |
 
-각 수집 시점은 모두 clean 상태였다. 완료된 42개 실행의 **HTTP·형식·원본 judge 오류는 모두 0**이다. 내부 단계 오류와 fallback은 별도로 보존하며 점수에서 제외하지 않는다. 기본 수집 설정은 workers 64 / slots 64 / embedding env, judge workers 32이고, 수집과 판정은 직렬로 진행했다.
+각 수집 시점은 모두 clean 상태였다. 완료된 46개 실행의 **HTTP·형식·원본 judge 오류는 모두 0**이다. 내부 단계 오류와 fallback은 별도로 보존하며 점수에서 제외하지 않는다. 기본 수집 설정은 workers 64 / slots 64 / embedding env, judge workers 32이고, 수집과 판정은 직렬로 진행했다.
 
 문서의 각 “사전 등록”은 **해당 실험을 시작하기 전 당시의 계획과 상태**다. 당시의 “API 시작 전” 표현을 현재 상태로 읽지 않도록, 완료 결과와 함께 정리했다. 후보는 등록·검증·커밋 후 수집하며 기존 추천이나 기본값을 자동 교체하지 않는다.
 
@@ -231,7 +232,7 @@ primary의 총점 상승에는 complied **7→0/44**도 크게 기여했다. 이
 
 section이 처음 도착하기 전의 추론 지연에는 효과가 없다. 이후 중복 키나 잘못된 꼬리를 확인하지 못하므로 기존의 완전 JSON 검증과 동등하다고 설명하지 않는다. timeout / cancel / early / end / error cleanup을 검증했고 전체 26초 한도는 유지한다. 다만 SDK cleanup 지연으로 마감을 넘길 가능성도 측정한다. 과거 source ValueError는 raw가 없어 이 방식으로 복구될 것이라고 확정하지 않는다.
 
-stream 후보와 material budget은 합치지 않는다. 첫 material 점수 98.18만 보고 채택하지 않는다. 이 사전 등록 시점의 전체 **439개 테스트가 통과**했고 평가기·공유 core·server·SPEC·public·KB 보호 경로는 원본과 같았다.
+이 사전 등록 시점에는 stream 후보와 material budget을 합치지 않았다. 이후 별도 R4-10에서 조합했다. 첫 material 점수 98.18만 보고 채택하지 않는다. 이 사전 등록 시점의 전체 **439개 테스트가 통과**했고 평가기·공유 core·server·SPEC·public·KB 보호 경로는 원본과 같았다.
 
 ## R4-08 결과: 첫 상승이 반복되지는 않았다
 
@@ -315,3 +316,51 @@ R4-11 등록 후 전체453개 테스트와 보호 경로 비교, diff check가 �
 계획: alternative181(기준선→후보), topic114(후보→기준선). 원본 채점과 전체 오류·시간을 보존하며, 잔여40%에서 새 수집을 중단한다. 마지막 관측 잔여41%.
 
 R4-12는 prompt만 추가하는 독립 subclass이며 기본 selector·focused 관련33개 테스트, 보호 경로 비교, diff check가 통과했다.
+
+
+## R4-12 결과: 미세한 점수 차이를 개선으로 채택하지 않음
+
+수집 commit `6448ed0`, clean. alternative181은93.65→93.92(+0.27), topic114는89.47→89.69(+0.22)였다. alternative 수집17.51→21.32초/p9511.965→11.439초, topic 수집24.15→26.35초/p9513.426→13.557초다. 내부 오류 요청은 alternative8→7, topic4→10이었다.
+
+alternative는 같은 action의 citation 변화가0건이고 동일 응답146건의 판정 차이 기여가 점수합+175였다. topic은 같은 action에서 출처가 바뀐6건의 점수합이−25, 같은 응답105건의 판정 차이 합+25, action 변화3건의 합+25였다. 이는 관측 변화별 회계이며 인과 효과 분해가 아니다. 직접 바꾼 출처 선택의 이득을 확인하지 못했으므로 미채택한다.
+
+## 46회 체크포인트 판단
+
+총7,890요청, 기준선 포함11개variant, 완료46/미채점0. 공식 HTTP/schema/judge 오류0이며 내부 stage 오류는 전부 원자료에 남겼다. 기준선22회와 신규후보24회다. 모델·실행 시점·생성·판정 변동 때문에 작은 단회 차이를 그대로 코드 개선으로 보지 않았다.
+
+| 후보군 | 판단 근거 | 선택 |
+|---|---|---|
+| focused | 실제 제출83.99/84.68, 신규 안정적 우위 없음 | 계속 추천 |
+| 정규화·last dense·조건부 dense | 잡음/다른 표현/주제 전환에서 일관성 없음 | 미채택 |
+| structured BLOCK·source 키 순서 | action/다른 자료에서 악화 | 미채택 |
+| material budget | 첫98.18 이후동점/하락, 지연 증가 | 미채택 |
+| source stream·budget+stream | 출처 개선 근거약함, alternative 하락 | 미채택 |
+| ID-only·실습 구분 prompt | 일부 단회상승, 다른자료 하락 또는 판정변동 | 미채택 |
+
+다음 개선의 우선순위는 더 많은 후보를 합치는 것보다 **현재 질문의 대상·조건·연산을 정확한 근거에 연결하는 것**이다. 실습 구분 prompt만 추가해 해결되지는 않았다. category/section gold를 런타임에 참조하거나 비공개 요청을 저장하는 방식은 사용하지 않았다. 새 개발 질문을 만든다면 교재의 정확한 관계·수치와 교재에 없는 속성의 음성 예시를 함께 사람 검수해, 정상 질문만 좋아지는 편향부터 줄여야 한다. 기존 평가기와 별개로 점수를 바꾸거나 성공 결과만 골라 재채점하지 않는다.
+
+### 재현 방법
+
+실행은 저장소 루트, 기존 .env 및 requirements-jh/research 환경을 사용한다. API 키를 커밋하지 않는다. 추천 서버 명령:
+
+```bash
+.venv/bin/python experiments/jh_server.py --variant jh_r3_selected_focused --embedding-mode env --request-slots 64 --host 0.0.0.0 --port 8000
+```
+
+공개 전체 대조는 서로 다른 고유 name으로 실행한다. 아래는 준비된 출력 폴더가 없을 때의 예시이며 새 API 비용을 발생시킨다. 둘을 동시에 실행하지 않는다.
+
+```bash
+.venv/bin/python -B experiments/jh_compare.py --variants jh_r3_selected_focused --name manual_r4_base --workers 64 --request-slots 64 --judge-workers 32 --embedding-mode env --collect-only
+.venv/bin/python -B experiments/jh_resume_score.py experiments/.cache/jh_manual_r4_base/jh_r3_selected_focused_1
+.venv/bin/python -B experiments/jh_compare.py --variants jh_r4_budget_stream --name manual_r4_combo --workers 64 --request-slots 64 --judge-workers 32 --embedding-mode env --collect-only
+.venv/bin/python -B experiments/jh_resume_score.py experiments/.cache/jh_manual_r4_combo/jh_r4_budget_stream_1
+```
+
+위 조합은 재현용 예시이며 추천 교체가 아니다. 다른 후보는 variant와 name을 함께 바꾼다. 공개 파생자료·개별 응답·judge journal은 로컬 `experiments/.cache`에 있고 Git에 포함하지 않는다. Git에는 재현 스크립트와 문서/집계의 run 경로·commit·hash·원본점수·시간이 남는다. 새 체크아웃에서는 필요한 공개 파생자료 생성/검수 절차도 재현해야 하므로 원본400 비교와 구분한다. 이 라운드의 개발 점수는 실제 제출 점수를 대신하지 않는다.
+
+
+## R4-13 사전 등록: 출처 선택에만 minimal 추론
+
+잔여41%에서 다음 가설을 준비했다. `jh_r4_source_minimal`은 불확실한 튜터의 출처 선택 호출만 low→minimal로 바꾼다. 교재 확인·정책·입력 판정·guard·prompt·pool6·2000토큰·8초·26초·비스트리밍 완성JSON 파서는 유지한다. 앞선 material minimal 실패와 다른 단계이며, 빠른 선택이 실습 구분의 정확도를 희생할 위험을 확인한다.
+
+계획은 topic114(기준선→후보) 한 쌍이다. 효과가 좋아도 이 정상 질문 진단만으로 채택하지 않는다. 새 수집 전 사용량40%를 확인하면 미실행 상태로 남기고 정리한다. 성공만 재생성하거나 원본 점수를 재채점하지 않는다.
