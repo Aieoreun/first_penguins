@@ -42,8 +42,10 @@ def load(name: str = ""):
             return module.Threshold98 if name == "jh_r2_gate98" else module.Threshold995
         if name == "jh_r2_candidate":
             return importlib.import_module("pipelines.kimjaehak.round2_candidate").Pipeline
-        if name in {"jh_r2_input_examples", "jh_r2_dense_input", "jh_r2_dense_ungated", "jh_r2_dense98"}:
+        if name in {"jh_r2_input_examples", "jh_r2_dense_input", "jh_r2_dense_ungated", "jh_r2_dense98", "jh_r2_dense10"}:
             module = importlib.import_module("pipelines.kimjaehak.input_examples")
+            if name == "jh_r2_dense10":
+                return module.DenseTen
             if name == "jh_r2_dense98":
                 return module.DenseConservative
             if name == "jh_r2_dense_ungated":

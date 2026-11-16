@@ -119,3 +119,9 @@ class DenseUngated(Dense):
 
 class DenseConservative(Dense):
     learned_gate_threshold = .98
+
+
+class DenseTen(Dense):
+    # Search still returns dense hits. Only the material judge is bounded to
+    # the original BM25 prefix; semantic input examples remain enabled.
+    material_max_chunks = 10
