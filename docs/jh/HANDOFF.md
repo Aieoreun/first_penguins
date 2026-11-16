@@ -14,6 +14,41 @@
 > `jh_r3_safe_alternative`는 구성요소 점수 일부 개선에도 사진 위치추론에 가까운 대안이 남아
 > 결합 보류다. 최신 상세 비교·실패·새 후보 진행은 위 연속 기록이 우선한다.
 
+### 현재 실험 후보 실행과 구조
+
+실제 제출83.22의 후보는 여전히 `jh_guard_fitted_contextfast`다. 아래는 별도로 선택해야 하는
+새 실험 후보의 서버 실행 명령이다. 기존 `.env`와 같은 임베딩 색인을 사용한다.
+
+```bash
+.venv/bin/python experiments/jh_server.py \
+  --variant jh_r3_selected_focused --embedding-mode env \
+  --request-slots 64 --host 0.0.0.0 --port 8000
+```
+
+시작 로그의 흐름 이름과 `임베딩 있음`을 확인한다. 주최측 채점기·제출 형식은 그대로다.
+가드는 ContextFast, 유해·정책 응답도 기존 방식이다. normal/PII tutor에서 확신한 출처는 유지하고,
+불확실한 경우 기존 출처·마지막 질문·전체 대화 검색에서 최대6섹션을 모아 LLM이1개를 선택한다.
+선택한 실제 교재의 모든 문단·표·코드를 유지하되 질문과 관련 높은 문단을 먼저 놓는다.
+출처 선택 뒤 답변을 다시 생성하는 LLM 호출은 없다. 답변은 기존 짧은 설명보다 길어질 수 있다.
+
+```mermaid
+flowchart TD
+  R[요청] --> T["/tutor"]
+  R --> G["/guard"]
+  G --> O[기존 ContextFast 판정]
+  T --> C[기존 입력 판정]
+  C --> P[정책·유해 요청: 기존 응답 경로]
+  C --> N[정상·개인정보 포함 학습 질문]
+  N --> S{출처를 확신하는가}
+  S -->|예| K[선택된 교재]
+  S -->|아니요| L[최대6후보 중 LLM이 출처1개 선택]
+  L --> K
+  K --> F[관련 문단을 먼저 배치하고 실제 교재 인용]
+```
+
+`quote_selected_focused`, `expanded_focused`, `safe_alternative`, `safe_menu`는 후속 비교에서
+채택하지 않은 후보다. relation 질문 생성 스타일은 코드만 준비했고 아직 API 실행 전이다.
+
 > **최신 로컬 작업 완료 (2026-11-16):** 요청한 tutor DenseTen / guard ContextFast 조합은
 > `jh_r2_tutor_split`로 구현했다. 39회·7,238요청과 초안 검토 진단을 완료했고 미채점 실행은 없다.
 > 분리 후보는 원본 tutor 평균 96.185→97.435였지만 변형은 94.14→93.23으로 낮았다.
