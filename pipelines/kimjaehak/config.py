@@ -37,7 +37,8 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r2_joint_block_ungated", "jh_r2_source_choice", "jh_r2_policy_review",
                               "jh_r2_policy_explained", "jh_r2_policy_complied",
                               "jh_r2_ground2", "jh_r2_ground3", "jh_r2_dense_ungated", "jh_r2_dense98", "jh_r2_dense10",
-                              "jh_r2_chat128", "jh_r2_tutor_split", "jh_r2_answer_review")
+                              "jh_r2_chat128", "jh_r2_tutor_split", "jh_r2_answer_review",
+                              "jh_r2_tutor_dense", "jh_r2_tutor_material10")
 
 
 def configure():

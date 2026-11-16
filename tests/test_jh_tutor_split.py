@@ -4,16 +4,16 @@ from unittest.mock import patch
 
 from pipelines.kimjaehak.guard_fitted import ContextFast
 from pipelines.kimjaehak.input_examples import DenseTen
-from pipelines.kimjaehak.tutor_split import Pipeline
+from pipelines.kimjaehak.tutor_split import DenseOnly, MaterialOnly, Pipeline
 
 
 class TutorSplitTests(unittest.IsolatedAsyncioTestCase):
-    def make_pipeline(self):
+    def make_pipeline(self, cls=Pipeline):
         def initialize(instance, searcher, llm):
             instance.searcher, instance.llm = searcher, llm
             instance._slots = asyncio.Semaphore(2)
-        with patch.object(ContextFast, "__init__", initialize), patch.object(DenseTen, "__init__", initialize):
-            return Pipeline(object(), object())
+        with patch.object(ContextFast, "__init__", initialize), patch.object(cls.tutor_type, "__init__", initialize):
+            return cls(object(), object())
 
     def test_loader_and_guard_inheritance(self):
         from pipelines import load
@@ -70,3 +70,16 @@ class TutorSplitTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(pipeline._tutor_pipeline.dense_input_examples)
         self.assertIsNone(pipeline.material_max_chunks)
         self.assertFalse(hasattr(pipeline, "policy_examples"))
+
+    def test_ablation_variants_isolate_each_change(self):
+        from pipelines import load
+        self.assertIs(load("jh_r2_tutor_dense"), DenseOnly)
+        self.assertIs(load("jh_r2_tutor_material10"), MaterialOnly)
+        dense, material = self.make_pipeline(DenseOnly), self.make_pipeline(MaterialOnly)
+        self.assertTrue(dense._tutor_pipeline.dense_input_examples)
+        self.assertIsNone(dense._tutor_pipeline.material_max_chunks)
+        self.assertFalse(hasattr(material._tutor_pipeline, "dense_input_examples"))
+        self.assertEqual(material._tutor_pipeline.material_max_chunks, 10)
+        for pipeline in (dense, material):
+            self.assertIsNone(pipeline.material_max_chunks)
+            self.assertIs(pipeline._slots, pipeline._tutor_pipeline._slots)

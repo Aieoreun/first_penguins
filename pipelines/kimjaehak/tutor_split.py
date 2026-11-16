@@ -1,6 +1,6 @@
 """Apply semantic examples only to /tutor; preserve the complete guard path."""
 from .guard_fitted import ContextFast
-from .input_examples import DenseTen
+from .input_examples import Dense, DenseTen
 
 
 class Pipeline(ContextFast):
@@ -20,3 +20,17 @@ class Pipeline(ContextFast):
 
     # guard() and all its helpers are inherited unchanged from ContextFast,
     # including guard requests that have no candidate_answer.
+
+
+class MaterialTen(ContextFast):
+    material_max_chunks = 10
+
+
+class DenseOnly(Pipeline):
+    tutor_type = Dense
+    endpoint_variants = {"tutor": "jh_r2_dense_input", "guard": "jh_guard_fitted_contextfast"}
+
+
+class MaterialOnly(Pipeline):
+    tutor_type = MaterialTen
+    endpoint_variants = {"tutor": "contextfast_material10", "guard": "jh_guard_fitted_contextfast"}

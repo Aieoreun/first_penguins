@@ -23,8 +23,10 @@ def load(name: str = ""):
         configure()
         if name == "jh_r2_answer_review":
             return importlib.import_module("pipelines.kimjaehak.answer_review").Pipeline
-        if name == "jh_r2_tutor_split":
-            return importlib.import_module("pipelines.kimjaehak.tutor_split").Pipeline
+        if name in {"jh_r2_tutor_split", "jh_r2_tutor_dense", "jh_r2_tutor_material10"}:
+            module = importlib.import_module("pipelines.kimjaehak.tutor_split")
+            return {"jh_r2_tutor_split": module.Pipeline, "jh_r2_tutor_dense": module.DenseOnly,
+                    "jh_r2_tutor_material10": module.MaterialOnly}[name]
         if name == "jh_r2_chat128":
             return importlib.import_module("pipelines.kimjaehak.chat_budget").Pipeline
         if name in {"jh_r2_ground2", "jh_r2_ground3"}:
