@@ -194,7 +194,7 @@ def main():
                                           "jh_r3_quote_answer", "jh_r3_complete_answer",
                                           "jh_r3_checked_answer", "jh_r3_sentence_answer", "jh_r3_answer_support",
                                           "jh_r3_extract_section", "jh_r3_extract_chunk",
-                                          "jh_r3_extract_union", "jh_r3_extract_union_tables"))
+                                          "jh_r3_extract_union", "jh_r3_extract_union_tables", "jh_r3_extract_focused"))
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=32)
     ap.add_argument("--collect-only", action="store_true")
