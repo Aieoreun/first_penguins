@@ -220,5 +220,30 @@ class V4Test(unittest.TestCase):
         self.assertIn("check_output:Deadline", state.errors)
 
 
+
+class V5Test(unittest.TestCase):
+    """v5는 v4에서 정답만 요구의 힌트 답변 프롬프트만 바꾼 것이다."""
+
+    def test_only_answer_seeking_prompt_differs(self):
+        from pipelines.v5 import prompts as v5_prompts
+        changed = [label for label, system in prompts.ANSWER_SYSTEMS.items() if v5_prompts.ANSWER_SYSTEMS[label] != system]
+        self.assertEqual([label.value for label in changed], ["answer_seeking"])
+        self.assertEqual(set(v5_prompts.ANSWER_SYSTEMS), set(prompts.ANSWER_SYSTEMS))
+
+    def test_answer_seeking_uses_new_prompt(self):
+        from pipelines.v5 import prompts as v5_prompts
+        from pipelines.v5.pipeline import Pipeline as V5
+        hint = "자료에는 하루 이체 한도가 정해져 있다고 나와 있어요. 그 한도와 비교해 보세요."
+        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.MATERIAL_SYSTEM: FOUND,
+                       prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "self_info": false}',
+                       v5_prompts.SCAFFOLD_ANSWER_SEEKING_SYSTEM: hint})
+        state = asyncio.run(V5(SEARCHER, llm).tutor({"messages": QUESTION}))
+        response = parse_tutor(state.to_tutor_response())
+        self.assertEqual(response["action"], "scaffold")
+        self.assertIn(hint, response["answer"])
+        self.assertEqual(len(llm.calls), 4)
+        self.assertEqual(state.errors, [])
+
+
 if __name__ == "__main__":
     unittest.main()
