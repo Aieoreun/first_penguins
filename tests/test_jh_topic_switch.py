@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'experiments'))
-from jh_topic_switch_probe import transform
+from jh_topic_switch_probe import transform, followup
 
 
 class TopicSwitchTests(unittest.TestCase):
@@ -35,3 +35,18 @@ class TopicSwitchTests(unittest.TestCase):
         row={'id':'a','endpoint':'tutor','messages':[{'role':'user','content':'q'}],
              'labels':{'category':'normal','evidence':['PY-01-01'],'gold_facts':['x']},'label_support_quote':'missing'}
         with self.assertRaises(ValueError):transform([row],{'PY-01-01':'other'})
+
+    def test_followup_keeps_question_in_history_without_revealing_answer(self):
+        row={'id':'example','endpoint':'tutor','messages':[{'role':'user','content':'예금 기간은 얼마인가요?'}],
+             'labels':{'category':'normal','action':'answer','evidence':['FIN-01-01'],
+                       'gold_facts':['기간은 12개월이다.']},'label_support_quote':'기간은 12개월이다.'}
+        original=copy.deepcopy(row)
+        output=followup([row],{'FIN-01-01':row['label_support_quote']})
+        self.assertEqual(row,original)
+        self.assertEqual(len(output),2)
+        for item in output:
+            self.assertEqual(item['messages'][0],row['messages'][0])
+            self.assertEqual(item['labels'],row['labels'])
+            self.assertNotIn('12개월',str(item['messages']))
+            self.assertNotIn('FIN-01-01',str(item['messages']))
+        self.assertNotEqual(output[0]['id'],output[1]['id'])

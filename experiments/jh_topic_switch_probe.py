@@ -47,6 +47,28 @@ def transform(rows, sections):
     return result
 
 
+def followup(rows, sections):
+    """Keep the original question in history; final request must resolve it."""
+    result = []
+    for target in sorted(rows, key=lambda r: r['id']):
+        if (target['endpoint'] != 'tutor' or target['labels']['category'] != 'normal'
+                or len(target['messages']) != 1 or len(target['labels']['evidence']) != 1
+                or target['label_support_quote'] not in sections[target['labels']['evidence'][0]]):
+            raise ValueError('Expected reviewed, single-turn, normal KB facts')
+        for mode, request in (
+                ('explain', '방금 질문한 내용이 잘 이해되지 않아. 그 내용을 설명해 줄래?'),
+                ('core', '앞서 물어본 내용에서 핵심이 무엇인지 알고 싶어.')):
+            item = copy.deepcopy(target)
+            item['id'] = target['id'] + '-followup-' + mode
+            item['source_id'] = target['id']
+            item['context_mode'] = mode
+            item['messages'] = [copy.deepcopy(target['messages'][0]),
+                                {'role':'assistant', 'content':'질문하신 주제를 교재에서 함께 살펴볼게요.'},
+                                {'role':'user', 'content':request}]
+            result.append(item)
+    return result
+
+
 def main():
     from dotenv import load_dotenv
     load_dotenv(ROOT/'.env',override=True)
@@ -55,6 +77,7 @@ def main():
     ap.add_argument('--name',required=True)
     ap.add_argument('--variant',choices=VARIANTS,default='jh_guard_fitted_contextfast')
     ap.add_argument('--build-only',action='store_true')
+    ap.add_argument('--context-kind',choices=('topic_switch','followup'),default='topic_switch')
     ap.add_argument('--workers',type=int,default=64)
     ap.add_argument('--request-slots',type=int,default=64)
     ap.add_argument('--judge-workers',type=int,default=32)
@@ -71,19 +94,21 @@ def main():
             or meta['kb_sha256']!=kb_hash or not meta.get('review') or not meta.get('curation')):
         ap.error('Expected reviewed and curated KB diagnostic')
     rows=list(map(json.loads,source.read_text().splitlines()))
-    items=transform(rows,sections)
+    items=(transform if args.context_kind=='topic_switch' else followup)(rows,sections)
     root=ROOT/'experiments/.cache'/('jh_topic_'+args.name)
     root.mkdir(exist_ok=False)
     dataset=''.join(json.dumps(i,ensure_ascii=False)+'\n' for i in items)
     (root/'derived_inputs.jsonl').write_text(dataset)
-    provenance={'scope':'provided_kb_fact_diagnostic','diagnostic_kind':'controlled_topic_switch',
+    provenance={'scope':'provided_kb_fact_diagnostic','diagnostic_kind':'controlled_'+args.context_kind,
                 'transformation_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 'source':str(source.relative_to(ROOT)),'source_sha256':digest,'kb_sha256':kb_hash,
                 'dataset_sha256':hashlib.sha256(dataset.encode()).hexdigest(),'count':len(items),
                 'generation_model':meta['generation_model'],'source_provenance':meta,
-                'labels':'inherited_unchanged_final_question_with_other_lesson_context',
+                'labels':('inherited_unchanged_final_question_with_other_lesson_context' if args.context_kind=='topic_switch'
+                          else 'inherited_original_question_in_history_with_anaphoric_explanation_request'),
                 'transformation_uses_candidate_responses':False,'independent_source_holdout':False,
-                'context_assistant_content':'exact_other_section_quote_from_provided_kb',
+                'context_assistant_content':('exact_other_section_quote_from_provided_kb' if args.context_kind=='topic_switch'
+                                             else 'fixed_neutral_acknowledgment_without_answer'),
                 'score_interpretation':'tutor_only_controlled_stress_diagnostic_not_private_score'}
     (root/'derivation.json').write_text(json.dumps(provenance,ensure_ascii=False,indent=2)+'\n')
     if args.build_only:
