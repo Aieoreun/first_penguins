@@ -21,6 +21,8 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_r3_resolved_query":
+            return importlib.import_module("pipelines.kimjaehak.resolved_query").Pipeline
         if name in {"jh_r3_quote_answer", "jh_r3_complete_answer"}:
             module = importlib.import_module("pipelines.kimjaehak.answer_style")
             return module.Quote if name == "jh_r3_quote_answer" else module.Complete

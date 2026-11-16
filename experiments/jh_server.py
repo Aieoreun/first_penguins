@@ -56,7 +56,7 @@ def main():
               "source_choice", "source_choice_timeout", "source_choice_sections", "all_blocked_policy_review",
               "complied_policy_review", "chat_slots", "answer_review", "review_timeout", "review_min_remaining", "factual_scaffold", "english_answer",
               "answer_choices", "answer_choice_timeout", "tutor_section_ranker", "tutor_ranker_c", "tutor_ranker_margin",
-              "tutor_answer_style")
+              "tutor_answer_style", "tutor_resolved_query", "query_resolve_timeout")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode
@@ -81,6 +81,8 @@ def main():
         effective["answer_review_prompt_sha256"] = hashlib.sha256(pipeline.review_system.encode()).hexdigest()
     if hasattr(pipeline, "answer_choice_system"):
         effective["answer_choice_prompt_sha256"] = hashlib.sha256(pipeline.answer_choice_system.encode()).hexdigest()
+    if hasattr(pipeline, "query_resolve_system"):
+        effective["query_resolve_prompt_sha256"] = hashlib.sha256(pipeline.query_resolve_system.encode()).hexdigest()
     print("EXPERIMENT_CONFIG " + json.dumps(effective), flush=True)
     uvicorn.run("server:app", host=args.host, port=args.port, access_log=False)
 

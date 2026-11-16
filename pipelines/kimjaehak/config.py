@@ -41,7 +41,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r2_tutor_dense", "jh_r2_tutor_material10", "jh_r2_tutor_block",
                               "jh_r2_factual_scaffold", "jh_r2_english_answer",
                               "jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r3_tutor_ranked",
-                              "jh_r3_quote_answer", "jh_r3_complete_answer")
+                              "jh_r3_quote_answer", "jh_r3_complete_answer", "jh_r3_resolved_query")
 
 
 def configure():
