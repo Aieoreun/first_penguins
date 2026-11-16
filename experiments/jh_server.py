@@ -62,7 +62,7 @@ def main():
               "tutor_dual_query", "tutor_answer_support", "tutor_extract_scope", "tutor_material_source", "material_quote_min_chars",
               "source_extraction_selector", "source_extract_timeout", "source_extract_sections", "source_extract_expanded_limit",
               "tutor_other_boundary", "tutor_material_boundary", "source_extract_quote_required", "tutor_material_votes",
-              "tutor_safe_alternative", "tutor_safe_menu", "tutor_category_normalization", "source_last_dense", "source_last_dense_timeout", "source_last_dense_sections", "source_conditional_dense", "structured_tutor_block", "source_conversation_last", "tutor_material_timeout", "tutor_prepare_limit", "source_stream_early_finish", "source_stream_buffer_chars", "source_id_only")
+              "tutor_safe_alternative", "tutor_safe_menu", "tutor_category_normalization", "source_last_dense", "source_last_dense_timeout", "source_last_dense_sections", "source_conditional_dense", "structured_tutor_block", "source_conversation_last", "tutor_material_timeout", "tutor_prepare_limit", "source_stream_early_finish", "source_stream_buffer_chars", "source_id_only", "source_disambiguation")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode
