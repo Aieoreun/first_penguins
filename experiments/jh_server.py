@@ -18,11 +18,15 @@ def main():
     parser.add_argument("--variant", choices=(*VARIANTS, "v4"), required=True)
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--embedding-mode", choices=("env", "off"), default="env")
     parser.add_argument("--request-slots", type=int, help="Override the candidate's internal request slots (1..64)")
     args = parser.parse_args()
     if args.request_slots is not None and not 1 <= args.request_slots <= 64:
         parser.error("request-slots must be between 1 and 64")
     load_dotenv(ROOT / ".env", override=True)
+    if args.embedding_mode == "off":
+        for key in ("EMBEDDING_BASE_URL", "EMBEDDING_MODEL", "EMBEDDING_API_KEY"):
+            os.environ[key] = ""
     os.environ["PIPELINE"] = args.variant
     for key in ("TEAM_TOKEN", "OPENAI_API_KEY", "OPENAI_BASE_URL", "OPENAI_MODEL"):
         if not os.environ.get(key):
@@ -50,6 +54,8 @@ def main():
               "span_decision_threshold")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
+    effective["embedding_mode"] = args.embedding_mode
+    effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None
     if hasattr(pipeline, "refusal_pattern"):
         effective["refusal_pattern"] = pipeline.refusal_pattern.pattern
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(

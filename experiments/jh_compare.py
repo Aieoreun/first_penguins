@@ -168,6 +168,7 @@ def score_rows(items, rows, workers, no_judge=False, journal=None):
 
 
 def run_variant(args, variant, repetition, items, root):
+    embedding_mode = getattr(args, "embedding_mode", "env")
     dest = root / f"{variant}_{repetition}"
     dest.mkdir()
     with socket.socket() as s:
@@ -184,13 +185,16 @@ def run_variant(args, variant, repetition, items, root):
         "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
         "model": os.environ["OPENAI_MODEL"],
         "pinned_v2": BASELINE_ENV if variant.startswith("jh_") else None,
-        "embedding_configured": bool(os.environ.get("EMBEDDING_BASE_URL") and os.environ.get("EMBEDDING_MODEL")),
+        "embedding_mode": embedding_mode,
+        "embedding_configured": embedding_mode != "off" and bool(os.environ.get("EMBEDDING_BASE_URL") and os.environ.get("EMBEDDING_MODEL")),
+        "embedding_model": os.environ.get("EMBEDDING_MODEL") if embedding_mode != "off" else None,
         "evaluator_hashes": evaluator_hashes(),
     }
     (dest / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
     print(f"START {variant} repeat={repetition} public={len(items)} workers={args.workers}", flush=True)
     with (dest / "server.log").open("w") as log:
         server_command = [sys.executable, "-u", "experiments/jh_server.py", "--variant", variant, "--port", str(port)]
+        server_command.extend(["--embedding-mode", embedding_mode])
         if args.request_slots is not None:
             server_command.extend(["--request-slots", str(args.request_slots)])
         proc = subprocess.Popen(server_command, cwd=ROOT, stdout=log, stderr=log)
@@ -209,6 +213,8 @@ def run_variant(args, variant, repetition, items, root):
     server_log = (dest / "server.log").read_text()
     errors = re.findall(r"errors=([^\s]+)", server_log)
     for line in server_log.splitlines():
+        if line.startswith("준비 끝:"):
+            manifest["embedding_index_loaded"] = "임베딩 있음" in line
         if line.startswith("EXPERIMENT_CONFIG "):
             manifest["effective_config"] = json.loads(line.removeprefix("EXPERIMENT_CONFIG "))
     (dest / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
@@ -244,6 +250,7 @@ def main():
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=8)
     ap.add_argument("--request-slots", type=int, help="Candidate internal concurrency override (1..64)")
+    ap.add_argument("--embedding-mode", choices=("env", "off"), default="env")
     ap.add_argument("--endpoints", nargs="+", choices=("tutor", "guard"), default=["tutor", "guard"],
                     help="Single endpoint is diagnostic only; its total is not a full-set score")
     ap.add_argument("--limit", type=int, default=0, help="Smoke test: items per endpoint; 0 means all 400")

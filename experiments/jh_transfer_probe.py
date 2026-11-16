@@ -73,6 +73,7 @@ def main():
     parser.add_argument("--name",required=True)
     parser.add_argument("--workers",type=int,default=64)
     parser.add_argument("--request-slots",type=int,default=64)
+    parser.add_argument("--embedding-mode", choices=("env", "off"), default="env")
     parser.add_argument("--build-only",action="store_true")
     parser.add_argument("--alternative",action="store_true",help="Use expressions excluded from the primary transfer set")
     parser.add_argument("--full",action="store_true",help="Retain source endpoints and inherited answer/evidence labels")

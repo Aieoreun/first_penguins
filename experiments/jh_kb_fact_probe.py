@@ -51,6 +51,7 @@ def main():
     parser.add_argument("--variant", choices=VARIANTS, required=True)
     parser.add_argument("--workers", type=int, default=64)
     parser.add_argument("--request-slots", type=int, default=64)
+    parser.add_argument("--embedding-mode", choices=("env", "off"), default="env")
     parser.add_argument("--build-only", action="store_true")
     parser.add_argument("--review", type=Path, help="Completed provided-model review; required for collection")
     parser.add_argument("--curation", type=Path, help="Frozen pre-scoring exclusions after direct question/label review")
