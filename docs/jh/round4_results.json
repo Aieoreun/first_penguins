@@ -1269,6 +1269,112 @@
       "unverified_components": 0
     },
     {
+      "run": "experiments/.cache/jh_topic_r4_13_topic_base/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 114,
+      "commit": "a721b724b8f4aada605a7c13b72cf7abe9f0c2a5",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "provided_kb_fact_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "4277acd9816e296454a6523c09ceb8fa80d4adb4eae2112353b46e5f6d06b664",
+      "runtime": {
+        "collect_seconds": 23.83,
+        "p50": 9.290500000000002,
+        "p95": 13.38,
+        "max": 15.137,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "material:TimeoutError": 3,
+          "source_extract:TimeoutError": 1
+        }
+      },
+      "tutor": 88.16,
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 114,
+        "action_correct": {
+          "count": 114,
+          "mean": 0.9385964912280702
+        },
+        "citation_f1": {
+          "count": 114,
+          "mean": 0.7456140350877193
+        },
+        "facts": {
+          "count": 114,
+          "mean": 0.8508771929824561
+        },
+        "faithful": {
+          "count": 114,
+          "mean": 0.9912280701754386
+        },
+        "complied": {
+          "count": 0,
+          "mean": null
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r4_13_topic_minimal/jh_r4_source_minimal_1",
+      "variant": "jh_r4_source_minimal",
+      "count": 114,
+      "commit": "a721b724b8f4aada605a7c13b72cf7abe9f0c2a5",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "provided_kb_fact_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "944b8a183d5ef5a83875f3b75af1c3b1aa930c600f94e3dd7c4233cb3d222c1e",
+      "runtime": {
+        "collect_seconds": 22.54,
+        "p50": 8.778,
+        "p95": 13.078,
+        "max": 13.525,
+        "http_errors": 0,
+        "stage_failure_requests": 11,
+        "stage_errors": {
+          "material:TimeoutError": 8,
+          "source_extract:ValueError": 3
+        }
+      },
+      "tutor": 73.9,
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 114,
+        "action_correct": {
+          "count": 114,
+          "mean": 0.9298245614035088
+        },
+        "citation_f1": {
+          "count": 114,
+          "mean": 0.4473684210526316
+        },
+        "facts": {
+          "count": 114,
+          "mean": 0.5877192982456141
+        },
+        "faithful": {
+          "count": 114,
+          "mean": 0.9912280701754386
+        },
+        "complied": {
+          "count": 0,
+          "mean": null
+        }
+      },
+      "unverified_components": 0
+    },
+    {
       "run": "experiments/.cache/jh_transfer_r4_03_primary_base/jh_r3_selected_focused_1",
       "variant": "jh_r3_selected_focused",
       "count": 192,

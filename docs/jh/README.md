@@ -1,15 +1,16 @@
 # 김재학 실험 — 승원 v2 + Peace 가드
 
-**현재 진행: [ROUND4_TUTOR.md](ROUND4_TUTOR.md).** 사용자 요청으로 실험을 재개했고 새 중단 기준은
-잔여40%다. 기준선은 실제84.68 관측의 selected_focused이며 guard는 유지한다. 아래60% 중단은
-이전 라운드 기록이다.
+**최신 종료: [ROUND4_TUTOR.md](ROUND4_TUTOR.md).** 잔여40% 기준으로 종료했고 48회·8,118요청 채점을 완료했다.
+추천은 실제84.68 관측의 `jh_r3_selected_focused / env / slots64` 유지다. 이번 신규 후보는 미채택.
+[중단 근거](ROUND4_STOP.json), [결과 집계](round4_results.json), [인수인계](HANDOFF.md)를 우선한다.
+아래60%·50%·15% 기준은 이전 라운드의 이력이다.
 
 진행 상황·최고 관측 점수·재개 방법은 [HANDOFF.md](HANDOFF.md), 모든 후속 가설과 채택 여부는 [01_experiments.md](01_experiments.md), 집계 데이터는 [results.json](results.json)에 기록한다. 아래 네 비교군은 후속 실험과 별도로 그대로 유지한다.
 
 2026-11-16 후속 라운드는 [ROUND2.md](ROUND2.md), 최신 튜터·가드 분리와 후속 비교는
 [TUTOR_SPLIT.md](TUTOR_SPLIT.md), 해당 집계는 [tutor_split_results.json](tutor_split_results.json)을 본다.
-현재 사용자 지시는 **잔여 사용량 60%에서 새 실험 중단**이다. 이전 50%를 사용자가 정정했으며,
-아래 15%는 최초 라운드의 기준이다. 진행 중인 실험은 [TUTOR_CONTINUOUS.md](TUTOR_CONTINUOUS.md)를 본다.
+이전 라운드의 사용자 지시는 **잔여 사용량 60%에서 새 실험 중단**이었다. 이전 50%를 사용자가 정정했으며,
+아래 15%는 최초 라운드의 기준이다. 당시 실험은 [TUTOR_CONTINUOUS.md](TUTOR_CONTINUOUS.md)를 본다.
 
 2026-11-17 02:10 KST에 잔여60%를 확인해 새 실험을 중단했다. 현재 우선 실험 후보는
 `jh_r3_selected_focused`(guard ContextFast 유지, embedding env, slots64)다.

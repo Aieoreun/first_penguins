@@ -1,5 +1,5 @@
 {
-  "status": "active",
+  "status": "stopped_usage_limit",
   "started_at": "2026-11-17T02:41:41.517995+09:00",
   "starting_used_percent": 43,
   "starting_remaining_percent": 57,
@@ -12,14 +12,19 @@
   "guard": "unchanged_ContextFast",
   "branch": "experiment/kimjaehak",
   "resume_authorized_by_user": true,
-  "completed_http": 46,
+  "completed_http": 48,
   "pending_http": 0,
   "recommended_variant": "jh_r3_selected_focused",
-  "next_experiments": [
-    "source_minimal_topic"
-  ],
-  "last_observed_used_percent": 59,
-  "last_observed_remaining_percent": 41,
+  "next_experiments": [],
+  "last_observed_used_percent": 60,
+  "last_observed_remaining_percent": 40,
   "stream_rule_checked": true,
-  "total_requests": 7890
+  "total_requests": 8118,
+  "stop_reason": "user_requested_remaining40",
+  "stop_observed_at": "2026-11-17T04:30:42.871927+09:00",
+  "variant_count": 12,
+  "finished_at": "2026-11-17T04:32:23.220643+09:00",
+  "tests_passed": 453,
+  "protected_paths_unchanged": true,
+  "private_best_observed": 84.68
 }
