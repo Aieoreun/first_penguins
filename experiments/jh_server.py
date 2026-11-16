@@ -59,6 +59,13 @@ def main():
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode
     effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None
+    if hasattr(pipeline, "endpoint_variants"):
+        effective["endpoint_variants"] = pipeline.endpoint_variants
+        effective["shared_request_slots"] = pipeline.request_slots
+        effective["tutor_overrides"] = {key: getattr(pipeline.tutor_type, key, None)
+                                         for key in fields
+                                         if key != "request_slots"
+                                         and getattr(pipeline.tutor_type, key, None) != effective[key]}
     if hasattr(pipeline, "refusal_pattern"):
         effective["refusal_pattern"] = pipeline.refusal_pattern.pattern
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(
