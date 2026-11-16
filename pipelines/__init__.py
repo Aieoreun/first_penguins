@@ -25,10 +25,11 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.safe_alternative").Pipeline
         if name == "jh_r3_material_vote3":
             return importlib.import_module("pipelines.kimjaehak.material_votes").Pipeline
-        if name in {"jh_r3_extract_focused", "jh_r3_selected_focused", "jh_r3_grounded_focused", "jh_r3_quote_selected_focused"}:
+        if name in {"jh_r3_extract_focused", "jh_r3_selected_focused", "jh_r3_grounded_focused", "jh_r3_quote_selected_focused", "jh_r3_expanded_focused"}:
             module = importlib.import_module("pipelines.kimjaehak.focused_excerpt")
             return {"jh_r3_extract_focused":module.Pipeline, "jh_r3_selected_focused":module.Selected,
-                    "jh_r3_grounded_focused":module.Grounded, "jh_r3_quote_selected_focused":module.Quoted}[name]
+                    "jh_r3_grounded_focused":module.Grounded, "jh_r3_quote_selected_focused":module.Quoted,
+                    "jh_r3_expanded_focused":module.Expanded}[name]
         if name in {"jh_r3_tutor_other_boundary", "jh_r3_tutor_material_boundary"}:
             module = importlib.import_module("pipelines.kimjaehak.tutor_boundaries")
             return module.Other if name == "jh_r3_tutor_other_boundary" else module.Material

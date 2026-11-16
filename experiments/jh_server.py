@@ -60,7 +60,7 @@ def main():
               "tutor_answer_style", "tutor_resolved_query", "query_resolve_timeout", "query_resolve_effort",
               "tutor_topic_selection", "tutor_query_gate", "tutor_section_threshold",
               "tutor_dual_query", "tutor_answer_support", "tutor_extract_scope", "tutor_material_source", "material_quote_min_chars",
-              "source_extraction_selector", "source_extract_timeout", "source_extract_sections",
+              "source_extraction_selector", "source_extract_timeout", "source_extract_sections", "source_extract_expanded_limit",
               "tutor_other_boundary", "tutor_material_boundary", "source_extract_quote_required", "tutor_material_votes",
               "tutor_safe_alternative")
     effective = {key: getattr(pipeline, key, None) for key in fields}

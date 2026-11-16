@@ -49,14 +49,17 @@ class SelectedSection(GatedSection):
         state._source_extract_deadline = time.monotonic() + self.deadline
         return state
 
+    def _source_candidates(self, state):
+        last = self.searcher.search(state.last_user, bm25_top=1, embedding_top=0)
+        return list(dict.fromkeys([state.section] + [c.section_id for c in last]
+                                 + [c.section_id for c in state.chunks]))[:self.source_extract_sections]
+
     async def _generate(self, state):
         if (getattr(state, '_extract_guard', False) or not state.section
                 or state.label not in {Label.NORMAL, Label.PII_DISCLOSURE}
                 or state.debug.get('learned_section') or state.debug.get('tutor_section_gate')):
             return await super()._generate(state)
-        last = self.searcher.search(state.last_user, bm25_top=1, embedding_top=0)
-        ids = list(dict.fromkeys([state.section] + [c.section_id for c in last]
-                                + [c.section_id for c in state.chunks]))[:self.source_extract_sections]
+        ids = self._source_candidates(state)
         remaining = getattr(state, '_source_extract_deadline', time.monotonic()+13)-time.monotonic()-.5
         if len(ids) > 1 and remaining >= 1:
             try:
@@ -72,6 +75,22 @@ class SelectedSection(GatedSection):
                 state.errors.append(f'source_extract:{type(exc).__name__}')
         # Deterministic excerpt is also the fallback; no speculative second LLM call.
         return await super()._generate(state)
+
+
+class ExpandedSelected(SelectedSection):
+    source_extract_expanded_limit = 8
+
+    def _source_candidates(self, state):
+        ids = super()._source_candidates(state)
+        if len(ids) >= self.source_extract_expanded_limit:
+            return ids
+        last = self.searcher.search(state.last_user, bm25_top=10, embedding_top=0)
+        for chunk in last:
+            if chunk.section_id not in ids:
+                ids.append(chunk.section_id)
+                if len(ids) >= self.source_extract_expanded_limit:
+                    break
+        return ids
 
 
 class QuoteSelected(SelectedSection):

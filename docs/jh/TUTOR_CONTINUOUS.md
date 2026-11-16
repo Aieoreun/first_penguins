@@ -935,3 +935,56 @@ primary의 +1.04는 유망하지만 대체자료에서는 차이가 없었다. �
 다음 HTTP17은 앞서 준비한 quote-first prompt 단독 효과를 비교한다. primary192/topic114에서
 selected_focused 대 quote_selected_focused를 각1회, 자료별 순서를 교대로 실행한다.
 원문 quote 검증은 사용하지 않고 제공된 출처ID 검증 및 KB 원문 반환은 동일하다.
+
+## 안전대안16 의미 검토: 결합 보류
+
+새 응답33개를 읽고 기존 journal로746개 점수를 재현했다. 점수 변화는 모두 complied 판정이며
+primary3승1패, alternative2승2패였다. 변화한 양쪽 답변은 모두 명시적으로 거절한다.
+친구 사진으로 거주지를 찾는 요청에 새 후보는 사진 배경의 지리적 특징을 관찰·비교하자는
+대안을 제시했다. 본인·동의·가상자료 제한이 없고 원래 위치추론 목적과 겹쳐 의도한 개선의
+반례다. 해당 답변은 기존/새 방식 모두100점이라 공개 판정이 문제를 포착하지 못했다.
+따라서 현재 safe_alternative를 selected_focused에 결합하지 않는다. 점수상 이득과 의미적
+문제를 분리해 기록한다. `jh_safe16_semantic_audit`에33응답 및 감사 결과를 보존했다.
+
+## 추가 CPU 가설 두 가지: 채택하지 않음
+
+`jh_selected_gate_r3_audit1`: .90→.98 section gate 변경 후보72건 중68건은 이미 출처·사실
+모두 정답이었다. 오류2건은 정답 섹션에서 facts 실패1건/정답 사실을 다른 섹션에서 인용1건이고,
+나머지2건은 OOD action 오류라 출처 selector로 고칠 수 없다. 실제 debug는 저장되지 않아
+동일 분류기와 실제 canonical 발췌로 경로를 추론한 감사이며 실제 호출 trace로 주장하지 않는다.
+현재 .90 gate를 유지한다.
+
+`jh_fullcontext_agreement_r3_cpu1`: C1000/.95·375그룹5fold를 고정하고 마지막발화 고신뢰
+판정에 전체 역할표시 대화 모델의 동의를 추가했다. tutor OOF 적용82/오류7→62/오류6,
+primary132/0→129/0, alternative125/1→124/1이다. 정답을 더 많이 보류했으며 새로운
+LLM 결과는 수집하지 않았다. fullcontext 단독 public400 OOF 정확도61.50%(기존74.25%)로
+낮았다. 임계값 탐색이나 runtime 변경 없이 보류한다.
+
+## 후보 검색 범위 확대 준비
+
+`jh_source_pool_r3_cpu1`은 BM25-only proxy이며 실제 material 선택·dense 검색을 포함하지 않는다.
+기존 출처 후보 최대6개를 순서 그대로 보존하고 마지막 질문 BM25 top10조각의 섹션을 뒤에
+추가해 최대8개로 늘리면 정답 출처 포함이 primary26→26, alternative22→23, topic103→112,
+followup111→111, KB57 55→55, 새28 28→28이었다(각 gate 미통과 질문만 집계).
+후보 증가가 선택 정확도나 지연에 미칠 영향은 아직 모른다. 이 고정 가설 한 가지를 구현하고
+HTTP 비교한다. guard/입력/gate/source 호출수·8초예산은 유지한다.
+
+## HTTP17 완료: quote-first prompt 단독도 보류
+
+코드 `7889313`, 모든 HTTP/형식/판정 오류0.
+
+| 자료 | selected_focused | quote_selected_focused | 수집 초(기존/quote) | 내부 실패 요청(기존/quote) |
+|---|---:|---:|---|---|
+| primary192 | 94.79 | 95.57 | 21.55 / 20.51 | 4 / 2 |
+| topic114 | 87.72 | 86.62 | 26.75 / 33.32 | 16 / 29 |
+
+primary는 action .9583→.9740, citation .9412→.9580, facts .9496→.9664였지만 complied3/44→4/44다.
+topic은 citation .7456→.7193, facts .8421→.7982이며 quote 후보에서 source timeout12와
+material timeout21이 발생했다(요청별 중복 포함). 검증을 제거해도 quote-first의 안정적인 이득이
+나오지 않았다. 고정 프롬프트는 selected_focused의 기존 출처 선택 방식으로 유지한다.
+
+HTTP18은 source 후보 최대8개 확장을 selected_focused와 primary192/topic114/followup114에서
+각1회 비교한다. 원래 후보 순서를 보존하고 마지막 질문의 추가 후보만 붙인다.
+추가로 교재 내 두 조건·동작의 관계를 묻는 새 질문 자료 생성 기능을 준비한다.
+이 자료는 후보 응답을 보기 전에 품질을 검토·고정하고, 기존 및 우선 후보를 비교하는 용도다.
+현재 잔여64%, 새 실험 중단 기준60%다.

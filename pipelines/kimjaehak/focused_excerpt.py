@@ -1,6 +1,6 @@
 """Keep the entire selected section, but show relevant subsections first."""
 from .extractive_answer import Section
-from .source_extract import GroundedSelected, QuoteSelected, SelectedSection
+from .source_extract import ExpandedSelected, GroundedSelected, QuoteSelected, SelectedSection
 
 
 class Pipeline(Section):
@@ -28,6 +28,10 @@ class Pipeline(Section):
 
 
 class Selected(SelectedSection, Pipeline):
+    pass
+
+
+class Expanded(ExpandedSelected, Pipeline):
     pass
 
 

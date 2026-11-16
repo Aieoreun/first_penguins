@@ -84,6 +84,24 @@ question에는 올바른 정답 값을 함께 쓰지 마세요. answer_fact에�
 """
 
 
+RELATION_SYSTEM = SYSTEM + """
+
+이번 문항의 특별 조건:
+두 question 모두 같은 섹션에 명시된 두 사실·조건·동작의 차이 또는 관계를 설명해 달라는 정상 학습 질문으로 쓰세요.
+각 문항에서 비교할 두 대상과 관계를 판단하는 데 필요한 조건을 질문 안에 명시하세요.
+실습·상품·도구·파이썬 개념의 정확한 이름을 쓰되, 비교 결과나 정답 값 자체를 질문에 노출하지 마세요.
+두 질문은 서로 다른 관계나 조건의 차이를 물어야 하며, 단일 값을 그대로 찾아 적는 질문은 피하세요.
+각 문항의 quote는 같은 섹션에서 공백·문장 부호까지 그대로 복사한 하나의 연속 구절이고 350자 이하여야 해요.
+그 구절 안에서 두 사실과 그 차이·관계의 정답이 모두 분명히 확인되어야 해요.
+떨어진 문장을 이어 붙이거나 다른 섹션의 근거를 합치지 마세요. 교재 밖 상식이나 추정으로 관계를 보충하지 마세요.
+answer_fact는 질문이 요구한 차이·관계와 필요한 조건만 담은 완전한 문장으로 쓰세요.
+계산 질문은 외부 가정이 필요 없고 계산 결과와 결론까지 해당 quote에 명시된 경우에만 허용해요.
+교재의 수치를 재료로 새로운 수학 문제나 계산 결과를 만들지 마세요.
+교재에 없는 인과관계나 의도를 추측하지 마세요. 제출 대행, 정답만 요구, 개인정보, 유해 요청을 넣지 마세요.
+두 문항 모두 독립적으로 이해할 수 있는 학생의 개념 학습 질문이어야 해요.
+"""
+
+
 async def generate(sections, dest, workers, completed, system=SYSTEM):
     from core.llm import LLM
     from pipelines.v1.pipeline import _json_object
@@ -122,14 +140,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", required=True)
     parser.add_argument("--workers", type=int, default=4)
-    parser.add_argument("--question-style", choices=('fact','counterclaim'), default='fact')
+    parser.add_argument("--question-style", choices=('fact','counterclaim','relation'), default='fact')
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.name) or not 1 <= args.workers <= 8:
         parser.error("Invalid name or concurrency")
     sections, digest = sections_and_hash()
     dest = ROOT / "experiments/.cache" / ("jh_kb_facts_" + args.name)
     dest.mkdir(exist_ok=True)
-    system = COUNTERCLAIM_SYSTEM if args.question_style == 'counterclaim' else SYSTEM
+    system = {'fact': SYSTEM, 'counterclaim': COUNTERCLAIM_SYSTEM,
+              'relation': RELATION_SYSTEM}[args.question_style]
     manifest = {"scope": "provided_llm_kb_only_facts_v2", "model": os.environ["OPENAI_MODEL"],
                 "workers": args.workers, "sections": list(sections), "kb_sha256": digest,
                 "prompt_sha256": hashlib.sha256(system.encode()).hexdigest()}
@@ -138,7 +157,8 @@ def main():
     path = dest / "manifest.json"
     if path.exists():
         old = json.loads(path.read_text())
-        if any(old.get(key) != value for key, value in manifest.items()):
+        if (old.get('question_style', 'fact') != args.question_style
+                or any(old.get(key) != value for key, value in manifest.items())):
             parser.error("Resume provenance differs")
     else:
         manifest["commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
