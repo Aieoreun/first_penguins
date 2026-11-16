@@ -12,11 +12,13 @@
   "guard": "unchanged_ContextFast",
   "branch": "experiment/kimjaehak",
   "resume_authorized_by_user": true,
-  "completed_http": 8,
+  "completed_http": 15,
   "pending_http": 0,
   "recommended_variant": "jh_r3_selected_focused",
   "next_experiments": [
-    "conditional_dense",
-    "structured_block"
-  ]
+    "source_conversation_last",
+    "grounded_relation_diagnostic"
+  ],
+  "last_observed_used_percent": 51,
+  "last_observed_remaining_percent": 49
 }

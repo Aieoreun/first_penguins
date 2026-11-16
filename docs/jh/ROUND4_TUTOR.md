@@ -70,3 +70,30 @@
 캐시action감사58회: 같은오분류반복24,같은입력action변동20,단회14. action은원본평가기의문자열비교라judge변동이아니다. 모델/검색/내부API실패원인은개별확정불가. CPU56회는fallback,학업부정2회는normal .9972 gate우회. 감사자체는API없음.
 
 두후보등록후전체390개테스트통과. conditional의gold감사재현테스트는캐시에만두고, 저장소테스트는합성입력으로검증해캐시없이재현된다. 평가기·core·server·SPEC·public·KB는원본동일.
+
+## R4-03/04 결과 — 누적15개 HTTP 실행 완료
+
+새7개수집 `d3c35a9` clean, env/64/32, HTTP/형식/judge오류0. primary 기준선은두가설공유이며각후보와동일commit/자료다.
+
+| 자료 | 기준선 | 고정dense | 조건부dense | structured BLOCK |
+|---|---:|---:|---:|---:|
+| primary192 |94.53|94.53|95.70|94.53|
+| topic114 |89.69(R4-02)|89.25(R4-02)|88.60|—|
+| alternative181 |91.30|—|—|93.23|
+
+조건부primary +1.17을검색개선으로채택하지않는다. 완전히동일응답153개에서원본판정점수순차이+300, 전체평균기여+1.5625점으로전체차이+1.171875보다크다. 같은응답의판정변동만으로관측상승을설명할수있다. 실제로출처가바뀐경우에이득과손실이있으며topic도하락. raw score는변경하지않는다. primary관측paired CI[-1.953,4.297]이며반복실행불확실성을포함하지않는다.
+
+structured BLOCK도원본튜터action primary187/192→183/192, alternative170/181→172/181로일관되지않다. 직접목표였던일부정상질문은회복했지만alternative 실제역할변경요청1개는refuse→answer로악화. primary 총점동점은faithful/complied 등의변동과상쇄된값이다. 따라서현재추천을교체하지않는다. 추가실제제출은하지않았다.
+
+## 추가 CPU 감사와 팀원 갱신
+
+- early last-BM25 삽입: 정상abstain15회에서새정답section구제0,새정답구절추가가능1. OOD→answer19회는lasttop1이이미fullBM25 top10에모두있음. `material_max_chunks=None`이므로자료잘림해소가아닌순서가설에가깝다. 구현/API보류.
+- OVR unique-high category: 기존375group5fold, fold내어휘학습, C1000/.95고정. 기존multinomial OOF297/400→OVR293/400, tutor gate82/7오류→90/9오류. 고정fallback관측재생tutoraction175→172. 현재HTTP점수와구분하며API보류.
+- 팀원원격갱신: 승원c164d5e그대로, Peace6398f5e→3f00c25. 개인정보범주보정완료결과를guard deadline내보존하는변경이며현재tutor개선직접근거가아니다. guard유지지침에따라가져오지않았다.
+
+## R4-05/06 사전 등록
+
+1. `jh_r4_source_conversation_last`: source selector의입력JSON 최상위키순서만 conversation→materials에서materials→conversation으로변경. 후보6개순서/내용,system,low/2000/8초,분류/guard/답변동일. 긴교재뒤에대화를놓는것이대상혼동을줄이는지topic114와primary192에서각새기준선과비교한다. 기존payload기본hook은바이트동일성을테스트했다.
+2. 새로운KB-only 관계진단: `jh_generate_grounded_tasks.py`가각section의완전한연속문단8..350자를사전고정한다. 제공nano에공개질문/labels/후보응답을주지않고question+answer_fact한쌍만요청한다. quote는코드가선정원문을유지한다. 문단선정48/48,80..283자. 기존별도제공모델review와직접사전정제를통과해야채점한다. 이전관계생성실패41회의정확한원인은확정하지않았으며, 이번방식은복사부담을줄이는다른생성설계다. 관계·조건에명시된사실만묻고새계산능력진단이라고주장하지않는다.
+
+전체406개테스트통과,보호경로원본동일. 아직새진단/출처순서후보API는시작전이다.

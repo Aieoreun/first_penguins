@@ -57,6 +57,10 @@ class SelectedSection(GatedSection):
     async def _candidate_sections(self, state):
         return self._source_candidates(state)
 
+    def _source_payload(self, state, ids):
+        return {'conversation':state.messages,
+                'materials':[{'section':sid,'text':self.searcher.section_text(sid)} for sid in ids]}
+
     async def _generate(self, state):
         if (getattr(state, '_extract_guard', False) or not state.section
                 or state.label not in {Label.NORMAL, Label.PII_DISCLOSURE}
@@ -67,9 +71,7 @@ class SelectedSection(GatedSection):
         if len(ids) > 1 and remaining >= 1:
             try:
                 raw = await self.llm.chat(self.source_extract_system,
-                    json.dumps({'conversation':state.messages,
-                                'materials':[{'section':sid,'text':self.searcher.section_text(sid)} for sid in ids]},
-                               ensure_ascii=False), effort='low', max_tokens=2000,
+                    json.dumps(self._source_payload(state, ids), ensure_ascii=False), effort='low', max_tokens=2000,
                     timeout=min(self.source_extract_timeout,remaining),json_mode=True)
                 selected = self._validate_source(_json_object(raw) or {}, ids)
                 state.section = selected
