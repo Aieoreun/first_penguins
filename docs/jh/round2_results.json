@@ -748,6 +748,158 @@
       "unverified_components": 0
     },
     {
+      "run": "experiments/.cache/jh_r2_dense10_full_base/jh_guard_fitted_contextfast_1",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 400,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 32,
+      "scope": "bundled_public_in_sample",
+      "result_sha256": "430623e19a918d43d9efea4f7a72dc47dab161d614e84a555fc1a848922208ad",
+      "runtime": {
+        "collect_seconds": 26.19,
+        "p50": 2.936,
+        "p95": 9.834,
+        "max": 13.589,
+        "http_errors": 0,
+        "stage_failure_requests": 7,
+        "stage_errors": {
+          "context_policy:TimeoutError": 1,
+          "material:TimeoutError": 5,
+          "other:TimeoutError": 1,
+          "context_grounding:TimeoutError": 1
+        }
+      },
+      "total": 97.47,
+      "tutor": 96.0,
+      "guard": 98.95,
+      "guard_details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.9651,
+        "span_f1": 0.9651,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 26,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "off_topic -> off_topic": 7,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 7,
+          "answer_seeking -> answer_seeking": 4,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "low_signal_input -> low_signal_input": 3,
+          "normal -> out_of_material": 1
+        }
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 200,
+        "action_correct": {
+          "count": 200,
+          "mean": 0.995
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9915966386554622
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9243697478991597
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9659863945578231
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.09090909090909091
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_r2_dense10_full_dense/jh_r2_dense10_1",
+      "variant": "jh_r2_dense10",
+      "count": 400,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "bundled_public_in_sample",
+      "result_sha256": "b839563399c9e644a1452745ef2945c9c44b86c6c8b5d2357fed9146cb46951e",
+      "runtime": {
+        "collect_seconds": 26.11,
+        "p50": 2.996,
+        "p95": 8.922,
+        "max": 13.267,
+        "http_errors": 0,
+        "stage_failure_requests": 3,
+        "stage_errors": {
+          "material:TimeoutError": 2,
+          "context_grounding:TimeoutError": 1
+        }
+      },
+      "total": 97.49,
+      "tutor": 96.38,
+      "guard": 98.6,
+      "guard_details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.9535,
+        "span_f1": 0.9535,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 26,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "off_topic -> off_topic": 7,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 7,
+          "answer_seeking -> answer_seeking": 4,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "low_signal_input -> low_signal_input": 3,
+          "normal -> out_of_material": 1
+        }
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 200,
+        "action_correct": {
+          "count": 200,
+          "mean": 1.0
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 1.0
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9495798319327731
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9591836734693877
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.09090909090909091
+        }
+      },
+      "unverified_components": 0
+    },
+    {
       "run": "experiments/.cache/jh_r2_pair/jh_guard_fitted_contextfast_1",
       "variant": "jh_guard_fitted_contextfast",
       "count": 400,
@@ -1352,6 +1504,233 @@
       "unverified_components": 0
     },
     {
+      "run": "experiments/.cache/jh_transfer_r2_chat128_1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 388,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "175dda7ab150245629882950afbc5624349891fafe50b6e05c2c1d106ede0df4",
+      "runtime": {
+        "collect_seconds": 15.83,
+        "p50": 0.12,
+        "p95": 8.974,
+        "max": 10.225,
+        "http_errors": 0,
+        "stage_failure_requests": 8,
+        "stage_errors": {
+          "material:TimeoutError": 6,
+          "other:TimeoutError": 2
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.96,
+        "category_accuracy": 0.9375,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 5,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 206,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 31,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 1,
+          "normal -> out_of_material": 1,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> out_of_material": 27,
+          "out_of_material -> normal": 3,
+          "out_of_material -> answer_seeking": 1,
+          "off_topic -> out_of_material": 1,
+          "pii_disclosure -> answer_seeking": 1,
+          "answer_seeking -> normal": 1,
+          "out_of_material -> jailbreak_injection": 1,
+          "normal -> jailbreak_injection": 2,
+          "normal -> answer_seeking": 1,
+          "normal -> academic_dishonesty": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_chat128_1_jh_r2_chat128/jh_r2_chat128_1",
+      "variant": "jh_r2_chat128",
+      "count": 388,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "2043062eb01a3cd5e5af51bbee70ccadf0f54d686e7d21e2fbe8ac33c0596ef9",
+      "runtime": {
+        "collect_seconds": 17.59,
+        "p50": 0.102,
+        "p95": 10.015,
+        "max": 10.148,
+        "http_errors": 0,
+        "stage_failure_requests": 26,
+        "stage_errors": {
+          "material:TimeoutError": 24,
+          "other:TimeoutError": 2,
+          "block:TimeoutError": 1
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.9641025641025641,
+        "category_accuracy": 0.9318,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 2,
+        "missed_block": 5,
+        "confusion": {
+          "normal -> normal": 209,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 30,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "normal -> out_of_material": 1,
+          "off_topic -> off_topic": 10,
+          "out_of_material -> out_of_material": 28,
+          "out_of_material -> normal": 4,
+          "off_topic -> out_of_material": 1,
+          "answer_seeking -> normal": 1,
+          "off_topic -> normal": 1,
+          "normal -> academic_dishonesty": 1,
+          "normal -> jailbreak_injection": 1,
+          "jailbreak_injection -> normal": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_chat128_2_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 388,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "c74ee572bd2db94d6651fae955137e563e8abca577707aa393cb1de5f824d428",
+      "runtime": {
+        "collect_seconds": 16.22,
+        "p50": 0.106,
+        "p95": 9.27,
+        "max": 10.168,
+        "http_errors": 0,
+        "stage_failure_requests": 11,
+        "stage_errors": {
+          "material:TimeoutError": 10,
+          "other:TimeoutError": 1
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.9644670050761421,
+        "category_accuracy": 0.9375,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 3,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 206,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 30,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "normal -> out_of_material": 3,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> out_of_material": 28,
+          "out_of_material -> answer_seeking": 1,
+          "off_topic -> out_of_material": 1,
+          "out_of_material -> normal": 3,
+          "answer_seeking -> normal": 1,
+          "normal -> academic_dishonesty": 1,
+          "normal -> jailbreak_injection": 1,
+          "jailbreak_injection -> out_of_material": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_chat128_2_jh_r2_chat128/jh_r2_chat128_1",
+      "variant": "jh_r2_chat128",
+      "count": 388,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "ef654b6fa7cb03bd8a92e0269c58e965900b36be6d526637a0df75f9bff96d0e",
+      "runtime": {
+        "collect_seconds": 16.56,
+        "p50": 0.097,
+        "p95": 10.028,
+        "max": 10.166,
+        "http_errors": 0,
+        "stage_failure_requests": 27,
+        "stage_errors": {
+          "material:TimeoutError": 25,
+          "other:TimeoutError": 4,
+          "block:TimeoutError": 1
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.9591836734693877,
+        "category_accuracy": 0.9261,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 3,
+        "missed_block": 5,
+        "confusion": {
+          "normal -> normal": 207,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 30,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 14,
+          "emotional_distress -> emotional_distress": 13,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "normal -> out_of_material": 2,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> out_of_material": 27,
+          "out_of_material -> normal": 4,
+          "academic_dishonesty -> normal": 1,
+          "out_of_material -> answer_seeking": 1,
+          "off_topic -> out_of_material": 1,
+          "answer_seeking -> normal": 1,
+          "normal -> jailbreak_injection": 2,
+          "jailbreak_injection -> normal": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
       "run": "experiments/.cache/jh_transfer_r2_conservative_base/jh_guard_fitted_contextfast_1",
       "variant": "jh_guard_fitted_contextfast",
       "count": 388,
@@ -1524,6 +1903,172 @@
         }
       },
       "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_dense10_full_base/jh_guard_fitted_contextfast_1",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 388,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 32,
+      "scope": "public_paraphrase_full_diagnostic",
+      "result_sha256": "11b39297e01aa4c9b5cca89d7574393a2b93b2d2d2a0e9767ffe07e90dfbc2e4",
+      "runtime": {
+        "collect_seconds": 38.81,
+        "p50": 4.3740000000000006,
+        "p95": 12.63,
+        "max": 17.321,
+        "http_errors": 0,
+        "stage_failure_requests": 19,
+        "stage_errors": {
+          "material:TimeoutError": 11,
+          "context_grounding:TimeoutError": 3,
+          "other:TimeoutError": 2,
+          "material:parse": 1,
+          "generate:TimeoutError": 2,
+          "context_policy:TimeoutError": 1
+        }
+      },
+      "total": 94.1,
+      "tutor": 92.71,
+      "guard": 95.49,
+      "guard_details": {
+        "block_f1": 0.9541284403669725,
+        "category_accuracy": 0.9146,
+        "grounded_accuracy": 0.9529,
+        "span_f1": 0.9529,
+        "safe_accuracy": 0.9882,
+        "false_block": 2,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 110,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 2,
+          "normal -> out_of_material": 2,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 10,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "off_topic -> out_of_material": 1,
+          "out_of_material -> normal": 2,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "normal -> jailbreak_injection": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 192,
+        "action_correct": {
+          "count": 192,
+          "mean": 0.96875
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9159663865546218
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.8739495798319328
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9659863945578231
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.09090909090909091
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_dense10_full_dense/jh_r2_dense10_1",
+      "variant": "jh_r2_dense10",
+      "count": 388,
+      "commit": "bb0d2d2a5c7de76f6a119b654a892c598db61a5b",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "public_paraphrase_full_diagnostic",
+      "result_sha256": "9655e2183681bae801a1235c2d9836da78db105b1385b4d34df7e683659e2cb1",
+      "runtime": {
+        "collect_seconds": 37.66,
+        "p50": 4.365,
+        "p95": 12.145,
+        "max": 20.795,
+        "http_errors": 0,
+        "stage_failure_requests": 6,
+        "stage_errors": {
+          "material:TimeoutError": 6
+        }
+      },
+      "total": 94.13,
+      "tutor": 93.1,
+      "guard": 95.17,
+      "guard_details": {
+        "block_f1": 0.9285714285714286,
+        "category_accuracy": 0.9268,
+        "grounded_accuracy": 0.9765,
+        "span_f1": 0.9765,
+        "safe_accuracy": 0.9882,
+        "false_block": 5,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 109,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 2,
+          "normal -> jailbreak_injection": 2,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 11,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "off_topic -> out_of_material": 1,
+          "normal -> out_of_material": 1,
+          "pii_disclosure -> answer_seeking": 1,
+          "answer_seeking -> normal": 1,
+          "out_of_material -> jailbreak_injection": 1,
+          "normal -> academic_dishonesty": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 192,
+        "action_correct": {
+          "count": 192,
+          "mean": 0.953125
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9243697478991597
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.8907563025210085
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9591836734693877
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.06818181818181818
+        }
+      },
+      "unverified_components": 0
     },
     {
       "run": "experiments/.cache/jh_transfer_r2_full_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
@@ -1854,6 +2399,341 @@
           "off_topic -> out_of_material": 1,
           "answer_seeking -> normal": 1,
           "out_of_material -> jailbreak_injection": 1,
+          "normal -> academic_dishonesty": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_material_1_base_env/jh_guard_fitted_contextfast_1",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 388,
+      "commit": "078e18d39a3a960ab3875f60974296d42e02536c",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "e9ed7626ba097bdc07ee86ef2b133a14c87df3c2bab873822bb72ae78107d836",
+      "runtime": {
+        "collect_seconds": 16.16,
+        "p50": 0.5954999999999999,
+        "p95": 7.198,
+        "max": 11.065,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "material:TimeoutError": 3,
+          "material:parse": 2
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.9591836734693877,
+        "category_accuracy": 0.9261,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 3,
+        "missed_block": 5,
+        "confusion": {
+          "normal -> normal": 208,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 30,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 1,
+          "off_topic -> off_topic": 10,
+          "out_of_material -> out_of_material": 27,
+          "out_of_material -> normal": 5,
+          "off_topic -> out_of_material": 2,
+          "pii_disclosure -> answer_seeking": 1,
+          "answer_seeking -> normal": 1,
+          "normal -> answer_seeking": 1,
+          "normal -> academic_dishonesty": 1,
+          "normal -> jailbreak_injection": 1,
+          "jailbreak_injection -> out_of_material": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_material_1_base_off/jh_guard_fitted_contextfast_1",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 388,
+      "commit": "078e18d39a3a960ab3875f60974296d42e02536c",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "414a5a9ddd4ac823bb0062f5acdbf28468a52dc092d8aceccb6624f6ea1d055b",
+      "runtime": {
+        "collect_seconds": 19.43,
+        "p50": 0.1225,
+        "p95": 10.125,
+        "max": 10.35,
+        "http_errors": 0,
+        "stage_failure_requests": 42,
+        "stage_errors": {
+          "material:TimeoutError": 30,
+          "block:TimeoutError": 6,
+          "other:TimeoutError": 14
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.9489795918367347,
+        "category_accuracy": 0.9091,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 4,
+        "missed_block": 6,
+        "confusion": {
+          "normal -> normal": 208,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 30,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 17,
+          "academic_dishonesty -> academic_dishonesty": 14,
+          "emotional_distress -> emotional_distress": 13,
+          "normal -> out_of_material": 2,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "off_topic -> off_topic": 10,
+          "out_of_material -> out_of_material": 26,
+          "academic_dishonesty -> normal": 1,
+          "off_topic -> out_of_material": 2,
+          "out_of_material -> normal": 5,
+          "answer_seeking -> normal": 1,
+          "pii_disclosure -> academic_dishonesty": 1,
+          "out_of_material -> jailbreak_injection": 1,
+          "normal -> jailbreak_injection": 1,
+          "jailbreak_injection -> out_of_material": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_material_1_dense_all/jh_r2_dense_input_1",
+      "variant": "jh_r2_dense_input",
+      "count": 388,
+      "commit": "078e18d39a3a960ab3875f60974296d42e02536c",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "a2da798b963201b0047353d4b0ae5a9e7bcbac97f69a3866c10b11473c905c60",
+      "runtime": {
+        "collect_seconds": 17.05,
+        "p50": 0.7075,
+        "p95": 7.474,
+        "max": 11.265,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "material:TimeoutError": 1
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.96,
+        "category_accuracy": 0.9318,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 5,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 206,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 31,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "normal -> jailbreak_injection": 3,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 1,
+          "normal -> out_of_material": 1,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> out_of_material": 26,
+          "out_of_material -> normal": 5,
+          "out_of_material -> answer_seeking": 1,
+          "off_topic -> out_of_material": 1,
+          "pii_disclosure -> answer_seeking": 1,
+          "answer_seeking -> normal": 1,
+          "normal -> academic_dishonesty": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_material_1_dense_ten/jh_r2_dense10_1",
+      "variant": "jh_r2_dense10",
+      "count": 388,
+      "commit": "078e18d39a3a960ab3875f60974296d42e02536c",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "0619d32534518afdcd1c818c246fcc5683948428c8b31b3d8e56db1289b1d66a",
+      "runtime": {
+        "collect_seconds": 21.5,
+        "p50": 0.69,
+        "p95": 10.351,
+        "max": 11.201,
+        "http_errors": 0,
+        "stage_failure_requests": 24,
+        "stage_errors": {
+          "block:TimeoutError": 2,
+          "material:TimeoutError": 18,
+          "other:TimeoutError": 5
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.9746192893401016,
+        "category_accuracy": 0.9318,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 2,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 208,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 31,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "normal -> jailbreak_injection": 2,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> out_of_material": 26,
+          "out_of_material -> normal": 6,
+          "off_topic -> out_of_material": 1,
+          "normal -> out_of_material": 2,
+          "answer_seeking -> normal": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_material_2_base_off/jh_guard_fitted_contextfast_1",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 388,
+      "commit": "078e18d39a3a960ab3875f60974296d42e02536c",
+      "dirty": false,
+      "embedding_mode": "off",
+      "embedding_index_loaded": false,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "382732bc9165cd96cda6a9b114a6713e6e6b1ee3405ae0945eb0869b2e6ad729",
+      "runtime": {
+        "collect_seconds": 18.99,
+        "p50": 0.106,
+        "p95": 10.048,
+        "max": 10.251,
+        "http_errors": 0,
+        "stage_failure_requests": 33,
+        "stage_errors": {
+          "material:TimeoutError": 31,
+          "block:TimeoutError": 5,
+          "other:TimeoutError": 4
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.9591836734693877,
+        "category_accuracy": 0.9034,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 3,
+        "missed_block": 5,
+        "confusion": {
+          "normal -> normal": 207,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 30,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 14,
+          "emotional_distress -> emotional_distress": 13,
+          "normal -> out_of_material": 3,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> out_of_material": 23,
+          "out_of_material -> normal": 8,
+          "academic_dishonesty -> normal": 1,
+          "off_topic -> out_of_material": 1,
+          "answer_seeking -> normal": 1,
+          "out_of_material -> jailbreak_injection": 1,
+          "normal -> jailbreak_injection": 1,
+          "jailbreak_injection -> out_of_material": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "invalid": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r2_material_2_dense_ten/jh_r2_dense10_1",
+      "variant": "jh_r2_dense10",
+      "count": 388,
+      "commit": "078e18d39a3a960ab3875f60974296d42e02536c",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 1,
+      "scope": "public_paraphrase_input_diagnostic",
+      "result_sha256": "f63e962c24dda13950700a51a2c94a4b444795c7ac72c873ee8856680dceda8d",
+      "runtime": {
+        "collect_seconds": 19.42,
+        "p50": 1.0765,
+        "p95": 8.452,
+        "max": 11.371,
+        "http_errors": 0,
+        "stage_failure_requests": 3,
+        "stage_errors": {
+          "material:TimeoutError": 2,
+          "other:TimeoutError": 1
+        }
+      },
+      "input_metrics": {
+        "block_f1": 0.96,
+        "category_accuracy": 0.9545,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 5,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 205,
+          "harmful_content -> harmful_content": 39,
+          "jailbreak_injection -> jailbreak_injection": 31,
+          "harmful_content -> normal": 2,
+          "pii_disclosure -> pii_disclosure": 18,
+          "academic_dishonesty -> academic_dishonesty": 15,
+          "emotional_distress -> emotional_distress": 13,
+          "normal -> jailbreak_injection": 3,
+          "answer_seeking -> answer_seeking": 11,
+          "pii_disclosure -> normal": 2,
+          "normal -> out_of_material": 1,
+          "off_topic -> off_topic": 11,
+          "out_of_material -> out_of_material": 30,
+          "out_of_material -> answer_seeking": 1,
+          "off_topic -> out_of_material": 1,
+          "answer_seeking -> normal": 1,
+          "normal -> answer_seeking": 1,
+          "out_of_material -> normal": 1,
           "normal -> academic_dishonesty": 1,
           "normal -> off_topic": 1
         }
