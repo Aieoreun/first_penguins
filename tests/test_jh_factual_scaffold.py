@@ -14,3 +14,12 @@ class FactualScaffoldTests(unittest.TestCase):
         self.assertEqual(changed, [Label.ANSWER_SEEKING])
         for name in ("guard", "_classify", "_search", "_check_output", "_generate"):
             self.assertIs(getattr(Pipeline,name),getattr(ContextFast,name))
+
+    def test_english_instructions_preserve_policy_and_guard(self):
+        from pipelines.kimjaehak.english_answer import Pipeline as English
+        self.assertIs(load("jh_r2_english_answer"), English)
+        changed = {label for label in English.answer_systems
+                   if English.answer_systems[label] != ContextFast.answer_systems[label]}
+        self.assertEqual(changed, {Label.NORMAL, Label.PII_DISCLOSURE})
+        for name in ("guard", "_classify", "_search", "_check_output", "_generate"):
+            self.assertIs(getattr(English,name),getattr(ContextFast,name))
