@@ -4,7 +4,8 @@
 
 2026-11-16 후속 라운드는 [ROUND2.md](ROUND2.md), 최신 튜터·가드 분리와 후속 비교는
 [TUTOR_SPLIT.md](TUTOR_SPLIT.md), 해당 집계는 [tutor_split_results.json](tutor_split_results.json)을 본다.
-현재 사용자 지시는 **잔여 사용량 50%에서 새 실험 중단**이며, 아래 15%는 최초 라운드의 기준이다.
+현재 사용자 지시는 **잔여 사용량 60%에서 새 실험 중단**이다. 이전 50%를 사용자가 정정했으며,
+아래 15%는 최초 라운드의 기준이다. 진행 중인 실험은 [TUTOR_CONTINUOUS.md](TUTOR_CONTINUOUS.md)를 본다.
 
 ## 출처와 범위
 

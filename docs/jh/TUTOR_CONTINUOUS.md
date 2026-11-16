@@ -2,7 +2,8 @@
 
 2026-11-16, 시작 커밋 `5453139`, branch `experiment/kimjaehak`.
 사용자 지시: guard는 기존 ContextFast 유지, 튜터 점수를 높이는 실험→분석→다음 실험을 반복한다.
-잔여 Codex 사용량 50% 또는 사용자 중단 요청 전까지 임의로 종료하지 않는다.
+잔여 Codex 사용량 **60%** 또는 사용자 중단 요청 전까지 임의로 종료하지 않는다.
+사용자가 구현 커밋 `88752a5` 직후 기존 50% 기준을 60%로 정정했다. 이후 실험에는 60%를 적용한다.
 시작 확인 used 11% / remaining 89%. 이전 TUTOR_SPLIT의 종료 기록은 이 연속 실험 시작 전 체크포인트다.
 원본 grader, harness/score_local, core, public, kb는 변경하지 않는다.
 
