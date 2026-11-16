@@ -32,10 +32,10 @@ def load(name: str = ""):
         if name in {"jh_r3_extract_section", "jh_r3_extract_chunk"}:
             module = importlib.import_module("pipelines.kimjaehak.extractive_answer")
             return module.Section if name == "jh_r3_extract_section" else module.Chunk
-        if name in {"jh_r3_material_extract", "jh_r3_gated_extract", "jh_r3_selected_extract"}:
+        if name in {"jh_r3_material_extract", "jh_r3_gated_extract", "jh_r3_selected_extract", "jh_r3_grounded_extract"}:
             module = importlib.import_module("pipelines.kimjaehak.source_extract")
             return {"jh_r3_material_extract":module.MaterialSection, "jh_r3_gated_extract":module.GatedSection,
-                    "jh_r3_selected_extract":module.SelectedSection}[name]
+                    "jh_r3_selected_extract":module.SelectedSection, "jh_r3_grounded_extract":module.GroundedSelected}[name]
         if name == "jh_r3_material_source":
             return importlib.import_module("pipelines.kimjaehak.material_source").Pipeline
         if name == "jh_r3_dual_section90":

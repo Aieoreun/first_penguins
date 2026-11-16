@@ -47,7 +47,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r3_section90", "jh_r3_dual_query", "jh_r3_tutor_fit3000", "jh_r3_answer_support", "jh_r3_dual_section90", "jh_r3_extract_section", "jh_r3_extract_chunk", "jh_r3_material_source", "jh_r3_extract_union", "jh_r3_extract_union_tables", "jh_r3_material_extract",
                               "jh_r3_gated_extract", "jh_r3_selected_extract",
                               "jh_r3_tutor_other_boundary", "jh_r3_tutor_material_boundary",
-                              "jh_r3_extract_focused")
+                              "jh_r3_extract_focused", "jh_r3_grounded_extract")
 
 
 def configure():

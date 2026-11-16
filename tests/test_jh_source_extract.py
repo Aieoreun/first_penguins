@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 from core.schema import Label
 from core.state import Chunk, State
 from pipelines.kimjaehak.guard_fitted import ContextFast
-from pipelines.kimjaehak.source_extract import GatedSection, MaterialSection, SelectedSection
+from pipelines.kimjaehak.source_extract import GatedSection, GroundedSelected, MaterialSection, SelectedSection
 
 
 class SourceExtractTests(unittest.IsolatedAsyncioTestCase):
@@ -61,7 +61,7 @@ class SourceExtractTests(unittest.IsolatedAsyncioTestCase):
 
     def test_all_compositions_preserve_guard_markers(self):
         from pipelines import load
-        for name,cls in [('jh_r3_material_extract',MaterialSection),('jh_r3_gated_extract',GatedSection),('jh_r3_selected_extract',SelectedSection)]:
+        for name,cls in [('jh_r3_material_extract',MaterialSection),('jh_r3_gated_extract',GatedSection),('jh_r3_selected_extract',SelectedSection),('jh_r3_grounded_extract',GroundedSelected)]:
             self.assertIs(load(name),cls)
             p=cls.__new__(cls);s=p._new_state({'messages':[]},True)
             self.assertTrue(s._extract_guard)
@@ -69,3 +69,16 @@ class SourceExtractTests(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(getattr(s,marker))
             for method in ('guard','_check_output'):
                 self.assertIs(getattr(cls,method),getattr(ContextFast,method))
+
+    async def test_grounded_selection_validates_quote_from_selected_source(self):
+        for quote, expected in [('last source material', 'last'),
+                                ('last  source\nmaterial', 'last'),
+                                ('old source material', 'old'),
+                                ('invented material', 'old'), ('', 'old'), (None, 'old')]:
+            p,s=self.setup_case(json.dumps({'section':'last','quote':quote}))
+            p.__class__=GroundedSelected
+            await p._generate(s)
+            self.assertEqual(s.section,expected)
+            self.assertEqual(s.citations,[expected])
+            self.assertEqual(p.llm.chat.await_count,1)
+            self.assertEqual(bool(s.errors),expected=='old')
