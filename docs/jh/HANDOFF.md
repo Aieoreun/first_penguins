@@ -1,10 +1,18 @@
 # 김재학 실험 인수인계
 
-> **연속 실험 진행 중:** 사용자 정정에 따라 튜터 개선을 계속하며 잔여 **60%** 또는 사용자 중단까지
-> 임의 종료하지 않는다. 아래 완료 기록은 중간 체크포인트다. 최신 작업은
-> [TUTOR_CONTINUOUS.md](TUTOR_CONTINUOUS.md)에 기록한다. 가드는 기존 ContextFast 유지.
+> **2026-11-17 02:10 KST, 잔여60%에서 새 실험 중단.** 중단 근거는
+> [TUTOR_CONTINUOUS_STOP.json](TUTOR_CONTINUOUS_STOP.json), 전체 작업·실패·채택 판단은
+> [TUTOR_CONTINUOUS.md](TUTOR_CONTINUOUS.md)에 있다. 가드는 기존 ContextFast 유지.
+> 우선 실험 후보는 **`jh_r3_selected_focused / embedding env / request slots64`**다.
+> 공개400개 대조 두 쌍의 평균 전체97.805→98.540, tutor96.310→98.125였다.
+> 이 원본 공개자료는 학습에 사용했으며 실제 비공개 제출 결과가 아니다. 실제 제출 최고 관측은
+> 기존 ContextFast의83.22다. 운영 기본값은 자동으로 바꾸지 않았다.
+> 대체 표현181개는 첫 비교92.13→94.48, 역순 반복94.61→92.82로 방향이 바뀌었다.
+> 두 쌍 평균93.370→93.650에 그쳐, 이 자료에서 안정적인 전체 개선을 주장하지 않는다.
+> 중단 전에 수집한 모든 채점은 완료했고 pending0이다. 테스트350개와 probe 자체6검증 통과,
+> 평가기·core·기본server·SPEC·public·kb 변경0. 원격 push·새 비공개 제출은 수행하지 않았다.
 
-> **2026-11-17 진행 체크포인트:** 현재 우선 실험 후보는 `jh_r3_selected_focused`다.
+> **2026-11-17 중간 체크포인트(HTTP14·15):** 우선 실험 후보는 `jh_r3_selected_focused`다.
 > 기존 ContextFast 대비 alternative181 92.13→94.48, KB57 92.98→93.86,
 > followup114 83.99→91.89, 새28 93.75→99.11이었다. 공개 전체400은97.90→98.30,
 > tutor96.50→98.00/guard99.30→98.60이었다. 같은 후보의 앞선 primary192는94.14→94.01로

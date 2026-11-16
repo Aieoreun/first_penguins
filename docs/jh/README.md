@@ -7,6 +7,11 @@
 현재 사용자 지시는 **잔여 사용량 60%에서 새 실험 중단**이다. 이전 50%를 사용자가 정정했으며,
 아래 15%는 최초 라운드의 기준이다. 진행 중인 실험은 [TUTOR_CONTINUOUS.md](TUTOR_CONTINUOUS.md)를 본다.
 
+2026-11-17 02:10 KST에 잔여60%를 확인해 새 실험을 중단했다. 현재 우선 실험 후보는
+`jh_r3_selected_focused`(guard ContextFast 유지, embedding env, slots64)다.
+공개 원본400개 대조 두 쌍의 평균 전체97.805→98.540, tutor96.310→98.125였다.
+실제 비공개 제출 점수와 구분하며 실행 명령·후속 판단은 [HANDOFF.md](HANDOFF.md)를 우선한다.
+
 ## 출처와 범위
 
 - 기준 코드: `experiment/seungwon`의 `6ec111d` (v2 사용).
