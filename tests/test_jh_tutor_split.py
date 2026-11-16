@@ -1,10 +1,11 @@
 import asyncio
 import unittest
-from unittest.mock import patch
+from unittest.mock import AsyncMock, Mock, patch
+from types import SimpleNamespace
 
 from pipelines.kimjaehak.guard_fitted import ContextFast
 from pipelines.kimjaehak.input_examples import DenseTen
-from pipelines.kimjaehak.tutor_split import DenseOnly, MaterialOnly, Pipeline
+from pipelines.kimjaehak.tutor_split import BlockOnly, DenseOnly, MaterialOnly, Pipeline
 
 
 class TutorSplitTests(unittest.IsolatedAsyncioTestCase):
@@ -83,3 +84,18 @@ class TutorSplitTests(unittest.IsolatedAsyncioTestCase):
         for pipeline in (dense, material):
             self.assertIsNone(pipeline.material_max_chunks)
             self.assertIs(pipeline._slots, pipeline._tutor_pipeline._slots)
+
+    async def test_block_examples_leave_other_and_material_prompts_unchanged(self):
+        from pipelines import load
+        self.assertIs(load("jh_r2_tutor_block"), BlockOnly)
+        pipeline = BlockOnly.tutor_type.__new__(BlockOnly.tutor_type)
+        pipeline.policy_examples = SimpleNamespace(select=Mock(return_value=[]))
+        state = SimpleNamespace(messages=[{"role":"user","content":"학습 질문"}])
+        with patch.object(ContextFast, "_ask", new_callable=AsyncMock) as ask:
+            for name in ("block", "other", "material"):
+                await pipeline._ask(state,name,"system","current target","low",10)
+            payloads = [call.args[3] for call in ask.await_args_list]
+        self.assertIn("[공개 판정 예시", payloads[0])
+        self.assertEqual(payloads[1:], ["current target", "current target"])
+        pipeline.policy_examples.select.assert_called_once()
+        self.assertIsNone(pipeline.material_max_chunks)

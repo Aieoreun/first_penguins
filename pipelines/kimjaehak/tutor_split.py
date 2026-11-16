@@ -1,6 +1,6 @@
 """Apply semantic examples only to /tutor; preserve the complete guard path."""
 from .guard_fitted import ContextFast
-from .input_examples import Dense, DenseTen
+from .input_examples import Dense, DenseBlockOnly, DenseTen
 
 
 class Pipeline(ContextFast):
@@ -34,3 +34,8 @@ class DenseOnly(Pipeline):
 class MaterialOnly(Pipeline):
     tutor_type = MaterialTen
     endpoint_variants = {"tutor": "contextfast_material10", "guard": "jh_guard_fitted_contextfast"}
+
+
+class BlockOnly(Pipeline):
+    tutor_type = DenseBlockOnly
+    endpoint_variants = {"tutor": "dense_block_examples", "guard": "jh_guard_fitted_contextfast"}

@@ -72,13 +72,14 @@ class PolicyExamples:
 class Lexical(ContextFast):
     input_example_count = 4
     dense_input_examples = False
+    example_check_names = ("block", "other")
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
         self.policy_examples = PolicyExamples(self.dense_input_examples)
 
     async def _ask(self, state, name, system, user, effort, timeout):
-        if name in {"block", "other"}:
+        if name in self.example_check_names:
             if not hasattr(state, "policy_prompt_examples"):
                 state.policy_prompt_examples = {}
             if name not in state.policy_prompt_examples:
@@ -125,3 +126,9 @@ class DenseTen(Dense):
     # Search still returns dense hits. Only the material judge is bounded to
     # the original BM25 prefix; semantic input examples remain enabled.
     material_max_chunks = 10
+
+
+class DenseBlockOnly(Dense):
+    # Keep the original emotional-distress/answer-seeking checks and material
+    # context; retrieve policy examples only for the block decision.
+    example_check_names = ("block",)

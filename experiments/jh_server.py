@@ -52,7 +52,7 @@ def main():
               "retry_source_failure", "learned_span_c", "learned_span_threshold", "guard_category_without_subtype",
               "output_timeout", "hybrid_output", "refusal_review", "refusal_timeout", "guard_only_c",
               "span_decision_threshold", "retrieval_fusion", "tutor_example_count",
-              "input_example_count", "dense_input_examples", "joint_input", "joint_input_timeout", "joint_block_only",
+              "input_example_count", "dense_input_examples", "example_check_names", "joint_input", "joint_input_timeout", "joint_block_only",
               "source_choice", "source_choice_timeout", "source_choice_sections", "all_blocked_policy_review",
               "complied_policy_review", "chat_slots", "answer_review", "review_timeout", "review_min_remaining")
     effective = {key: getattr(pipeline, key, None) for key in fields}
