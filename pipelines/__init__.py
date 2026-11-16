@@ -29,6 +29,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.source_conversation_last").SourceConversationLast
         if name == "jh_r4_material_budget":
             return importlib.import_module("pipelines.kimjaehak.material_budget").Pipeline
+        if name == "jh_r4_source_stream":
+            return importlib.import_module("pipelines.kimjaehak.source_stream").Pipeline
         if name == "jh_r4_last_dense":
             return importlib.import_module("pipelines.kimjaehak.last_dense_source").Pipeline
         if name == "jh_r4_normalized_tutor":

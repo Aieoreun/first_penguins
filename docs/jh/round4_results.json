@@ -4,6 +4,59 @@
   "stop_remaining_percent": 40,
   "http": [
     {
+      "run": "experiments/.cache/jh_kb_probe_r4_06_grounded16_base/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 16,
+      "commit": "aac7100d02914a4a44bb05b29176ac45508a77eb",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "provided_kb_fact_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "753d80267c9f7efe460f8af5ae969c86fc60abe3d91e394fc3768bd246b27457",
+      "runtime": {
+        "collect_seconds": 18.61,
+        "p50": 9.6025,
+        "p95": 18.609,
+        "max": 18.609,
+        "http_errors": 0,
+        "stage_failure_requests": 2,
+        "stage_errors": {
+          "material:TimeoutError": 2,
+          "source_extract:TimeoutError": 1
+        }
+      },
+      "tutor": 95.31,
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 16,
+        "action_correct": {
+          "count": 16,
+          "mean": 0.9375
+        },
+        "citation_f1": {
+          "count": 16,
+          "mean": 0.9375
+        },
+        "facts": {
+          "count": 16,
+          "mean": 0.9375
+        },
+        "faithful": {
+          "count": 16,
+          "mean": 1.0
+        },
+        "complied": {
+          "count": 0,
+          "mean": null
+        }
+      },
+      "unverified_components": 0
+    },
+    {
       "run": "experiments/.cache/jh_noise_r4_01_noise_base/jh_r3_selected_focused_1",
       "variant": "jh_r3_selected_focused",
       "count": 222,
@@ -632,6 +685,112 @@
       "unverified_components": 0
     },
     {
+      "run": "experiments/.cache/jh_topic_r4_07_followup_base/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 114,
+      "commit": "aac7100d02914a4a44bb05b29176ac45508a77eb",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "provided_kb_fact_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "f037cbef5a35956a33a8b840a0450b0f20fd5588a84991cde18ca4005bb957db",
+      "runtime": {
+        "collect_seconds": 24.57,
+        "p50": 9.824,
+        "p95": 13.629,
+        "max": 14.534,
+        "http_errors": 0,
+        "stage_failure_requests": 8,
+        "stage_errors": {
+          "material:TimeoutError": 8
+        }
+      },
+      "tutor": 88.16,
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 114,
+        "action_correct": {
+          "count": 114,
+          "mean": 0.8947368421052632
+        },
+        "citation_f1": {
+          "count": 114,
+          "mean": 0.7807017543859649
+        },
+        "facts": {
+          "count": 114,
+          "mean": 0.8508771929824561
+        },
+        "faithful": {
+          "count": 114,
+          "mean": 1.0
+        },
+        "complied": {
+          "count": 0,
+          "mean": null
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r4_07_followup_budget/jh_r4_material_budget_1",
+      "variant": "jh_r4_material_budget",
+      "count": 114,
+      "commit": "aac7100d02914a4a44bb05b29176ac45508a77eb",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "provided_kb_fact_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "cc2a724e68162719aa78a6d6ae5aa056b00f09cd70e9b3bd54d9e7ca8a47a791",
+      "runtime": {
+        "collect_seconds": 27.95,
+        "p50": 11.6955,
+        "p95": 17.262,
+        "max": 19.364,
+        "http_errors": 0,
+        "stage_failure_requests": 11,
+        "stage_errors": {
+          "embed:TimeoutError": 1,
+          "material:TimeoutError": 9,
+          "source_extract:TimeoutError": 1
+        }
+      },
+      "tutor": 91.23,
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 114,
+        "action_correct": {
+          "count": 114,
+          "mean": 0.9385964912280702
+        },
+        "citation_f1": {
+          "count": 114,
+          "mean": 0.8157894736842105
+        },
+        "facts": {
+          "count": 114,
+          "mean": 0.8947368421052632
+        },
+        "faithful": {
+          "count": 114,
+          "mean": 1.0
+        },
+        "complied": {
+          "count": 0,
+          "mean": null
+        }
+      },
+      "unverified_components": 0
+    },
+    {
       "run": "experiments/.cache/jh_transfer_r4_03_primary_base/jh_r3_selected_focused_1",
       "variant": "jh_r3_selected_focused",
       "count": 192,
@@ -1150,6 +1309,134 @@
         "complied": {
           "count": 44,
           "mean": 0.20454545454545456
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r4_07_primary_base/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 192,
+      "commit": "aac7100d02914a4a44bb05b29176ac45508a77eb",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "public_paraphrase_full_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "39c0372a5d379839959512352d8e52b45dd678b4b606a13043aca4c9f779b7a1",
+      "runtime": {
+        "collect_seconds": 17.42,
+        "p50": 1.1345,
+        "p95": 9.502,
+        "max": 13.646,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "material:TimeoutError": 1
+        }
+      },
+      "total": 46.42,
+      "tutor": 92.84,
+      "guard": 0.0,
+      "guard_details": {
+        "block_f1": 1.0,
+        "category_accuracy": null,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {}
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 192,
+        "action_correct": {
+          "count": 192,
+          "mean": 0.9583333333333334
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9411764705882353
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9495798319327731
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9863945578231292
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.1590909090909091
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r4_07_primary_budget/jh_r4_material_budget_1",
+      "variant": "jh_r4_material_budget",
+      "count": 192,
+      "commit": "aac7100d02914a4a44bb05b29176ac45508a77eb",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "public_paraphrase_full_diagnostic",
+      "score_scope": "tutor",
+      "category_filter": null,
+      "result_sha256": "f9abdade088b8e92019f62c300e1d57b6e72edefbe2c781c12123a64d066d79e",
+      "runtime": {
+        "collect_seconds": 17.57,
+        "p50": 1.061,
+        "p95": 10.903,
+        "max": 15.252,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "material:TimeoutError": 1
+        }
+      },
+      "total": 49.09,
+      "tutor": 98.18,
+      "guard": 0.0,
+      "guard_details": {
+        "block_f1": 1.0,
+        "category_accuracy": null,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {}
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 192,
+        "action_correct": {
+          "count": 192,
+          "mean": 0.9791666666666666
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9663865546218487
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9663865546218487
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 1.0
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.0
         }
       },
       "unverified_components": 0

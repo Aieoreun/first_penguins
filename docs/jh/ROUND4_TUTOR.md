@@ -111,3 +111,29 @@ structured BLOCK도원본튜터action primary187/192→183/192, alternative170/1
 최근baselinefollowup materialTimeout39/114등을관측했다. `jh_r4_material_budget`는튜터material단일호출의최대한도10→13초,prepare14→16초만바꾼다. request별shallowcopy로prepare한도를설정하고guard/누락identity는14초그대로다. 전체26초/source8초,프롬프트/토큰수/투표/분류threshold/호출수/재시도정책은동일하다. material도남은전체시간보다길게호출하지않는다. 늘어난prepare시간이source시간을줄일수있으므로점수·내부오류·tail시간을함께본다.
 
 followup114와primary192를각기준선과비교하고새관계16개에기준선을수집한다. source순서/조건부dense/정규화와합치지않는독립후보다. 전체418개테스트통과,보호경로원본동일.
+
+## R4-06/07 결과 — 누적24개 HTTP 실행
+
+수집 `aac7100` clean. 새관계16개기준선95.31, action/citation/facts15/16, faithful16/16. 실패1개는중간실력확인의조건문·반복문관계를묻는질문에abstain한것이며약5.05초였다. 내부materialTimeout2/sourceTimeout1은있었지만그실패1개를시간초과때문이라고확정하지않는다. 올바른교재에서새관계설명을생성해야facts가회복되는증거는없어답변prefix생성후보는만들지않았다.
+
+| 자료 | 기준선 | material13/prepare16 | 차이 |
+|---|---:|---:|---:|
+| followup114 |88.16|91.23|+3.07|
+| primary192 |92.84|98.18|+5.34|
+
+후속action102→107/114, citation89→93, facts97→102. 단,materialTimeout8→9와전체내부오류8→11로줄지않았고p95 13.629→17.262초,수집24.57→27.95초로길어졌다. 상승을단순히timeout복구덕분이라고말할수없다.
+
+primary action184→188/192, citation112→115/119, facts113→115/119,faithful145→147/147. complied7→0/44도총점에크게기여했다. 이거절/전환문구분기는새시간설정이직접바꾸지않으므로판정·생성변동을분리해야한다. 내부materialTimeout은각1개,수집17.42→17.57초,p95 9.502→10.903초. 관측paired CI는primary[2.474,8.464],followup[-1.316,7.675]이나반복실행/비공개분산을포함하지않는다. 아직추천교체안함.
+
+## 추가 보류 근거
+
+- 기존 brief_policy의off_topic/jailbreak두문구만분리한캐시감사: off_topic100→100두번,jailbreak100→100/100→93.33. 같은payload판정변동도있어재도입근거없음. 신규API안함.
+- 검토된KB57+new28을section분류학습에추가한CPU1조건(C1000,w1): primaryargmax112→114,alternative107→111이지만 .98 coverage54→24/52→23으로감소, .90 primary 신규오판1. 원본≥.90선택을보존하고aug≥.98만추가하는보완형도primary/alt/새16/followup추가0. topic84추가는학습KB57부모파생이라일반화근거로쓰지않음. 런타임/학습데이터는변경안함.
+
+## R4-08/09 사전 등록
+
+- material budget을primary192와alternative181에서반대순서를포함해재비교한다. 첫98.18만보고채택하지않는다.
+- `jh_r4_source_stream`: 출처선택의prompt/payload/low/2000/8초/후보pool을유지하고내부모델응답을stream으로받는다. 첫최상위section문자열이완성되고뒤구분자·자체 후보 ID가확인되면stream을닫고그선택만반환한다. 첫키가다르거나미완성이면완료텍스트를기존파서로넘긴다. 외부tutor/guard JSON형식은그대로다. 처음section이도착하기전추론지연에는효과없다. 이후중복키/잘못된꼬리를못보는의미차이가있어기존완전JSON검증과동일하다고하지않는다. timeout/cancel/early/end/error cleanup을검증했고전체26초한도도유지한다. sourceValueError의raw가없으므로과거오류가복구될것이라고확정하지않는다.
+- stream은제공API호환smoke를먼저확인하고,topic114/primary192에서기준선과비교한다. materialbudget과합치지않는다. SDKcleanup지연에의한마감초과가능성도측정한다.
+
+전체439개테스트통과. 평가기·공유core·server·SPEC·public·KB보호경로원본동일.
