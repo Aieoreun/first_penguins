@@ -704,3 +704,29 @@ BM25만의 근사 후보 점검(추가 임베딩 호출 없음): .90 이상 자�
 주제전환114는105/114, followup114는111/114였다. full/last 균등6개는 주제111로 늘지만
 followup107로 줄었다. 따라서 단순 마지막 질문 우선으로 교체하지 않는다. 실제 selector에는
 기존 dense 검색도 포함되므로 이 BM25 근사를 실제 candidate recall로 보고하지 않는다.
+
+## 출처 선택·추출 HTTP10 완료
+
+코드 `065fdfa`, 아래9개 모두 HTTP/형식/채점 오류0. 개발 tutor 점수이며 비공개 제출 결과가 아니다.
+
+| 자료 | 후보 | tutor | 수집 초 | p50 초 | 내부 실패 요청 |
+|---|---|---:|---:|---:|---:|
+| primary192 | 기존 | 93.49 | 25.04 | 4.751 | 2 |
+| primary192 | section | 95.31 | 15.10 | .924 | 2 |
+| primary192 | material_extract | 95.57 | 17.06 | 1.079 | 1 |
+| primary192 | gated_extract | 95.57 | 16.31 | 1.050 | 2 |
+| primary192 | selected_extract | 96.88 | 16.93 | 1.047 | 5 |
+| topic114 | 기존 | 52.41 | 24.90 | 9.337 | 3 |
+| topic114 | section | 53.07 | 16.30 | 5.724 | 2 |
+| topic114 | material_extract | 71.71 | 17.14 | 6.050 | 2 |
+| topic114 | selected_extract | 88.82 | 22.62 | 8.845 | 8 |
+
+primary 기존→selected: action .9531→.9688, citation .9412→.9580, facts .9412→.9580,
+faithful .9320→1.0, complied3/44→1/44다. 변경하지 않은 정책/입력의 확률적 차이도 섞였다.
+관측 쌍 bootstrap 차이+3.3854, 95%구간[.6510,6.3802], 승23/패6/동률163이지만
+한 번의 응답·판정에 조건부인 구간이며 반복 변동이나 비공개 일반화의 신뢰구간이 아니다.
+topic은 citation .0351→.7632, facts .1667→.8684로 출처 개선이 뚜렷하다.
+선택형 내부 실패는 primary material4/기존정책 generate1, topic material8이며 결과에서 제외하지 않았다.
+
+다음6개 HTTP는 입력 경계 변경을 기존 ContextFast에 각각 적용해 분리 비교한다.
+이어 selected_extract를 alternative/KB57/followup에서 재검증할 계획이다. 운영 기본값은 아직 기존이다.
