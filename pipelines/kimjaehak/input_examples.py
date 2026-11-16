@@ -115,3 +115,7 @@ class Dense(Lexical):
 class DenseUngated(Dense):
     # Diagnose the example-guided LLM fallback without the public-fitted gates.
     learned_gate_threshold = 1.01
+
+
+class DenseConservative(Dense):
+    learned_gate_threshold = .98
