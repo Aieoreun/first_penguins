@@ -1,4 +1,3 @@
-import asyncio
 import os
 import secrets
 from contextlib import asynccontextmanager
@@ -8,9 +7,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-from guard_classifier import classify_input
-from guard_output import check_grounding, check_safety
-from guard_schemas import validate_guard_response
+from guard_supervisor import GuardSupervisor
 from kb_search import KnowledgeSearch
 
 TOKEN = os.environ["TEAM_TOKEN"]
@@ -29,6 +26,11 @@ def check_token(authorization: str = Header("")):
 @asynccontextmanager
 async def lifespan(app):
     app.state.searcher = KnowledgeSearch()
+    app.state.guard = GuardSupervisor(
+        llm, MODEL, app.state.searcher,
+        review_mode=os.environ.get("GUARD_REVIEW_MODE", "off"),
+        safety_review_enabled=os.environ.get("GUARD_SAFETY_REVIEW", "off") == "on",
+    )
     try:
         yield
     finally:
@@ -68,82 +70,11 @@ async def tutor(req: TutorRequest):
     return {"answer": answer, "action": "answer", "citations": []}
 
 
-async def run_guard_stage(name, operation):
-    try:
-        return await asyncio.wait_for(operation, timeout=26)
-    except Exception as error:
-        reason = getattr(error, "reason_code", type(error).__name__)
-        print(f"가드 단계 실패: {name} / {reason}")
-        return None
-
-
-async def retrieve_and_check(req):
-    query = "\n".join(
-        f"{message['role']}: {message['content']}" for message in req.messages
-    )
-
-    evidence = await app.state.searcher.search(query, top_k=5)
-
-    return await check_grounding(
-        client=llm,
-        model=MODEL,
-        messages=req.messages,
-        candidate_answer=req.candidate_answer,
-        evidence=evidence,
-    )
-
-
 @app.post("/guard")
 async def guard(req: GuardRequest):
-    operations = [
-        run_guard_stage(
-            "input",
-            classify_input(llm, MODEL, req.messages),
-        )
-    ]
-
-    has_candidate = req.candidate_answer is not None
-
-    if has_candidate:
-        operations.extend(
-            [
-                run_guard_stage("grounding", retrieve_and_check(req)),
-                run_guard_stage(
-                    "safety",
-                    check_safety(llm, MODEL, req.messages, req.candidate_answer),
-                ),
-            ]
-        )
-
-    results = await asyncio.gather(*operations)
-
-    if any(result is None for result in results):
-        raise HTTPException(
-            status_code=503,
-            detail="Guard evaluation failed",
-        )
-
-    input_verdict = results[0]
-    response = {
-        "input": (
-            input_verdict.model_dump()
-            if input_verdict is not None
-            else {"decision": "allow", "category": "normal"}
-        )
-    }
-
-    if has_candidate:
-        grounding, safety = results[1], results[2]
-
-        response["output"] = {
-            "grounded": grounding.grounded if grounding else True,
-            "unsupported": grounding.unsupported if grounding else [],
-            "safe": safety.safe if safety else True,
-            "category": "normal",
-        }
-
-    validated = validate_guard_response(
-        response,
-        candidate_answer=req.candidate_answer,
-    )
-    return validated.model_dump(exclude_none=True)
+    try:
+        return await app.state.guard.evaluate(req.messages, req.candidate_answer)
+    except Exception as error:
+        # SPEC §8: never log request contents, model output, or exception bodies.
+        print("가드 단계 실패:", type(error).__name__)
+        raise HTTPException(status_code=503, detail="Guard evaluation failed") from None
