@@ -1,0 +1,15 @@
+{
+  "status": "active",
+  "started_at": "2026-11-17T02:41:41.517995+09:00",
+  "starting_used_percent": 43,
+  "starting_remaining_percent": 57,
+  "stop_remaining_percent": 40,
+  "baseline": "jh_r3_selected_focused",
+  "baseline_private_observations": [
+    83.99,
+    84.68
+  ],
+  "guard": "unchanged_ContextFast",
+  "branch": "experiment/kimjaehak",
+  "resume_authorized_by_user": true
+}

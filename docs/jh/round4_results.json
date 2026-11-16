@@ -1,0 +1,9 @@
+{
+  "scope": "round4_tutor_development_not_private_evaluation",
+  "baseline": "jh_r3_selected_focused",
+  "stop_remaining_percent": 40,
+  "http": [],
+  "pending": [],
+  "failed": [],
+  "components": []
+}

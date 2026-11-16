@@ -54,12 +54,15 @@ class SelectedSection(GatedSection):
         return list(dict.fromkeys([state.section] + [c.section_id for c in last]
                                  + [c.section_id for c in state.chunks]))[:self.source_extract_sections]
 
+    async def _candidate_sections(self, state):
+        return self._source_candidates(state)
+
     async def _generate(self, state):
         if (getattr(state, '_extract_guard', False) or not state.section
                 or state.label not in {Label.NORMAL, Label.PII_DISCLOSURE}
                 or state.debug.get('learned_section') or state.debug.get('tutor_section_gate')):
             return await super()._generate(state)
-        ids = self._source_candidates(state)
+        ids = await self._candidate_sections(state)
         remaining = getattr(state, '_source_extract_deadline', time.monotonic()+13)-time.monotonic()-.5
         if len(ids) > 1 and remaining >= 1:
             try:
