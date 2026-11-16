@@ -74,8 +74,11 @@ class SelectedSection(GatedSection):
         return await super()._generate(state)
 
 
-class GroundedSelected(SelectedSection):
+class QuoteSelected(SelectedSection):
     source_extract_system = GROUND_SOURCE_SYSTEM
+
+
+class GroundedSelected(QuoteSelected):
     source_extract_quote_required = True
 
     def _validate_source(self, result, ids):

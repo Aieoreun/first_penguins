@@ -9,8 +9,8 @@ from core.schema import ANSWER_MAX_CHARS, Label
 from core.search import Searcher
 from core.state import Chunk, State
 from pipelines.kimjaehak.extractive_answer import Section
-from pipelines.kimjaehak.focused_excerpt import Grounded, Pipeline, Selected
-from pipelines.kimjaehak.source_extract import GroundedSelected, SelectedSection
+from pipelines.kimjaehak.focused_excerpt import Grounded, Pipeline, Quoted, Selected
+from pipelines.kimjaehak.source_extract import GroundedSelected, QuoteSelected, SelectedSection
 
 
 class FocusedExcerptTests(unittest.IsolatedAsyncioTestCase):
@@ -49,7 +49,8 @@ class FocusedExcerptTests(unittest.IsolatedAsyncioTestCase):
     def test_selector_compositions_keep_excerpt_hook_and_guard_identity(self):
         from pipelines import load
         for name, cls, parent in [('jh_r3_selected_focused', Selected, SelectedSection),
-                                  ('jh_r3_grounded_focused', Grounded, GroundedSelected)]:
+                                  ('jh_r3_grounded_focused', Grounded, GroundedSelected),
+                                  ('jh_r3_quote_selected_focused', Quoted, QuoteSelected)]:
             self.assertIs(load(name), cls)
             self.assertIs(cls._excerpt, Pipeline._excerpt)
             self.assertIs(cls._generate, parent._generate)

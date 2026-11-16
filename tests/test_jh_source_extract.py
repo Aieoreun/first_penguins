@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 from core.schema import Label
 from core.state import Chunk, State
 from pipelines.kimjaehak.guard_fitted import ContextFast
-from pipelines.kimjaehak.source_extract import GatedSection, GroundedSelected, MaterialSection, SelectedSection
+from pipelines.kimjaehak.source_extract import GatedSection, GroundedSelected, MaterialSection, QuoteSelected, SelectedSection
 
 
 class SourceExtractTests(unittest.IsolatedAsyncioTestCase):
@@ -82,3 +82,14 @@ class SourceExtractTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(s.citations,[expected])
             self.assertEqual(p.llm.chat.await_count,1)
             self.assertEqual(bool(s.errors),expected=='old')
+
+    async def test_quote_prompt_ablation_returns_only_actual_kb_not_model_quote(self):
+        p,s=self.setup_case('{"section":"last","quote":"invented quote"}')
+        p.__class__=QuoteSelected
+        await p._generate(s)
+        self.assertEqual(s.citations,['last'])
+        self.assertEqual(s.answer,'관련 교재 내용을 인용할게요.\n\nlast source material')
+        self.assertNotIn('invented',s.answer)
+        p.llm.chat.assert_awaited_once()
+        self.assertFalse(p.source_extract_quote_required)
+        self.assertEqual(p.source_extract_system,GroundedSelected.source_extract_system)
