@@ -16,7 +16,7 @@ def main():
     load_dotenv(ROOT / ".env",override=True)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name",required=True)
-    parser.add_argument("--variant",choices=("jh_adaptive","jh_r2_joint_ungated"),default="jh_adaptive")
+    parser.add_argument("--variant",choices=("jh_adaptive","jh_r2_joint_ungated","jh_r2_joint_block_ungated"),default="jh_adaptive")
     args = parser.parse_args()
     if not args.name.replace("_", "").isalnum():
         parser.error("Invalid name")

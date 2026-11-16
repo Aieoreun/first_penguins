@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 from core.state import Chunk, State
 from pipelines.kimjaehak.guard_fitted import ContextFast
-from pipelines.kimjaehak.joint_input import Pipeline
+from pipelines.kimjaehak.joint_input import Pipeline, BlockOnly
 
 
 class JointInputTests(unittest.TestCase):
@@ -51,6 +51,17 @@ class JointInputTests(unittest.TestCase):
             self.assertEqual(backup.await_count,2)
         self.assertIsNot(states[0].errors,states[1].errors)
         self.assertEqual(states[0].errors,["joint_input:TimeoutError"])
+
+    def test_block_only_keeps_independent_other_and_material_decisions(self):
+        pipe = BlockOnly.__new__(BlockOnly)
+        pipe.llm = type("LLM",(),{"chat":AsyncMock(return_value=json.dumps({"intent":"학습 설명", "block":"none",
+                    "other":"answer_seeking","self_info":True,"section":"invented","quote":"없는 근거"}))})()
+        state = self.state()
+        old_other,old_material = [{"category":"none","self_info":False}],{"quote":"교재에 적힌 사실","section":"A"}
+        with patch.object(ContextFast,"_collect_checks",return_value=([{"category":"jailbreak_injection"}],old_other,old_material),new_callable=AsyncMock):
+            result = asyncio.run(pipe._collect_checks(state,"check","material"))
+        self.assertEqual(result,([{"category":"none"}],old_other,old_material))
+        self.assertEqual(state.errors,[])
 
 
 if __name__ == "__main__":

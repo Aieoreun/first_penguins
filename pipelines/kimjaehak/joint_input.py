@@ -30,6 +30,7 @@ quote에는 질문의 이름만 나오는 문장 대신 묻는 사실에 직접 
 class Pipeline(ContextFast):
     joint_input = True
     joint_input_timeout = 10
+    joint_block_only = False
 
     async def _collect_checks(self, state, check, material):
         # Backup calls use request-local copies so discarded errors do not
@@ -42,6 +43,12 @@ class Pipeline(ContextFast):
                                           timeout=self.joint_input_timeout,json_mode=True)
                 obj = _json_object(raw) or {}
                 block,other,quote,section = (obj.get(k) for k in ("block","other","quote","section"))
+                if self.joint_block_only:
+                    if block not in BLOCKS or not isinstance(obj.get("intent"),str):
+                        raise ValueError("Invalid block intent decision")
+                    previous = await backup
+                    state.errors.extend(e for e in backup_state.errors if not e.startswith("block:"))
+                    return ([{"category":block}],previous[1],previous[2])
                 if (block not in BLOCKS or other not in OTHERS or not isinstance(obj.get("self_info"),bool)
                         or not isinstance(quote,str) or not isinstance(obj.get("intent"),str)):
                     raise ValueError("Invalid joint decision")
@@ -68,4 +75,12 @@ class Threshold98(Pipeline):
 
 
 class Ungated(Pipeline):
+    learned_gate_threshold = 1.01
+
+
+class BlockOnly(Pipeline):
+    joint_block_only = True
+
+
+class BlockOnlyUngated(BlockOnly):
     learned_gate_threshold = 1.01
