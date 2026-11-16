@@ -22,6 +22,7 @@ QUERY_SYSTEM = """학생 대화의 마지막 질문을 교재 검색에 쓸 독�
 class Pipeline(ContextFast):
     tutor_resolved_query = True
     query_resolve_timeout = 4
+    query_resolve_effort = 'low'
     query_resolve_system = QUERY_SYSTEM
 
     def _new_state(self, body, guard):
@@ -51,7 +52,7 @@ class Pipeline(ContextFast):
             try:
                 raw = await self.llm.chat(self.query_resolve_system,
                     json.dumps({'conversation':state.messages}, ensure_ascii=False),
-                    effort='low', max_tokens=1500, timeout=self.query_resolve_timeout, json_mode=True)
+                    effort=self.query_resolve_effort, max_tokens=1500, timeout=self.query_resolve_timeout, json_mode=True)
                 query = (_json_object(raw) or {}).get('query')
                 if (not isinstance(query,str) or not 4 <= len(query.strip()) <= 400
                         or re.search(r'\b[A-Z]{2,4}-\d{2}-\d{2}\b',query)):
@@ -77,3 +78,7 @@ class Pipeline(ContextFast):
             if not task.done():
                 task.cancel()
             await asyncio.gather(task, return_exceptions=True)
+
+
+class Minimal(Pipeline):
+    query_resolve_effort = 'minimal'

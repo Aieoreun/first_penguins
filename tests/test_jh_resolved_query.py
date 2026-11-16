@@ -77,3 +77,13 @@ class ResolvedQueryTests(unittest.IsolatedAsyncioTestCase):
         self.assertIs(load('jh_r3_resolved_query'),Pipeline)
         for method in ('guard','_classify','_check_output','_generate'):
             self.assertIs(getattr(Pipeline,method),getattr(ContextFast,method))
+
+    async def test_minimal_variant_changes_only_resolver_effort(self):
+        from pipelines import load
+        minimal = load('jh_r3_resolved_minimal')
+        self.pipeline.__class__ = minimal
+        await self.run_search()
+        self.assertEqual(self.pipeline.llm.chat.call_args.kwargs['effort'], 'minimal')
+        self.assertEqual(self.pipeline.llm.chat.call_args.kwargs['timeout'], 4)
+        for method in ('guard', '_classify', '_check_output', '_generate'):
+            self.assertIs(getattr(minimal, method), getattr(ContextFast, method))

@@ -21,8 +21,11 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
-        if name == "jh_r3_resolved_query":
-            return importlib.import_module("pipelines.kimjaehak.resolved_query").Pipeline
+        if name == "jh_r3_query_gate":
+            return importlib.import_module("pipelines.kimjaehak.query_gate").Pipeline
+        if name in {"jh_r3_resolved_query", "jh_r3_resolved_minimal"}:
+            module = importlib.import_module("pipelines.kimjaehak.resolved_query")
+            return module.Minimal if name.endswith('_minimal') else module.Pipeline
         if name in {"jh_r3_quote_answer", "jh_r3_complete_answer"}:
             module = importlib.import_module("pipelines.kimjaehak.answer_style")
             return module.Quote if name == "jh_r3_quote_answer" else module.Complete
