@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_r2_gate98", "jh_r2_gate995"}:
+            module = importlib.import_module("pipelines.kimjaehak.conservative_gate")
+            return module.Threshold98 if name == "jh_r2_gate98" else module.Threshold995
         if name == "jh_r2_candidate":
             return importlib.import_module("pipelines.kimjaehak.round2_candidate").Pipeline
         if name in {"jh_r2_input_examples", "jh_r2_dense_input"}:
