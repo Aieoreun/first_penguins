@@ -175,7 +175,8 @@ def main():
     ap.add_argument("--name")
     ap.add_argument("--variant", choices=("jh_guard_fitted_contextfast", "jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r2_english_answer",
                                           "jh_r3_quote_answer", "jh_r3_complete_answer",
-                                          "jh_r3_checked_answer", "jh_r3_sentence_answer", "jh_r3_answer_support"))
+                                          "jh_r3_checked_answer", "jh_r3_sentence_answer", "jh_r3_answer_support",
+                                          "jh_r3_extract_section", "jh_r3_extract_chunk"))
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--judge-workers", type=int, default=32)
     ap.add_argument("--collect-only", action="store_true")
@@ -217,6 +218,7 @@ def main():
                 "commit":subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                 "dirty":bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True).strip()),
                 "answer_choices":getattr(cls,'answer_choices',1),
+                "tutor_extract_scope":getattr(cls,'tutor_extract_scope',None),
                 "answer_prompt_sha256":hashlib.sha256(cls.answer_systems[Label.NORMAL].encode()).hexdigest(),
                 "selection_prompt_sha256":hashlib.sha256(getattr(cls,'answer_choice_system','').encode()).hexdigest(),
                 "runtime_limit":"generation_only_26s_not_end_to_end",

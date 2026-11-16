@@ -57,7 +57,9 @@ def main():
               "complied_policy_review", "chat_slots", "answer_review", "review_timeout", "review_min_remaining", "factual_scaffold", "english_answer",
               "answer_choices", "answer_choice_timeout", "answer_choice_min_remaining", "answer_selection",
               "tutor_section_ranker", "tutor_ranker_c", "tutor_ranker_margin",
-              "tutor_answer_style", "tutor_resolved_query", "query_resolve_timeout")
+              "tutor_answer_style", "tutor_resolved_query", "query_resolve_timeout", "query_resolve_effort",
+              "tutor_topic_selection", "tutor_query_gate", "tutor_section_threshold",
+              "tutor_dual_query", "tutor_answer_support", "tutor_extract_scope")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode
