@@ -21,6 +21,11 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name.startswith("jh_r2_"):
+            module = importlib.import_module("pipelines.kimjaehak.round2")
+            return {"jh_r2_sources": module.Sources, "jh_r2_rrf": module.Fusion,
+                    "jh_r2_rrf_sources": module.FusionSources, "jh_r2_examples": module.Examples,
+                    "jh_r2_rrf_examples": module.FusionExamples}[name]
         if name == "jh_baseline":
             return importlib.import_module("pipelines.v2.pipeline").Pipeline
         if name == "jh_v4_output":
