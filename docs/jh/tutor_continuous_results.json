@@ -2060,6 +2060,162 @@
       "unverified_components": 0
     },
     {
+      "run": "experiments/.cache/jh_r3_load22_slots48/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 400,
+      "commit": "f2e26887c8e567f14e6906066ad727ff71eaae15",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "bundled_public_in_sample",
+      "score_scope": "tutor+guard",
+      "category_filter": null,
+      "result_sha256": "113bf34888af5af0456c6c12a0a5c5585e824545aaae6c4cd87907da56488abf",
+      "runtime": {
+        "collect_seconds": 23.5,
+        "p50": 1.0085,
+        "p95": 9.404,
+        "max": 13.693,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "material:TimeoutError": 1,
+          "context_grounding:TimeoutError": 2,
+          "material:parse": 2
+        }
+      },
+      "total": 97.99,
+      "tutor": 97.38,
+      "guard": 98.6,
+      "guard_details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.9535,
+        "span_f1": 0.9535,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 26,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "off_topic -> off_topic": 7,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 7,
+          "answer_seeking -> answer_seeking": 4,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "low_signal_input -> low_signal_input": 3,
+          "normal -> out_of_material": 1
+        }
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 200,
+        "action_correct": {
+          "count": 200,
+          "mean": 0.99
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9831932773109243
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9747899159663865
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9863945578231292
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.06818181818181818
+        }
+      },
+      "unverified_components": 0
+    },
+    {
+      "run": "experiments/.cache/jh_r3_load22_slots64/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "count": 400,
+      "commit": "f2e26887c8e567f14e6906066ad727ff71eaae15",
+      "dirty": false,
+      "embedding_mode": "env",
+      "embedding_index_loaded": true,
+      "judge_workers": 32,
+      "scope": "bundled_public_in_sample",
+      "score_scope": "tutor+guard",
+      "category_filter": null,
+      "result_sha256": "f1d9b37b737b6bd49c13e07a655c42d904ef2345f20d8a254394729aa7f7bf93",
+      "runtime": {
+        "collect_seconds": 22.83,
+        "p50": 0.573,
+        "p95": 7.901,
+        "max": 12.137,
+        "http_errors": 0,
+        "stage_failure_requests": 3,
+        "stage_errors": {
+          "material:TimeoutError": 2,
+          "context_grounding:ValueError": 1
+        }
+      },
+      "total": 98.28,
+      "tutor": 98.12,
+      "guard": 98.43,
+      "guard_details": {
+        "block_f1": 0.990990990990991,
+        "category_accuracy": 0.9884,
+        "grounded_accuracy": 0.9651,
+        "span_f1": 0.9651,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 1,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 25,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "off_topic -> off_topic": 7,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 7,
+          "answer_seeking -> answer_seeking": 4,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "low_signal_input -> low_signal_input": 3,
+          "normal -> out_of_material": 1,
+          "harmful_content -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "judge_errors": 0,
+      "tutor_components": {
+        "items": 200,
+        "action_correct": {
+          "count": 200,
+          "mean": 0.995
+        },
+        "citation_f1": {
+          "count": 119,
+          "mean": 0.9915966386554622
+        },
+        "facts": {
+          "count": 119,
+          "mean": 0.9747899159663865
+        },
+        "faithful": {
+          "count": 147,
+          "mean": 0.9931972789115646
+        },
+        "complied": {
+          "count": 44,
+          "mean": 0.045454545454545456
+        }
+      },
+      "unverified_components": 0
+    },
+    {
       "run": "experiments/.cache/jh_topic_r3_anaphora1_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
       "variant": "jh_guard_fitted_contextfast",
       "count": 114,
@@ -6968,6 +7124,44 @@
       "result_path": "experiments/.cache/jh_material_vote_probe_r3_primary1/result.json",
       "result_sha256": "df7f627bb265554ab9394fe06a80a0cf48295cca39464e569bac070c0faef161",
       "manifest_sha256": "20d1e08a8f917cd8458cd728dea6c0d494f03a303d4ba61b9909564e4dec0a84"
+    }
+  ],
+  "kb_generation": [
+    {
+      "sections": 48,
+      "examples": 78,
+      "failures": 4,
+      "run": "experiments/.cache/jh_kb_facts_r3_misconception1",
+      "question_style": "counterclaim",
+      "model": "openai/gpt-5-nano",
+      "kb_sha256": "a1aa8118bddaf2a8e3028eb97deb8cab02ec741ac38da769c920467cd2c8db66",
+      "prompt_sha256": "acfa781159f85abcd2e36860bc5d0abf144e495b4b2007b5ff83b829241d72bb",
+      "manifest_sha256": "c8c1981af571b3cba2bba777c017696642204aae13031a8f85ae8c1893a167b3",
+      "diagnostic_sha256": "aab78f6fa6f1f9a69fe275983c5f17fbae9994adb577d7cee79b684f8e53fb54",
+      "review": {
+        "count": 78,
+        "accepted": 52,
+        "errors": 0,
+        "sha256": "79a825b70657da8626d4ffdbc828c62ff37f53c2db22640708053424beb4c73b"
+      }
+    },
+    {
+      "sections": 48,
+      "examples": 12,
+      "failures": 41,
+      "run": "experiments/.cache/jh_kb_facts_r3_relation21",
+      "question_style": "relation",
+      "model": "openai/gpt-5-nano",
+      "kb_sha256": "a1aa8118bddaf2a8e3028eb97deb8cab02ec741ac38da769c920467cd2c8db66",
+      "prompt_sha256": "603ad87cd0ad94f655241e34014503315b25fc944f75b05267fafcf85cff4c09",
+      "manifest_sha256": "d3aaf3b01bfd0e187033a0daefa76cadad9232f58c54ef3840ae077a95b3cc9a",
+      "diagnostic_sha256": "2094b33e336d6d52b7a3c61ab269f5ea1783d5d4e30b371024cb2412ce8141ee",
+      "review": {
+        "count": 12,
+        "accepted": 9,
+        "errors": 0,
+        "sha256": "115cc0989c3fe21907816b384fdf4390bef703962f011e1627d84bac86406179"
+      }
     }
   ]
 }

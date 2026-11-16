@@ -47,7 +47,8 @@ flowchart TD
 ```
 
 `quote_selected_focused`, `expanded_focused`, `safe_alternative`, `safe_menu`는 후속 비교에서
-채택하지 않은 후보다. relation 질문 생성 스타일은 코드만 준비했고 아직 API 실행 전이다.
+채택하지 않은 후보다. relation21 질문 생성은48섹션 중41개 실패와 문항 품질 문제로
+후보 성능 비교에 사용하지 않았다. 생성·자동 검토 실패까지 연속 기록에 보존했다.
 
 > **최신 로컬 작업 완료 (2026-11-16):** 요청한 tutor DenseTen / guard ContextFast 조합은
 > `jh_r2_tutor_split`로 구현했다. 39회·7,238요청과 초안 검토 진단을 완료했고 미채점 실행은 없다.

@@ -46,6 +46,27 @@ def main():
             'result_path':str(result_path.relative_to(ROOT)),
             'result_sha256':hashlib.sha256(result_path.read_bytes()).hexdigest(),
             'manifest_sha256':hashlib.sha256(meta.read_bytes()).hexdigest()})
+    report['kb_generation'] = []
+    for meta in sorted(cache.glob('jh_kb_facts_r3_*/manifest.json')):
+        diagnostic = meta.parent / 'diagnostic.json'
+        if not diagnostic.exists():
+            report['pending'].append({'run':str(meta.parent.relative_to(ROOT)), 'phase':'kb_generation'})
+            continue
+        manifest = json.loads(meta.read_text())
+        entry = {**json.loads(diagnostic.read_text()),
+                 'run':str(meta.parent.relative_to(ROOT)),
+                 'question_style':manifest.get('question_style', 'fact'),
+                 'model':manifest['model'], 'kb_sha256':manifest['kb_sha256'],
+                 'prompt_sha256':manifest['prompt_sha256'],
+                 'manifest_sha256':hashlib.sha256(meta.read_bytes()).hexdigest(),
+                 'diagnostic_sha256':hashlib.sha256(diagnostic.read_bytes()).hexdigest()}
+        review = cache / meta.parent.name.replace('jh_kb_facts_', 'jh_kb_review_', 1) / 'reviews.jsonl'
+        if review.exists():
+            rows = [json.loads(line) for line in review.read_text().splitlines()]
+            entry['review'] = {'count':len(rows), 'accepted':sum(r['valid'] for r in rows),
+                               'errors':sum(bool(r['error']) for r in rows),
+                               'sha256':hashlib.sha256(review.read_bytes()).hexdigest()}
+        report['kb_generation'].append(entry)
     (ROOT/'docs/jh/tutor_continuous_results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({k:len(v) for k,v in report.items() if isinstance(v,list)}))
 
