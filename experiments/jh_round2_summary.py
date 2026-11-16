@@ -7,10 +7,10 @@ from jh_compare import ROOT, evaluator_hashes
 from jh_tutor_components import explain
 
 
-def summarize():
+def summarize(pattern="*r2*/*/manifest.json"):
     records, pending, failed = [], [], []
     cache = ROOT / "experiments/.cache"
-    for manifest_path in sorted(cache.glob("*r2*/*/manifest.json")):
+    for manifest_path in sorted(cache.glob(pattern)):
         run = manifest_path.parent
         manifest = json.loads(manifest_path.read_text())
         if "variant" not in manifest:
