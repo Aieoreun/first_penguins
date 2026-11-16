@@ -2,6 +2,10 @@
 
 진행 상황·최고 관측 점수·재개 방법은 [HANDOFF.md](HANDOFF.md), 모든 후속 가설과 채택 여부는 [01_experiments.md](01_experiments.md), 집계 데이터는 [results.json](results.json)에 기록한다. 아래 네 비교군은 후속 실험과 별도로 그대로 유지한다.
 
+2026-11-16 후속 라운드는 [ROUND2.md](ROUND2.md), 최신 튜터·가드 분리와 후속 비교는
+[TUTOR_SPLIT.md](TUTOR_SPLIT.md), 해당 집계는 [tutor_split_results.json](tutor_split_results.json)을 본다.
+현재 사용자 지시는 **잔여 사용량 50%에서 새 실험 중단**이며, 아래 15%는 최초 라운드의 기준이다.
+
 ## 출처와 범위
 
 - 기준 코드: `experiment/seungwon`의 `6ec111d` (v2 사용).
