@@ -10,7 +10,7 @@ from experiments.jh_paired_scores import compare
 class PairedScoreTests(unittest.TestCase):
     def test_paired_delta_and_shared_source_clusters(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root=Path(tmp)
+            root=Path(tmp).resolve()
             rows=[{'id':'a','source_id':'parent'},{'id':'b','source_id':'parent'},{'id':'c','source_id':'other'}]
             runs=[]
             for name,scores in [('base',[0,50,100]),('new',[25,75,100])]:
