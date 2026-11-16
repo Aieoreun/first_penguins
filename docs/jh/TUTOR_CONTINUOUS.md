@@ -794,7 +794,7 @@ guard와 block/other는 그대로다. 독립 request 표식과 취소시 병렬 
 
 코드 `7291c59`, API 없이 추출113/107/55건 수집, 그 뒤 원본 평가기로 채점. 생성/형식/판정 오류0.
 primary는 source10 자체 selected의 action·출처를 고정해96.88→97.14, topic88.82→89.69였다.
-primary 변화는 목표했던 과일 목록·환불 포인트 두 건의 facts75→100뿐이다. topic은4건이25점씩 올랐다.
+primary 변화는 목표했던 과일 목록·환불 포인트 두 건의 문항75→100(facts0→1)뿐이다. topic은4건이25점씩 올랐다.
 이는 동일 원문 내용의 순서에 민감한 로컬 판정 결과이기도 하며 비공개 개선을 보장하지 않는다.
 KB57은 기존 생성92.11→92.98로, 앞선 동일출처 전체 섹션 추출92.98과 같다. KB57에서는
 기존 생성 대비3승1패가 있어 모든 질문이 좋아진다고 표현하지 않는다.
@@ -803,3 +803,43 @@ KB57은 기존 생성92.11→92.98로, 앞선 동일출처 전체 섹션 추출9
 내용을 보존하는 관련 문단 순서를 결합한다. MRO·가드 표식·출처 검증 및 excerpt hook 검증 완료.
 다음 HTTP13은 primary192 기존/selected_focused/grounded_focused, topic114 두focused 후보,
 총5개다. 이후 유망 후보를 alternative/KB57/followup/새28로 교차 확인한다.
+
+## 결합 HTTP13 완료: 전체 변동과 출처 검증 비용
+
+코드 `8cb9c84`, 모든 HTTP/형식/채점 오류0. 내부 선택 검증 거부도 실패 요청 수에 포함했다.
+
+| 자료/후보 | tutor | 수집 초 | p95 초 | 내부 실패 요청 |
+|---|---:|---:|---:|---:|
+| primary192 기존 | 94.14 | 21.98 | 12.203 | 2 |
+| primary192 selected_focused | 94.01 | 15.65 | 10.257 | 2 |
+| primary192 grounded_focused | 94.14 | 17.71 | 10.715 | 9 |
+| topic114 selected_focused | 88.82 | 25.31 | 14.052 | 16 |
+| topic114 grounded_focused | 82.24 | 30.02 | 15.526 | 28 |
+
+primary 기존/selected/grounded의 facts .9160/.9412/.9748, citation .9328/.9496/.9748,
+faithful .9592/1.0/.9864였지만 action .9635/.9427/.9688, complied2/44·3/44·6/44로
+전체 점수는 앞선96.88/구성요소97.14를 재현하지 못했다. 새 정상 생성과 별개인 정책·입력 변동을
+분리해야 한다. 기본값 교체나 비공개 점수 상승으로 발표하지 않는다.
+topic grounded는 source ValueError20/timeout4, material timeout9로 겹치는 실패28요청이다.
+selected도 source ValueError3/timeout2, material timeout12가 있었다. 원문 검증은 보수적
+복구를 늘렸으나 citation .7544→.6667, facts .8772→.7193으로 낮아졌다. quote-first+검증 조합은 보류한다.
+
+HTTP14는 selected_focused와 기존을 alternative181/KB57/followup114/새28에서 각1회, 총8개 비교한다.
+자료별 순서를 교대하고 수집·채점을 분리한다. 현재 잔여73%, 중단 기준60%를 유지한다.
+
+### 다음 MATERIAL 구성요소 진단 준비
+
+`jh_material_vote_probe.py`는 공개 파생자료 lineage/해시를 검증한 뒤 자체 입력 준비만 실행한다.
+요청별3개 material 원응답을 호출순서로 기록하고 같은 block/other 표·검색을 고정해 첫표와
+다수표의 label/action을 원래 우선순위로 재생한다. gold는 재생 평가에만 사용하며 pipeline에는 전달하지 않는다.
+양쪽 모두3호출 부하에서 나온 표라 지연/전체점수 비교가 아니다. prepare 미완료도 별도 기록하고
+완료된 쌍의 지표에서만 제외한다고 명시한다. API 없는 모의9테스트 및 오염된 환경에서도
+고정 timeout/flags 동일성 검증을 통과했다. 아직 실제 API 수집 전이다.
+
+### 두 출처 동시 인용 CPU 탐색 보류
+
+KB48섹션의20자 이상 문장 단위1,958개 중 섹션간 완전동일11개(산문8/코드3)였다.
+topic canonical차이12건 중 질문에 직접 관련된 정확한 공통 문장은1건뿐이다. 짧은 구절은
+주어·조건을 잃고 여러 섹션에 겹쳤다. 공통 산문만으로 출처를 추가하면 이미 올바른 topic15건,
+primary19건도 인용 정밀도 손해에 노출된다. 실제 두 근거를 함께 사용할 일반 규칙을 찾지 못해
+추가 인용 후보는 구현·API 시험 없이 보류한다. gold를 보고 두 번째 출처를 고르지 않는다.
