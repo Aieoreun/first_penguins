@@ -33,6 +33,11 @@ def main():
             raise SystemExit(f"Missing setting: {key}")
     from pipelines import load
     pipeline = load(args.variant)
+    dual_metadata = {}
+    if getattr(pipeline, "source_dual_granularity", False):
+        import asyncio
+        from pipelines.kimjaehak.dual_index import prepare_short_index
+        dual_metadata = asyncio.run(prepare_short_index())
     if args.request_slots is not None:
         if not hasattr(pipeline, "request_slots"):
             parser.error("This pipeline has no configurable request semaphore")
@@ -65,6 +70,8 @@ def main():
               "tutor_safe_alternative", "tutor_safe_menu", "tutor_category_normalization", "source_last_dense", "source_last_dense_timeout", "source_last_dense_sections", "source_conditional_dense", "structured_tutor_block", "source_conversation_last", "tutor_material_timeout", "tutor_prepare_limit", "source_stream_early_finish", "source_stream_buffer_chars", "source_id_only", "source_disambiguation", "source_minimal_effort")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
+    effective.update(dual_metadata)
+    effective["source_dual_granularity"] = getattr(pipeline, "source_dual_granularity", False)
     effective["embedding_mode"] = args.embedding_mode
     effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None
     if hasattr(pipeline, "endpoint_variants"):

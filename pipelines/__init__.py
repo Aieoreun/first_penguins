@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_r5_dual6", "jh_r5_dual_all"}:
+            module = importlib.import_module("pipelines.kimjaehak.dual_granularity")
+            return module.Six if name == "jh_r5_dual6" else module.All
         if name == "jh_r4_conditional_dense":
             return importlib.import_module("pipelines.kimjaehak.conditional_dense_source").Pipeline
         if name == "jh_r4_structured_block":
