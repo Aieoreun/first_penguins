@@ -20,6 +20,7 @@ class RefusalReview:
     refusal_review = True
     refusal_timeout = 8
     refusal_pattern = REFUSAL
+    policy_system = POLICY_SYSTEM
 
     async def _check_output(self, state):
         await super()._check_output(state)
@@ -29,7 +30,7 @@ class RefusalReview:
         # In particular, a disclaimer followed by compliance remains unsafe.
         try:
             raw = await asyncio.wait_for(self.llm.chat(
-                POLICY_SYSTEM + "\n" + POLICY_HINTS.get(state.category.value, ""),
+                self.policy_system + "\n" + POLICY_HINTS.get(state.category.value, ""),
                 json.dumps({"conversation": state.messages,
                             "candidate_answer": state.candidate_answer}, ensure_ascii=False),
                 effort="low", max_tokens=1800, timeout=self.refusal_timeout, json_mode=True),

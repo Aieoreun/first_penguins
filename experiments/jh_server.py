@@ -63,6 +63,8 @@ def main():
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(
         {k.value: v for k, v in pipeline.answer_systems.items()}, sort_keys=True).encode()).hexdigest()
     effective["unsupported_prompt_sha256"] = hashlib.sha256(pipeline.unsupported_system.encode()).hexdigest()
+    if hasattr(pipeline, "policy_system"):
+        effective["policy_prompt_sha256"] = hashlib.sha256(pipeline.policy_system.encode()).hexdigest()
     if hasattr(pipeline, "source_choice_system"):
         effective["source_choice_prompt_sha256"] = hashlib.sha256(pipeline.source_choice_system.encode()).hexdigest()
     print("EXPERIMENT_CONFIG " + json.dumps(effective), flush=True)
