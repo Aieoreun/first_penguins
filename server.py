@@ -1,9 +1,11 @@
 import os
 import secrets
+import logging
+import uuid
 from contextlib import asynccontextmanager
 from typing import Dict, List, Optional  # noqa: UP035
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
@@ -14,6 +16,13 @@ TOKEN = os.environ["TEAM_TOKEN"]
 MODEL = os.environ["OPENAI_MODEL"]
 SYSTEM = "당신은 온라인 학습 플랫폼의 AI 튜터입니다. 한국어로 답합니다."
 FALLBACK = "지금은 답변을 만들 수 없어요. 잠시 후 다시 질문해 주세요."
+
+# Only this logger is enabled; SDK request URLs/bodies are not logged here.
+runtime_logger = logging.getLogger("guard_runtime")
+runtime_logger.setLevel(logging.INFO)
+if not runtime_logger.handlers:
+    runtime_logger.addHandler(logging.StreamHandler())
+runtime_logger.propagate = False
 
 llm = AsyncOpenAI(timeout=25, max_retries=0)
 
@@ -71,10 +80,13 @@ async def tutor(req: TutorRequest):
 
 
 @app.post("/guard")
-async def guard(req: GuardRequest):
+async def guard(req: GuardRequest, response: Response):
+    request_id = uuid.uuid4().hex
+    response.headers["X-Guard-Request-ID"] = request_id
     try:
-        return await app.state.guard.evaluate(req.messages, req.candidate_answer)
+        return await app.state.guard.evaluate(req.messages, req.candidate_answer, request_id=request_id)
     except Exception as error:
         # SPEC §8: never log request contents, model output, or exception bodies.
         print("가드 단계 실패:", type(error).__name__)
-        raise HTTPException(status_code=503, detail="Guard evaluation failed") from None
+        raise HTTPException(status_code=503, detail="Guard evaluation failed",
+                            headers={"X-Guard-Request-ID": request_id}) from None

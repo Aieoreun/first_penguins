@@ -2,6 +2,7 @@ import asyncio
 import logging
 import json
 from openai import OpenAIError
+from guard_runtime import model_call, record, remaining_time, ModelResponseError
 import re
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -109,7 +110,7 @@ async def extract_unsupported(client, model, sentences, selected_ids, evidence, 
     ]}
     schema = SpanSelection.model_json_schema()
     schema["$defs"]["UnsupportedRange"]["properties"]["sentence_id"]["enum"] = sorted(set(selected_ids))
-    response = await client.chat.completions.create(
+    response = await model_call(client, "span_model",
         model=model,
         messages=[{"role":"system", "content":SPAN_POLICY},
                   {"role":"user", "content":json.dumps(payload, ensure_ascii=False)}],
@@ -121,21 +122,21 @@ async def extract_unsupported(client, model, sentences, selected_ids, evidence, 
     )
     choice = response.choices[0]
     if choice.finish_reason != "stop" or not choice.message.content:
-        raise ValueError("오류 구간 추출이 완료되지 않았습니다.")
+        raise ModelResponseError("unexpected_finish:" + str(choice.finish_reason) if choice.finish_reason != "stop" else "empty_content")
     result = SpanSelection.model_validate_json(choice.message.content)
     seen, spans = set(), []
     for error in result.errors:
         if error.sentence_id not in selected_ids:
-            raise ValueError("선택되지 않은 문장입니다.")
+            raise ModelResponseError("span_unknown_sentence")
         ww = words[error.sentence_id]
         if error.start_word > error.end_word or error.end_word >= len(ww):
-            raise ValueError("유효하지 않은 오류 어절 범위입니다.")
+            raise ModelResponseError("span_invalid_word_range")
         text = sentences[error.sentence_id][ww[error.start_word].start():ww[error.end_word].end()]
         seen.add(error.sentence_id)
         if text not in spans:
             spans.append(text)
     if seen != set(selected_ids):
-        raise ValueError("판정된 오류 문장이 누락됐습니다.")
+        raise ModelResponseError("span_missing_sentence")
     return spans
 
 
@@ -152,23 +153,26 @@ async def check_grounding(client, model, messages, candidate_answer, evidence, *
         policy += RECHECK_POLICY
     decision_schema = GroundingSelection.model_json_schema()
     decision_schema["required"] = list(decision_schema["properties"])
-    response = await client.chat.completions.create(
+    if not sentences:
+        return GroundingVerdict(grounded=True, unsupported=[])
+    decision_schema["properties"]["unsupported_ids"]["items"]["enum"] = list(range(len(sentences)))
+    response = await model_call(client, "grounding_model",
         model=model,
         messages=[{"role":"system","content":policy},
                   {"role":"user","content":json.dumps(payload,ensure_ascii=False)}],
         response_format={"type":"json_schema","json_schema":{
             "name":"grounding_decision","strict":True,
             "schema":decision_schema}},
-        max_completion_tokens=1800,
+        max_completion_tokens=2000,
         extra_body={"reasoning_effort":"low"},
     )
     choice = response.choices[0]
     if choice.finish_reason != "stop" or not choice.message.content:
-        raise ValueError("근거 판정이 완료되지 않았습니다.")
+        raise ModelResponseError("unexpected_finish:" + str(choice.finish_reason) if choice.finish_reason != "stop" else "empty_content")
     selected = GroundingSelection.model_validate_json(choice.message.content)
     ids = list(dict.fromkeys(selected.unsupported_ids))
     if any(i < 0 or i >= len(sentences) for i in ids):
-        raise ValueError("존재하지 않는 후보 문장 번호입니다.")
+        raise ModelResponseError("grounding_unknown_sentence")
     if selected.grounded != (not ids):
         raise ValueError("근거 판정과 문장 번호가 불일치합니다.")
     if selected.grounded:
@@ -183,12 +187,19 @@ async def check_grounding(client, model, messages, candidate_answer, evidence, *
     ]
     if not selected.error_descriptions:
         descriptions = []
+    # Reserve time for validation/serialization before the parent's deadline.
+    extraction_budget = min(SPAN_TIMEOUT_SECONDS, remaining_time(reserve=0.25))
+    if extraction_budget < 1.0:
+        record("fallback", "span_extraction", reason="insufficient_time", remaining=extraction_budget)
+        return GroundingVerdict(grounded=False, unsupported=spans)
     try:
         spans = await asyncio.wait_for(
             extract_unsupported(client, model, sentences, ids, evidence, error_descriptions=descriptions),
-            timeout=SPAN_TIMEOUT_SECONDS,
+            timeout=extraction_budget,
         )
-    except (ValueError, TimeoutError, OpenAIError) as exc:
+    except (ValueError, TimeoutError, asyncio.TimeoutError, OpenAIError) as exc:
+        record("fallback", "span_extraction", reason=getattr(exc, "reason_code", "invalid_extraction"),
+               error_type=type(exc).__name__)
         logging.getLogger(__name__).warning("span_extraction_fallback type=%s",type(exc).__name__)
     # The extraction model cannot overwrite the first-stage decision.
     return GroundingVerdict(grounded=selected.grounded, unsupported=spans)
@@ -231,7 +242,7 @@ insufficient는 정보 부족이며 모순의 증거가 아닙니다.
 
 
 async def check_safety(client, model, messages, candidate_answer, *, review_feedback=None):
-    response = await client.chat.completions.create(
+    response = await model_call(client, "safety_model",
         model=model,
         messages=[
             {"role": "system", "content": SAFETY_POLICY + (RECHECK_POLICY if review_feedback is not None else "")},
@@ -253,6 +264,6 @@ async def check_safety(client, model, messages, candidate_answer, *, review_feed
 
     choice = response.choices[0]
     if choice.finish_reason != "stop" or not choice.message.content:
-        raise ValueError("안전성 판정 응답이 정상적으로 완료되지 않았습니다.")
+        raise ModelResponseError("unexpected_finish:" + str(choice.finish_reason) if choice.finish_reason != "stop" else "empty_content")
 
     return SafetyVerdict.model_validate_json(choice.message.content)

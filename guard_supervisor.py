@@ -12,6 +12,7 @@ from guard_output import check_grounding, check_safety
 from guard_review import (OutputReviewReport, review_input, review_verdict,
                           review_input_status, review_grounding, review_safety)
 from guard_schemas import validate_guard_response
+from guard_runtime import request_scope, deadline_scope, record, timed_stage
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ def retryable(error):
             body = getattr(error, "body", {}) or {}
             return "quota" not in str(body).lower() and "credit" not in str(body).lower()
         return error.status_code in (408, 409) or error.status_code >= 500
-    return isinstance(error, (APIConnectionError, TimeoutError, ValueError))
+    return isinstance(error, (APIConnectionError, TimeoutError, asyncio.TimeoutError, ValueError))
 
 
 def apply_review(initial, report, messages, candidate, evidence, *, observer=None):
@@ -107,17 +108,31 @@ class GuardSupervisor:
             except Exception:
                 self.metrics["monitor_errors"] += 1
 
-    async def _stage(self, operation, deadline):
+    async def _stage(self, operation, deadline, name="base"):
         for attempt in range(2):
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise TimeoutError("base_deadline")
+            started = time.monotonic()
+            record("attempt", name, attempt=attempt + 1, remaining=round(remaining, 4))
             try:
-                return await asyncio.wait_for(operation(), timeout=remaining)
+                async with timed_stage(name):
+                    return await asyncio.wait_for(operation(), timeout=remaining)
             except Exception as error:
-                if attempt or not retryable(error) or deadline - time.monotonic() < 1:
+                elapsed = time.monotonic() - started
+                reason = getattr(error, "reason_code", None)
+                record("attempt_failed", name, attempt=attempt + 1,
+                       error_type=type(error).__name__, reason=reason)
+                # The identical request cannot fix an exhausted token budget.
+                exhausted = reason == "unexpected_finish:length"
+                needed = max(2.0, elapsed * 1.1) + 0.25
+                if attempt or not retryable(error) or exhausted or deadline - time.monotonic() < needed:
+                    record("retry_skipped", name, reason="token_limit" if exhausted else
+                           "attempt_limit" if attempt else "not_retryable" if not retryable(error)
+                           else "insufficient_time", remaining=round(deadline-time.monotonic(), 4))
                     raise
                 self.metrics["base_retries"] += 1
+                record("retry", name, attempt=attempt + 2)
                 await asyncio.sleep(0.1)
 
     def _needs_review(self, initial):
@@ -128,39 +143,68 @@ class GuardSupervisor:
         # A heuristic only, not a calibrated confidence estimate.
         return initial["input"]["decision"] == "block" or initial["input"]["category"] != "normal"
 
-    async def evaluate(self, messages, candidate_answer=None):
+    async def evaluate(self, messages, candidate_answer=None, *, request_id=None):
         started = time.monotonic()
         deadline = started + self.total_timeout
         base_deadline = min(deadline, started + self.base_timeout)
-        evidence = []
+        with request_scope(base_deadline, request_id):
+            record("start", "request")
+            try:
+                result = await self._evaluate(messages, candidate_answer, deadline, base_deadline)
+            except BaseException as error:
+                record("failure", "request", error_type=type(error).__name__,
+                       seconds=round(time.monotonic()-started, 4))
+                raise
+            record("success", "request", seconds=round(time.monotonic()-started, 4))
+            return result
+
+    async def _evaluate(self, messages, candidate_answer, deadline, base_deadline):
+        evidence = None
+        completed = {}  # Request-local only; no cross-request cache or guessed fields.
         query = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
 
         async def grounding():
             nonlocal evidence
-            evidence = await self.searcher.search(query, top_k=5)
+            if evidence is None:
+                async with timed_stage("grounding_search"):
+                    evidence = await self.searcher.search(query, top_k=5)
+            else:
+                record("reuse", "grounding_search")
             return await check_grounding(self.client, self.model, messages, candidate_answer, evidence)
 
-        operations = [lambda: classify_input(self.client, self.model, messages, searcher=self.searcher)]
+        operations = {"input": lambda: classify_input(self.client, self.model, messages, searcher=self.searcher)}
         if candidate_answer is not None:
-            operations += [grounding, lambda: check_safety(self.client, self.model, messages, candidate_answer)]
-        tasks = [asyncio.create_task(self._stage(op, base_deadline)) for op in operations]
+            operations.update(grounding=grounding,
+                              safety=lambda: check_safety(self.client, self.model, messages, candidate_answer))
+
+        async def run(name, operation):
+            completed[name] = await self._stage(operation, base_deadline, name)
+            record("retained", name)
+            return completed[name]
+
+        tasks = [asyncio.create_task(run(name, op)) for name, op in operations.items()]
         try:
-            results = await asyncio.gather(*tasks)
+            results = await asyncio.gather(*tasks, return_exceptions=True)
         finally:
             for task in tasks:
                 if not task.done():
                     task.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
-        initial = {"input": results[0].model_dump()}
+        errors = [r for r in results if isinstance(r, BaseException)]
+        if errors:
+            record("incomplete", "request", completed=sorted(completed))
+            raise errors[0]  # Never fabricate uncomputed required fields.
+        initial = {"input": completed["input"].model_dump()}
         if candidate_answer is not None:
-            initial["output"] = {**results[1].model_dump(), **results[2].model_dump(), "category": "normal"}
+            initial["output"] = {**completed["grounding"].model_dump(),
+                                 **completed["safety"].model_dump(), "category": "normal"}
         initial = validated(initial, candidate_answer)
-        self._emit("initial_verdict", response=initial, evidence=evidence)
+        self._emit("initial_verdict", response=initial, evidence=evidence or [])
         if not self._needs_review(initial):
             self.metrics["review_skipped"] += 1
             return initial
-
-        return await self.review_initial(messages, candidate_answer, evidence, initial, deadline)
+        with deadline_scope(deadline):
+            return await self.review_initial(messages, candidate_answer, evidence or [], initial, deadline)
 
     async def review_initial(self, messages, candidate_answer, evidence, initial, deadline):
         """Three independent scopes share one frozen first pass and absolute deadline."""
