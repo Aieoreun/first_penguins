@@ -72,6 +72,7 @@ def main():
     parser.add_argument("--variant",choices=VARIANTS,required=True)
     parser.add_argument("--name",required=True)
     parser.add_argument("--workers",type=int,default=64)
+    parser.add_argument("--judge-workers",type=int,default=8)
     parser.add_argument("--request-slots",type=int,default=64)
     parser.add_argument("--embedding-mode", choices=("env", "off"), default="env")
     parser.add_argument("--build-only",action="store_true")
@@ -79,6 +80,8 @@ def main():
     parser.add_argument("--full",action="store_true",help="Retain source endpoints and inherited answer/evidence labels")
     parser.add_argument("--collect-only",action="store_true",help="Defer full derived scoring until collection comparisons finish")
     args = parser.parse_args()
+    if not 1 <= args.judge_workers <= 64:
+        parser.error("Invalid judge concurrency")
     source = args.source.resolve()
     if not source.is_relative_to(ROOT / "experiments/.cache") or not re.fullmatch(r"[A-Za-z0-9_-]+",args.name) or not 1 <= args.workers <= 64 or not 1 <= args.request_slots <= 64:
         parser.error("Invalid source, name or concurrency")
@@ -107,7 +110,7 @@ def main():
     # Collection uses the same HTTP transport and server as the full comparison.
     # Only full diagnostics need the original answer judge.
     deferred = args.collect_only
-    args.judge_workers, args.no_judge, args.collect_only = (8 if args.full else 1), not args.full, True
+    args.judge_workers, args.no_judge, args.collect_only = (args.judge_workers if args.full else 1), not args.full, True
     args.endpoints = ["tutor","guard"] if args.full else ["guard"]
     run_variant(args,args.variant,1,items,root)
     dest = root / (args.variant + "_1")

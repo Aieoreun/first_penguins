@@ -7,6 +7,8 @@ from core.state import State
 from pipelines.kimjaehak.fewshot import normalized
 from pipelines.kimjaehak.guard_fitted import ContextFast
 from pipelines.kimjaehak.input_examples import PolicyExamples, Lexical, Dense
+from pipelines.kimjaehak.round2 import Sources
+from pipelines.kimjaehak.round2_candidate import Pipeline as Combined
 from tests.test_pipeline_v2 import SEARCHER
 
 
@@ -56,6 +58,17 @@ class InputExampleTests(unittest.TestCase):
         self.assertTrue(state.chunks)
         self.assertFalse(hasattr(state,"policy_example_vector"))
         self.assertEqual(state.errors,["embed:TimeoutError"])
+
+    def test_combination_initializes_each_feature_and_preserves_output_guard(self):
+        with patch.object(ContextFast,"__init__",return_value=None) as initialize:
+            pipe = Combined(SEARCHER, object())
+        initialize.assert_called_once()
+        self.assertIsInstance(pipe.policy_examples, PolicyExamples)
+        self.assertIsNotNone(pipe.policy_examples.vectors)
+        self.assertIsNone(pipe.tutor_examples)
+        self.assertIs(Combined._search, Dense._search)
+        self.assertIs(Combined._generate, Sources._generate)
+        self.assertIs(Combined._check_output, ContextFast._check_output)
 
 
 if __name__ == "__main__":

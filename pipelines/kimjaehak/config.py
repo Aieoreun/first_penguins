@@ -31,7 +31,8 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_refusal_review", "jh_hybrid_refusal", "jh_hybrid_refusal_broad",
                               "jh_guard_fitted_hybrid", "jh_guard_fitted_fast", "jh_guard_fitted_contextfast",
                               "jh_guard_fitted_span99", "jh_r2_sources", "jh_r2_rrf", "jh_r2_rrf_sources",
-                              "jh_r2_examples", "jh_r2_rrf_examples", "jh_r2_input_examples", "jh_r2_dense_input")
+                              "jh_r2_examples", "jh_r2_rrf_examples", "jh_r2_input_examples", "jh_r2_dense_input",
+                              "jh_r2_candidate")
 
 
 def configure():
