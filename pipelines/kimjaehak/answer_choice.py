@@ -32,7 +32,12 @@ async def choose(llm, material, messages, answers, timeout):
 class Pipeline(ContextFast):
     answer_choices = 3
     answer_choice_timeout = 4
+    answer_choice_min_remaining = 2
+    answer_selection = 'llm'
     answer_choice_system = SELECT_SYSTEM
+
+    async def _choose_answer(self, state, answers, timeout):
+        return await choose(self.llm, self.searcher.section_text(state.section), state.messages, answers, timeout)
 
     def _new_state(self, body, guard):
         state = super()._new_state(body, guard)
@@ -71,10 +76,9 @@ class Pipeline(ContextFast):
                 return
             selected = 0
             left = end - time.monotonic()
-            if len(answers) > 1 and left >= 2:
+            if len(answers) > 1 and left >= self.answer_choice_min_remaining:
                 try:
-                    selected = await choose(self.llm, self.searcher.section_text(state.section),
-                        state.messages, answers, min(self.answer_choice_timeout, left))
+                    selected = await self._choose_answer(state, answers, min(self.answer_choice_timeout, left))
                 except Exception as exc:
                     state.errors.append(f"answer_choice:{type(exc).__name__}")
             state.answer, state.citations = sources[selected].answer, list(sources[selected].citations)
@@ -88,3 +92,12 @@ class Pipeline(ContextFast):
 
 class Pair(Pipeline):
     answer_choices = 2
+
+
+class Longest(Pipeline):
+    answer_selection = 'longest'
+    answer_choice_min_remaining = 0
+
+    async def _choose_answer(self, state, answers, timeout):
+        from .draft_selection import select
+        return select(answers, 'longest')

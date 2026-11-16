@@ -28,8 +28,10 @@ def load(name: str = ""):
             return module.Quote if name == "jh_r3_quote_answer" else module.Complete
         if name == "jh_r3_tutor_ranked":
             return importlib.import_module("pipelines.kimjaehak.tutor_ranked").Pipeline
-        if name in {"jh_r3_answer_choice", "jh_r3_answer_pair"}:
+        if name in {"jh_r3_answer_choice", "jh_r3_answer_pair", "jh_r3_answer_longest"}:
             module = importlib.import_module("pipelines.kimjaehak.answer_choice")
+            if name == "jh_r3_answer_longest":
+                return module.Longest
             return module.Pair if name.endswith("_pair") else module.Pipeline
         if name == "jh_r2_english_answer":
             return importlib.import_module("pipelines.kimjaehak.english_answer").Pipeline

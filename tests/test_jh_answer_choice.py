@@ -94,3 +94,13 @@ class AnswerChoiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertIs(load('jh_r3_answer_pair'),Pair)
         for name in ('guard','_classify','_check_output','_search'):
             self.assertIs(getattr(Pipeline,name),getattr(ContextFast,name))
+
+    async def test_longest_selection_uses_no_selector_api_call(self):
+        from pipelines import load
+        cls=load('jh_r3_answer_longest')
+        p=cls.__new__(cls)
+        p.llm=SimpleNamespace(chat=AsyncMock())
+        selected=await p._choose_answer(self.state,['짧은 답','조건과 숫자를 포함하는 긴 답'],1)
+        self.assertEqual(selected,1)
+        p.llm.chat.assert_not_awaited()
+        self.assertIs(cls.guard,ContextFast.guard)

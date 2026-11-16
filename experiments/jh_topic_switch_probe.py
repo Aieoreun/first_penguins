@@ -77,6 +77,7 @@ def main():
     dataset=''.join(json.dumps(i,ensure_ascii=False)+'\n' for i in items)
     (root/'derived_inputs.jsonl').write_text(dataset)
     provenance={'scope':'provided_kb_fact_diagnostic','diagnostic_kind':'controlled_topic_switch',
+                'transformation_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 'source':str(source.relative_to(ROOT)),'source_sha256':digest,'kb_sha256':kb_hash,
                 'dataset_sha256':hashlib.sha256(dataset.encode()).hexdigest(),'count':len(items),
                 'generation_model':meta['generation_model'],'source_provenance':meta,
