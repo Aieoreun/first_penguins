@@ -82,6 +82,8 @@ def load(name: str = ""):
             return importlib.import_module("pipelines.kimjaehak.brief_policy").Pipeline
         if name == "jh_clear_policy":
             return importlib.import_module("pipelines.kimjaehak.brief_policy").ClearScaffold
+        if name == "jh_r2_source_choice":
+            return importlib.import_module("pipelines.kimjaehak.source_choice").Pipeline
         if name == "jh_medium_answer":
             return importlib.import_module("pipelines.kimjaehak.medium_answer").Pipeline
         if name in {"jh_voted_output", "jh_voted_output5"}:
