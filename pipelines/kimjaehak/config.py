@@ -35,7 +35,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r2_candidate", "jh_r2_gate98", "jh_r2_gate995", "jh_r2_joint_input",
                               "jh_r2_joint_gate98", "jh_r2_joint_ungated", "jh_r2_joint_block",
                               "jh_r2_joint_block_ungated", "jh_r2_source_choice", "jh_r2_policy_review",
-                              "jh_r2_policy_explained")
+                              "jh_r2_policy_explained", "jh_r2_policy_complied")
 
 
 def configure():

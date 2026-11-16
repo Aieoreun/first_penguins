@@ -53,7 +53,8 @@ def main():
               "output_timeout", "hybrid_output", "refusal_review", "refusal_timeout", "guard_only_c",
               "span_decision_threshold", "retrieval_fusion", "tutor_example_count",
               "input_example_count", "dense_input_examples", "joint_input", "joint_input_timeout", "joint_block_only",
-              "source_choice", "source_choice_timeout", "source_choice_sections", "all_blocked_policy_review")
+              "source_choice", "source_choice_timeout", "source_choice_sections", "all_blocked_policy_review",
+              "complied_policy_review")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode

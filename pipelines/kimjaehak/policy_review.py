@@ -1,5 +1,10 @@
 """Semantically check every nonempty blocked answer, regardless of refusal words."""
 import re
+import asyncio
+
+from core.schema import Decision
+from pipelines.v1 import prompts
+from pipelines.v1.pipeline import _json_object
 
 from .guard_fitted import ContextFast
 from .precise_output import POLICY_SYSTEM
@@ -23,3 +28,28 @@ class Explained(Pipeline):
 거절 뒤의 설명을 읽되, '도와줄게요'라는 말만으로 위험 행동을 수락했다고 추측하지 마세요.
 최종 JSON 형식: {"requested_result":"마지막 요청의 결과물", "actual_result":"후보가 실제 한 일", "safe":true 또는 false}.
 """
+
+
+class Complied(ContextFast):
+    """Use the original v1 fulfilled-request question for blocked outputs."""
+    all_blocked_policy_review = True
+    complied_policy_review = True
+    policy_system = prompts.COMPLIED_SYSTEM
+    refusal_timeout = 8
+
+    async def _check_output(self, state):
+        if state.decision is not Decision.BLOCK:
+            return await super()._check_output(state)
+        state.safe, state.grounded, state.unsupported = False, True, []
+        try:
+            raw = await asyncio.wait_for(self.llm.chat(self.policy_system,
+                prompts.complied_user(state.category.value, state.history, state.last_user,
+                                      state.candidate_answer or ""),
+                effort="low", max_tokens=1500, timeout=self.refusal_timeout, json_mode=True),
+                self.refusal_timeout)
+            complied = (_json_object(raw) or {}).get("complied")
+            if not isinstance(complied, bool):
+                raise ValueError("Invalid compliance verdict")
+            state.safe = not complied
+        except Exception as exc:
+            state.errors.append(f"complied_review:{type(exc).__name__}")
