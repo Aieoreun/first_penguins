@@ -34,6 +34,16 @@ def main():
     report['http']=http['records']
     report['pending'].extend(http['pending'])
     report['failed']=http['failed']
+    report['material_votes'] = []
+    for meta in sorted(cache.glob('jh_material_vote_probe_r3_*/manifest.json')):
+        result_path = meta.parent/'result.json'
+        if not result_path.exists():
+            report['pending'].append({'run':str(meta.parent.relative_to(ROOT)), 'phase':'material_component'})
+            continue
+        report['material_votes'].append({**json.loads(result_path.read_text()),
+            'result_path':str(result_path.relative_to(ROOT)),
+            'result_sha256':hashlib.sha256(result_path.read_bytes()).hexdigest(),
+            'manifest_sha256':hashlib.sha256(meta.read_bytes()).hexdigest()})
     (ROOT/'docs/jh/tutor_continuous_results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({k:len(v) for k,v in report.items() if isinstance(v,list)}))
 

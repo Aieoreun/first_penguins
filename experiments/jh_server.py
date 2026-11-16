@@ -61,7 +61,8 @@ def main():
               "tutor_topic_selection", "tutor_query_gate", "tutor_section_threshold",
               "tutor_dual_query", "tutor_answer_support", "tutor_extract_scope", "tutor_material_source", "material_quote_min_chars",
               "source_extraction_selector", "source_extract_timeout", "source_extract_sections",
-              "tutor_other_boundary", "tutor_material_boundary", "source_extract_quote_required", "tutor_material_votes")
+              "tutor_other_boundary", "tutor_material_boundary", "source_extract_quote_required", "tutor_material_votes",
+              "tutor_safe_alternative")
     effective = {key: getattr(pipeline, key, None) for key in fields}
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective["embedding_mode"] = args.embedding_mode
@@ -84,6 +85,8 @@ def main():
         effective["source_choice_prompt_sha256"] = hashlib.sha256(pipeline.source_choice_system.encode()).hexdigest()
     if hasattr(pipeline, "source_extract_system"):
         effective["source_extract_prompt_sha256"] = hashlib.sha256(pipeline.source_extract_system.encode()).hexdigest()
+    if hasattr(pipeline, "safe_alternative_system"):
+        effective["safe_alternative_prompt_sha256"] = hashlib.sha256(pipeline.safe_alternative_system.encode()).hexdigest()
     if hasattr(pipeline, "review_system"):
         effective["answer_review_prompt_sha256"] = hashlib.sha256(pipeline.review_system.encode()).hexdigest()
     if hasattr(pipeline, "answer_choice_system"):

@@ -5907,5 +5907,91 @@
       "unverified_components": 0
     }
   ],
-  "failed": []
+  "failed": [],
+  "material_votes": [
+    {
+      "count": 181,
+      "paired_valid": 181,
+      "material_paired": 46,
+      "no_material": 135,
+      "prepare_incomplete": 0,
+      "requests_with_errors": 6,
+      "material_call_errors": 6,
+      "material_invalid_quotes": 6,
+      "scope": "input_component_no_generation_no_judge_no_http_or_full_score",
+      "all_complete": {
+        "count": 181,
+        "first": {
+          "action_correct": 168,
+          "category_correct": 167
+        },
+        "majority": {
+          "action_correct": 168,
+          "category_correct": 167
+        },
+        "action_changed": 0,
+        "action_gains": 0,
+        "action_losses": 0
+      },
+      "material_only": {
+        "count": 46,
+        "first": {
+          "action_correct": 34,
+          "category_correct": 33
+        },
+        "majority": {
+          "action_correct": 34,
+          "category_correct": 33
+        },
+        "action_changed": 0,
+        "action_gains": 0,
+        "action_losses": 0
+      },
+      "result_path": "experiments/.cache/jh_material_vote_probe_r3_alternative1/result.json",
+      "result_sha256": "83281434c7bc56e5faf0f47d79621be0534ccdf71a3135e1d58e26a10981935a",
+      "manifest_sha256": "ea9f9571e43b13dc203fd6256d8a8806df77f4f9237fac0811323f4c0ee1762b"
+    },
+    {
+      "count": 192,
+      "paired_valid": 192,
+      "material_paired": 51,
+      "no_material": 141,
+      "prepare_incomplete": 0,
+      "requests_with_errors": 4,
+      "material_call_errors": 5,
+      "material_invalid_quotes": 5,
+      "scope": "input_component_no_generation_no_judge_no_http_or_full_score",
+      "all_complete": {
+        "count": 192,
+        "first": {
+          "action_correct": 185,
+          "category_correct": 184
+        },
+        "majority": {
+          "action_correct": 184,
+          "category_correct": 183
+        },
+        "action_changed": 3,
+        "action_gains": 1,
+        "action_losses": 2
+      },
+      "material_only": {
+        "count": 51,
+        "first": {
+          "action_correct": 44,
+          "category_correct": 43
+        },
+        "majority": {
+          "action_correct": 43,
+          "category_correct": 42
+        },
+        "action_changed": 3,
+        "action_gains": 1,
+        "action_losses": 2
+      },
+      "result_path": "experiments/.cache/jh_material_vote_probe_r3_primary1/result.json",
+      "result_sha256": "df7f627bb265554ab9394fe06a80a0cf48295cca39464e569bac070c0faef161",
+      "manifest_sha256": "20d1e08a8f917cd8458cd728dea6c0d494f03a303d4ba61b9909564e4dec0a84"
+    }
+  ]
 }

@@ -877,3 +877,29 @@ source/guard/예산/반환 KB 원문 범위는 그대로이며 관련 테스트1
 거절 앞에 고정 prefix만 붙이는 탐색은 보류했다. 완료된6run의208응답/101고유본문을 읽었고,
 complied 실패18건도 대부분 이미 명시적으로 거절했다. 일부 안전대안의 본인/가상 자료 범위가
 모호한 문제는 prefix로 고쳐지지 않으며 off_topic에도 부자연스러워진다. 별도 API는 호출하지 않았다.
+
+## MATERIAL 3표 구성요소 완료: 채택하지 않음
+
+primary192와 alternative181에서 같은 3호출 부하로 수집한 첫 표와 다수결을 비교했다.
+primary action 정답185→184, category184→183으로 낮아졌고 alternative는168/167로 같았다.
+준비 미완료0, material 미호출141/135, 오류 요청4/6을 모두 보존했다. primary 변화3건은
+1개 개선·2개 손실이다. 3표 부하의 구성요소 관측이지 1회 호출의 지연이나 전체 점수 비교가 아니다.
+고정 ML confidence .80 보조표도 첫 표 대비 순이득0이었다. Any-support는 자료 밖 answer를
+늘리고 Any-absence는 과잉 abstain을 늘렸다. 임계값 탐색이나 추가 API 없이 보류했다.
+캐시: `jh_material_vote_probe_r3_{primary1,alternative1}`, `jh_material_policy_r3_cpu1`.
+
+## 다음 비교 준비: 전체 공개자료와 안전대안 생성
+
+현재 잔여66%, 새 실험 중단 기준60%다. 먼저 기존과 `jh_r3_selected_focused`를 공개400개에서
+각1회 비교하여 tutor/guard 혼합 부하를 확인한다. 가드 알고리즘은 바꾸지 않는다.
+
+`jh_r3_safe_alternative`는 자체 harmful 판정에만 고정 거절 첫 문장과 맥락 기반 안전대안
+한 문장을 생성한다. 개인정보 대안은 본인·명시적 동의·가상/익명 자료로 제한하도록 지시한다.
+기존 harmful 답변에 prefix를 붙이는 방식이 아니다. 호출은 기존처럼8초/low/1500토큰1회다.
+생성 실패뿐 아니라 외부 deadline에도 기존 calibrated FIXED로 복구하는 차이가 있다.
+다른 입력 분기와 guard는 그대로다. 길이 검사는 의미적 안전성 검증을 대신하지 않는다.
+
+`jh_refusal_generation_probe.py`는 완료된 기존 후보의 자체 action/응답으로 harmful 분기를
+복원해 생성만 비교한다. gold는 생성 선택이나 payload에 들어가지 않는다. 나머지 응답을
+고정하고 기존 judge journal을 재사용한다. 중단된 채점은 재개하지만 완료 결과는 재채점하지 않는다.
+자체 모의5검증과 pipeline11테스트를 통과했으며 API 효과는 아직 검증하지 않았다.
