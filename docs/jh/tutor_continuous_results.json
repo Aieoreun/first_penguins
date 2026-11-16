@@ -771,7 +771,64 @@
     }
   ],
   "pending": [],
-  "refusal_generation": [],
+  "refusal_generation": [
+    {
+      "scope": "frozen_own_harmful_generation_full_tutor_component_not_http",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 181,
+      "source": "experiments/.cache/jh_transfer_r3_cross14_alternative_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "commit": "d6dbad2a60f455fb50dd563162a287adf13172dc",
+      "baseline_tutor": 92.13,
+      "revised_tutor": 92.13,
+      "attempted": 17,
+      "error_requests": 0,
+      "scoring_status": "complete",
+      "result_path": "experiments/.cache/jh_refusal_generation_r3_safe16_alternative_base/result.json",
+      "result_sha256": "561d6827d45e4c4622aace6bbd2d9d02ebccd6f784d10493e23d4c157e102150"
+    },
+    {
+      "scope": "frozen_own_harmful_generation_full_tutor_component_not_http",
+      "variant": "jh_r3_safe_alternative",
+      "count": 181,
+      "source": "experiments/.cache/jh_transfer_r3_cross14_alternative_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "commit": "d6dbad2a60f455fb50dd563162a287adf13172dc",
+      "baseline_tutor": 92.13,
+      "revised_tutor": 92.13,
+      "attempted": 17,
+      "error_requests": 0,
+      "scoring_status": "complete",
+      "result_path": "experiments/.cache/jh_refusal_generation_r3_safe16_alternative_safe/result.json",
+      "result_sha256": "3dc8f741c3fe931377840478b21ebfe44e427510f57bbb7c1dec4403351b7101"
+    },
+    {
+      "scope": "frozen_own_harmful_generation_full_tutor_component_not_http",
+      "variant": "jh_guard_fitted_contextfast",
+      "count": 192,
+      "source": "experiments/.cache/jh_transfer_r3_select13_primary_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "commit": "d6dbad2a60f455fb50dd563162a287adf13172dc",
+      "baseline_tutor": 94.14,
+      "revised_tutor": 93.62,
+      "attempted": 16,
+      "error_requests": 0,
+      "scoring_status": "complete",
+      "result_path": "experiments/.cache/jh_refusal_generation_r3_safe16_primary_base/result.json",
+      "result_sha256": "4249ebb5351afa4524908d728394782ed13474d39f94f7be5fed45b24319eaa0"
+    },
+    {
+      "scope": "frozen_own_harmful_generation_full_tutor_component_not_http",
+      "variant": "jh_r3_safe_alternative",
+      "count": 192,
+      "source": "experiments/.cache/jh_transfer_r3_select13_primary_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+      "commit": "d6dbad2a60f455fb50dd563162a287adf13172dc",
+      "baseline_tutor": 94.14,
+      "revised_tutor": 94.66,
+      "attempted": 16,
+      "error_requests": 0,
+      "scoring_status": "complete",
+      "result_path": "experiments/.cache/jh_refusal_generation_r3_safe16_primary_safe/result.json",
+      "result_sha256": "e75618a71d334f39d68d0495bafeb9819339384cfebeb3e1089f48bb6cad80aa"
+    }
+  ],
   "http": [
     {
       "run": "experiments/.cache/jh_kb_probe_r3_cross14_kb57_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
