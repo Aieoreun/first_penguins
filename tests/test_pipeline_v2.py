@@ -304,5 +304,27 @@ class V7Test(unittest.TestCase):
         self.assertEqual(len(llm.calls), 3)  # 호출 수는 v6과 같다
 
 
+class V8Test(unittest.TestCase):
+    """v8은 v6에서 출력 가드가 잡은 구절을 코드로 짧게 다듬는다."""
+
+    def test_trim(self):
+        from pipelines.v8.pipeline import trim
+        self.assertEqual(trim("추가 금액은 1천 원이에요"), "1천 원")
+        self.assertEqual(trim("다람쥐 틴즈 체크카드는 만 14세 이상이 사용할 수 있어요."), "만 14세 이상이 사용할 수 있어요")
+        self.assertEqual(trim("5만 원"), "5만 원")
+        self.assertEqual(trim("한도는 5만"), "한도는 5만")  # 떼면 너무 짧아지니 그대로 둔다
+
+    def test_spans_are_trimmed_and_still_in_candidate(self):
+        from pipelines.v8.pipeline import Pipeline as V8
+        candidate = "하루 이체 한도는 10만 원이에요. 천천히 확인해 보세요."
+        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+                       prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["하루 이체 한도는 10만 원이에요"]}'})
+        state = asyncio.run(V8(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": candidate}))
+        out = state.to_guard_response()["output"]
+        self.assertEqual((out["grounded"], out["unsupported"]), (False, ["10만 원"]))
+        self.assertIn(out["unsupported"][0], candidate)
+        self.assertEqual(state.debug["raw_unsupported"], ["하루 이체 한도는 10만 원이에요"])
+
+
 if __name__ == "__main__":
     unittest.main()
