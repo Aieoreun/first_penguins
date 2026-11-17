@@ -374,6 +374,13 @@ class VxTest(unittest.TestCase):
         llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 90}'}))
         self.assertEqual(self.guard(self.make(min_conf=85), llm).decision.value, "block")
 
+    def test_kept_category_survives_low_confidence(self):
+        cls = self.make(min_conf=85, conf_keep=frozenset({"harmful_request"}))
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "harmful_request", "confidence": 70}'}))
+        self.assertEqual(self.guard(cls, llm).decision.value, "block")
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 70}'}))
+        self.assertEqual(self.guard(cls, llm).decision.value, "allow")
+
     def test_recheck_calls_twice_when_answers_agree(self):
         llm = FakeLLM(self.base())
         self.guard(self.make(input_recheck=True), llm)

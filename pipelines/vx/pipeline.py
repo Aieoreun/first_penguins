@@ -6,6 +6,7 @@
   VX_CURRICULUM=1     차단 확인 프롬프트에 교재 목차를 넣는다
   VX_TWO_STAGE=1      차단 확인을 두 단계로: "차단인가"만 먼저 묻고, 차단이라고 한 것만 범주를 묻는다
   VX_MIN_CONF=85      차단 확인·그 밖 확인이 이 값보다 낮은 확신으로 잡은 판정은 버린다
+  VX_CONF_KEEP=harmful_request,harmful_speech   여기 적은 범주는 확신이 낮아도 버리지 않는다 (놓치면 더 아픈 범주를 지킨다)
   VX_INPUT_RECHECK=1  차단 확인·그 밖 확인을 두 번 부르고, 답이 갈릴 때만 세 번째를 불러 다수결한다
   VX_MATERIAL_RETRY=1 교재 확인이 실패하면 한 번 더 부른다
 출력 가드
@@ -51,6 +52,7 @@ class Pipeline(V8Pipeline):
     curriculum = _on("VX_CURRICULUM")
     two_stage = _on("VX_TWO_STAGE")
     min_conf = float(os.environ.get("VX_MIN_CONF", "0") or 0)
+    conf_keep = frozenset(c for c in os.environ.get("VX_CONF_KEEP", "").split(",") if c)
     input_recheck = _on("VX_INPUT_RECHECK")
     material_retry = _on("VX_MATERIAL_RETRY")
     num_hint = _on("VX_NUM_HINT")
@@ -90,7 +92,8 @@ class Pipeline(V8Pipeline):
             answer = await once()
 
         category, confidence = answer.get("category"), answer.get("confidence")
-        if self.min_conf and category not in (None, "none") and isinstance(confidence, (int, float)) and confidence < self.min_conf:
+        if (self.min_conf and category not in (None, "none") and category not in self.conf_keep
+                and isinstance(confidence, (int, float)) and confidence < self.min_conf):
             answer = dict(answer, category="none")
         return answer
 
