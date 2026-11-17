@@ -202,6 +202,9 @@ class KBIndex:
             if expand_aliases and low in _BILINGUAL_ALIASES:
                 for kor_alias in _BILINGUAL_ALIASES[low]:
                     tokens.append(kor_alias)
+        content = [t for t in tokens if len(t) >= 2 or t.isdigit()]
+        if len(content) >= 2:
+            tokens.extend(f"{content[i]}_{content[i + 1]}" for i in range(len(content) - 1))
         return tokens
 
     def _load_kb(self) -> None:
@@ -590,7 +593,7 @@ class KBIndex:
         if has_dense:
             dense_sec_order = sorted(self.section_order, key=lambda s: sec_dense[s], reverse=True)
             for rank, sid in enumerate(dense_sec_order, start=1):
-                sec_rrf[sid] += 1.0 / (rrf_k + rank)
+                sec_rrf[sid] += 0.55 / (rrf_k + rank)
 
         ranked_sids = sorted(
             sec_rrf.keys(),
@@ -609,6 +612,66 @@ class KBIndex:
             )
             for sid in ranked_sids
         ]
+
+    def focused_section_text(
+        self,
+        section_id: str,
+        last_query: str = "",
+        full_query: str = "",
+    ) -> str:
+        """Return the complete section text with ## subsections ordered by relevance to the query."""
+        sec = self.sections.get(section_id)
+        if sec is None or not sec.raw_text:
+            return ""
+        raw = sec.raw_text.strip()
+        lines = raw.splitlines()
+        if not lines:
+            return raw
+
+        header_line = lines[0] if lines[0].startswith("# ") else f"# {section_id} {sec.title}"
+        body = "\n".join(lines[1:] if lines[0].startswith("# ") else lines).strip()
+        if not body:
+            return raw
+
+        # Split only on top-level ## headings outside fenced code blocks so tables/code stay intact
+        blocks: list[str] = []
+        cur_lines: list[str] = []
+        in_fence = False
+        for ln in body.splitlines():
+            stripped = ln.strip()
+            if stripped.startswith("```"):
+                in_fence = not in_fence
+            if not in_fence and ln.startswith("## ") and cur_lines:
+                blocks.append("\n".join(cur_lines).strip())
+                cur_lines = [ln]
+            else:
+                cur_lines.append(ln)
+        if cur_lines:
+            blocks.append("\n".join(cur_lines).strip())
+        blocks = [b for b in blocks if b]
+        if len(blocks) <= 1:
+            return raw
+
+        q_last_toks = set(self._tokenize(last_query, expand_aliases=True)) if last_query else set()
+        q_full_toks = set(self._tokenize(full_query, expand_aliases=True)) if full_query else set()
+        if not q_last_toks and not q_full_toks:
+            return raw
+
+        block_tokens = [set(self._tokenize(b)) for b in blocks]
+        rel_scores = [0.0 for _ in blocks]
+        for q_set in (q_last_toks, q_full_toks):
+            if not q_set:
+                continue
+            raw_hits = [float(len(q_set & b_set)) for b_set in block_tokens]
+            max_hit = max(raw_hits) if raw_hits else 0.0
+            scale = max_hit if max_hit > 0.0 else 1.0
+            for idx, h in enumerate(raw_hits):
+                rel_scores[idx] += h / scale
+            if q_full_toks == q_last_toks:
+                break
+
+        ordered_indices = sorted(range(len(blocks)), key=lambda i: (-rel_scores[i], i))
+        return header_line + "\n\n" + "\n\n".join(blocks[i] for i in ordered_indices)
 
     async def retrieve_similar_tutor_examples(
         self, query: str, k: int = 3, exclude_exact: Optional[str] = None

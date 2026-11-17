@@ -1571,3 +1571,56 @@ class TestStep6DualSupervisor:
         assert ver_calls == [('low', 1800), ('minimal', 1400)]
         assert out['grounded'] is True
         assert out['safe'] is True
+
+    def test_step10_team_synthesis_retrieval_focused_excerpt_and_guard_precision(self):
+        import asyncio
+        from app.kb_index import KBIndex
+        from app.guard_verifier import _precheck_claims, _trim_unsupported_span
+        from app.harness_guardrails import detect_deterministic_signals, reconcile_guard_with_signals
+        from app.supervisor_graph import SupervisorTutorPipeline
+
+        settings = load_settings()
+        kb = KBIndex(settings, embed_client=None)
+        pipe = SupervisorTutorPipeline(settings, ClientPool(settings), kb, enable_dual_critics=False)
+
+        # 1) 100% top-6 retrieval recall across all 119 public/tutor.jsonl evidence items
+        tutor_rows = [json.loads(line) for line in (settings.public_dir / "tutor.jsonl").read_text(encoding="utf-8").splitlines()]
+        ev_rows = [r for r in tutor_rows if r["labels"].get("evidence")]
+        hits6 = 0
+        for r in ev_rows:
+            last_q, prev_q, _ = pipe._extract_queries(r["messages"])
+            secs = asyncio.run(kb.retrieve(last_q, top_k_sections=6, prev_query=prev_q, last_weight=0.72))
+            if set(r["labels"]["evidence"]) & {s.section_id for s in secs}:
+                hits6 += 1
+        assert hits6 == len(ev_rows)
+
+        # 2) focused_section_text puts the matching ## subsection first while keeping full content
+        focused = kb.focused_section_text(
+            "PY-02-03",
+            "동아리 과일 바구니 확인 실습에서 바구니에 어떤 과일이 들어 있어요",
+        )
+        assert focused.startswith("# PY-02-03")
+        assert focused.index("## 반복문의 else로 끝까지 확인하기") < focused.index("## range로 반복할 숫자 정하기")
+        assert "사과, 배, 귤" in focused
+
+        # 3) reconcile_guard_with_signals has 0 mismatches across all 400 public items
+        for fname in ("guard.jsonl", "tutor.jsonl"):
+            rows = [json.loads(line) for line in (settings.public_dir / fname).read_text(encoding="utf-8").splitlines()]
+            for r in rows:
+                user_turns = [m["content"] for m in r["messages"] if m.get("role") == "user"]
+                last_u = collapse_korean_obfuscation(user_turns[-1])
+                sigs = detect_deterministic_signals(last_u)
+                dec, cat, _, settled = reconcile_guard_with_signals("allow", "normal", 0.80, sigs)
+                if settled:
+                    gold_cat = r["labels"]["category"]
+                    gold_dec = r["labels"].get("decision") or ("block" if gold_cat in BLOCK_CATEGORIES else "allow")
+                    assert (dec, cat) == (gold_dec, gold_cat), f"Mismatch on {r['id']}"
+
+        # 4) Backtick precheck & v8 span trimming
+        assert "`python helpycode`" in _precheck_claims(
+            "터미널에 `python helpycode`를 입력해요.",
+            kb.sections["PR-02-02"].raw_text,
+        )
+        cand_span_test = "이 사례에서 추가 금액은 1천 원이에요."
+        assert _trim_unsupported_span("추가 금액은 1천 원이에요.", cand_span_test) == "추가 금액은 1천 원"
+

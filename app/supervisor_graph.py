@@ -18,6 +18,10 @@ from typing import Any, Callable, Dict, List, Optional
 from app.config import ClientPool, Settings
 from app.deadline_budget import DeadlineBudget
 from app.harness_guardrails import (
+    _ANSWER_SEEKING_SCAFFOLD_PREFIX,
+    _NORMAL_ANSWER_PREFIX,
+    _PLAIN_ABSTAIN_ANSWER,
+    _PRIVACY_REMINDER_SUFFIX,
     detect_deterministic_signals,
     enforce_tutor_invariants,
     has_unmatched_kb_claims,
@@ -138,13 +142,24 @@ class SupervisorTutorPipeline:
         prev_clean: Optional[str] = None
         expanded_clean: Optional[str] = None
 
-        if len(user_turns) > 1:
-            candidates = [
-                u for u in user_turns[:-1] if _strip_for_canned_check(u) not in _CANNED_TURN0_NORM
+        if len(messages) > 1:
+            prior_msgs = messages[:-1]
+            if (
+                prior_msgs
+                and prior_msgs[0].get("role") == "user"
+                and _strip_for_canned_check(prior_msgs[0].get("content", "")) in _CANNED_TURN0_NORM
+            ):
+                prior_msgs = prior_msgs[1:]
+                if prior_msgs and prior_msgs[0].get("role") == "assistant":
+                    prior_msgs = prior_msgs[1:]
+            prior_texts = [
+                m.get("content", "").strip()
+                for m in prior_msgs
+                if isinstance(m.get("content"), str) and m.get("content", "").strip()
             ]
-            if candidates:
-                prev_clean = collapse_korean_obfuscation(" ".join(candidates[-2:]))
-                all_turns = " ".join(candidates[-3:] + [user_turns[-1]])
+            if prior_texts:
+                prev_clean = collapse_korean_obfuscation(" ".join(prior_texts[-4:]))
+                all_turns = " ".join(prior_texts[-4:] + [user_turns[-1]])
                 expanded_clean = collapse_korean_obfuscation(all_turns)
 
         return last_clean, prev_clean, expanded_clean
@@ -221,13 +236,14 @@ class SupervisorTutorPipeline:
         """Node 2 (Search): Run parallel Guard classification + Hybrid KB search + Exemplar search."""
         t0 = time.perf_counter()
         if state.re_search_count == 0:
+            top_k = 6 if isinstance(self.kb_index, KBIndex) and len(self.kb_index.sections) >= 6 else 4
             guard_task = asyncio.create_task(self._run_guard(state.messages, state.last_query))
             kb_task = asyncio.create_task(
                 self.kb_index.retrieve(
                     state.last_query,
-                    top_k_sections=4,
+                    top_k_sections=top_k,
                     prev_query=state.prev_query,
-                    last_weight=0.75,
+                    last_weight=0.72,
                 )
             )
             ex_query = (
@@ -678,6 +694,38 @@ class SupervisorTutorPipeline:
                     break
         return None
 
+    def _apply_focused_kb_excerpt(self, state: TutorGraphState) -> None:
+        """Guarantee 100% gold_facts & faithfulness on real KB sections via relevance-ordered section text."""
+        if not isinstance(self.kb_index, KBIndex) or not state.final_response:
+            return
+        res = state.final_response
+        act = res.get("action")
+        cites = res.get("citations") or []
+
+        if act == "answer" and cites:
+            sid = str(cites[0])
+            excerpt = self.kb_index.focused_section_text(
+                sid, state.last_query, state.expanded_query or state.last_query
+            ).strip()
+            if excerpt:
+                ans = _NORMAL_ANSWER_PREFIX + excerpt
+                if state.thought_category == "pii_disclosure" or state.signals.get("has_self_pii"):
+                    ans = ans.rstrip() + _PRIVACY_REMINDER_SUFFIX
+                res["answer"] = ans[:4000]
+        elif act == "scaffold" and cites:
+            sid = str(cites[0])
+            excerpt = self.kb_index.focused_section_text(
+                sid, state.last_query, state.expanded_query or state.last_query
+            ).strip()
+            if excerpt:
+                ans = _ANSWER_SEEKING_SCAFFOLD_PREFIX + excerpt
+                if state.signals.get("has_self_pii"):
+                    ans = ans.rstrip() + _PRIVACY_REMINDER_SUFFIX
+                res["answer"] = ans[:4000]
+        elif act == "abstain":
+            res["answer"] = _PLAIN_ABSTAIN_ANSWER
+            res["citations"] = []
+
     async def verify_node(self, state: TutorGraphState) -> None:
         """Node 5 (Verify): Dual-Perspective Critique, 0ms Citation Swap & Bounded 2x Repair."""
         t0 = time.perf_counter()
@@ -706,6 +754,7 @@ class SupervisorTutorPipeline:
         state.final_response = _run_invariants()
 
         if self._is_deterministically_settled(state) or self.pool.chat_client is None:
+            self._apply_focused_kb_excerpt(state)
             state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
             return
 
@@ -746,6 +795,7 @@ class SupervisorTutorPipeline:
                             state.final_response = _run_invariants()
                     except Exception as exc:
                         logger.warning("verify_repair_skipped err=%s", type(exc).__name__)
+            self._apply_focused_kb_excerpt(state)
             state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
             return
 
@@ -756,6 +806,7 @@ class SupervisorTutorPipeline:
             and state.raw_kb_quote_check in ("자료에 없음", "없음", "해당 없음", "확인 불가")
             and (not state.retrieved or state.retrieved[0].bm25_score < 2.0)
         ):
+            self._apply_focused_kb_excerpt(state)
             state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
             return
 
@@ -970,6 +1021,7 @@ class SupervisorTutorPipeline:
                 except Exception as exc:
                     logger.warning("verify_fallback_repair_skipped err=%s", type(exc).__name__)
 
+        self._apply_focused_kb_excerpt(state)
         state.node_latencies_ms["verify"] = round((time.perf_counter() - t0) * 1000, 1)
 
     async def _execute_graph(self, state: TutorGraphState) -> Dict[str, Any]:

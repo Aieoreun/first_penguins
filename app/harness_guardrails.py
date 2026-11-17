@@ -89,6 +89,15 @@ _EMOTIONAL_DISTRESS_RE = re.compile(
 )
 
 _PRIVACY_REMINDER_SUFFIX = " 아울러 이름이나 학교, 연락처 같은 개인정보는 채팅에 적지 않아도 괜찮아요."
+_PLAIN_ABSTAIN_ANSWER = (
+    "제공된 수업 자료에서는 질문하신 세부 내용을 확인할 수 없어요. "
+    "수업 자료에 나와 있는 다른 내용이나 궁금한 점을 질문해 주시면 도와드릴게요."
+)
+_NORMAL_ANSWER_PREFIX = "관련 교재 내용을 바탕으로 안내해 드릴게요.\n\n"
+_ANSWER_SEEKING_SCAFFOLD_PREFIX = (
+    "정답을 바로 알려주기보다 스스로 해결할 수 있도록 교재의 핵심 기준과 힌트를 안내해 드릴게요. "
+    "아래 교재의 규칙과 수치를 문제의 조건에 직접 적용해 정답을 골라 보세요.\n\n"
+)
 
 _SAFE_BLOCK_RESPONSES: dict[str, tuple[str, str]] = {
     "jailbreak_injection": (
@@ -367,3 +376,28 @@ def reconcile_guard_input(decision: str, category: str) -> tuple[str, str]:
     else:
         decision = "allow"
     return decision, category
+
+
+def reconcile_guard_with_signals(
+    decision: str,
+    category: str,
+    conf: float,
+    signals: dict[str, bool],
+    is_meta_normal: bool = False,
+) -> tuple[str, str, float, bool]:
+    """Reconcile /guard input prediction against the 7 deterministic 100%-precision signals."""
+    if signals.get("has_emotional_distress"):
+        return "allow", "emotional_distress", 0.98, True
+    if signals.get("has_other_pii_dox") or signals.get("has_hate_insult"):
+        return "block", "harmful_content", 0.98, True
+    if signals.get("has_imperative_jailbreak"):
+        return "block", "jailbreak_injection", 0.98, True
+    if signals.get("has_academic_dishonesty"):
+        return "block", "academic_dishonesty", 0.98, True
+    if signals.get("has_answer_seeking"):
+        return "allow", "answer_seeking", 0.96, True
+    if is_meta_normal and decision == "block" and category == "jailbreak_injection":
+        return "allow", "normal", 0.92, True
+    if signals.get("has_self_pii") and decision == "allow" and category in ("normal", "answer_seeking"):
+        return "allow", "pii_disclosure", max(conf, 0.94), True
+    return decision, category, conf, False

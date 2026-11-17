@@ -8,6 +8,7 @@ import inspect
 import json
 import logging
 import re
+import unicodedata
 from typing import TYPE_CHECKING, Any
 
 from app.config import ClientPool, Settings
@@ -31,6 +32,9 @@ _COURSE_ENTITY_RE = re.compile(
     r"(?:다람쥐\s*은행|다람\s*문구점|kkumtle|HelpyCode|Helpy|(?:PY|FIN|PR)-\d{2}(?:-\d{2})?)",
     re.IGNORECASE,
 )
+_BACKTICK_CODE_RE = re.compile(r"`([^`\n]{2,45})`")
+_LEADING_LIST_MARKER_RE = re.compile(r"^(?:[①②③④⑤⑥⑦⑧⑨⑩]|\d+[.)])\s*")
+_TRAILING_COPULA_RE = re.compile(r"(?:이에요|예요|입니다|이므로|돼\s*있어요)?[.!?]+$|(?<=[\d%원세살명개건점단계분초일주개월년배회`’'\"\]\)\}하기고])\s*(?:이에요|예요|입니다|이므로|돼\s*있어요)$")
 
 _NORM_PUNCT = set(".,!?;:'\"“”‘’`()[]{}<>«»·…~-–—/\\")
 
@@ -41,11 +45,23 @@ def _normalize_with_map(text: str) -> tuple[str, list[int]]:
     index_map: list[int] = []
     for i, ch in enumerate(text):
         # Match NFKC lower without whitespace or punctuation
-        for nch in ch.lower():
+        for nch in unicodedata.normalize("NFKC", ch).lower():
             if not nch.isspace() and nch not in _NORM_PUNCT:
                 norm_chars.append(nch)
                 index_map.append(i)
     return "".join(norm_chars), index_map
+
+
+def _trim_unsupported_span(span: str, candidate_answer: str) -> str:
+    """Trim leading list markers and trailing copula/punctuation while keeping verbatim substring validity."""
+    s = span.strip()
+    if not s or s not in candidate_answer:
+        return s
+    trimmed = _LEADING_LIST_MARKER_RE.sub("", s).strip()
+    trimmed = _TRAILING_COPULA_RE.sub("", trimmed).strip()
+    if len(trimmed) >= 4 and trimmed in candidate_answer:
+        return trimmed
+    return s
 
 
 def _snap_span_to_verbatim(span: str, candidate_answer: str, min_ratio: float = 0.65) -> str | None:
@@ -198,6 +214,18 @@ def _precheck_claims(candidate_answer: str, kb_text: str) -> list[str]:
             )
             if tok_norm not in kb_norm and not num_hit:
                 unmatched.append(tok)
+
+    kb_compact = re.sub(r"\s+", "", kb_norm)
+    for m in _BACKTICK_CODE_RE.finditer(candidate_answer):
+        inner = m.group(1).strip()
+        inner_norm = normalize_text(inner).lower()
+        inner_compact = re.sub(r"\s+", "", inner_norm)
+        if not inner_compact or len(inner_compact) < 2 or inner_norm in seen:
+            continue
+        seen.add(inner_norm)
+        if inner_norm not in kb_norm and inner_compact not in kb_compact:
+            unmatched.append(f"`{inner}`")
+
     return unmatched[:12]
 
 
@@ -322,7 +350,7 @@ class GuardVerifier:
                     continue
                 s = _snap_span_to_verbatim(item, cand, min_ratio=0.65)
                 if s:
-                    snapped.append(s)
+                    snapped.append(_trim_unsupported_span(s, cand))
 
             unsupported = _deduplicate_spans(snapped)
 

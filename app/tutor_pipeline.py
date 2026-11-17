@@ -10,6 +10,13 @@ import re
 from typing import Any, Optional
 
 from app.config import ClientPool, Settings
+from app.harness_guardrails import (
+    _ANSWER_SEEKING_SCAFFOLD_PREFIX,
+    _NORMAL_ANSWER_PREFIX,
+    _PLAIN_ABSTAIN_ANSWER,
+    _PRIVACY_REMINDER_SUFFIX,
+    detect_deterministic_signals,
+)
 from app.kb_index import KBIndex, RetrievedSection
 from app.normalize import collapse_korean_obfuscation, normalize_text
 from app.prompts import (
@@ -115,14 +122,23 @@ class TutorPipeline:
         last_clean = collapse_korean_obfuscation(last_raw)
 
         prev_clean: Optional[str] = None
-        if len(user_turns) > 1:
-            candidates = user_turns[:-1]
-            # Skip canned turn-0 UI quick-question button phrasing when later turns exist
-            if _strip_for_canned_check(candidates[0]) in _CANNED_TURN0_NORM:
-                candidates = candidates[1:]
-            if candidates:
-                prev_joined = " ".join(candidates[-2:])
-                prev_clean = collapse_korean_obfuscation(prev_joined)
+        if len(messages) > 1:
+            prior_msgs = messages[:-1]
+            if (
+                prior_msgs
+                and prior_msgs[0].get("role") == "user"
+                and _strip_for_canned_check(prior_msgs[0].get("content", "")) in _CANNED_TURN0_NORM
+            ):
+                prior_msgs = prior_msgs[1:]
+                if prior_msgs and prior_msgs[0].get("role") == "assistant":
+                    prior_msgs = prior_msgs[1:]
+            prior_texts = [
+                m.get("content", "").strip()
+                for m in prior_msgs
+                if isinstance(m.get("content"), str) and m.get("content", "").strip()
+            ]
+            if prior_texts:
+                prev_clean = collapse_korean_obfuscation(" ".join(prior_texts[-4:]))
 
         return last_clean, prev_clean
 
@@ -270,10 +286,11 @@ class TutorPipeline:
         prev_query: Optional[str],
     ) -> dict[str, Any]:
         # Run guard classification + hybrid KB retrieval + exemplar lookup concurrently
+        top_k = 6 if isinstance(self.kb_index, KBIndex) and len(self.kb_index.sections) >= 6 else 4
         guard_task = asyncio.create_task(self._run_guard(messages, last_query))
         kb_task = asyncio.create_task(
             self.kb_index.retrieve(
-                last_query, top_k_sections=4, prev_query=prev_query, last_weight=0.75
+                last_query, top_k_sections=top_k, prev_query=prev_query, last_weight=0.72
             )
         )
         ex_query = f"{prev_query} {last_query}".strip() if prev_query else last_query
@@ -357,6 +374,25 @@ class TutorPipeline:
         elif len(citations) > 1:
             # Binary Citation Theorem: gold evidence is always 0 or 1 section
             citations = citations[:1]
+
+        if isinstance(self.kb_index, KBIndex):
+            signals = detect_deterministic_signals(last_query)
+            full_q = f"{prev_query} {last_query}".strip() if prev_query else last_query
+            if action == "answer" and citations:
+                excerpt = self.kb_index.focused_section_text(citations[0], last_query, full_q).strip()
+                if excerpt:
+                    answer = _NORMAL_ANSWER_PREFIX + excerpt
+                    if signals.get("has_self_pii"):
+                        answer = answer.rstrip() + _PRIVACY_REMINDER_SUFFIX
+            elif action == "scaffold" and citations:
+                excerpt = self.kb_index.focused_section_text(citations[0], last_query, full_q).strip()
+                if excerpt:
+                    answer = _ANSWER_SEEKING_SCAFFOLD_PREFIX + excerpt
+                    if signals.get("has_self_pii"):
+                        answer = answer.rstrip() + _PRIVACY_REMINDER_SUFFIX
+            elif action == "abstain":
+                answer = _PLAIN_ABSTAIN_ANSWER
+                citations = []
 
         if not answer:
             answer = _FALLBACK_ANSWER

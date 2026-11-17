@@ -22,7 +22,9 @@ from app.guard_verifier import (
     _precheck_claims,
     _retrieve_kb_sections,
     _snap_span_to_verbatim,
+    _trim_unsupported_span,
 )
+from app.harness_guardrails import reconcile_guard_with_signals
 from app.normalize import normalize_text
 from app.prompts import (
     BLOCK_CATEGORIES,
@@ -156,7 +158,7 @@ class GuardSupervisor:
         user_prompt = "\n\n".join(parts)
 
         efforts: tuple[tuple[str, int], ...] = (
-            (("low", 1000), ("minimal", 800))
+            (("low", 1500), ("minimal", 800))
             if budget.has_at_least(14.0)
             else (("minimal", 800),)
         )
@@ -222,6 +224,9 @@ class GuardSupervisor:
                     tb_dec, tb_cat = "allow", "normal"
                 elif tb_dec == "allow" and signals.get("has_self_pii") and tb_cat == "normal":
                     tb_cat = "pii_disclosure"
+                tb_dec, tb_cat, _, _ = reconcile_guard_with_signals(
+                    tb_dec, tb_cat, conf, signals, is_meta_normal=bool(diag.get("is_meta_normal"))
+                )
                 dec, cat = tb_dec, tb_cat
 
         return {"decision": dec, "category": cat}
@@ -301,7 +306,7 @@ class GuardSupervisor:
             + f"\n\n[후보 답변 (candidate_answer)]\n{candidate_answer}"
         )
 
-        for effort, tok_cap in (("low", 1024), ("minimal", 800)):
+        for effort, tok_cap in (("low", 1500), ("minimal", 800)):
             try:
                 async with self.pool.semaphore:
                     resp = await asyncio.wait_for(
@@ -431,7 +436,7 @@ class GuardSupervisor:
             raw_unsup = oa_res.get("unsupported") or []
             unsupported = _deduplicate_spans(
                 [
-                    s
+                    _trim_unsupported_span(s, cand)
                     for item in raw_unsup
                     if isinstance(item, str)
                     for s in (_snap_span_to_verbatim(item, cand, min_ratio=0.65),)
@@ -458,7 +463,7 @@ class GuardSupervisor:
                 judge_raw_unsup = judge_res.get("unsupported") or []
                 if isinstance(judge_raw_unsup, list):
                     judge_snapped = [
-                        s
+                        _trim_unsupported_span(s, cand)
                         for item in judge_raw_unsup
                         if isinstance(item, str)
                         for s in (_snap_span_to_verbatim(item, cand, min_ratio=0.65),)

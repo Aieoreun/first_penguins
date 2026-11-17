@@ -20,7 +20,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import FeatureUnion
 
 from app.config import ClientPool, Settings
-from app.harness_guardrails import detect_deterministic_signals
+from app.harness_guardrails import detect_deterministic_signals, reconcile_guard_with_signals
 from app.normalize import collapse_korean_obfuscation, normalize_text
 from app.prompts import (
     BLOCK_CATEGORIES,
@@ -513,7 +513,7 @@ class GuardClassifier:
         user_parts.append("[현재 대화 이력]\n" + _format_messages_for_llm(messages))
         user_prompt = "\n\n".join(user_parts)
 
-        for effort, tok_cap in (("low", 1024), ("minimal", 768)):
+        for effort, tok_cap in (("low", 1500), ("minimal", 800)):
             try:
                 async with self.pool.semaphore:
                     resp = await asyncio.wait_for(
@@ -684,11 +684,19 @@ class GuardClassifier:
                     conf = 0.95 if agreed else 0.72
                 else:
                     conf = 0.92 if cpu_decision == "allow" else 0.78
+                llm_dec, llm_cat, conf, settled = reconcile_guard_with_signals(
+                    llm_dec, llm_cat, conf, signals, is_meta_normal=is_meta_normal
+                )
+                if settled:
+                    diag["deterministic"] = True
                 self.last_diagnostics = diag
                 return llm_dec, llm_cat, conf, diag
 
-        if cpu_decision == "allow" and signals.get("has_self_pii") and cpu_category == "normal":
-            cpu_category = "pii_disclosure"
+        cpu_decision, cpu_category, cpu_conf, settled = reconcile_guard_with_signals(
+            cpu_decision, cpu_category, cpu_conf, signals, is_meta_normal=is_meta_normal
+        )
+        if settled:
+            diag["deterministic"] = True
         self.last_diagnostics = diag
         return cpu_decision, cpu_category, float(round(cpu_conf, 4)), diag
 
