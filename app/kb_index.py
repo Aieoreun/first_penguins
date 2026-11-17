@@ -170,6 +170,7 @@ class KBIndex:
         self.sections: dict[str, ParentSection] = {}
         self.section_order: list[str] = []
         self.chunks: list[ChildChunk] = []
+        self.short_chunks: list[ChildChunk] = []
         self._chunk_id_to_idx: dict[str, int] = {}
 
         self._contextual_headers: dict[str, str] = {}
@@ -180,6 +181,7 @@ class KBIndex:
         self._tutor_embeddings: Optional[np.ndarray] = None
 
         self._load_kb()
+        self._build_short_chunks()
         self._load_public_examples()
         self._load_precomputed_assets()
         self._build_bm25_indices()
@@ -296,6 +298,67 @@ class KBIndex:
         self._chunk_id_to_idx[chunk.chunk_id] = len(self.chunks)
         self.chunks.append(chunk)
 
+    def _build_short_chunks(self, target_chars: int = 220) -> None:
+        """Split long ## chunks at ### Q. and paragraph boundaries while keeping code/tables atomic."""
+        short: list[ChildChunk] = []
+        for chunk in self.chunks:
+            if chunk.is_table:
+                short.append(chunk)
+                continue
+            lines = chunk.text.splitlines()
+            if not lines:
+                continue
+            header = lines[0]
+            body = "\n".join(lines[1:]).strip()
+            parts = re.split(r"(?m)(?=^### Q\.)", body)
+            units: list[str] = []
+            for part in parts:
+                if part.startswith("### Q."):
+                    units.append(part.strip())
+                    continue
+                block: list[str] = []
+                fence: Optional[str] = None
+                for ln in part.splitlines():
+                    m = re.match(r"^\s*(`{3,}|~{3,})", ln)
+                    if m:
+                        tok = m.group(1)
+                        if fence is None:
+                            fence = tok
+                        elif tok[0] == fence[0] and len(tok) >= len(fence):
+                            fence = None
+                    if not ln.strip() and fence is None:
+                        if block:
+                            units.append("\n".join(block).strip())
+                            block = []
+                    else:
+                        block.append(ln)
+                if block:
+                    units.append("\n".join(block).strip())
+            packed: list[str] = []
+            current = ""
+            for u in units:
+                if current and (
+                    len(current) + 2 + len(u) > target_chars
+                    or u.startswith("### Q.")
+                    or current.startswith("### Q.")
+                ):
+                    packed.append(current)
+                    current = ""
+                current = f"{current}\n\n{u}" if current else u
+            if current:
+                packed.append(current)
+            for idx, part_txt in enumerate(packed or [""]):
+                short.append(
+                    ChildChunk(
+                        chunk_id=f"{chunk.chunk_id}::s{idx}",
+                        section_id=chunk.section_id,
+                        title=chunk.title,
+                        text=f"{header}\n{part_txt}".strip(),
+                        is_table=chunk.is_table,
+                    )
+                )
+        self.short_chunks = short
+
     def _split_md_chunks(self, section_id: str, title: str, text: str) -> None:
         parts = _HEADING_SPLIT_RE.split(text)
         intro = parts[0].strip()
@@ -407,6 +470,15 @@ class KBIndex:
             self._chunk_bm25 = bm25s.BM25()
             self._chunk_bm25.index(chunk_corpus, show_progress=False)
 
+        short_corpus = [
+            self._tokenize(c.text) or ["_empty_"]
+            for c in self.short_chunks
+        ]
+        self._short_bm25: Optional[bm25s.BM25] = None
+        if short_corpus:
+            self._short_bm25 = bm25s.BM25()
+            self._short_bm25.index(short_corpus, show_progress=False)
+
         # Also build a 48-section full-document BM25 index to prevent table-row crowding
         self._section_bm25: Optional[bm25s.BM25] = None
         if self.section_order:
@@ -504,6 +576,84 @@ class KBIndex:
         for idx, sc in zip(indices[0], scores[0]):
             scores_arr[int(idx)] = float(sc)
         return scores_arr
+
+    def _bm25_short_scores(self, query: str) -> np.ndarray:
+        n_short = len(self.short_chunks)
+        scores_arr = np.zeros(n_short, dtype=np.float32)
+        if not n_short or self._short_bm25 is None:
+            return scores_arr
+        q_tokens = self._tokenize(query, expand_aliases=True)
+        if not q_tokens:
+            return scores_arr
+        indices, scores = self._short_bm25.retrieve(
+            [q_tokens], k=n_short, show_progress=False
+        )
+        for idx, sc in zip(indices[0], scores[0]):
+            scores_arr[int(idx)] = float(sc)
+        return scores_arr
+
+    async def retrieve_chunks(
+        self,
+        last_query: str,
+        prev_query: Optional[str] = None,
+        top_k_chunks: int = 10,
+        last_weight: float = 0.72,
+    ) -> list[ChildChunk]:
+        """Return diverse top granular chunks (long + short BM25 + optional dense) for material checks."""
+        if not self.chunks:
+            return []
+        if self._chunk_embeddings is None and self.embed_client is not None:
+            await self.ensure_embeddings()
+
+        b_long = self._bm25_chunk_scores(last_query)
+        b_last_only = b_long.copy()
+        b_short = self._bm25_short_scores(last_query)
+        b_short_last = b_short.copy()
+        if prev_query and prev_query.strip():
+            b_long = last_weight * b_long + (1.0 - last_weight) * self._bm25_chunk_scores(prev_query)
+            b_short = last_weight * b_short + (1.0 - last_weight) * self._bm25_short_scores(prev_query)
+
+        dense_scores = np.zeros(len(self.chunks), dtype=np.float32)
+        if self._chunk_embeddings is not None and self.embed_client is not None:
+            q_vec = await self._embed_query(last_query)
+            if q_vec is not None:
+                if prev_query and prev_query.strip():
+                    prev_vec = await self._embed_query(prev_query)
+                    if prev_vec is not None:
+                        blended = last_weight * q_vec + (1.0 - last_weight) * prev_vec
+                        norm = float(np.linalg.norm(blended))
+                        if norm > 0.0:
+                            q_vec = blended / norm
+                dense_scores = self._chunk_embeddings @ q_vec
+
+        long_order = [int(i) for i in np.argsort(-b_long) if b_long[int(i)] > 0][:6]
+        last_order = [int(i) for i in np.argsort(-b_last_only) if b_last_only[int(i)] > 0][:2]
+        short_order = [int(i) for i in np.argsort(-b_short) if b_short[int(i)] > 0][:6]
+        short_last_order = [int(i) for i in np.argsort(-b_short_last) if b_short_last[int(i)] > 0][:2]
+        dense_order = [int(i) for i in np.argsort(-dense_scores)][:6] if np.any(dense_scores > 0) else []
+
+        out: list[ChildChunk] = []
+        seen_text: set[str] = set()
+
+        def _add(chunk: ChildChunk) -> None:
+            key = chunk.text[:160]
+            if key not in seen_text and len(out) < top_k_chunks:
+                seen_text.add(key)
+                out.append(chunk)
+
+        # Round-robin across last-only, blended long, short Q&A, and dense hits
+        for r in range(6):
+            if r < len(last_order):
+                _add(self.chunks[last_order[r]])
+            if r < len(short_last_order):
+                _add(self.short_chunks[short_last_order[r]])
+            if r < len(long_order):
+                _add(self.chunks[long_order[r]])
+            if r < len(short_order):
+                _add(self.short_chunks[short_order[r]])
+            if r < len(dense_order):
+                _add(self.chunks[dense_order[r]])
+        return out
 
     def _bm25_section_scores(self, query: str) -> dict[str, float]:
         n_secs = len(self.section_order)

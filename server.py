@@ -12,6 +12,8 @@ from app.guard_classifier import GuardClassifier
 from app.guard_supervisor import GuardSupervisor
 from app.guard_verifier import GuardVerifier
 from app.kb_index import KBIndex
+from app.orthogonal_guard import OrthogonalGuardSupervisor
+from app.orthogonal_tutor import OrthogonalTutorPipeline
 from app.supervisor_graph import SupervisorTutorPipeline
 from app.tutor_pipeline import TutorPipeline
 
@@ -31,7 +33,7 @@ class AppState:
     kb_index: Optional[KBIndex] = None
     guard_classifier: Optional[GuardClassifier] = None
     guard_verifier: Optional[GuardVerifier] = None
-    guard_supervisor: Optional[GuardSupervisor] = None
+    guard_supervisor: Any = None
     tutor_pipeline: Any = None
 
 
@@ -47,15 +49,21 @@ def _init_sync_components() -> None:
     guard_classifier = GuardClassifier(settings, pool, kb_index=kb_index)
     guard_classifier.load_or_train()
     guard_verifier = GuardVerifier(settings, pool, kb_index)
-    guard_supervisor = GuardSupervisor(
-        settings, pool, kb_index, guard_classifier, guard_verifier
-    )
 
-    if settings.pipeline_mode == "single":
-        tutor_pipeline: Any = TutorPipeline(
+    if settings.pipeline_mode == "orthogonal":
+        guard_supervisor: Any = OrthogonalGuardSupervisor(settings, pool, kb_index)
+        tutor_pipeline: Any = OrthogonalTutorPipeline(settings, pool, kb_index, guard_supervisor)
+    elif settings.pipeline_mode == "single":
+        guard_supervisor = GuardSupervisor(
+            settings, pool, kb_index, guard_classifier, guard_verifier
+        )
+        tutor_pipeline = TutorPipeline(
             settings, pool, kb_index, guard_classifier=guard_classifier
         )
     else:
+        guard_supervisor = GuardSupervisor(
+            settings, pool, kb_index, guard_classifier, guard_verifier
+        )
         tutor_pipeline = SupervisorTutorPipeline(
             settings,
             pool,

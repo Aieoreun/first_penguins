@@ -1,46 +1,43 @@
 # HANDOFF — 석동진 현재 상태 및 다음 할 일
 
 - 갱신: 2026-11-18
-- 작업 브랜치: **`experiment/bsuk1`** (`expert/bsuk1`에서 브랜치명 변경 + Step 10 팀 아이디어 통합 적용)
+- 작업 브랜치: **`experiment/bsuk1`** (Step 11: 3분할 직교 입력 + 적응형 2-of-3 다수결 + 전용 Source Selection + 5-vote 합의 출력 가드)
 - 참고 브랜치: `origin/experiment/kimjaehak`, `origin/experiment/seungwon`, `origin/export/peace`
 
-## 1. 현재 기준선 및 Step 10 통합 내역
+## 1. 제출 이력 및 Step 10 → Step 11 전환 배경
 
-| 구분 | 기준 커밋 | 점수 / 검증 결과 |
-| --- | --- | --- |
-| 이전 런박스 최고점 (Step 7) | `102cb2d` | 총점 **80.18** (튜터 73.22, 가드 87.14, 85.336s) |
-| **Step 10 팀 아이디어 종합 업그레이드** | 현재 HEAD | `public/tutor.jsonl` Top-6 검색 재현율 **119/119 (100.0%)**, Top-1 **109/119 (91.6%)**, 결정론 신호 400문항 오탐 **0건 (76/76 100% 정밀도)** |
+| 구분 | 기준 커밋 | 점수 | 핵심 진단 |
+| --- | --- | --- | --- |
+| Step 7 | `102cb2d` | 80.18 (튜터 73.22, 가드 87.14, 85.3s) | 단일패스 + GuardSupervisor |
+| Step 10 | `e2485b3` | 80.09 (튜터 74.33, 가드 85.84, 87.8s) | `focused_section_text`로 튜터 +1.11p 상승했으나, 단일 10/11분류기(`write_node`) 한계 및 `scaffold`에 2,200자 전체 원문이 들어가 `out_of_material`/`scaffold`에서 손실 발생 |
+| **Step 11** | 현재 HEAD | (런박스 검증 예정) | **단일 10/11분류기 폐기 → 3분할 직교 입력(`block` / `other` / `material`) + `confidence` 하한선 + 전용 Source Select + `SEEK_SYSTEM` + 5-vote 합의 출력 가드로 전면 전환** |
 
-### Step 10 핵심 반영 사항 (`experiment/bsuk1` 전용)
-1. **검색 정밀도·재현율 향상 (`app/kb_index.py`, `app/supervisor_graph.py`)**
-   - Kiwi 형태소 분석 후 인접 내용어(2글자 이상·숫자) 바이그램 토큰 추가 + 멀티턴 전체 대화(user + assistant, 0턴 빠른질문 버튼 제외) 문맥 결합 + 후보 섹션 수 `top_k_sections=6` 확대 + Dense RRF 가중치 `0.55` 보정.
-   - `public/tutor.jsonl` 근거 문항 119개 기준 Top-1 적중률 **84.0% → 91.6%**, Top-6 재현율 **99.2% → 100.0% (119/119)** 달성.
-2. **`/tutor` 원문 소단원 재정렬 인용 (`focused_section_text`) + `answer_seeking` 근거 결합 + `plain_abstain` (`app/kb_index.py`, `app/supervisor_graph.py`, `app/tutor_pipeline.py`)**
-   - **재학님(`focused_excerpt.py`) + 승원님(`v5`/`v6`) 핵심 아이디어 결합**:
-     - `action == "answer"` (`normal`, `pii_disclosure`): LLM이 선택한 섹션(`citations[0]`) 내부의 `## ` 소단원들을 질문 관련도 순으로 재배치해 원문 전체(표·코드 포함, 최대 2,698자 < 4,000자)를 인용(`facts` ≈ 1.0, `faithful` ≈ 1.0 보장).
-     - `action == "scaffold"` + `citations == [sid]` (`answer_seeking`): 주최 측 채점 기준에 맞춰 스스로 정답을 고르도록 유도하는 스캐폴딩 문구 아래에 선택된 섹션의 재정렬 원문을 함께 제공하여 `gold_facts` 누락을 원천 차단.
-     - `action == "abstain"` (`out_of_material`): `citations=[]`(`evidence=[]`) 상태에서 과목 고유 수치를 언급해 `faithful=False`로 감점되는 현상을 막기 위해 깔끔한 고정 기권 문구(`_PLAIN_ABSTAIN_ANSWER`) 반환.
-3. **`/guard` 정밀도·토큰 예산·구간 다듬기 고도화 (`app/guard_classifier.py`, `app/guard_supervisor.py`, `app/guard_verifier.py`, `app/harness_guardrails.py`, `app/prompts.py`)**
-   - `GuardClassifier._llm_classify`, `GuardSupervisor._run_input_tiebreaker`, `_audit_safety`의 `low` 추론 토큰 상한을 `1000/1024 → 1500`으로 상향해 추론 토큰 소진으로 인한 `minimal` 폴백 방지.
-   - 공개 400문항 전체에서 오탐 0건(76/76 100% 정밀도)이 검증된 7대 결정론 신호(`reconcile_guard_with_signals`)를 `/guard` 입력 판정에도 일관 적용.
-   - 평화님의 `normal vs off_topic`(복습용 포스터·광고 형식 허용 vs 실제 홍보·게임·사과문자 차단) 및 `normal vs harmful_content`(사기 예방·차별 문구 필터링 실습 허용 vs 실제 사칭·타인정보 탈취·집단 비하 차단) 경계를 `GUARD_INPUT_TIEBREAKER_SYSTEM_PREFIX`에 반영.
-   - `_normalize_with_map` NFKC 정규화, `_precheck_claims` 백틱 코드/명령어 대조 추가, 승원님 `v8` 아이디어인 `_trim_unsupported_span`(선행 번호 및 후행 서술어 어미/마침표 제거) 적용.
+### Step 11 아키텍처 (`PIPELINE_MODE=orthogonal`, 기본값)
+1. **이중 세분화 + 바이그램 하이브리드 검색 (`app/kb_index.py`)**:
+   - 기존 `##` 청크(389) + `### Q.`·문단 단위 짧은 청크(718) + 인접 내용어 바이그램 + Dense RRF 결합.
+   - `public/tutor.jsonl` 119문항 기준 Top-1 **91.6%**, Top-6 **100.0% (119/119)** 달성.
+2. **3분할 직교 입력 분류 + 적응형 2-of-3 다수결 + 확신도 하한 (`app/orthogonal_guard.py`)**:
+   - `block` (`requested_operation` CoT + 5종, 2회 호출 불일치 시 3회차, `min_conf=85` 단 `harmful_request`/`harmful_speech` 보호)
+   - `other` (`emotional_distress`/`answer_seeking`/`low_signal_input` + `self_info`, 2회 호출 불일치 시 3회차, `min_conf=80`)
+   - `material` (이중 청크 기반 원문 `quote` 유무 확인, `/tutor` 13s·`/guard` 10s 상한)
+   - `seek_first=True` 우선순위 + 오탐 0건 검증 완료된 결정론 안전 신호 보정(명시적 탈옥/과제대필이 `answer_seeking`에 의해 덮이지 않도록 보호).
+3. **`/tutor` 전용 출처 선택 + 소단원 재정렬 원문 인용 (`app/orthogonal_tutor.py`)**:
+   - `normal`/`pii_disclosure`: 전용 `SOURCE_SELECT_SYSTEM`으로 최대 6후보 중 최적 섹션 1개만 선별 → `focused_section_text` 원문 인용(`facts` ≈ 1.0, `faithful` ≈ 1.0).
+   - `answer_seeking`: 전용 `SOURCE_SELECT_SYSTEM`으로 섹션 확정 → `SEEK_SYSTEM`으로 핵심 사실·수치만 포함한 2~3문장 발판 생성(코드 원문 전체 덤프 방지).
+   - `harmful_content`: `harmful_request`→`refuse`, `harmful_speech`→`redirect` 분리 + 문맥형 안전 거절.
+   - `out_of_material`/`jailbreak`/`off_topic`/`academic_dishonesty`/`emotional_distress`/`low_signal`: 고정 정책 응답(`citations=[]`).
+4. **`/guard` 5-vote 합의 출력 검증 + 거절 의미 검증 + 스팬 트리밍 (`app/orthogonal_guard.py`)**:
+   - `block` 입력: `safe_by_rule` + 거절 표현 감지 시 `RefusalReview` 의미 검증.
+   - `allow` 입력: `CONTEXT_GROUNDING_SYSTEM` 5회(잔여 예산 부족 시 3회) 병렬 검증 → `_snap_span_to_verbatim` + `_trim_unsupported_span` → 문자 위치 합의(`consensus_span_index`) 채택.
 
-## 2. 다시 하지 말 것
-
-1. **`reasoning_effort="low"`에서 `max_completion_tokens`를 1200 미만으로 깎지 않습니다.**
-2. **k-NN `exemplars`를 빼지 않습니다.**
-3. **`GUARD_OUTPUT_SYSTEM_PREFIX`에 "계산·비교 결론 허용" 문구를 넣지 않습니다.**
-4. **Tie-Breaker 게이트에 `_OOM_DETAIL_CUE_RE`를 단독 OR 조건으로 걸지 않습니다.**
-
-## 3. 실행·검증 명령
+## 2. 실행·검증 명령
 
 ```bash
 # 단위 테스트와 규정 사전 점검
 pytest tests/test_pipeline.py -v
 python3 scripts/submission_helper.py preflight
 
-# 서버 기동
+# 런박스 서버 기동 (기본 PIPELINE_MODE=orthogonal)
 set -a; source .env; set +a
 python3 -m uvicorn server:app --host 0.0.0.0 --port 8000
 ```

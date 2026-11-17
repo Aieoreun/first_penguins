@@ -394,8 +394,9 @@ def reconcile_guard_with_signals(
         return "block", "jailbreak_injection", 0.98, True
     if signals.get("has_academic_dishonesty"):
         return "block", "academic_dishonesty", 0.98, True
-    if signals.get("has_answer_seeking"):
-        return "allow", "answer_seeking", 0.96, True
+    if signals.get("has_answer_seeking") and not signals.get("has_explicit_jailbreak"):
+        if decision == "allow" or is_quiz_pretext_override(category, signals):
+            return "allow", "answer_seeking", 0.96, True
     if is_meta_normal and decision == "block" and category == "jailbreak_injection":
         return "allow", "normal", 0.92, True
     if signals.get("has_self_pii") and decision == "allow" and category in ("normal", "answer_seeking"):
