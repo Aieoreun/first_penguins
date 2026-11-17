@@ -11,10 +11,14 @@ class Pipeline(ContextPolicy):
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
+        if not self.learned_models_enabled:
+            return
         self.span_tagger = SpanTagger(public_rows(), self.learned_span_c)
 
     async def _check_output(self, state):
         await super()._check_output(state)
+        if not self.learned_models_enabled:
+            return
         if not state.unsupported:
             return
         predicted, confidence = self.span_tagger.predict(state.candidate_answer or "")

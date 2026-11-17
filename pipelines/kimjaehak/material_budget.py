@@ -6,6 +6,8 @@ from pipelines.kimjaehak.focused_excerpt import Selected as SelectedFocused
 
 
 class Pipeline(SelectedFocused):
+    # Faithful non-trained port: all other inherited behavior stays unchanged.
+    learned_models_enabled = False
     tutor_material_timeout = 13.0
     tutor_prepare_limit = 16.0
 

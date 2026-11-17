@@ -33,9 +33,13 @@ class Pipeline(TutorOnly):
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
+        if not self.learned_models_enabled:
+            return
         self.harmful_vectorizer, self.harmful_classifier = train_harmful_classifier(self.learned_harmful_c)
 
     async def _classify(self, state):
+        if not self.learned_models_enabled:
+            return await super()._classify(state)
         probability = self.classifier.predict_proba(self.vectorizer.transform([state.last_user]))[0]
         index = probability.argmax()
         if self.classifier.classes_[index] == "harmful_content" and probability[index] >= self.learned_gate_threshold:

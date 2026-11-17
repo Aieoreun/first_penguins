@@ -32,11 +32,15 @@ class Pipeline(Broad):
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
+        if not self.learned_models_enabled:
+            return
         self.section_vectorizer, self.section_classifier = train_section_classifier(self.learned_section_c)
         self._known_sections = set(searcher.section_ids())
 
     async def _classify(self, state):
         await super()._classify(state)
+        if not self.learned_models_enabled:
+            return
         if state.has_candidate and not self.learned_section_use_for_output:
             return
         probability = self.section_classifier.predict_proba(self.section_vectorizer.transform([state.last_user]))[0]

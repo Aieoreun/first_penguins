@@ -31,16 +31,21 @@ def train_public_classifier(regularization):
 
 
 class Pipeline(Adaptive):
+    learned_models_enabled = True
     learned_gate_threshold = .995
     learned_gate_c = 1000
     training_source = "bundled_public_categories"
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
+        if not self.learned_models_enabled:
+            return
         # Fit before the server is ready, never during a request.
         self.vectorizer, self.classifier = train_public_classifier(self.learned_gate_c)
 
     async def _classify(self, state):
+        if not self.learned_models_enabled:
+            return await super()._classify(state)
         probability = self.classifier.predict_proba(self.vectorizer.transform([state.last_user]))[0]
         index = probability.argmax()
         category = self.classifier.classes_[index]

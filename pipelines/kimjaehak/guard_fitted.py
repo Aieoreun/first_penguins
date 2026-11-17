@@ -11,6 +11,8 @@ class GuardFitting:
 
     def __init__(self, searcher, llm):
         super().__init__(searcher, llm)
+        if not self.learned_models_enabled:
+            return
         self.guard_vectorizer, self.guard_classifier = train_public_classifier(self.guard_only_c)
 
     def _new_state(self, body, guard):
@@ -19,6 +21,8 @@ class GuardFitting:
         return state
 
     async def _classify(self, state):
+        if not self.learned_models_enabled:
+            return await super()._classify(state)
         if state.debug.get("guard_endpoint"):
             # Keep the models immutable and separate: no shared-model swapping
             # while concurrent tutor requests use the original C=1000 path.

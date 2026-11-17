@@ -13,6 +13,8 @@ class Pipeline(ContextFast):
 
     async def _classify(self, state):
         await super()._classify(state)
+        if not self.learned_models_enabled:
+            return
         if (getattr(state, '_section_gate_guard', False) or state.debug.get('learned_section')
                 or state.label not in {Label.NORMAL, Label.PII_DISCLOSURE, Label.ANSWER_SEEKING}):
             return
