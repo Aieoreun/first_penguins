@@ -277,5 +277,32 @@ class V6Test(unittest.TestCase):
         self.assertEqual(state.errors, [])
 
 
+class V7Test(unittest.TestCase):
+    """v7은 v6에서 차단 확인 프롬프트만 과목별로 바꾼 것이다."""
+
+    def setUp(self):
+        from pipelines.v7 import prompts as v7_prompts
+        from pipelines.v7.pipeline import Pipeline as V7
+        self.V7, self.p = V7, v7_prompts
+        self.subject = TOP1.split("-")[0]
+
+    def test_three_subject_prompts_extend_the_common_one(self):
+        self.assertEqual(set(self.p.BLOCK_SYSTEMS), {"PY", "PR", "FIN"})
+        for system in self.p.BLOCK_SYSTEMS.values():
+            self.assertNotEqual(system, prompts.BLOCK_SYSTEM)
+            self.assertIn("# 출력", system)
+        self.assertEqual(self.p.block_system("없는 과목"), prompts.BLOCK_SYSTEM)
+
+    def test_block_check_uses_the_subject_prompt(self):
+        subject_system = self.p.BLOCK_SYSTEMS[self.subject]
+        llm = FakeLLM({subject_system: '{"category": "harmful_request"}', prompts.OTHER_SYSTEM: NONE_OTHER,
+                       prompts.MATERIAL_SYSTEM: FOUND})
+        state = asyncio.run(self.V7(SEARCHER, llm).tutor({"messages": QUESTION}))
+        self.assertIn(subject_system, llm.calls)
+        self.assertNotIn(prompts.BLOCK_SYSTEM, llm.calls)
+        self.assertEqual(state.to_tutor_response()["action"], "refuse")
+        self.assertEqual(len(llm.calls), 3)  # 호출 수는 v6과 같다
+
+
 if __name__ == "__main__":
     unittest.main()
