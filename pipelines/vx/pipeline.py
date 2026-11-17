@@ -9,6 +9,8 @@
   VX_CONF_KEEP=harmful_request,harmful_speech   여기 적은 범주는 확신이 낮아도 버리지 않는다 (놓치면 더 아픈 범주를 지킨다)
   VX_INPUT_RECHECK=1  차단 확인·그 밖 확인을 두 번 부르고, 답이 갈릴 때만 세 번째를 불러 다수결한다
   VX_MATERIAL_RETRY=1 교재 확인이 실패하면 한 번 더 부른다
+  VX_MATERIAL_NO_SECTION=1  교재 확인이 근거 섹션을 적지 않게 한다 (그 값은 지금 쓰이지 않는다. 출력을 줄여 빠르게 하려는 것)
+  VX_CHECK_EFFORT=medium  차단 확인·그 밖 확인의 추론 수준 (기본은 low). 토큰 한도도 2000으로 올린다
 출력 가드
   VX_NUM_HINT=1       후보 답변의 숫자 중 교재에 없는 것을 코드로 찾아 모델에게 알려 준다
   VX_OUT_SECTIONS=2   근거 검사에 주는 교재를 검색 상위 섹션 둘로 늘린다 (기본 1)
@@ -55,6 +57,8 @@ class Pipeline(V8Pipeline):
     conf_keep = frozenset(c for c in os.environ.get("VX_CONF_KEEP", "").split(",") if c)
     input_recheck = _on("VX_INPUT_RECHECK")
     material_retry = _on("VX_MATERIAL_RETRY")
+    check_effort = os.environ.get("VX_CHECK_EFFORT", "")
+    material_no_section = _on("VX_MATERIAL_NO_SECTION")
     num_hint = _on("VX_NUM_HINT")
     out_sections = int(os.environ.get("VX_OUT_SECTIONS", "1") or 1)
     out_votes = int(os.environ.get("VX_OUT_VOTES", "1") or 1)
@@ -62,9 +66,23 @@ class Pipeline(V8Pipeline):
 
     # ---------- 입력 가드 ----------
 
+    async def _ask_with_effort(self, state, name, system, user, effort, timeout):
+        """추론 수준을 올려 부른다. 생각에 토큰을 더 쓰니 한도를 2000으로 올린다(그보다 크면 API가 거절한다)."""
+        try:
+            text = await self.llm.chat(system, user, effort=self.check_effort, max_tokens=2000, timeout=timeout, json_mode=True)
+            answer = _json_object(text)
+            if answer is None:
+                state.errors.append(f"{name}:parse")
+            return answer or {}
+        except Exception as e:
+            state.errors.append(f"{name}:{type(e).__name__}")
+            return {}
+
     async def _ask(self, state, name, system, user, effort, timeout):
-        base = super()._ask
+        base = self._ask_with_effort if self.check_effort and name in ("block", "other", "gate") else super()._ask
         if name == "material":
+            if self.material_no_section:
+                system = prompts.MATERIAL_NO_SECTION
             answer = await base(state, name, system, user, effort, timeout)
             if not answer and self.material_retry:
                 answer = await base(state, "material_retry", system, user, effort, timeout)

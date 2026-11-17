@@ -381,6 +381,15 @@ class VxTest(unittest.TestCase):
         llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 70}'}))
         self.assertEqual(self.guard(cls, llm).decision.value, "allow")
 
+    def test_material_prompt_without_section(self):
+        from pipelines.vx import prompts as vx_prompts
+        self.assertNotIn("section", vx_prompts.MATERIAL_NO_SECTION)
+        self.assertIn('"quote"', vx_prompts.MATERIAL_NO_SECTION)
+        llm = FakeLLM(self.base(**{vx_prompts.MATERIAL_NO_SECTION: '{"asked": "한도", "quote": "하루 이체 한도는 5만 원"}'}))
+        state = self.guard(self.make(material_no_section=True), llm)
+        self.assertNotIn(prompts.MATERIAL_SYSTEM, llm.calls)
+        self.assertEqual(state.section, TOP1)
+
     def test_recheck_calls_twice_when_answers_agree(self):
         llm = FakeLLM(self.base())
         self.guard(self.make(input_recheck=True), llm)
