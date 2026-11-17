@@ -6,6 +6,8 @@
          (호출이 차단 / 과제·정답 / 그 밖으로 셋. 교재 확인까지 넣으면 요청당 다섯 번이 된다)
   subj:  과목별로 다른 차단 확인 프롬프트를 쓴다. 과목은 낱말 검색 1위 섹션의 과목(PY, PR, FIN)으로 정한다.
          과목마다 그 과목의 목차와, 그 과목에서 자주 틀리는 판정의 기준을 덧붙인다. 호출 수는 그대로다
+  subjtwo: subj에 두 단계를 더한 것. 과목별 프롬프트로 먼저 "차단인가"만 묻고, 차단이라고 한 것만
+         같은 과목별 프롬프트로 범주를 묻는다. 두 번째가 none이라고 하면 차단하지 않는다
   plain: 지금 구조 그대로 (비교 기준). 교재 확인은 차단 여부와 무관해서 부르지 않는다
 
 차단 여부는 차단 확인·그 밖 확인(·과제 확인)만으로 정해지므로 교재 확인과 검색은 부르지 않는다.
@@ -33,6 +35,7 @@ from pipelines.v1.pipeline import CLASSIFY_EFFORT, CLASSIFY_TIMEOUT  # noqa: E40
 from pipelines.v2 import prompts as P  # noqa: E402
 from pipelines.v2.pipeline import _priority  # noqa: E402
 from pipelines.v4.pipeline import Pipeline  # noqa: E402
+from experiments.conf_examples import GATE_OUTPUT  # noqa: E402
 
 CACHE = Path(__file__).resolve().parent / ".cache"
 BLOCKED = {"harmful_content", "jailbreak_injection", "academic_dishonesty", "off_topic"}
@@ -172,8 +175,18 @@ async def run(name: str) -> None:
         async with sem:
             state = State.from_request({"messages": p["messages"]})
             user = P.check_user(state.request, state.history, state.last_user)
-            block = subject_block_system(subject_of(p)) if kind == "subj" else block_system
-            calls = [ask(state, "block", block, user), ask(state, "other", other_system, user)]
+            block = subject_block_system(subject_of(p)) if kind.startswith("subj") else block_system
+
+            async def two_stage():
+                gate = block.split("# 출력\n", 1)[0] + GATE_OUTPUT
+                first = await ask(state, "gate", gate, user)
+                if first.get("block") is not True:
+                    return {"category": "none", "confidence": first.get("confidence"), "gate": False}
+                second = await ask(state, "block", block, user)
+                return dict(second, gate=True)
+
+            first_call = two_stage() if kind == "subjtwo" else ask(state, "block", block, user)
+            calls = [first_call, ask(state, "other", other_system, user)]
             if kind == "pair":
                 calls.append(ask(state, "task", TASK_SYSTEM, user))
             answers = await asyncio.gather(*calls)
@@ -183,7 +196,8 @@ async def run(name: str) -> None:
             policy = POLICY[label]
             return {"id": p["id"], "gold": p["labels"]["category"], "label": label.value,
                     "pred": policy.category.value, "blocked": policy.decision is Decision.BLOCK,
-                    "answers": [[a.get("category"), a.get("confidence")] for a in answers], "errors": state.errors}
+                    "answers": [[a.get("category"), a.get("confidence")] for a in answers], "errors": state.errors,
+                    "gate": answers[0].get("gate")}
 
     rows = await asyncio.gather(*(one(p) for p in load_items("all")))
     CACHE.mkdir(exist_ok=True)
@@ -201,6 +215,10 @@ def report() -> None:
         seek = [r for r in rows if r["gold"] == "answer_seeking"]
         print(f"{path.stem[8:]}: 오검 {len(false_block)}, 미검 {len(missed)}, 차단 F1 {f1:.3f}, 차단 문항 100개 중 범주까지 맞힘 {cat_ok}, "
               f"정답만 요구 {len(seek)}개 중 맞힘 {sum(r['pred'] == 'answer_seeking' for r in seek)}, 단계 실패 {sum(bool(r['errors']) for r in rows)}")
+        if any(r.get("gate") is not None for r in rows):
+            over = [r for r in rows if r.get("gate") is True and r["answers"][0][0] in ("none", None)]
+            print(f"   첫 호출이 차단이라고 한 것 {sum(r.get('gate') is True for r in rows)}건, 두 번째가 뒤집은 것 {len(over)}건 "
+                  f"(정답이 허용 {sum(r['gold'] not in BLOCKED for r in over)}, 정답이 차단 {sum(r['gold'] in BLOCKED for r in over)})")
         print(f"   오검이 간 곳 {Counter(r['pred'] for r in false_block).most_common()} / 미검의 정답 {Counter(r['gold'] for r in missed).most_common()}")
 
 
