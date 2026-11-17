@@ -326,5 +326,85 @@ class V8Test(unittest.TestCase):
         self.assertEqual(state.debug["raw_unsupported"], ["하루 이체 한도는 10만 원이에요"])
 
 
+class VxTest(unittest.TestCase):
+    """vx는 v8에 실험 스위치를 얹은 것이다. 스위치는 클래스 속성이라 여기서 켜고 끈다."""
+
+    CANDIDATE = "하루 이체 한도는 10만 원이에요. 천천히 확인해 보세요."
+
+    def make(self, **switches):
+        from pipelines.vx.pipeline import Pipeline as Vx
+        return type("VxCase", (Vx,), switches)
+
+    def base(self, **more):
+        replies = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+                   prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["하루 이체 한도는 10만 원이에요"]}'}
+        replies.update(more)
+        return replies
+
+    def guard(self, cls, llm):
+        return asyncio.run(cls(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": self.CANDIDATE}))
+
+    def test_switches_off_is_v8(self):
+        llm = FakeLLM(self.base())
+        out = self.guard(self.make(), llm).to_guard_response()["output"]
+        self.assertEqual((out["grounded"], out["unsupported"]), (False, ["10만 원"]))
+        self.assertEqual(len(llm.calls), 4)
+
+    def test_curriculum_prompt(self):
+        from pipelines.vx import prompts as vx_prompts
+        llm = FakeLLM(self.base(**{vx_prompts.BLOCK_KB: NONE_BLOCK}))
+        self.guard(self.make(curriculum=True), llm)
+        self.assertIn(vx_prompts.BLOCK_KB, llm.calls)
+        self.assertNotIn(prompts.BLOCK_SYSTEM, llm.calls)
+
+    def test_two_stage_second_call_only_when_gate_blocks(self):
+        from pipelines.vx import prompts as vx_prompts
+        gate = vx_prompts.gate_of(prompts.BLOCK_SYSTEM)
+        llm = FakeLLM(self.base(**{gate: '{"block": false, "confidence": 90}'}))
+        state = self.guard(self.make(two_stage=True), llm)
+        self.assertNotIn(prompts.BLOCK_SYSTEM, llm.calls)
+        self.assertEqual(state.decision.value, "allow")
+        llm = FakeLLM(self.base(**{gate: '{"block": true, "confidence": 90}', prompts.BLOCK_SYSTEM: '{"category": "off_topic"}'}))
+        state = self.guard(self.make(two_stage=True), llm)
+        self.assertEqual(state.category.value, "off_topic")
+
+    def test_low_confidence_flag_is_dropped(self):
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 70}'}))
+        self.assertEqual(self.guard(self.make(min_conf=85), llm).decision.value, "allow")
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 90}'}))
+        self.assertEqual(self.guard(self.make(min_conf=85), llm).decision.value, "block")
+
+    def test_recheck_calls_twice_when_answers_agree(self):
+        llm = FakeLLM(self.base())
+        self.guard(self.make(input_recheck=True), llm)
+        self.assertEqual(llm.calls.count(prompts.BLOCK_SYSTEM), 2)
+        self.assertEqual(llm.calls.count(prompts.OTHER_SYSTEM), 2)
+
+    def test_number_hint_and_two_sections(self):
+        from pipelines.vx.pipeline import numbers_missing
+        self.assertEqual(numbers_missing("한도는 10만 원이고 5만 원은 아니에요 (FIN-01-04)", "하루 한도는 5만 원"), ["10만"])
+        seen = {}
+
+        def answer(user):
+            seen["user"] = user
+            return '{"unsupported": ["하루 이체 한도는 77만 원이에요"]}'
+
+        # 교재에 없는 숫자(77만)를 쓴다. 교재의 다른 곳에 나오는 숫자는 코드가 잡지 못한다
+        candidate = "하루 이체 한도는 77만 원이에요. 천천히 확인해 보세요."
+        llm = FakeLLM(self.base(**{prompts.UNSUPPORTED_SYSTEM: answer}))
+        cls = self.make(num_hint=True, out_sections=2)
+        state = asyncio.run(cls(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": candidate}))
+        out = state.to_guard_response()["output"]
+        self.assertIn("[코드가 확인한 것]", seen["user"])
+        self.assertIn("77만", seen["user"].split("[코드가 확인한 것]")[1])
+        self.assertEqual((out["grounded"], out["unsupported"]), (False, ["77만 원"]))
+
+    def test_output_votes_need_a_majority(self):
+        replies = iter(['{"unsupported": ["하루 이체 한도는 10만 원이에요"]}', '{"unsupported": []}', '{"unsupported": []}'])
+        llm = FakeLLM(self.base(**{prompts.UNSUPPORTED_SYSTEM: lambda user: next(replies)}))
+        out = self.guard(self.make(out_votes=3), llm).to_guard_response()["output"]
+        self.assertEqual((out["grounded"], out["unsupported"]), (True, []))
+
+
 if __name__ == "__main__":
     unittest.main()
