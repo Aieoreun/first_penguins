@@ -26,6 +26,10 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'fast_gate': ('jh_pg_fast_gate', 'pipelines.kimjaehak.peace_guard_scheduling.FastGate'),
+    'parallel_input': ('jh_pg_parallel_input', 'pipelines.kimjaehak.peace_guard_scheduling.ParallelInput'),
+    'fast_parallel': ('jh_pg_fast_parallel', 'pipelines.kimjaehak.peace_guard_scheduling.FastParallelInput'),
+    'fast_requested': ('jh_pg_fast_requested', 'pipelines.kimjaehak.peace_guard_scheduling.FastRequestedParallel'),
     'ground3': ('jh_pg_ground3', 'pipelines.kimjaehak.peace_ground_budget.LowThree'),
     'medium3': ('jh_pg_medium3', 'pipelines.kimjaehak.peace_ground_budget.MediumThree'),
     'current_span80': ('jh_pg_current_span80', 'pipelines.kimjaehak.peace_span_variants.CurrentSpan80'),
@@ -53,7 +57,7 @@ CANDIDATES = {
 # wrapper only observes original lifespan startup; it does not replace routing.
 # Peace's server ignores PIPELINE, so require its actual hard-coded route too.
 BOOTSTRAP = r'''
-import asyncio, contextlib, hashlib, inspect, json, logging, os, pathlib, sys
+import asyncio, contextlib, functools, hashlib, inspect, json, logging, os, pathlib, sys
 logging.disable(logging.CRITICAL)
 try:
     root, variant, expected, port, identity_path, reference = sys.argv[1:]
@@ -70,6 +74,33 @@ try:
     import server
     if pathlib.Path(server.__file__).resolve() != root / 'server.py' or server.PIPELINE != variant:
         raise RuntimeError('Actual server route mismatch')
+    # Count logical method invocations, not payloads, tokens, or HTTP retries.
+    # Install before original startup so any index-building calls are included.
+    counts = {'instrumented': False, 'scope': 'server_lifespan_llm_method_invocations',
+              'chat': {key: 0 for key in ('started', 'completed', 'cancelled', 'errors')},
+              'embed': {key: 0 for key in ('started', 'completed', 'cancelled', 'errors')}}
+    llm_class = getattr(server, 'LLM', None)
+    def counted_method(method, counters):
+        @functools.wraps(method)
+        async def wrapped(self, *args, **kwargs):
+            counters['started'] += 1
+            try:
+                result = await method(self, *args, **kwargs)
+            except asyncio.CancelledError:
+                counters['cancelled'] += 1
+                raise
+            except BaseException:
+                counters['errors'] += 1
+                raise
+            else:
+                counters['completed'] += 1
+                return result
+        return wrapped
+    if llm_class is not None and all(inspect.iscoroutinefunction(getattr(llm_class, name, None))
+                                     for name in ('chat', 'embed')):
+        for name in ('chat', 'embed'):
+            setattr(llm_class, name, counted_method(getattr(llm_class, name), counts[name]))
+        counts['instrumented'] = True
     original = server.app.router.lifespan_context
     @contextlib.asynccontextmanager
     async def observed(app):
@@ -94,6 +125,7 @@ try:
                         'guard_safety_after_input',
                         'guard_routed_safety','guard_safety_votes','guard_independent_safety',
                         'guard_ground_effort','guard_ground_max_tokens',
+                        'guard_fast_input_wait','guard_vote_first',
                         'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
                         'learned_gate_threshold','learned_span_threshold'):
                 data[key] = getattr(instance, key, None)
@@ -113,9 +145,23 @@ try:
             data['unsupported_system_sha256'] = hashlib.sha256(ground.encode()).hexdigest() if isinstance(ground, str) else None
             data['guard_safety_hints_sha256'] = {k: hashlib.sha256(v.encode()).hexdigest()
                 for k,v in getattr(instance, 'guard_safety_hint_systems', {}).items()}
+            counts['startup'] = {name: dict(counts[name]) for name in ('chat', 'embed')}
             pathlib.Path(identity_path).write_text(json.dumps(data))
             yield
-    server.app.router.lifespan_context = observed
+    @contextlib.asynccontextmanager
+    async def counted_lifespan(app):
+        try:
+            async with observed(app):
+                yield
+        finally:
+            counts['total'] = {key: counts['chat'][key] + counts['embed'][key]
+                               for key in ('started', 'completed', 'cancelled', 'errors')}
+            try:
+                pathlib.Path(identity_path).with_name('api_counts.json').write_text(json.dumps(counts))
+            except OSError:
+                # Observability must never replace the original lifespan error.
+                pass
+    server.app.router.lifespan_context = counted_lifespan
     import uvicorn
     uvicorn.run(server.app, host='127.0.0.1', port=int(port), access_log=False, log_config=None)
 except BaseException as exc:
@@ -263,6 +309,10 @@ def collect_candidate(label, source_root, items, dest, env, judge_workers, embed
                'p95': durations[min(len(durations)-1, int(.95*len(durations)))], 'max': max(durations),
                'http_errors': sum(bool(row['error']) for row in rows),
                'stage_failure_requests': sum(error != '-' for error in errors)}
+    # Read only after SIGTERM/wait: graceful lifespan shutdown writes final counts.
+    counts_path = dest / 'api_counts.json'
+    runtime['api_calls'] = json.loads(counts_path.read_text()) if counts_path.exists() else {
+        'instrumented': False, 'available': False, 'reason': 'shutdown_counts_unavailable'}
     write_json(dest / 'runtime.json', runtime)
     if shared.evaluator_hashes() != manifest['evaluator_hashes']:
         raise RuntimeError('Official evaluator changed during collection')

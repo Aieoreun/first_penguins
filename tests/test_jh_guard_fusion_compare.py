@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock, Mock, patch
@@ -146,6 +147,118 @@ class GuardFusionCompareTests(unittest.TestCase):
         self.assertEqual(identity['guard_safety_system_sha256'], probe.digest(b'synthetic safety'))
         self.assertEqual(identity['guard_block_system_sha256'], probe.digest(b'resolved synthetic block'))
         self.assertEqual((self.root / 'server.py').read_bytes(), before)
+        counts = json.loads((self.root / 'api_counts.json').read_text())
+        self.assertIs(counts['instrumented'], False)
+        self.assertEqual(counts['total']['started'], 0)
+
+    def fake_counted_llm(self):
+        with (self.root / 'server.py').open('a') as out:
+            out.write('''
+import asyncio
+class LLM:
+ calls=[]
+ value=object()
+ error=ValueError('private-error-payload')
+ waiting=None
+ async def chat(self, system, user, *, effort):
+  self.calls.append(('chat', system, user, effort))
+  if user == 'error': raise self.error
+  if user == 'cancel':
+   self.waiting.set()
+   await asyncio.Event().wait()
+  return self.value
+ async def embed(self, texts, timeout):
+  self.calls.append(('embed', texts, timeout))
+  return self.value
+''')
+
+    def test_call_counter_preserves_results_errors_cancellation_and_arguments(self):
+        self.fake_server_tree()
+        self.fake_counted_llm()
+        (self.root / 'uvicorn.py').write_text('''
+import asyncio
+import server
+def run(app, **kwargs):
+ async def work():
+  async with app.router.lifespan_context(app):
+   llm=server.LLM()
+   assert await llm.chat('private-prompt', 'ok', effort='low') is llm.value
+   try: await llm.chat('private-prompt', 'error', effort='low')
+   except ValueError as error: assert error is llm.error
+   else: raise AssertionError('Original exception swallowed')
+   llm.waiting=asyncio.Event()
+   task=asyncio.create_task(llm.chat('private-prompt', 'cancel', effort='low'))
+   await llm.waiting.wait()
+   task.cancel()
+   try: await task
+   except asyncio.CancelledError: pass
+   else: raise AssertionError('Cancellation swallowed')
+   assert await llm.embed(['private-embedding'], timeout=3) is llm.value
+   assert llm.calls == [('chat','private-prompt','ok','low'),
+                        ('chat','private-prompt','error','low'),
+                        ('chat','private-prompt','cancel','low'),
+                        ('embed',['private-embedding'],3)]
+ asyncio.run(work())
+''')
+        result = self.run_fake_bootstrap()
+        self.assertEqual(result.returncode, 0, result.stdout)
+        encoded = (self.root / 'api_counts.json').read_text()
+        self.assertNotIn('private', encoded)
+        counts = json.loads(encoded)
+        self.assertIs(counts['instrumented'], True)
+        self.assertEqual(counts['chat'], {'started':3,'completed':1,'cancelled':1,'errors':1})
+        self.assertEqual(counts['embed'], {'started':1,'completed':1,'cancelled':0,'errors':0})
+        self.assertEqual(counts['total']['started'], 4)
+        self.assertEqual(counts['startup']['chat']['started'], 0)
+
+    def test_counts_flush_on_sigterm_after_original_shutdown(self):
+        self.fake_server_tree()
+        self.fake_counted_llm()
+        (self.root / 'uvicorn.py').write_text('''
+import asyncio, pathlib, signal
+import server
+def run(app, **kwargs):
+ async def work():
+  stop=asyncio.Event()
+  asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, stop.set)
+  async with app.router.lifespan_context(app):
+   await server.LLM().chat('private-prompt','ok',effort='low')
+   pathlib.Path('ready').write_text('ready')
+   await stop.wait()
+ asyncio.run(work())
+''')
+        proc = subprocess.Popen([sys.executable, '-B', '-c', probe.BOOTSTRAP, str(self.root),
+            'jh_parallel_guard', 'pipelines.fake.Pipeline', '12345',
+            str(self.root / 'identity.json'), '1'], cwd=self.root,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        try:
+            deadline = time.monotonic() + 5
+            while not (self.root / 'ready').exists() and time.monotonic() < deadline:
+                if proc.poll() is not None:
+                    break
+                time.sleep(.01)
+            self.assertTrue((self.root / 'ready').exists())
+            proc.terminate()
+            output, error = proc.communicate(timeout=5)
+            self.assertEqual(proc.returncode, 0, output + error)
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.communicate()
+        counts = json.loads((self.root / 'api_counts.json').read_text())
+        self.assertEqual(counts['chat']['completed'], 1)
+
+    def test_lifespan_error_still_flushes_counts_without_exception_details(self):
+        self.fake_server_tree()
+        self.fake_counted_llm()
+        path = self.root / 'server.py'
+        path.write_text(path.read_text().replace(' yield\n', ' yield\n raise ValueError("private shutdown")\n'))
+        result = self.run_fake_bootstrap()
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stdout.strip(), 'SERVER_FAILURE ValueError')
+        counts = json.loads((self.root / 'api_counts.json').read_text())
+        self.assertIs(counts['instrumented'], True)
+        self.assertEqual(counts['total']['started'], 0)
 
     def test_bootstrap_refuses_server_ignoring_selection_before_initialization(self):
         self.fake_server_tree(variant='ignored_cli')
@@ -178,6 +291,34 @@ class GuardFusionCompareTests(unittest.TestCase):
                 probe.collect_candidate('peace', self.root, [], dest, {'TEAM_TOKEN':'fixture'}, 32, 'off')
         collect.assert_not_awaited()
         process.terminate.assert_called_once()
+        process.wait.assert_called_once_with(timeout=10)
+
+    def test_collector_reads_api_counts_only_after_process_shutdown(self):
+        loop = asyncio.new_event_loop()
+        self.addCleanup(loop.close)
+        dest = self.root / 'run'
+        process = Mock()
+        socket_context = Mock()
+        socket_context.__enter__ = Mock(return_value=SimpleNamespace(
+            bind=Mock(), getsockname=Mock(return_value=('127.0.0.1', 12345))))
+        socket_context.__exit__ = Mock(return_value=False)
+        counts = {'instrumented':True,'total':{'started':8,'completed':7,'cancelled':1,'errors':0}}
+        def ready(proc, port):
+            probe.write_json(dest / 'startup_identity.json', self.identity('peace'))
+        def shutdown(timeout):
+            process.terminate.assert_called_once()
+            probe.write_json(dest / 'api_counts.json', counts)
+        process.wait.side_effect = shutdown
+        with patch.object(probe.socket, 'socket', return_value=socket_context), \
+             patch.object(probe.asyncio, 'run', side_effect=loop.run_until_complete), \
+             patch.object(probe.subprocess, 'Popen', return_value=process), \
+             patch.object(probe.shared, 'wait_ready', side_effect=ready), \
+             patch.object(probe.shared, 'evaluator_hashes', return_value={}), \
+             patch.object(probe.shared, 'collect', new=AsyncMock(return_value=[{'seconds':.1,'error':None}])):
+            probe.collect_candidate('peace', self.root, [{'id':'a'}], dest,
+                                    {'TEAM_TOKEN':'fixture'}, 32, 'off')
+        runtime = json.loads((dest / 'runtime.json').read_text())
+        self.assertEqual(runtime['api_calls'], counts)
         process.wait.assert_called_once_with(timeout=10)
 
     def test_prepare_only_builds_full_guard_plan_without_server_or_scoring(self):
