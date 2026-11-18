@@ -3992,6 +3992,23 @@
         "kb_embeddings_loaded": true,
         "application_startup_complete": true
       }
+    },
+    {
+      "source": "user_report",
+      "reported_date": "2026-11-19",
+      "variant_assumed": "jh_pg_fast_cancel",
+      "variant_basis": "Immediately preceding execution instructions; variant and commit not independently confirmed",
+      "instructed_commit": "492af6129434f5bd49e7ed684f6d4edb19e94f23",
+      "actual_commit_verified": false,
+      "total": 82.77,
+      "tutor": 78.42,
+      "guard": 87.11,
+      "duration_seconds": 53.955,
+      "requests": 600,
+      "timeouts": 0,
+      "format_or_missing": 0,
+      "judge_errors": 0,
+      "seed": "0b21f8d8dce67cbcc234b2b21a2fcf9a"
     }
   ]
 }
