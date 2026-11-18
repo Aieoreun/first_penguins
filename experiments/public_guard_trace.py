@@ -16,6 +16,10 @@ sys.path.insert(0, str(ROOT))
 from core.kb import load_chunks
 from core.llm import LLM
 from core.search import Searcher, load_vectors
+from pipelines.kimjaehak.config import configure
+
+# Match server startup: set pinned controls before importing the pipeline.
+configure()
 from pipelines.kimjaehak.parallel_guard import Pipeline
 
 TRACE = contextvars.ContextVar('public_guard_trace', default=None)
