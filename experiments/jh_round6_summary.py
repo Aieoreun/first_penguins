@@ -43,7 +43,7 @@ def summary():
             'effective_config':{k:v for k,v in manifest.get('effective_config',{}).items()
                                 if k in {'class','request_slots','embedding_mode','embedding_model',
                                          'tutor_short_material','tutor_material_no_section','tutor_verify_context_sources',
-                                         'source_evidence_order','source_selection_votes','tutor_computable_material','tutor_topic_selection','source_resolved_hint','source_resolved_hint_prompt_sha256','source_selection_effort','source_selection_tokens','source_extract_timeout','tutor_normal_gate_threshold','tutor_joint_evidence','joint_evidence_tokens','joint_evidence_prompt_sha256','tutor_skip_trusted_embedding','tutor_joint_quote','tutor_lexical_mode','tutor_resolved_query','query_resolve_effort',
+                                         'source_evidence_order','source_selection_votes','tutor_computable_material','tutor_topic_selection','source_resolved_hint','source_resolved_hint_prompt_sha256','source_selection_effort','source_selection_tokens','source_extract_timeout','tutor_normal_gate_threshold','tutor_joint_evidence','joint_evidence_tokens','joint_evidence_prompt_sha256','tutor_skip_trusted_embedding','tutor_joint_quote','tutor_eager_source','tutor_lexical_mode','tutor_resolved_query','query_resolve_effort',
                                          'source_extract_sections','tutor_prepare_limit','tutor_material_timeout'}}})
     return {'scope':'public_development_not_private_score','completed_runs':len(done),
             'total_requests':sum(r['count'] for r in done), 'pending_runs':pending, 'runs':done}
