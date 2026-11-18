@@ -3925,5 +3925,23 @@
       "identical_response_count": 150,
       "identical_response_different_judge_score": 2
     }
-  }
+  },
+  "private_submissions": [
+    {
+      "source": "user_report",
+      "variant_assumed": "jh_cm_dense_lr50",
+      "variant_basis": "Immediately preceding execution instructions; runtime not independently verified",
+      "instructed_commit": "c57bd200ac0835d9b230731bb9ac75f18a82e580",
+      "actual_commit_verified": false,
+      "total": 84.09,
+      "tutor": 79.58,
+      "guard": 88.59,
+      "duration_seconds": 73.842,
+      "requests": 600,
+      "timeouts": 0,
+      "format_or_missing": 0,
+      "judge_errors": 0,
+      "seed": "4478a433324b53ec55c3bdbd5aa4f050"
+    }
+  ]
 }

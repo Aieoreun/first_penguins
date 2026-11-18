@@ -1,5 +1,7 @@
 # 김재학 실험 인수인계
 
+> **분류기 후보 실제 제출 보고:** 직전 안내에 따라 `jh_cm_dense_lr50`로 추정, 전체84.09 / 튜터79.58 / 가드88.59 / 73.842초, 600요청·공식 오류0. 런박스 실제 variant·커밋은 독립 확인하지 않았다. 로컬 상승의 제출 재현은 아직 확인되지 않았고 기존 material_budget/focused를 유지한다. 다음 직접 대조는 `jh_pg_fast_cancel` 권장. [기록·분석](CLASSIFIER_MATRIX.md#실제-제출-1--임베딩-lr50-사용자-보고).
+
 > **새 분류기 비교 완료 (2026-11-18):** 문자/제공 임베딩 × 로지스틱/작은 신경망 구현·비교, HTTP 4,124개 및 전체 824테스트 완료. 혼합388에서 임베딩 LR50 전체95.96/가드96.61, 기존 fast_cancel 전체95.70/가드95.70. 다른184문항에서는 기존이 우세해 확정 개선으로 취급하지 않는다. 실제 제출 시험은 `jh_cm_dense_lr50` 우선, `jh_cm_char_mlp50`은 신경망 비교용. 기존 최종 후보 보존. [설계·전체 결과](CLASSIFIER_MATRIX.md) / [런박스 제출 명령](CLASSIFIER_MATRIX_SUBMISSION.md).
 
 > **Peace 융합 라운드 종료 (2026-11-18):** `experiment/kimjaehak-peace-guard-fusion`. 사용자가 잔여80%(사용20%) 중단을 명확히 했으나 이전 반대 해석으로 확인 사용량25%까지 진행했다. 새 실험 중단, 이미 실행 중인 비교만 완료. HTTP11,496개·미채점0·전체815테스트 통과. 기존 material_budget/focused 유지, 새 제출 시험 우선 fast_cancel(입력 의도16에서는 오차단 회귀도 관측). [최종 후보·재현·인수인계](PEACE_GUARD_FUSION_FINAL.md) / [전체 결과](PEACE_GUARD_FUSION.md). 이번 라운드 push·비공개 제출 없음.
@@ -11,7 +13,7 @@
 > **최종 후보 보관:** [FINAL_CANDIDATES.md](FINAL_CANDIDATES.md) — 우선 material_budget, 백업 focused. 정확한 실행 명령·시간 배분 차이·전체 구조도를 함께 기록했다.
 
 
-> **최신 실제 제출:** 새1번 재제출 `jh_r4_material_budget` 전체84.47 / tutor80.58 / guard88.37 / 64.816초, 공식 오류0.
+> **이전 실제 제출:** 새1번 재제출 `jh_r4_material_budget` 전체84.47 / tutor80.58 / guard88.37 / 64.816초, 공식 오류0.
 > **현재 실제 제출 추천: `jh_r4_material_budget / env / slots64`.** 두 번 평균84.505로 focused 세 번 평균84.183보다 소폭 높다. 통계적 우월성이 확정된 것은 아니다.
 > [R4 제출 기록과 비교](PRIVATE_SUBMISSIONS_R4_20261117.md)를 우선한다. 기존 최고84.68과 최신84.47은 구분하며, 아래 최신/추천 문구는 각 기록 당시의 판단이다.
 
