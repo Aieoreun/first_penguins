@@ -7,28 +7,29 @@
   "baseline": "jh_r4_material_budget",
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
-  "completed_runs": 44,
-  "pending_runs": 0,
-  "last_observed_used_percent": 81,
-  "next": "H48-58 on existing public data; contrast45-47 pending explicit transfer approval",
-  "total_requests": 6287,
+  "completed_runs": 49,
+  "pending_runs": 9,
+  "last_observed_used_percent": 83,
+  "next": "Score H45–58; analyze contrast16 and public400, then matched repeats while remaining quota exceeds15%.",
+  "total_requests": 6708,
   "comparison_baselines": [
     "jh_r3_selected_focused",
     "jh_r4_material_budget",
     "jh_r5_dual_all"
   ],
-  "collected_requests": 6287,
+  "collected_requests": 8826,
   "public_trace_requests": 8,
   "parameter_smoke_requests": 1,
   "manual_contrast_items": 16,
-  "pending_approval": {
-    "runs": [
+  "contrast_api_approval": {
+    "status": "explicitly_approved_by_user",
+    "user_reply": "허용하고 16문항도 실험",
+    "collected_runs": [
       45,
       46,
       47
     ],
-    "action": "New manual contrast16 questions to existing organizer mlapi.run API",
-    "reason": "Automatic approval review rejected unclear export authorization",
-    "api_calls": 0
+    "http_requests": 48,
+    "deployment_data": "excluded; ignored development cache only"
   }
 }
