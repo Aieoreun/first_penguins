@@ -1,0 +1,123 @@
+{
+  "pg01_public": {
+    "source_commit": "ab276be",
+    "dataset": "public_guard200",
+    "in_sample": true,
+    "results": [
+      {
+        "candidate": "current",
+        "guard": 98.95,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9651,
+          "span_f1": 0.9651,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "normal -> normal": 112,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "emotional_distress -> emotional_distress": 4,
+            "off_topic -> off_topic": 7,
+            "answer_seeking -> answer_seeking": 4,
+            "out_of_material -> out_of_material": 12,
+            "harmful_content -> harmful_content": 26,
+            "low_signal_input -> low_signal_input": 3,
+            "normal -> out_of_material": 1,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "pii_disclosure -> pii_disclosure": 7,
+            "normal -> pii_disclosure": 1
+          }
+        },
+        "runtime": {
+          "collect_seconds": 20.244,
+          "p50": 1.1115,
+          "p95": 10.274,
+          "max": 13.3,
+          "http_errors": 0,
+          "stage_failure_requests": 6
+        }
+      },
+      {
+        "candidate": "peace",
+        "guard": 89.6,
+        "guard_details": {
+          "block_f1": 0.8666666666666667,
+          "category_accuracy": 0.8953,
+          "grounded_accuracy": 0.9767,
+          "span_f1": 0.8692,
+          "safe_accuracy": 0.9302,
+          "false_block": 12,
+          "missed_block": 4,
+          "confusion": {
+            "normal -> normal": 96,
+            "jailbreak_injection -> jailbreak_injection": 15,
+            "normal -> out_of_material": 4,
+            "emotional_distress -> emotional_distress": 4,
+            "off_topic -> off_topic": 6,
+            "answer_seeking -> answer_seeking": 4,
+            "normal -> jailbreak_injection": 6,
+            "normal -> off_topic": 3,
+            "out_of_material -> answer_seeking": 2,
+            "harmful_content -> harmful_content": 26,
+            "low_signal_input -> low_signal_input": 3,
+            "academic_dishonesty -> normal": 1,
+            "normal -> harmful_content": 3,
+            "out_of_material -> out_of_material": 8,
+            "pii_disclosure -> pii_disclosure": 6,
+            "normal -> answer_seeking": 2,
+            "academic_dishonesty -> academic_dishonesty": 5,
+            "off_topic -> out_of_material": 1,
+            "pii_disclosure -> out_of_material": 1,
+            "out_of_material -> normal": 2,
+            "academic_dishonesty -> answer_seeking": 1,
+            "jailbreak_injection -> normal": 1
+          }
+        },
+        "runtime": {
+          "collect_seconds": 44.883,
+          "p50": 10.46,
+          "p95": 16.728,
+          "max": 22.445,
+          "http_errors": 0,
+          "stage_failure_requests": 9
+        }
+      },
+      {
+        "candidate": "fusion",
+        "guard": 97.73,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9535,
+          "span_f1": 0.9535,
+          "safe_accuracy": 0.9419,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "normal -> normal": 113,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "emotional_distress -> emotional_distress": 4,
+            "off_topic -> off_topic": 7,
+            "answer_seeking -> answer_seeking": 4,
+            "out_of_material -> out_of_material": 12,
+            "harmful_content -> harmful_content": 26,
+            "low_signal_input -> low_signal_input": 3,
+            "normal -> out_of_material": 1,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "pii_disclosure -> pii_disclosure": 7
+          }
+        },
+        "runtime": {
+          "collect_seconds": 22.28,
+          "p50": 3.229,
+          "p95": 12.998,
+          "max": 18.062,
+          "http_errors": 0,
+          "stage_failure_requests": 8
+        }
+      }
+    ]
+  }
+}
