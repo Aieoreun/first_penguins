@@ -26,6 +26,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'ground3': ('jh_pg_ground3', 'pipelines.kimjaehak.peace_ground_budget.LowThree'),
+    'medium3': ('jh_pg_medium3', 'pipelines.kimjaehak.peace_ground_budget.MediumThree'),
     'current_span80': ('jh_pg_current_span80', 'pipelines.kimjaehak.peace_span_variants.CurrentSpan80'),
     'routed_span80': ('jh_pg_routed_span80', 'pipelines.kimjaehak.peace_span_variants.RoutedSpan80'),
     'requested_span80': ('jh_pg_requested_span80', 'pipelines.kimjaehak.peace_span_variants.RoutedRequestedSpan80'),
@@ -91,6 +93,7 @@ try:
                         'guard_safety_action_review','guard_safety_curriculum_context',
                         'guard_safety_after_input',
                         'guard_routed_safety','guard_safety_votes','guard_independent_safety',
+                        'guard_ground_effort','guard_ground_max_tokens',
                         'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
                         'learned_gate_threshold','learned_span_threshold'):
                 data[key] = getattr(instance, key, None)

@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_pg_ground3", "jh_pg_medium3"}:
+            module = importlib.import_module("pipelines.kimjaehak.peace_ground_budget")
+            return module.LowThree if name == "jh_pg_ground3" else module.MediumThree
         if name in {"jh_pg_current_span80", "jh_pg_routed_span80", "jh_pg_requested_span80"}:
             module = importlib.import_module("pipelines.kimjaehak.peace_span_variants")
             return {"jh_pg_current_span80": module.CurrentSpan80, "jh_pg_routed_span80": module.RoutedSpan80,

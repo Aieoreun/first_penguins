@@ -79,6 +79,7 @@ def main():
                 "guard_safety_action_review", "guard_safety_curriculum_context",
                 "guard_safety_after_input",
                 "guard_routed_safety", "guard_safety_votes",
+                "guard_ground_effort", "guard_ground_max_tokens",
                 "guard_preserve_completed_ground", "guard_restore_span_refinement",
                 "guard_vote_first", "guard_prepare_limit", "guard_deadline",
                 "guard_material_timeout", "guard_ground_timeout", "guard_safety_timeout"):
