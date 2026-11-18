@@ -18,6 +18,50 @@ def guard(identifier='g', candidate=True):
 
 
 class DatasetTests(unittest.TestCase):
+    def test_alternative_filters_by_parent_not_rewritten_endpoint(self):
+        parents = {'g': guard('g'), 't': {**guard('t', False), 'endpoint': 'tutor'}}
+        rows = [{**guard('g-p1', False), 'source_id': 'g'},
+                {**guard('t-p1', False), 'source_id': 't'}]
+        spec = {'raw_count': 2, 'count': 1, 'candidate_count': 0}
+        items = datasets.validate_rows(rows, spec, 'alternative', parents)
+        self.assertEqual(items, rows[:1])
+        self.assertIs(items[0], rows[0])
+        self.assertNotIn('candidate_answer', items[0])
+        with self.assertRaises(ValueError):
+            datasets.validate_rows(rows, spec, 'alternative')
+        for field, value in (('candidate_answer', 'Do not restore original answer'),
+                             ('labels', {'category':'normal','decision':'allow','safe':True}),
+                             ('source_id', 'missing'), ('messages', [])):
+            broken = deepcopy(rows)
+            broken[0][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                datasets.validate_rows(broken, spec, 'alternative', parents)
+
+    def test_alternative_rejects_label_drift_and_repeated_parent(self):
+        parents = {'g': guard('g')}
+        rows = [{**guard('g-p1', False), 'source_id':'g'}]
+        spec = {'raw_count':1,'count':1,'candidate_count':0}
+        for field, value in (('category','off_topic'), ('decision','block')):
+            broken = deepcopy(rows)
+            broken[0]['labels'][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                datasets.validate_rows(broken, spec, 'alternative', parents)
+        with self.assertRaises(ValueError):
+            datasets.validate_rows(rows + [{**rows[0], 'id':'g-p2'}],
+                                   {'raw_count':2,'count':2,'candidate_count':0}, 'alternative', parents)
+
+    def test_alternative_summary_never_reports_output_or_aggregate_score(self):
+        result = {'guard':99, 'guard_details':{'block_f1':.9, 'category_accuracy':.8,
+                  'false_block':2, 'missed_block':3, 'safe_accuracy':None}, 'runtime':{}}
+        metadata = {'dataset':'alternative', 'scope':'input-only diagnostic',
+                    'primary_metric':'input_only', 'interpretation':'No output labels'}
+        summary = datasets.summarize_result('fusion', result, metadata)
+        self.assertEqual(set(summary['input_metrics']),
+                         {'block_f1','category_accuracy','false_block','missed_block'})
+        self.assertNotIn('guard', summary)
+        self.assertNotIn('guard_details', summary)
+        self.assertEqual(summary['interpretation'], 'No output labels')
+
     def test_paraphrase_filters_guard_without_replacing_candidate_or_labels(self):
         rows = [guard('g1'), {'id':'t','endpoint':'tutor'}, guard('g2', False)]
         spec = {'raw_count':3,'count':2,'candidate_count':1}

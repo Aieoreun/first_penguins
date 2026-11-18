@@ -6,6 +6,24 @@ import random
 
 PUBLIC_SHA = '4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426'
 DATASETS = {
+    'alternative': {
+        'path': 'experiments/.cache/jh_transfer_alternative_build1/derived_inputs.jsonl',
+        'manifest': 'experiments/.cache/jh_transfer_alternative_build1/derivation.json',
+        'manifest_scope': 'public_paraphrase_input_diagnostic',
+        'generation_manifest': 'experiments/.cache/jh_augment_public2_1/manifest.json',
+        'raw_count': 365, 'count': 184, 'candidate_count': 0,
+        'files': {
+            'public/guard.jsonl': PUBLIC_SHA,
+            'public/tutor.jsonl': '8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0',
+            'experiments/.cache/jh_transfer_alternative_build1/derived_inputs.jsonl': 'e92d84b39aa79bb457db1106a929642137a3b879c5b496d30439982cb392798b',
+            'experiments/.cache/jh_transfer_alternative_build1/derivation.json': '425f608e65140a4ca784c3f2856a8bd68d341b2cd2ee562234f7fe169d37ab7b',
+            'experiments/.cache/jh_augment_public2_1/paraphrases.jsonl': '5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2',
+            'experiments/.cache/jh_augment_public2_1/manifest.json': '49a497875888638982a0da2cc40a82d8614d594f2bedd6262a4a2752ae52a8a6',
+        },
+        'scope': 'public_guard_alternative184_input_only_development',
+        'primary_metric': 'input_only', 'old_input_predictions_fixed': False,
+        'interpretation': 'Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development.',
+    },
     'public': {
         'path': 'public/guard.jsonl', 'raw_count': 200, 'count': 200, 'candidate_count': 86,
         'files': {'public/guard.jsonl': PUBLIC_SHA},
@@ -73,10 +91,28 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def validate_rows(rows, spec, name):
+def validate_rows(rows, spec, name, public_parents=None):
     if len(rows) != spec['raw_count']:
         raise ValueError('Unexpected source dataset count')
-    items = [row for row in rows if row.get('endpoint') == 'guard']
+    if name == 'alternative':
+        if public_parents is None:
+            raise ValueError('Alternative needs verified public parent endpoints')
+        if len({row.get('source_id') for row in rows}) != len(rows):
+            raise ValueError('Alternative contains repeated parents')
+        for row in rows:
+            parent = public_parents.get(row.get('source_id'))
+            if (parent is None or row.get('endpoint') != 'guard' or 'candidate_answer' in row
+                    or set(row.get('labels', {})) != {'category', 'decision'}
+                    or row['labels']['category'] != parent['labels']['category']
+                    or not isinstance(row.get('messages'), list) or not row['messages']
+                    or row['messages'][:-1] != parent['messages'][:-1]
+                    or row['messages'][-1].get('role') != 'user'):
+                raise ValueError('Alternative input-only parent contract changed')
+            if parent['endpoint'] == 'guard' and row['labels']['decision'] != parent['labels']['decision']:
+                raise ValueError('Alternative guard decision differs from parent')
+        items = [row for row in rows if public_parents[row['source_id']]['endpoint'] == 'guard']
+    else:
+        items = [row for row in rows if row.get('endpoint') == 'guard']
     if (len(items) != spec['count'] or len({row['id'] for row in items}) != len(items)
             or sum('candidate_answer' in row for row in items) != spec['candidate_count']):
         raise ValueError('Unexpected guard subset, IDs or candidate count')
@@ -133,13 +169,23 @@ def load_dataset(name, root):
                     or curation.get('source_sha256') != manifest['source_sha256']
                     or manifest['curation'].get('candidate_scores_observed') is not False):
                 raise ValueError('Original component provenance differs')
-        elif name == 'paraphrase':
+        elif name in ('paraphrase', 'alternative'):
             generation = json.loads((root / spec['generation_manifest']).read_text())
             if any(spec['files'].get('public/' + name) != checksum
                    for name, checksum in generation['public_hashes'].items()):
                 raise ValueError('Paraphrase public parent changed')
+            if name == 'alternative' and (manifest.get('paraphrase_partition') != 'alternative'
+                                           or manifest.get('inherited_labels') is not True):
+                raise ValueError('Alternative partition or inherited-label declaration changed')
     rows = [json.loads(line) for line in (root / spec['path']).read_text().splitlines() if line.strip()]
-    items = validate_rows(rows, spec, name)
+    parents = None
+    if name == 'alternative':
+        parents = {}
+        for endpoint in ('guard', 'tutor'):
+            for line in (root / 'public' / (endpoint + '.jsonl')).read_text().splitlines():
+                parent = json.loads(line)
+                parents[parent['id']] = {**parent, 'endpoint': endpoint}
+    items = validate_rows(rows, spec, name, parents)
     if name == 'public':
         # Preserve jh_compare.load_public's per-endpoint and final shuffles.
         random.Random(20261115).shuffle(items)
@@ -158,7 +204,11 @@ def load_dataset(name, root):
 def summarize_result(label, result, metadata):
     summary = {'candidate': label, 'dataset': metadata['dataset'], 'scope': metadata['scope'],
                'primary_metric': metadata['primary_metric'], 'runtime': result['runtime']}
-    if metadata['primary_metric'] == 'safe_accuracy':
+    if metadata['primary_metric'] == 'input_only':
+        summary['input_metrics'] = {key: result['guard_details'][key] for key in
+                                    ('block_f1', 'category_accuracy', 'false_block', 'missed_block')}
+        summary['interpretation'] = metadata['interpretation']
+    elif metadata['primary_metric'] == 'safe_accuracy':
         summary['safe_accuracy'] = result['guard_details']['safe_accuracy']
         summary['interpretation'] = metadata['interpretation']
     else:
