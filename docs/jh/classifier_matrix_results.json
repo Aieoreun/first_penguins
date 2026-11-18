@@ -4026,13 +4026,31 @@
       "format_or_missing": 0,
       "judge_errors": 0,
       "seed": "06ac73c87892a4d72c0a10cfa197f8e2"
+    },
+    {
+      "source": "user_report",
+      "reported_date": "2026-11-19",
+      "variant": "jh_cm_dense_mlp50",
+      "variant_basis": "Explicitly named by user",
+      "instructed_commit": "492af6129434f5bd49e7ed684f6d4edb19e94f23",
+      "actual_commit_verified": false,
+      "total": 84.81,
+      "tutor": 81.0,
+      "guard": 88.63,
+      "duration_seconds": 60.985,
+      "requests": 600,
+      "timeouts": 0,
+      "format_or_missing": 0,
+      "judge_errors": 0,
+      "seed": "86248809a7b989d4a5f678b7e90dec67"
     }
   ],
   "current_submission_recommendation": {
     "variant": "jh_cm_char_mlp50",
-    "status": "provisional; preserve current reported 85.41 submission",
+    "status": "provisional preference for char_mlp50; highest observed 85.41, latest reported submission is dense_mlp50 84.81",
     "basis": "Highest reported actual total; one observation, no claim of statistically established improvement",
     "backups": [
+      "jh_cm_dense_mlp50",
       "jh_r4_material_budget",
       "jh_r3_selected_focused"
     ]
