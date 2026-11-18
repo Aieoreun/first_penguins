@@ -181,3 +181,30 @@ followup114 및 primary192 비교, Kiwi primary192 비교. 순차 API 수집 후
 후속 질문13 resolved=86.18,14 material_budget=86.62,15 focused=89.69.
 resolved의 수집34.56초/내부실패15는 기준23.90초/2, focused26.71초/4보다 높았다.
 주제 전환의 이득이 후속 질문으로 그대로 이어지지 않았다. primary192 비교 채점을 계속한다.
+
+## 19개 HTTP 실행 완료
+
+누적2478요청(튜터 전용), HTTP/형식/판정 오류0. 실행별 전체 결과는 round6_results.json.
+
+| primary192 후보 | tutor | 수집 초 | 내부 실패 요청 |
+|---|---:|---:|---:|
+| material_budget | 95.83 | 21.31 | 2 |
+| resolved_focused | 94.92 | 24.41 | 4 |
+| selected_focused | 93.75 | 16.82 | 2 |
+| kiwi_bigram | 93.23 | 18.31 | 2 |
+
+Kiwi의 형태소 검색 이득은 이번 전체 튜터 비교로 이어지지 않았다. 후순위로 둔다.
+ResolvedFocused는 topic92.11이 높지만 followup86.18/primary94.92에서 일관된 우위가 없다.
+공식 제출 추천 material_budget 및 비교·백업 focused를 유지한다. 새 후보의 공식 제출은 아직 없다.
+
+### 남는 source 시간 활용 가설
+
+- `jh_r6_source_budget12`: source의 최대8초를12초로 확대하되 low/2000토큰과 기존 요청26초 제한을 유지한다.
+  실제 호출 timeout은 남은 요청시간에서0.5초를 뺀 값으로 계속 제한한다. material·guard는 그대로다.
+- `jh_r6_source_reason12`: 위12초 후보에서 source만 medium/3000토큰으로 바꾼다.
+  추론량과 토큰 상한을 함께 바꾸는 후보이므로 개선 시 어느 요인인지 후속 분리한다.
+  source의 근거 판단을 더 기다리는 이득과 동시64 부하의 실패 증가를 함께 본다.
+- 선택 시간이 요청 잔여 시간으로 제한되는 테스트 포함492개 통과.
+
+모든 실제 수집은 다음 clean commit에서 시작하며 공개 추적 도구는 HTTP 성능 비교와 별도 실행한다.
+현재 사용률68%(잔여32%). 중단 기준은 여전히 잔여15%이며 실험은 진행 중이다.
