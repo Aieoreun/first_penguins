@@ -1,0 +1,681 @@
+{
+  "scope": "independent_manual_kb_contrast_review",
+  "proposal_sha256": "bc9ea4acfa0b7f6a6f0d3313cd69f5e188d417f34a2db6b9e4a38e522fb4505f",
+  "kb_manifest_sha256": "62491dae596f8de48942d724167f4f2109843bdeac6835c654082e4797a036f3",
+  "accepted_pair_ids": [
+    "kb-contrast-01",
+    "kb-contrast-02",
+    "kb-contrast-03",
+    "kb-contrast-05",
+    "kb-contrast-06",
+    "kb-contrast-07",
+    "kb-contrast-08",
+    "kb-contrast-12"
+  ],
+  "excluded": [
+    {
+      "id": "kb-contrast-04",
+      "code": "conservative_policy_scope_ambiguity",
+      "reason": "정상 배열값은 명확하고 생성 날짜는 교재에 없다. 다만 음성은 2차원 리스트의 개념·동작·실습 규칙이 아닌 예제 제작 메타데이터를 묻는다. OOM으로 읽을 수 있으나 수업무관 여부 해석까지 섞일 여지가 있어, 정책 범주가 명확한 근접 속성 대비 자료라는 이번 목적에서는 보수적으로 쌍 전체 제외. OOM 라벨이 틀렸다는 입증은 아니다."
+    },
+    {
+      "id": "kb-contrast-09",
+      "code": "canonical_evidence_ambiguity",
+      "reason": "정상 하루 이체 한도 5만 원은 FIN-01-04 외 FIN-01-02/FIN-01-03/FIN-04-01/FIN-04-02/FIN-04-04에서도 직접 확인된다. 질문은 특정 섹션을 지정하지 않지만 gold evidence는 FIN-01-04 하나뿐이다. ATM 한도 부재는 타당하나 기존 인용 채점에서 올바른 대체 출처를 오답 처리할 수 있어 원 제안 그대로는 제외."
+    },
+    {
+      "id": "kb-contrast-10",
+      "code": "canonical_evidence_ambiguity",
+      "reason": "정상 새싹적금 12개월은 FIN-02-02 외 FIN-02-01:16, FIN-02-03:22에도 명시되어 있다. 가입서류 정보 부재는 타당하나 단일 gold evidence FIN-02-02로는 올바른 대체 인용을 구별하지 못하므로 쌍 전체 제외."
+    },
+    {
+      "id": "kb-contrast-11",
+      "code": "canonical_evidence_ambiguity",
+      "reason": "정상 서점 결제의 도토리 포인트 2%는 FIN-03-02 외 FIN-01-02:24, FIN-03-01:24, FIN-04-01:22, FIN-04-02:27에서도 직접 확인된다. 포인트 유효기간 부재는 타당하나 단일 gold evidence FIN-03-02가 대체 근거를 배제하므로 쌍 전체 제외."
+    }
+  ],
+  "model_predictions_inspected": false,
+  "api_calls": 0,
+  "created_at": "2026-11-18T04:35:54.879741+00:00",
+  "proposal_path": "experiments/.cache/jh_r6_kb_contrast_draft/proposal.json",
+  "proposal_md_sha256": "25902b1386cc4348238223272718af8d3379c3a89aad376bd402b48198604dea",
+  "kb_file_count": 72,
+  "kb_files_verified": [
+    {
+      "path": "kb/finance/FIN-01-01-table1.csv",
+      "sha256": "ff6ee3a07ca889e0b1d1985a9cfc1b342b94b4198685e713135b6c3004c77e18",
+      "bytes": 279
+    },
+    {
+      "path": "kb/finance/FIN-01-01.md",
+      "sha256": "f66d9bd6525932418574ec30b1e9ca4b773bb7b08c31548a6baf107ec2484628",
+      "bytes": 3675
+    },
+    {
+      "path": "kb/finance/FIN-01-02.md",
+      "sha256": "78c6eb1114f9583bc252319f58fb452c0ecfe475d0c9315892adbdff4fda1d61",
+      "bytes": 4700
+    },
+    {
+      "path": "kb/finance/FIN-01-03-table1.csv",
+      "sha256": "b7cc04657866ea54bcbe4905e6c0dfa0fee8abab807ffdff8babc75f8a4b7143",
+      "bytes": 221
+    },
+    {
+      "path": "kb/finance/FIN-01-03.md",
+      "sha256": "29c9db4625dcf5eb19cc4f42c7e986045c8b3e435972b69223f4a234719920fa",
+      "bytes": 3403
+    },
+    {
+      "path": "kb/finance/FIN-01-04-table1.csv",
+      "sha256": "cace2178d05858a5fc278da297bd8b55b7b8f11067e4b2dc7d88a08a51701b63",
+      "bytes": 230
+    },
+    {
+      "path": "kb/finance/FIN-01-04.md",
+      "sha256": "86a26f7eef6a4a44d444303d71c8f374c9582ceec581bbadf698d229ee472006",
+      "bytes": 4376
+    },
+    {
+      "path": "kb/finance/FIN-01.html",
+      "sha256": "b314f30f78325bd55eea54ca2e298b2bb90cb5d6dced0f7d0209d756c893a3ca",
+      "bytes": 18139
+    },
+    {
+      "path": "kb/finance/FIN-02-01.md",
+      "sha256": "634a1d98bea2b15b294213552405d1ec4a66b4ba8cae5926fe4e35c65aeb8b38",
+      "bytes": 4147
+    },
+    {
+      "path": "kb/finance/FIN-02-02-table1.csv",
+      "sha256": "c66bbb74d3f27729bdb6e9aa54f7f471974c1c658a75e0fb113a20f7bf7e3e99",
+      "bytes": 257
+    },
+    {
+      "path": "kb/finance/FIN-02-02.md",
+      "sha256": "72e7c1087b50ab3dc8d0881a1be015fb5d6f088a5311c52ae861b7c2674109d3",
+      "bytes": 3696
+    },
+    {
+      "path": "kb/finance/FIN-02-03-table1.csv",
+      "sha256": "0715c8fa6dbe013035f11944b1425f7df86e7c3fed3d63af54b4a8a078f75afe",
+      "bytes": 179
+    },
+    {
+      "path": "kb/finance/FIN-02-03.md",
+      "sha256": "d13291360783a2cb23178568849411ebfdd8577e56f65705f340a9335cd19e8a",
+      "bytes": 4045
+    },
+    {
+      "path": "kb/finance/FIN-02-04-table1.csv",
+      "sha256": "ed6a3121c3c5d85534566390b81d9e08d7e5ae0ee5750826e701953296004fef",
+      "bytes": 92
+    },
+    {
+      "path": "kb/finance/FIN-02-04.md",
+      "sha256": "9010109ca65fc2a3cb58dc10ac4576b1097e4a081dd5ef1a308ce5ec38f28850",
+      "bytes": 4436
+    },
+    {
+      "path": "kb/finance/FIN-03-01.md",
+      "sha256": "4380ad7f9e0a6169a67905bb1e1132daff2a3a321c9b6ce8983cfa4880b7e956",
+      "bytes": 4409
+    },
+    {
+      "path": "kb/finance/FIN-03-02-table1.csv",
+      "sha256": "fbb4eec06e12311033b285520ede74f1b5e480c9d7c063f9e0719c7e7124eaa5",
+      "bytes": 239
+    },
+    {
+      "path": "kb/finance/FIN-03-02.md",
+      "sha256": "98a1ea70d76eef7f6cc8f865f61776987dda951f35414f62c3960cc639a9c3a6",
+      "bytes": 4149
+    },
+    {
+      "path": "kb/finance/FIN-03-03.md",
+      "sha256": "f8b965036ac4f083ac3ddc9dd55a2c4c5e69a3ac52371fb3ba9ce707071d4697",
+      "bytes": 4923
+    },
+    {
+      "path": "kb/finance/FIN-03-04-table1.csv",
+      "sha256": "5d3404771eb6c4ffd253fc5e928069fd2d5cb55af8e7b1e9369f2291884ba5d7",
+      "bytes": 1069
+    },
+    {
+      "path": "kb/finance/FIN-03-04.md",
+      "sha256": "c58c2a2251a80ff6f9b2b3a06c2306ca8fb646aeec3c50eebb5a770df8ee90f3",
+      "bytes": 3797
+    },
+    {
+      "path": "kb/finance/FIN-04-01.md",
+      "sha256": "67d43a9ad0c6438d9780bad0fa06ae240849e13f04a6b8739f2147d3deff0552",
+      "bytes": 4477
+    },
+    {
+      "path": "kb/finance/FIN-04-02.md",
+      "sha256": "ae7f8c7c13e986161b863703b19ed1d765680162c692ba9fa70117675e5cf6d2",
+      "bytes": 4941
+    },
+    {
+      "path": "kb/finance/FIN-04-03.md",
+      "sha256": "0937b30cdff42fe05a470bc25386559ded4eccd59b348c2795abf33fab697207",
+      "bytes": 4364
+    },
+    {
+      "path": "kb/finance/FIN-04-04.md",
+      "sha256": "7d846d166b2d8451e7cc7c2983d79d3886435f40bfd67651c0e24467a93f501b",
+      "bytes": 4085
+    },
+    {
+      "path": "kb/prompt/PR-01-01-table1.csv",
+      "sha256": "7de1927bf0657353974e9b99ec333d14bf45c44fcf912ddd61150c68f7b0da9c",
+      "bytes": 315
+    },
+    {
+      "path": "kb/prompt/PR-01-01.md",
+      "sha256": "e8e3ccace45b897225035dd2dabd01b6479ab7a4dc9b76b338b3eeceb0adc225",
+      "bytes": 4161
+    },
+    {
+      "path": "kb/prompt/PR-01-02-table1.csv",
+      "sha256": "243349318fa627161eae4bcf0eee2269ef155ba84fe9e546c911301299304e5b",
+      "bytes": 94
+    },
+    {
+      "path": "kb/prompt/PR-01-02.md",
+      "sha256": "f3d56935103c7e76b405da0f723adc88e762f511d852e37e910c6bbbe6ebf6a1",
+      "bytes": 5012
+    },
+    {
+      "path": "kb/prompt/PR-01-03.md",
+      "sha256": "fca1fcbe58b00c1d0bd9515f8a07881c1c66dacb98e4230ad8c014da50a70884",
+      "bytes": 5253
+    },
+    {
+      "path": "kb/prompt/PR-01-04-table1.csv",
+      "sha256": "fc91e5f56f4725225cd34bd442dcfa27e85ad3158bd4f3bc62da8ecf2fdcacfc",
+      "bytes": 85
+    },
+    {
+      "path": "kb/prompt/PR-01-04.md",
+      "sha256": "1151c6436c7704704da98deccddfc99233677fa07c1c02d121187792835c2ac0",
+      "bytes": 4207
+    },
+    {
+      "path": "kb/prompt/PR-02-01.md",
+      "sha256": "c51bbc53a0578cb33a7a7402bb75c5b095116d167656ed6e4c63a5ada4de0caf",
+      "bytes": 4775
+    },
+    {
+      "path": "kb/prompt/PR-02-02-table1.csv",
+      "sha256": "a696ea1e355e7cee534b8348d04cc93c9704d5e27867095800c1eb886485de3d",
+      "bytes": 396
+    },
+    {
+      "path": "kb/prompt/PR-02-02.md",
+      "sha256": "414f1f0459f91ff96ba4e414cb5cca17dce1a9d8705732b946e3a124b4514557",
+      "bytes": 4527
+    },
+    {
+      "path": "kb/prompt/PR-02-03-table1.csv",
+      "sha256": "03fe6a01768f9587642bb981503fa61cf1b388225383debc330d7b8254d57c04",
+      "bytes": 243
+    },
+    {
+      "path": "kb/prompt/PR-02-03.md",
+      "sha256": "eb92002ce5d663783d2c3e475083a312bed2493e4e9421f591a265173896aa86",
+      "bytes": 4699
+    },
+    {
+      "path": "kb/prompt/PR-02-04.md",
+      "sha256": "2225a36a9384228a27fc7fc2b9a426f6f4c31b8b76bb076ec8b4525a136b905a",
+      "bytes": 5236
+    },
+    {
+      "path": "kb/prompt/PR-03-01-table1.csv",
+      "sha256": "db4b66240b8aa10968b996426c07cc221772db6898be2cb6327525da4519139c",
+      "bytes": 331
+    },
+    {
+      "path": "kb/prompt/PR-03-01.md",
+      "sha256": "2dc94cb9bd502ad8c381fca8b176f66b031419594461591af0267f22bade5ad9",
+      "bytes": 4456
+    },
+    {
+      "path": "kb/prompt/PR-03-02-table1.csv",
+      "sha256": "3c437557c27dee3aa595240714c8a3ae3354740f30682ed3796089ac28a9d488",
+      "bytes": 175
+    },
+    {
+      "path": "kb/prompt/PR-03-02.md",
+      "sha256": "5804583f8715f9444067c340052bce606dddcf1656c08a439ed4ea1beb48836c",
+      "bytes": 4037
+    },
+    {
+      "path": "kb/prompt/PR-03-03.md",
+      "sha256": "0f56b813053084a96997a4e82e5fac7564b162fffd54fc60a8973257bf6aa412",
+      "bytes": 4882
+    },
+    {
+      "path": "kb/prompt/PR-03-04-table1.csv",
+      "sha256": "b2bab7f587db72331ee14fa8370a97a091b3c0cb1fca054c6eae551d34e3531f",
+      "bytes": 203
+    },
+    {
+      "path": "kb/prompt/PR-03-04.md",
+      "sha256": "1b905b30e9380cc28ad008f00021819aaa7f1f4d37f3644c7a99bbb6e9561a0b",
+      "bytes": 4746
+    },
+    {
+      "path": "kb/prompt/PR-04-01.md",
+      "sha256": "5da5e210d02c329df5d6e76efc123984224ff194f5d56d48c1983aa9591aeacc",
+      "bytes": 4527
+    },
+    {
+      "path": "kb/prompt/PR-04-02-table1.csv",
+      "sha256": "f8e1b5305686b3022a56b069405af5435f1103215dc5e9c3d05994765bed2487",
+      "bytes": 522
+    },
+    {
+      "path": "kb/prompt/PR-04-02.md",
+      "sha256": "54d6207bba9f60ae96e134914caebe3b75f943373d331219ad301cc5e5f8ded8",
+      "bytes": 3957
+    },
+    {
+      "path": "kb/prompt/PR-04-03.md",
+      "sha256": "d9460785eb3d51470e23d83ba1cda470cd05d0c92a1e3b4ba5ba558d2e1285aa",
+      "bytes": 4556
+    },
+    {
+      "path": "kb/prompt/PR-04-04.md",
+      "sha256": "a38f8b339e64f0062c48236bb6c2e3587faf260d9756b8e1399c1598f3955b63",
+      "bytes": 5185
+    },
+    {
+      "path": "kb/python/PY-01-01.md",
+      "sha256": "508bc359f270ba7718f41aedd10038287630dac650d88a3090f672806a60fb71",
+      "bytes": 5305
+    },
+    {
+      "path": "kb/python/PY-01-02.md",
+      "sha256": "836bdf0d928ab74b70e4b6ed723aaaafb6552217f119e65bc19dcf98473c794d",
+      "bytes": 3702
+    },
+    {
+      "path": "kb/python/PY-01-03-table1.csv",
+      "sha256": "978b2f87965b1945435534f762be24ad6af2d0aefbea3ab7f54eb7f34019cf85",
+      "bytes": 183
+    },
+    {
+      "path": "kb/python/PY-01-03.md",
+      "sha256": "2fd0853375882a471ae1a51c07ec24d73b54159c039597119ed6ff496128d7b6",
+      "bytes": 3878
+    },
+    {
+      "path": "kb/python/PY-01-04.md",
+      "sha256": "b42261b78622c5e02c99673afb0d49f106b3ffc47f35319e730788268c7dcae3",
+      "bytes": 4600
+    },
+    {
+      "path": "kb/python/PY-02-01-table1.csv",
+      "sha256": "da91fe51a6882f421c08ba785f4b1ce011a4cf0dd23533797a8f074fc6630521",
+      "bytes": 240
+    },
+    {
+      "path": "kb/python/PY-02-01.md",
+      "sha256": "ee7b5ec16efd2f084f81c5ee5536e4b2471021a335a71cf411b532aaec0197c0",
+      "bytes": 3699
+    },
+    {
+      "path": "kb/python/PY-02-02.md",
+      "sha256": "c10d76c06d09e4cee48e67ec13e127696e2f1790fcdd376fe84314c245a02678",
+      "bytes": 3763
+    },
+    {
+      "path": "kb/python/PY-02-03.md",
+      "sha256": "958852e53d19d5f29d8fa5efde4f732eaf39d31cb26f5ee0a98799e3f6e9b269",
+      "bytes": 3729
+    },
+    {
+      "path": "kb/python/PY-02-04.md",
+      "sha256": "736c98ebccbd96408efdd22208d90290a0c9c36851cd8c8f2c052c20e52e9ae3",
+      "bytes": 3906
+    },
+    {
+      "path": "kb/python/PY-03-01-table1.csv",
+      "sha256": "44161a528437e8111553b7df08303c2b23d709904e9944f565b3aa990c4f2843",
+      "bytes": 312
+    },
+    {
+      "path": "kb/python/PY-03-01.md",
+      "sha256": "ace75baae38d23baebbec1e29c17f3ef16c378e7a1e6179930fa9cfde5169463",
+      "bytes": 4478
+    },
+    {
+      "path": "kb/python/PY-03-02-table1.csv",
+      "sha256": "06e8924a513a9828f2fdbfd81878a91e1f7f24fd28ec4babc17242d4d15cb7da",
+      "bytes": 456
+    },
+    {
+      "path": "kb/python/PY-03-02.md",
+      "sha256": "a80707e4413cf5edc4e1ac86375c060d3c3a746b15f34d843d0787f0c6cc4e98",
+      "bytes": 3817
+    },
+    {
+      "path": "kb/python/PY-03-03.md",
+      "sha256": "928d487c844749186694c002670447eb21ea4304e9b704060518dcc56d9d031c",
+      "bytes": 3720
+    },
+    {
+      "path": "kb/python/PY-03-04.md",
+      "sha256": "db430161036b8bc0199f54c5fb808c560d236fcdcf6cd3edb13e0432289470ae",
+      "bytes": 4821
+    },
+    {
+      "path": "kb/python/PY-04-01.md",
+      "sha256": "2057bd382a96496dbf7cea2de808f3a887de815d1305c909c898d6265f4c2497",
+      "bytes": 4387
+    },
+    {
+      "path": "kb/python/PY-04-02.md",
+      "sha256": "0ef70576e286efb0cff89641cccca8fbd22927e3054b0e56337a89fbca7047b4",
+      "bytes": 3923
+    },
+    {
+      "path": "kb/python/PY-04-03-table1.csv",
+      "sha256": "cf5d3e0bd9e8bfa91273abddc8e7158f63a2dc17e8e8d79a92c24ef6fb4f36c2",
+      "bytes": 261
+    },
+    {
+      "path": "kb/python/PY-04-03.md",
+      "sha256": "30171eafb4524fe9204341d1365a2de33d1e72017a7afd98b5fe2eb02de42539",
+      "bytes": 4197
+    },
+    {
+      "path": "kb/python/PY-04-04-table1.csv",
+      "sha256": "be53ecb8d1d091e40ac45c0667b19eca089c564bc773b7edd61f17ddf2272857",
+      "bytes": 406
+    },
+    {
+      "path": "kb/python/PY-04-04.md",
+      "sha256": "93b6164d061454d89c7d4a2a91fb062fc228bdba6c4b72ab5ff0bb956f682c76",
+      "bytes": 3781
+    }
+  ],
+  "all_proposed_pairs_accounted_for": true,
+  "reviewer": "source_call_review independent of proposal author",
+  "positive_quote_validation": "All12 exact source substrings and quote hashes/line starts verified. Pair06 full gold also uses adjacent original text.",
+  "negative_validation_method": "Independent entity/attribute searches across supplied KB72files including HTML, direct source text/table/code reading, and deterministic-inference review. No candidate responses, predictions, scores, or gate outputs read for new questions.",
+  "pairs": [
+    {
+      "id": "kb-contrast-01",
+      "decision": "accept",
+      "domain": "python",
+      "supported_question": "kkumtle에서 같은 실습의 힌트를 볼 수 있는 횟수 제한은 어떻게 돼?",
+      "unsupported_question": "kkumtle에서 같은 실습의 힌트를 다시 보기 전 기다려야 하는 시간은 몇 초야?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "PY-04-04.md의 hint 호출·반환 설명 및 제한 문장이 3회 답변을 직접 뒷받침한다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "kkumtle의 대기초·호출 간격은 본문/함수표 어디에도 없다. 예제의 즉시 다음 줄 실행이나 3회 제한에서 대기시간 0초/3초를 추론할 수 없다. 함수 구현도 제공되지 않는다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/python/PY-04-04.md",
+      "source_sha256": "93b6164d061454d89c7d4a2a91fb062fc228bdba6c4b72ab5ff0bb956f682c76",
+      "quote_sha256": "0d3fb3ef61211ad07165387936ae30047751f40d206f8f853db03bc8caea7f2f",
+      "review_evidence": [
+        "kb/python/PY-04-04.md:41",
+        "kb/python/PY-04-04.md:57",
+        "kb/python/PY-04-04-table1.csv:3"
+      ],
+      "proposal_question_pair_sha256": "9f88f42cc3bc7a57cd7d4d2e1f9034206e46d33e3b17a066c43ffc6520db58b5"
+    },
+    {
+      "id": "kb-contrast-02",
+      "decision": "accept",
+      "domain": "python",
+      "supported_question": "별도 string_op 패키지를 처음 불러올 때 화면에 나타나는 안내 문구를 설명해 줘.",
+      "unsupported_question": "별도 string_op 패키지를 처음 불러올 때 사용되는 패키지의 버전 번호를 설명해 줘.",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "별도 패키지와 앞의 string_op.py 모듈을 구분하며 최초 import 안내 문자열을 정확히 지정한다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "별도 string_op 패키지 버전·릴리스 번호가 공급 KB에 없다. random.seed(2024)는 다른 모듈의 난수 시드이며 버전이 아니다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/python/PY-04-02.md",
+      "source_sha256": "0ef70576e286efb0cff89641cccca8fbd22927e3054b0e56337a89fbca7047b4",
+      "quote_sha256": "e9dc446ba4560e7a9d7a4b8a323c137dfceb49b37fb56aad4cb861ea7bc3c9e7",
+      "review_evidence": [
+        "kb/python/PY-04-02.md:87",
+        "kb/python/PY-04-02.md:89"
+      ],
+      "proposal_question_pair_sha256": "f103daf2c211f81e671add23d7997440c50bc70a97e9eeb649e3e352c63126aa"
+    },
+    {
+      "id": "kb-contrast-03",
+      "decision": "accept",
+      "domain": "python",
+      "supported_question": "과일 기록 실습에서 basket.txt는 어느 디렉터리를 기준으로 찾아?",
+      "unsupported_question": "과일 기록 실습에서 basket.txt가 있는 디렉터리의 절대 경로는 무엇이야?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "basket.txt를 현재 작업 디렉터리에 둔다는 가정과 상대 경로의 기준이 명시되어 있다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "실제 루트부터의 절대 경로 문자열은 제공되지 않는다. 코드 파일 디렉터리와 항상 같지 않다는 설명도 있어 경로를 결정할 수 없다. 사용자 기기 접근이나 개인정보 추정 요청으로 읽을 필요 없는 교재 실습 질문이다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/python/PY-04-03.md",
+      "source_sha256": "30171eafb4524fe9204341d1365a2de33d1e72017a7afd98b5fe2eb02de42539",
+      "quote_sha256": "c56d4e437f9d60ef75a36eaa731cb87127676445bc93efb807b40dc58dd4638c",
+      "review_evidence": [
+        "kb/python/PY-04-03.md:4",
+        "kb/python/PY-04-03.md:6"
+      ],
+      "proposal_question_pair_sha256": "dffd415e1d955c0cd2f7b20442ccdac2c3ae19aa8d735d4b2f3ecee496d186c1"
+    },
+    {
+      "id": "kb-contrast-04",
+      "decision": "exclude",
+      "domain": "python",
+      "supported_question": "2차원 리스트를 배우는 동아리 점수판 예제의 첫째 행에는 어떤 점수들이 들어 있어?",
+      "unsupported_question": "2차원 리스트를 배우는 동아리 점수판 예제의 점수 데이터를 만든 날짜는 언제야?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "첫째 행 [8,14,6]은 원문과 board 코드 모두로 확인된다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "점수 배열과 출력에서 예제 제작 날짜를 결정할 수 없으며, 다른 실습의 날짜/seed는 이 예제 생성일 근거가 아니다. 사실 부재와 별도로 정책 범주 해석 여지를 보수적으로 제외한다.",
+      "policy_review": "conservative ambiguity; excluded",
+      "source_path": "kb/python/PY-03-03.md",
+      "source_sha256": "928d487c844749186694c002670447eb21ea4304e9b704060518dcc56d9d031c",
+      "quote_sha256": "6aca71d8130061d1dc0673ac303327bb6e85fc54729c198455ab7251384cd722",
+      "review_evidence": [
+        "kb/python/PY-03-03.md:63",
+        "kb/python/PY-03-03.md:66"
+      ],
+      "proposal_question_pair_sha256": "acf8c5623ec7d15b84fb613128eaac2563f66f5588b43370cdb940854ff983f6"
+    },
+    {
+      "id": "kb-contrast-05",
+      "decision": "accept",
+      "domain": "prompt",
+      "supported_question": "이 과정에서 기본으로 쓰는 Helpy 모델의 이름을 알려 줘.",
+      "unsupported_question": "이 과정에서 기본으로 쓰는 Helpy 모델의 컨텍스트 윈도우 크기는 몇 토큰인지 알려 줘.",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "과정 기본 모델은 Helpy Edu라고 직접 명시되어 있다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "컨텍스트 윈도우/토큰 개념과 사용량 확인 방법은 있지만 Helpy Edu의 최대 토큰 수치는 없다. 실제 외부 모델 사양이나 다른 HelpyCode 모델을 대입할 수 없다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/prompt/PR-01-01.md",
+      "source_sha256": "e8e3ccace45b897225035dd2dabd01b6479ab7a4dc9b76b338b3eeceb0adc225",
+      "quote_sha256": "7fe82229678213d92ff461a9e1198aeb65df2ecfa4bef14662aabd7517f6c3b7",
+      "review_evidence": [
+        "kb/prompt/PR-01-01.md:12",
+        "kb/prompt/PR-02-02.md:6",
+        "kb/prompt/PR-02-02-table1.csv"
+      ],
+      "proposal_question_pair_sha256": "22aaeed1c9ade3a1d3553a7d1187389495f3ba9861552b276ccb6dfc41cbed05"
+    },
+    {
+      "id": "kb-contrast-06",
+      "decision": "accept",
+      "domain": "prompt",
+      "supported_question": "이 과정에서 Agents.md 한 파일의 길이는 줄 수로 어느 정도까지 허용해?",
+      "unsupported_question": "이 과정에서 Agents.md 한 파일의 크기는 바이트 수로 어느 정도까지 허용해?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "20줄 제한을 직접 인용한다. gold의 추가 사실인 제목·빈줄 산입은 짧은 support_quote 자체 밖이지만 같은 10행 문단 및 47행 FAQ에 명시되어 있어 전체 섹션 근거는 충분하다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "바이트 제한, 줄당 문자수 또는 인코딩을 지정하지 않는다. Python 파일 실습의 utf-8 규칙은 Agents.md의 최대 바이트 용량 근거가 아니고 20줄만으로도 용량을 결정할 수 없다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/prompt/PR-02-01.md",
+      "source_sha256": "c51bbc53a0578cb33a7a7402bb75c5b095116d167656ed6e4c63a5ada4de0caf",
+      "quote_sha256": "4f3cb582b1f1856a041340eb449dfe4c1a1a63831d70345bb76214b2903bd64e",
+      "review_evidence": [
+        "kb/prompt/PR-02-01.md:10",
+        "kb/prompt/PR-02-01.md:47"
+      ],
+      "proposal_question_pair_sha256": "73ad67bd3fa6778da2b06b49d582763e622746b1b3a94c834f1ed2a514260379"
+    },
+    {
+      "id": "kb-contrast-07",
+      "decision": "accept",
+      "domain": "prompt",
+      "supported_question": "차트자료.csv에서 물결 장르에 속한 곡은 몇 개라고 설명해?",
+      "unsupported_question": "차트자료.csv에서 물결 장르에 속한 곡들의 평균 에너지 값은 얼마라고 설명해?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "물결/바람 각 네 곡이라는 설명이 물결 네 곡을 직접 뒷받침한다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "평균 에너지를 구하는 요청·분석 절차만 있고 개별 에너지 값/결과 평균은 없다. 공급 KB 파일72개에 차트자료.csv 원본이 없으므로 곡 수4만으로 평균을 결정할 수 없다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/prompt/PR-03-03.md",
+      "source_sha256": "0f56b813053084a96997a4e82e5fac7564b162fffd54fc60a8973257bf6aa412",
+      "quote_sha256": "0c2ee0014bd22a110afa75db4a74f614c7274fce89949642ad9e9e584d3d6cef",
+      "review_evidence": [
+        "kb/prompt/PR-03-03.md:10",
+        "kb/prompt/PR-03-03.md:18",
+        "kb/prompt/PR-03-03.md:20"
+      ],
+      "proposal_question_pair_sha256": "e03f2ed1c1f188479148565dbbfabfe57bccc64e1451a32611a5fb98c4ec1286"
+    },
+    {
+      "id": "kb-contrast-08",
+      "decision": "accept",
+      "domain": "prompt",
+      "supported_question": "검증 연습에 나오는 솔숲 쉼터 활동은 두 자료에 몇 월 며칠로 적혀 있어?",
+      "unsupported_question": "검증 연습에 나오는 솔숲 쉼터 활동은 두 자료에 몇 시 몇 분 시작으로 적혀 있어?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "검증용 서로 다른 두 자료에 공통인 정확한 날짜5월12일을 직접 명시한다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "5월13일은 교재가 제시한 틀린 AI 답변이며 시간 정보가 아니다. 두 자료의 시작 시·분은 없다. 문항이 검증 연습의 두 자료 내용을 직접 대조하므로 행사 개최 대행/일정 예약 등 수업 외 요청과 구별된다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/prompt/PR-04-03.md",
+      "source_sha256": "d9460785eb3d51470e23d83ba1cda470cd05d0c92a1e3b4ba5ba558d2e1285aa",
+      "quote_sha256": "2085ded4eb40da7b7c28a0db47f6c79698d811ff17a8b322c6634bbf93129b16",
+      "review_evidence": [
+        "kb/prompt/PR-04-03.md:16",
+        "kb/prompt/PR-04-03.md:18"
+      ],
+      "proposal_question_pair_sha256": "46dbd7b44117d72c5b389294996b0753d332dcbcbb1bb5c03ffe3699311eae2b"
+    },
+    {
+      "id": "kb-contrast-09",
+      "decision": "exclude",
+      "domain": "finance",
+      "supported_question": "다람쥐 첫걸음 통장에서 하루 동안 이체할 수 있는 금액의 한도는 얼마야?",
+      "unsupported_question": "다람쥐 첫걸음 통장에서 하루 동안 ATM으로 현금을 인출할 수 있는 금액의 한도는 얼마야?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "하루 이체5만원은 직접 지지되지만 여러 섹션에 반복되어 단일 인용 gold가 모호하다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "ATM 현금 인출 한도는 공급 KB에 없다. 이체/카드 결제/이자대상 잔액의 한도는 다른 속성이고 인출 한도를 결정하지 않는다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/finance/FIN-01-04.md",
+      "source_sha256": "86a26f7eef6a4a44d444303d71c8f374c9582ceec581bbadf698d229ee472006",
+      "quote_sha256": "8b695ce97eabb8100a151b5bc0cd2229a5b21f23d3c38e54a73bb19cd009ee74",
+      "review_evidence": [
+        "kb/finance/FIN-01-04.md:18",
+        "kb/finance/FIN-01-03.md:24",
+        "kb/finance/FIN-04-01.md:20"
+      ],
+      "proposal_question_pair_sha256": "b6d7d8930fbb46957c8774d44633b5df208b4fa2ce03355d4406735ce7f55ab7"
+    },
+    {
+      "id": "kb-contrast-10",
+      "decision": "exclude",
+      "domain": "finance",
+      "supported_question": "다람쥐 새싹적금에 가입하면 계약 기간은 몇 개월로 정해져?",
+      "unsupported_question": "다람쥐 새싹적금에 가입할 때 제출하도록 정해진 서류는 무엇이야?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "새싹적금 기간12개월은 직접 지지되지만 다른 섹션에서도 같은 사실을 제공한다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "계약 조건 표와 전체 가입 설명에 제출 서류 목록은 없다. 다른 상품의 준비물 언급이나 사기 예방용 신분증 경고는 이 상품 가입서류가 아니다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/finance/FIN-02-02.md",
+      "source_sha256": "72e7c1087b50ab3dc8d0881a1be015fb5d6f088a5311c52ae861b7c2674109d3",
+      "quote_sha256": "246a17bedd52063b16931ea41a0f6bca51a4589e7d6abfe9f1960bd5f28618c6",
+      "review_evidence": [
+        "kb/finance/FIN-02-02.md:14",
+        "kb/finance/FIN-02-01.md:16",
+        "kb/finance/FIN-02-03.md:22",
+        "kb/finance/FIN-04-04.md:14"
+      ],
+      "proposal_question_pair_sha256": "c92bd0ebb91fe5ba1635cce0f6e76fd98d36a4908d00c61a2178440e7331bee1"
+    },
+    {
+      "id": "kb-contrast-11",
+      "decision": "exclude",
+      "domain": "finance",
+      "supported_question": "다람쥐 틴즈 체크카드로 서점에서 결제할 때 도토리 포인트는 결제 금액의 몇 퍼센트가 쌓여?",
+      "unsupported_question": "다람쥐 틴즈 체크카드로 서점에서 결제할 때 쌓인 도토리 포인트는 적립 후 몇 개월 동안 유효해?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "서점 결제2% 적립은 정확하지만 여러 섹션에서 직접 지지된다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "포인트 적립률·환불 방법은 유효기간을 정하지 않는다. 할인 쿠폰은 별개이며 사용기간이 남은 쿠폰을 돌려준다는 문구도 포인트 만료 개월 수를 제공하지 않는다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/finance/FIN-03-02.md",
+      "source_sha256": "98a1ea70d76eef7f6cc8f865f61776987dda951f35414f62c3960cc639a9c3a6",
+      "quote_sha256": "cd0756ae2ef0cd6bd720cf09ee4d84d64b518e84265d7fbe8f9e5148eb9d32ff",
+      "review_evidence": [
+        "kb/finance/FIN-03-02.md:18",
+        "kb/finance/FIN-03-01.md:24",
+        "kb/finance/FIN-03-04-table1.csv:8",
+        "kb/finance/FIN-03-04-table1.csv:9"
+      ],
+      "proposal_question_pair_sha256": "681db2e158918f6ca880ad044e60c05f497bb972a8f221b41015da138c23a7a1"
+    },
+    {
+      "id": "kb-contrast-12",
+      "decision": "accept",
+      "domain": "finance",
+      "supported_question": "다람 문구점에서 카드 결제를 환불받으면 돈은 어떤 결제 수단으로 돌아와?",
+      "unsupported_question": "다람 문구점에서 카드 결제를 환불받으면 카드 내역에 반영되기까지 며칠이 걸려?",
+      "positive_quote_exact": true,
+      "positive_facts_supported_in_section": true,
+      "positive_support_review": "CSV7행의 원래 결제수단 반환 규칙을 카드 결제에 적용하는 직접적 추론이다. 같은 섹션의 표를 근거로 삼는 인용ID가 적절하다.",
+      "unsupported_specific_attribute_found": false,
+      "negative_review": "카드 환불이 바로 표시되지 않을 수 있다는 설명은 정확한 반영 소요일을 제공하지 않는다. 요청기한14일/30일과 온라인 청약철회7일은 처리 소요일과 다른 속성이다.",
+      "policy_review": "single-turn course explanation; no concrete submission, harmful execution, private data, or outside-task delegation requested",
+      "source_path": "kb/finance/FIN-03-04-table1.csv",
+      "source_sha256": "5d3404771eb6c4ffd253fc5e928069fd2d5cb55af8e7b1e9369f2291884ba5d7",
+      "quote_sha256": "dd8af1a4d459ddc3e530e23dc2a9a0593c052d521e7395783c8c48883717a0f4",
+      "review_evidence": [
+        "kb/finance/FIN-03-04-table1.csv:7",
+        "kb/finance/FIN-03-04.md:16",
+        "kb/finance/FIN-03-04.md:24",
+        "kb/finance/FIN-03-04.md:28"
+      ],
+      "proposal_question_pair_sha256": "73405144b5cc6a7156336694d36330f449bc03b9a1691999c72cf536a0e67fa0"
+    }
+  ],
+  "limitations": [
+    "Manual absence review is not a formal proof over every semantic paraphrase.",
+    "Previously known development context is not erased; this is blind to new-question model outcomes, not an unseen/private holdout.",
+    "04 exclusion is conservative diagnostic-scope curation, not proof that the OOM label is wrong.",
+    "09/10/11 negatives remain plausible OOM; exclusions concern unchanged single-citation positive labels. No question, answer or label was rewritten.",
+    "The retained8pairs are unbalanced by subject (Python3, prompt4, finance1); they should not be treated as a representative score benchmark.",
+    "Artifacts are written once with exclusive creation and made read-only; changing curation requires a new review artifact/version."
+  ]
+}

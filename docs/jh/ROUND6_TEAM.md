@@ -413,3 +413,100 @@ Eager17개 포함 전체554개 테스트 통과. 실제 `_run`의 prepare/outer 
 미완료 source 재사용 금지, source 재시도 없음, 가드 불변성을 확인했다. 보호 경로 diff0.
 36–44는 trusted_sparse·normal94_sparse의 primary/alternative 각1회, 수정medium의topic1회,
 joint_quote 및 eager_source의 topic/primary 각1회로 사전 등록한다. 각 실행 전 잔여 사용량을 다시 확인한다.
+
+## 36–44 수집 완료와 추가 가설
+
+수집 commit ec8f3bd, 전체 clean. 추가1472요청으로 누적 수집6287개이며 원본 평가기로 순차 채점 중이다.
+첫 결과는 sparse primary94.40/alternative92.82, normal94_sparse primary95.05다.
+원래 trusted 경로의 실제 HTTP 응답 동일성과 해당 경로의 판정 변동을 따로 비교한다.
+수정 medium/2000은 BadRequest0이지만 topic88.60/31.38초, source timeout5건으로 low/12초 후보89.69/25.90초보다
+이번 관측이 좋지 않다. 실패한3000 설정과 구분하며 추가 추론 수준 확대는 후순위로 둔다.
+
+strict joint_quote는 topic에서 InvalidQuote26건, primary에서5건이 발생했다. 실제 최종 응답은 새로 생성한
+인용을 내보내지 않고 원래 KB를 사용하지만, 검증 탈락을 OOM으로 전달하므로 정상 질문 손실 가능성이 크다.
+검증 실패 이유는 아직 실제 trace로 확인하지 않았고, 모든 실패가 잘못된 사실이라는 주장은 하지 않는다.
+이 때문에 다음 두 변화를 분리해 구현했다(commit243ef12, 전체566테스트 통과).
+
+- `jh_r6_joint_fact`: asked_fact/quote를 먼저 정리하는 프롬프트만 사용하고, 결과 적용은 원래 joint의
+  strict boolean·section adapter 그대로 둔다. 모델 quote를 검증된 근거로 취급하거나 사용자 답변으로 보내지 않는다.
+  원문 부분문자열 검사와 새 프롬프트 효과를 분리하는 실험이며 기존 joint_quote는 보존한다.
+- `jh_r6_eager_source12`: 기존 eager의 source timeout만8→12초. topic source timeout7건이 남았으므로
+  prepare16/요청26초 안에서 추가 시간을 활용할 수 있는지 검증한다. original material·source prompt는 동일하다.
+- `jh_r6_resolved_material_hint`: 성공한 resolved 검색 힌트를 source뿐 아니라 tutor material의 별도 JSON
+  보조 필드로 제공한다. 원 대화·조각·block/other·가드는 보존하고 추가 호출 없이13초 material 한도를 유지한다.
+  query의 기존 검증은 형식/길이/검색 성공이며 의미적 정확성 증명이 아니다. followup을 우선하고 primary OOM 손실도 확인한다.
+
+public trace에는 기존 joint adapter hook의 입력/출력을 관찰하는 기능을 추가했다. API 호출이나 판정/출처를
+추가하지 않으며 공개 완료 실행만 입력으로 받아 로컬 개발 캐시에 기록한다. 프로덕션과 서버에는 연결하지 않는다.
+현재 잔여22%이므로15% 기준까지 후속 비교를 계속한다.
+
+## 36–44 채점 완료
+
+| 번호 / 자료 | 후보 | tutor | 수집 초 | 내부 실패 요청 |
+|---|---|---:|---:|---:|
+| 36 primary192 | trusted_sparse | 94.40 | 19.03 | 2 |
+| 37 alternative181 | trusted_sparse | 92.82 | 17.55 | 1 |
+| 38 primary192 | normal94_sparse | 95.05 | 18.84 | 0 |
+| 39 alternative181 | normal94_sparse | 93.09 | 17.59 | 1 |
+| 40 topic114 | source_reason12 **수정2000토큰** | 88.60 | 31.38 | 7 |
+| 41 topic114 | joint_quote | 78.73 | 14.00 | 27 |
+| 42 primary192 | joint_quote | 92.97 | 14.91 | 7 |
+| 43 topic114 | eager_source | 88.60 | 21.74 | 11 |
+| 44 primary192 | eager_source | 94.53 | 16.19 | 1 |
+
+44회6287 HTTP요청 채점 완료, 미채점0. HTTP/형식/판정 오류0이며 내부실패는 표에 별도 표시했다.
+strict quote는 정상 질문을 과도하게 abstain시켜 topic92.32→78.73으로 하락했다. primary도94.14→92.97이다.
+엄격검사 후보를 채택하지 않으며, 프롬프트만 분리한 joint_fact는 다른 후보로 평가한다.
+Eager는 topic88.60으로 focused 세 번 평균89.257을 넘지 못했다. 시간은 줄었지만 source timeout7건이 남아
+12초 변형을 한 번 비교한다. primary94.53 역시 baseline95.83보다 낮지만 단회와 동일 응답 판정 변동을 구분한다.
+
+### trusted 경로의 실제 HTTP 확인
+
+이전 합성 벡터 screen의 대상 목록과 실제 데이터/KB 해시를 검증한 뒤, 실제 HTTP 최종JSON을 비교했다.
+
+| 비교 | 생략 대상 JSON 동일 | 짝지은 HTTP 시간 차이 중앙값(새−기존) |
+|---|---:|---:|
+| primary17→36 | 74/74 | −0.4005초 |
+| alternative25→37 | 67/67 | −0.3790초 |
+| primary normal94 24→38 | 74/74 | −0.7685초 |
+| alternative normal94 27→39 | 67/67 | −0.4490초 |
+
+이 경로에서 점수가 달라진 부분은 모두 **동일 JSON에 대한 판정 변동**이었다. 실제 임베딩 호출 telemetry는 없으므로
+합성 screen의 호출 카운트를 HTTP 실측으로 쓰지 않는다. 시간에는 서버/네트워크 부하의 실행 간 차이도 포함된다.
+37의 전체90.47→92.82 상승은 생략 대상 밖114건에서 발생했고, 그중 일부도 동일 응답의 판정 변화다.
+따라서 전체 상승을 sparse 검색의 정확도 이득으로 해석하지 않는다. 대상 응답 유지와 지연 절감의 근거로 유지한다.
+상세: `experiments/.cache/jh_r6_sparse_http_analysis/{analysis.md,analysis.json}`.
+
+### 새 KB 대비 자료
+
+후보 예측을 보기 전에 KB에서 정상/미제공 속성 질문12쌍을 새로 작성하고 별도 에이전트가 KB만으로 검토했다.
+8쌍16문항을 승인,4쌍을 제외했다. 한 쌍은 OOM/학습목표 범주 모호성, 금융3쌍은 여러 정당한 출처와
+단일 gold evidence의 불일치가 이유다. 문항/라벨을 모델 응답에 맞춰 수정하지 않는다.
+이는 작은 수동 약한 라벨 개발자료이며 독립 holdout/실제 제출 추정이 아니다. 작성자의 이전 실험 맥락도 한계로 기록했다.
+설계 및 검토의 해시를 고정하고 데이터 파일을 먼저 만든 뒤 모델을 확인한다. 학습/런타임 정답표에 넣지 않는다.
+
+## 교재 대비 자료 동결과 source support 후보
+
+독립 검토 후 `jh_kb_contrast_probe.py --build-only`로16문항을 먼저 동결했다.
+dataset SHA256 `f86c11a7f52be956425e85149472a0e96f01c72f4cab173de7f6fd2b385515ca`.
+제안/검토/재현은 [contrast16/README.md](contrast16/README.md)에 보존했다. 공급 KB72파일·파일크기·canonical해시,
+문항쌍해시·본문/표 출처와 섹션 대응·정확인용·추가인용·정답형식·검토 전수 accounting을 검사한다.
+19개 synthetic fixture 테스트를 통과했고 채점 정답/ID는 HTTP 요청에 전달하지 않는다.
+
+동결 뒤 기존 공개 학습 모델의 CPU 확률을 확인했다. 미제공8문항 중2개가 normal .9603/.9943으로
+기존 .95 입력 gate를 통과하지만 출처 confidence는 .2097/.7032로 낮았다. 새 .94 band 대상은0개다.
+나머지6개는 기존 LLM 분류로 넘어간다. 이 자료만으로 실제 제출 오류율을 추정하지 않는다.
+
+`jh_r6_source_support`는 **입력 high-confidence normal이지만 출처는 신뢰하지 못하는** 기존 source 호출만 바꾼다.
+조건은 tutor/NORMAL/learned_gate이고 learned_section·tutor_section_gate가 미적용인 경로다.
+후보 풀·full section 입력·low/2000/8초·전체26초를 유지하고, 그 한 번의 selector에서
+asked_fact/quote·supported boolean·section을 받는다. boolean과 후보 ID만 엄격 검증한다.
+true는 선택한 실제 KB의 focused 원문, false는 기존 고정 OOM 문구와 빈 인용을 반환한다.
+모델 quote를 검증된 사실로 취급하거나 답변에 넣지 않는다. PII·가드·이미 material을 확인한 fallback과
+고신뢰 출처 경로는 그대로다. invalid/timeout은 기존 출처 원문 fallback이며 재시도하지 않는다.
+가드·입력 분류·학습자료 변경 없이11개 모의 테스트 포함 전체596개 통과, 보호 경로 diff0.
+
+다음45–58 사전 계획: contrast16의 baseline/focused/source_support, source_support primary/alternative,
+material_hint followup/primary, joint_fact topic/primary, eager12 topic/primary,
+public400 혼합부하 baseline/focused/normal94_sparse. 각 실행 전 사용량을 확인하며 잔여15% 이하이면 새 실행을 시작하지 않는다.
+현재 잔여19%; 진행 중 채점은 중단하지 않고 끝낸 뒤 자료·인수인계·커밋을 정리한다.

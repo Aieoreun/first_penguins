@@ -1,0 +1,152 @@
+{
+  "scope": "frozen_reviewed_manual_KB_contrast_model_screen_no_API_not_score",
+  "dataset_sha256": "f86c11a7f52be956425e85149472a0e96f01c72f4cab173de7f6fd2b385515ca",
+  "training": "unchanged bundled public only",
+  "model_predictions_first_inspected_after_dataset_frozen": true,
+  "records": [
+    {
+      "id": "kb-contrast-01-supported",
+      "gold": "normal",
+      "predicted": "normal",
+      "confidence": 0.9634980342297033,
+      "source": "PY-04-04",
+      "source_confidence": 0.3608545373742628,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-01-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.8128355768162693,
+      "source": "PY-04-04",
+      "source_confidence": 0.2576115761821395,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-02-supported",
+      "gold": "normal",
+      "predicted": "normal",
+      "confidence": 0.31565655245194624,
+      "source": "PR-01-03",
+      "source_confidence": 0.2352246706007135,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-02-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.3935260823710462,
+      "source": "PR-01-03",
+      "source_confidence": 0.1820385814880868,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-03-supported",
+      "gold": "normal",
+      "predicted": "normal",
+      "confidence": 0.984447196351672,
+      "source": "PY-03-01",
+      "source_confidence": 0.17509453567708735,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-03-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.9603381283884433,
+      "source": "PY-03-01",
+      "source_confidence": 0.20971289995889814,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-05-supported",
+      "gold": "normal",
+      "predicted": "out_of_material",
+      "confidence": 0.6092746597163141,
+      "source": "PR-01-03",
+      "source_confidence": 0.19881811878636824,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-05-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.6280846626356102,
+      "source": "PR-01-03",
+      "source_confidence": 0.1816623488244429,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-06-supported",
+      "gold": "normal",
+      "predicted": "normal",
+      "confidence": 0.6883868278235089,
+      "source": "PR-02-01",
+      "source_confidence": 0.7337819788942364,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-06-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.48111544139496953,
+      "source": "PR-02-01",
+      "source_confidence": 0.6531417320693588,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-07-supported",
+      "gold": "normal",
+      "predicted": "normal",
+      "confidence": 0.5603466521896161,
+      "source": "PR-04-04",
+      "source_confidence": 0.11140619155649782,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-07-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.7709958795879767,
+      "source": "PR-04-01",
+      "source_confidence": 0.11566952302661744,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-08-supported",
+      "gold": "normal",
+      "predicted": "normal",
+      "confidence": 0.992833998933393,
+      "source": "PR-04-03",
+      "source_confidence": 0.7978482948228367,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-08-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.9943202848910832,
+      "source": "PR-04-03",
+      "source_confidence": 0.7031800068707508,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-12-supported",
+      "gold": "normal",
+      "predicted": "normal",
+      "confidence": 0.9635621748079521,
+      "source": "FIN-03-04",
+      "source_confidence": 0.5210262544011337,
+      "new_normal94_band": false
+    },
+    {
+      "id": "kb-contrast-12-unsupported",
+      "gold": "out_of_material",
+      "predicted": "normal",
+      "confidence": 0.6661005910596715,
+      "source": "FIN-03-04",
+      "source_confidence": 0.4872670918384099,
+      "new_normal94_band": false
+    }
+  ]
+}
