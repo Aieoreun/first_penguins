@@ -14,7 +14,7 @@ from pipelines.v2 import prompts
 from pipelines.kimjaehak.guard_fitted import ContextFast
 from pipelines.kimjaehak.material_budget import Pipeline as Base
 from pipelines.kimjaehak.plain_abstain import ABSTAIN
-from pipelines.kimjaehak.round6_source_support import Pipeline
+from pipelines.kimjaehak.round6_source_support import Pipeline, Budget
 
 
 class SourceSupportTests(unittest.IsolatedAsyncioTestCase):
@@ -194,6 +194,24 @@ class SourceSupportTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(first.citations, ['B'])
         self.assertEqual(second.citations, ['B'])
         self.assertEqual(p.llm.chat.await_count, 2)
+
+    async def test_budget_changes_only_support_call_and_caps_remaining_time(self):
+        p, s = self.setup_pipeline()
+        p.__class__ = Budget
+        await p._classify(s)
+        await p._generate(s)
+        self.assertEqual(p.llm.chat.call_args.kwargs['timeout'], 12)
+        self.assertEqual(p.source_extract_timeout, 8)
+        _, ordinary = self.setup_pipeline()
+        ordinary.label, ordinary.section, ordinary.debug = Label.NORMAL, 'A', {}
+        await p._generate(ordinary)
+        self.assertEqual(p.llm.chat.call_args.kwargs['timeout'], 8)
+        _, capped = self.setup_pipeline()
+        await p._classify(capped)
+        capped._source_extract_deadline = time.monotonic() + 2
+        await p._generate(capped)
+        self.assertLessEqual(p.llm.chat.call_args.kwargs['timeout'], 1.5)
+        self.assertEqual(p.deadline, 26)
 
 
 if __name__ == '__main__':

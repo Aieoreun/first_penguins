@@ -14,6 +14,7 @@ class Pipeline(MaterialBudget):
     source_support_system = QUOTE_SYSTEM
     # The inherited non-stream selector uses low effort and exactly 2000 tokens.
     source_support_tokens = 2000
+    source_support_timeout = 8
 
     async def _generate(self, state):
         if (getattr(state, '_material_budget_guard', True)
@@ -28,7 +29,7 @@ class Pipeline(MaterialBudget):
                 view = copy(self)
                 view.source_extract_system = self.source_support_system
                 raw = await view._source_response(state, ids,
-                    timeout=min(self.source_extract_timeout, remaining))
+                    timeout=min(self.source_support_timeout, remaining))
                 result = _json_object(raw) or {}
                 supported, selected = result.get('supported'), result.get('section')
                 if (not isinstance(supported, bool) or not isinstance(selected, str)
@@ -48,3 +49,8 @@ class Pipeline(MaterialBudget):
         # No second selector after failure. Preserve the excerpt and its
         # inherited empty/over-4000-character generation fallback.
         return await FocusedExcerpt._generate(self, state)
+
+
+class Budget(Pipeline):
+    """Extend only support checks; keep the ordinary source selector at 8s."""
+    source_support_timeout = 12
