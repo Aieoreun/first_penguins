@@ -373,3 +373,43 @@ joint의 topic 응답 p50은5.121초로 신규 기준선34의10.293초, focused3
 medium/2000 비스트리밍·JSON 실제 smoke1회는 정상 JSON으로 성공했다(1.965초).
 `experiments/.cache/jh_r6_medium2000_smoke.json`에 파라미터와 성공 여부만 보존했다.
 기능 확인이며 품질/HTTP 요청 수에는 합산하지 않는다. 현재 사용률75%, 잔여25%로 후속 실험을 계속한다.
+
+### 문항별 관측 차이
+
+기존 `jh_paired_scores.py`로 채점 체크포인트만 재생했다. source_id를 묶은10000회 bootstrap이며
+같은 실행 쌍의 표본 변동만 보여 준다. API 재실행/판정 모델의 변동이나 비공개 일반화 불확실성은 포함하지 않는다.
+
+| 비교 | 관측 차이 | 문항 그룹 bootstrap95 구간 |
+|---|---:|---|
+| primary17→normal94(24) | +0.130 | −2.214..+2.604 |
+| alternative25→normal94(27) | +2.072 | −1.105..+5.387 |
+| primary17→source_hint(31) | −2.734 | −5.990..+0.391 |
+| primary17→computable(32) | −2.214 | −5.729..+1.172 |
+| primary17→joint(33) | −1.693 | −5.208..+1.823 |
+| topic34→budget12(28) | +3.509 | +0.219..+6.798 |
+| topic34→joint(30) | +6.140 | +2.412..+10.307 |
+| topic35 focused→joint(30) | +3.289 | 0.000..+7.018 |
+
+`experiments/.cache/jh_r6_paired_f.json`에 상세를 보존했다. 같은 기준선의 반복 편차와 자료별 상충을
+함께 고려하므로, 이 구간만으로 새 후보를 최종 추천에 승격하지 않는다.
+
+## 출처 선택 병렬화
+
+`jh_r6_eager_source`는 기존 fallback 분류의 `_collect_checks`에 들어온 tutor 중 입력모델의
+argmax가 normal/PII이고 확률≥.5인 경우에만 원래 source selector를 미리 시작한다.
+기존 material chunk·프롬프트·block/other 투표는 그대로다. 미리 만든 후보 풀은 원래 ungated normal의
+firstchunk/last-BM25/retrieved 순서와 같으며 원래 source prompt/low/2000/8초를 유지한다.
+
+분류가 끝나기 전에는 선택한 출처를 반영하지 않는다. 최종 normal/PII이며 learned/source gate가
+미적용인 경우에만 결과를 재사용한다. 사용하지 않을 작업은 취소하고 회수한다. 실패·prepare 취소 후에도
+두 번째 selector 호출을 시작하지 않으며, 그때 남아 있는 실제 section/label의 기존 excerpt/fallback을 따른다.
+선제 호출 준비의 예외는 원래 분류를 막지 않는다. 완료된 미사용 호출의 실패도 내부 오류 집계에 남긴다.
+
+분류를 바꾸지 않아도 시간 배분은 달라진다. 출처 대기가 prepare16초 안에 들어가며, 최종 OOM·차단·출처 gate로
+버릴 호출이 늘 수 있다. 총API 호출 수 감소를 실측했다고 주장하지 않는다. 먼저 topic/primary에서 기존 두 후보와
+점수·p50/p95·실패를 비교하고 유망하면 혼합 부하 및 반복 검증으로 진행한다. 가드와 전체26초 마감은 유지한다.
+
+Eager17개 포함 전체554개 테스트 통과. 실제 `_run`의 prepare/outer deadline 모의 실행에서도 취소 작업 회수와
+미완료 source 재사용 금지, source 재시도 없음, 가드 불변성을 확인했다. 보호 경로 diff0.
+36–44는 trusted_sparse·normal94_sparse의 primary/alternative 각1회, 수정medium의topic1회,
+joint_quote 및 eager_source의 topic/primary 각1회로 사전 등록한다. 각 실행 전 잔여 사용량을 다시 확인한다.
