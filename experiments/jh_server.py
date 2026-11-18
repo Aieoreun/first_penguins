@@ -72,7 +72,7 @@ def main():
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective.update(dual_metadata)
     effective["source_dual_granularity"] = getattr(pipeline, "source_dual_granularity", False)
-    for key in ("tutor_short_material", "tutor_material_no_section", "tutor_verify_context_sources", "tutor_lexical_mode", "source_evidence_order", "source_selection_votes", "tutor_computable_material", "source_resolved_hint", "source_selection_effort", "source_selection_tokens", "tutor_normal_gate_threshold", "tutor_joint_evidence", "joint_evidence_tokens", "tutor_skip_trusted_embedding", "tutor_joint_quote", "tutor_eager_source", "tutor_joint_fact", "tutor_material_resolved_hint"):
+    for key in ("tutor_short_material", "tutor_material_no_section", "tutor_verify_context_sources", "tutor_lexical_mode", "source_evidence_order", "source_selection_votes", "tutor_computable_material", "source_resolved_hint", "source_selection_effort", "source_selection_tokens", "tutor_normal_gate_threshold", "tutor_joint_evidence", "joint_evidence_tokens", "tutor_skip_trusted_embedding", "tutor_joint_quote", "tutor_eager_source", "tutor_joint_fact", "tutor_material_resolved_hint", "tutor_source_support", "source_support_tokens"):
         effective[key] = getattr(pipeline, key, None)
     effective["embedding_mode"] = args.embedding_mode
     effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None
@@ -94,6 +94,8 @@ def main():
         effective["source_choice_prompt_sha256"] = hashlib.sha256(pipeline.source_choice_system.encode()).hexdigest()
     if hasattr(pipeline, "joint_evidence_system"):
         effective["joint_evidence_prompt_sha256"] = hashlib.sha256(pipeline.joint_evidence_system.encode()).hexdigest()
+    if hasattr(pipeline, "source_support_system"):
+        effective["source_support_prompt_sha256"] = hashlib.sha256(pipeline.source_support_system.encode()).hexdigest()
     if getattr(pipeline, "source_resolved_hint", False):
         from pipelines.kimjaehak.round6_query_hint import HINT_RULE
         effective["source_resolved_hint_prompt_sha256"] = hashlib.sha256(HINT_RULE.encode()).hexdigest()

@@ -14,7 +14,7 @@ class Round6Contracts(unittest.TestCase):
                 pipeline = load(name)
                 self.assertEqual(pipeline.deadline, 26)
                 self.assertFalse(getattr(pipeline, 'source_stream_early_finish', False))
-                for field in ('source_selection_tokens', 'joint_evidence_tokens',
+                for field in ('source_selection_tokens', 'joint_evidence_tokens', 'source_support_tokens',
                               'answer_max_tokens', 'short_max_tokens', 'material_max_tokens'):
                     value = getattr(pipeline, field, None)
                     if value is not None:
