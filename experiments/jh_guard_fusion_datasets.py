@@ -6,6 +6,22 @@ import random
 
 PUBLIC_SHA = '4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426'
 DATASETS = {
+    'counterfactual': {
+        'path': 'experiments/.cache/jh_guard_counterfactual_v1/inputs.jsonl',
+        'manifest': 'experiments/.cache/jh_guard_counterfactual_v1/manifest.json',
+        'manifest_scope': 'public_guard_counterfactual16_manual_grounding_development',
+        'review': 'docs/jh/COUNTERFACTUAL_REVIEW.json',
+        'raw_count': 16, 'count': 16, 'candidate_count': 16,
+        'files': {
+            'public/guard.jsonl': PUBLIC_SHA,
+            'experiments/.cache/jh_guard_counterfactual_v1/inputs.jsonl': 'fe90fb26e9442429db4c1c86389cff574bb4f9517f1ccf64260eed2300d689d3',
+            'experiments/.cache/jh_guard_counterfactual_v1/manifest.json': '2bd5d88976e93ff30ad7565fa4a83a666eb02860b921506dfdaa8c367d835559',
+            'docs/jh/COUNTERFACTUAL_REVIEW.json': '5ace08fa01e64b7685aada627ac4f4edcfebd96f7a20b03223646283c046280f',
+        },
+        'scope': 'public_guard_counterfactual16_reviewed_grounding_development',
+        'primary_metric': 'paired_grounding', 'old_input_predictions_fixed': False,
+        'interpretation': 'Reviewed manual counterfactual development data with public parents. Grounded control/detection/pair accuracy is primary; official guard/span scores are supplementary, and span boundaries are subjective. Not an independent holdout; training and deployment prohibited.',
+    },
     'alternative': {
         'path': 'experiments/.cache/jh_transfer_alternative_build1/derived_inputs.jsonl',
         'manifest': 'experiments/.cache/jh_transfer_alternative_build1/derivation.json',
@@ -89,6 +105,26 @@ DATASETS = {
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def validate_counterfactual(root, spec, rows, manifest):
+    from experiments import jh_guard_counterfactual as counterfactual
+    rebuilt, rebuilt_manifest = counterfactual.build_items(root)
+    data = ''.join(json.dumps(item, ensure_ascii=False) + '\n' for item in rebuilt).encode()
+    rebuilt_manifest['dataset_sha256'] = digest(data)
+    if rows != rebuilt or manifest != rebuilt_manifest:
+        raise ValueError('Counterfactual regeneration differs from frozen dataset/manifest')
+    review = json.loads((root / spec['review']).read_text())
+    parents = [pair['source_id'] for pair in manifest['pairs_provenance']]
+    if (review.get('scope') != 'parent_source_review_before_counterfactual_scoring'
+            or review.get('accepted') is not True
+            or review.get('new_counterfactual_predictions_observed') is not False
+            or review.get('training_allowed') is not False or review.get('deployment_allowed') is not False
+            or review.get('independent_source_holdout') is not False
+            or review.get('accepted_source_ids') != parents
+            or any(review.get(key) != manifest[key] for key in
+                   ('dataset_sha256', 'proposal_sha256', 'kb_manifest_sha256'))):
+        raise ValueError('Counterfactual parent review does not approve these exact sources')
 
 
 def validate_rows(rows, spec, name, public_parents=None):
@@ -178,6 +214,8 @@ def load_dataset(name, root):
                                            or manifest.get('inherited_labels') is not True):
                 raise ValueError('Alternative partition or inherited-label declaration changed')
     rows = [json.loads(line) for line in (root / spec['path']).read_text().splitlines() if line.strip()]
+    if name == 'counterfactual':
+        validate_counterfactual(root, spec, rows, manifest)
     parents = None
     if name == 'alternative':
         parents = {}
@@ -198,13 +236,23 @@ def load_dataset(name, root):
                 'historical_component_input_predictions_fixed': spec['old_input_predictions_fixed'],
                 'interpretation': spec.get('interpretation',
                     'Full own input/output routing on public-derived development data; not a private score estimate.')}
+    if name == 'counterfactual':
+        metadata['source_files'].update(manifest['kb_files'])
+        metadata['parent_review'] = spec['review']
+        metadata['parent_review_sha256'] = spec['files'][spec['review']]
+        metadata['generation_review_status'] = manifest['review_status']
+        metadata['parent_review_accepted'] = True
     return items, metadata
 
 
 def summarize_result(label, result, metadata):
     summary = {'candidate': label, 'dataset': metadata['dataset'], 'scope': metadata['scope'],
                'primary_metric': metadata['primary_metric'], 'runtime': result['runtime']}
-    if metadata['primary_metric'] == 'input_only':
+    if metadata['primary_metric'] == 'paired_grounding':
+        summary.update({key: result['counterfactual_details'][key] for key in
+                        ('control_accuracy', 'counterfactual_detection', 'paired_both_correct', 'invalid')})
+        summary['interpretation'] = metadata['interpretation']
+    elif metadata['primary_metric'] == 'input_only':
         summary['input_metrics'] = {key: result['guard_details'][key] for key in
                                     ('block_f1', 'category_accuracy', 'false_block', 'missed_block')}
         summary['interpretation'] = metadata['interpretation']

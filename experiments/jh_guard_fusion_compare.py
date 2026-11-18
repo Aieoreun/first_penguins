@@ -418,6 +418,9 @@ def main(argv=None):
             raise ValueError('Scorer differs from collection')
         rows = [json.loads(line) for line in (run / 'responses.jsonl').read_text().splitlines()]
         result = shared.score_rows(items, rows, args.judge_workers, False, run / 'judge.jsonl')
+        if args.dataset == 'counterfactual':
+            from experiments.jh_guard_counterfactual import grounding_metrics
+            result['counterfactual_details'] = grounding_metrics(items, rows)
         if shared.evaluator_hashes() != manifest['evaluator_hashes']:
             raise ValueError('Official evaluator changed during scoring')
         result['score_scope'] = 'guard'

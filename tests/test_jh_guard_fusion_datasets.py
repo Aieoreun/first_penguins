@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from experiments import jh_guard_fusion_datasets as datasets
+from experiments import jh_guard_counterfactual as counterfactual
 
 
 def guard(identifier='g', candidate=True):
@@ -18,6 +19,64 @@ def guard(identifier='g', candidate=True):
 
 
 class DatasetTests(unittest.TestCase):
+    def test_counterfactual_regeneration_and_separate_review_contract(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rows = [guard('p/control'),guard('p/counterfactual')]
+            base_manifest = {'pairs_provenance':[{'source_id':'p'}],
+                             'proposal_sha256':'proposal', 'kb_manifest_sha256':'kb'}
+            manifest = {**deepcopy(base_manifest), 'dataset_sha256':datasets.digest(
+                ''.join(json.dumps(row,ensure_ascii=False)+'\n' for row in rows).encode())}
+            review = {'scope':'parent_source_review_before_counterfactual_scoring','accepted':True,
+                      'new_counterfactual_predictions_observed':False, 'training_allowed':False,
+                      'deployment_allowed':False,'independent_source_holdout':False,
+                      'accepted_source_ids':['p'], **{key:manifest[key] for key in
+                      ('dataset_sha256','proposal_sha256','kb_manifest_sha256')}}
+            spec = {'review':'review.json'}
+            (root / 'review.json').write_text(json.dumps(review))
+            with patch.object(counterfactual,'build_items',side_effect=lambda root: (deepcopy(rows),deepcopy(base_manifest))):
+                datasets.validate_counterfactual(root,spec,rows,manifest)
+                for key,value in (('accepted',False),('accepted_source_ids',['different']),
+                                  ('dataset_sha256','changed'),('proposal_sha256','changed'),
+                                  ('kb_manifest_sha256','changed'),('training_allowed',True),
+                                  ('deployment_allowed',True),('new_counterfactual_predictions_observed',True)):
+                    (root / 'review.json').write_text(json.dumps({**review,key:value}))
+                    with self.subTest(key=key), self.assertRaises(ValueError):
+                        datasets.validate_counterfactual(root,spec,rows,manifest)
+                (root / 'review.json').write_text(json.dumps(review))
+                broken = deepcopy(rows)
+                broken[0]['candidate_answer'] += ' tampered'
+                with self.assertRaises(ValueError):
+                    datasets.validate_counterfactual(root,spec,broken,manifest)
+                with self.assertRaises(ValueError):
+                    datasets.validate_counterfactual(root,spec,rows,{**manifest,'extra':'tampered'})
+
+    def test_counterfactual_review_pin_is_checked_before_regeneration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            review = root / 'review.json'
+            review.write_text('{"accepted":true}')
+            spec = {'files':{'review.json':datasets.digest(review.read_bytes())}}
+            review.write_text('{"accepted":false}')
+            with patch.dict(datasets.DATASETS,{'counterfactual':spec}), \
+                 patch.object(counterfactual,'build_items') as rebuild:
+                with self.assertRaises(ValueError):
+                    datasets.load_dataset('counterfactual',root)
+                rebuild.assert_not_called()
+
+    def test_counterfactual_summary_prioritizes_grounding_over_official_aggregate(self):
+        result = {'guard':99,'guard_details':{'span_f1':1},'runtime':{},
+                  'counterfactual_details':{'count':16,'pairs':8,'invalid':1,
+                    'control_accuracy':.875,'counterfactual_detection':.5,'paired_both_correct':.375}}
+        metadata = {'dataset':'counterfactual','scope':'manual grounding development',
+                    'primary_metric':'paired_grounding','interpretation':'Span is supplementary'}
+        summary = datasets.summarize_result('fusion',result,metadata)
+        self.assertEqual(summary['paired_both_correct'],.375)
+        self.assertEqual(summary['invalid'],1)
+        self.assertNotIn('guard',summary)
+        self.assertNotIn('guard_details',summary)
+        self.assertEqual(result['guard'],99)
+
     def test_alternative_filters_by_parent_not_rewritten_endpoint(self):
         parents = {'g': guard('g'), 't': {**guard('t', False), 'endpoint': 'tutor'}}
         rows = [{**guard('g-p1', False), 'source_id': 'g'},

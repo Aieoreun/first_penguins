@@ -380,6 +380,46 @@ def run(app, **kwargs):
         self.assertEqual(saved['guard'],90)
         self.assertEqual(saved['diagnostic_scope'],'public diagnostic')
 
+    def test_counterfactual_scoring_retains_official_result_and_adds_pair_metrics(self):
+        dest = self.root / 'experiments/.cache/jh_guard_fusion_cf'
+        (dest / 'peace_snapshot').mkdir(parents=True)
+        run = dest / 'current'
+        run.mkdir()
+        items = [{'id':kind,'endpoint':'guard','pair_id':'pair','contrast_kind':kind,
+                  'labels':{'grounded':kind == 'control'}} for kind in ('control','counterfactual')]
+        data = ''.join(json.dumps(item)+'\n' for item in items)
+        (dest / 'inputs.jsonl').write_text(data)
+        probe.write_json(dest / 'plan.json', {
+            'order':['current'],'embedding_mode':'env','dataset_sha256':probe.digest(data.encode()),
+            'protected_hashes':{},'peace_snapshot':{'files':{}},
+            'dataset_provenance':{'dataset':'counterfactual'}})
+        probe.write_json(run / 'manifest.json', {'effective_config':self.identity('current'),'evaluator_hashes':{}})
+        probe.write_json(run / 'runtime.json', {'collect_seconds':1})
+        rows = [{'id':item['id'],'response':{'input':{'category':'normal','decision':'allow'},
+                  'output':{'grounded':item['labels']['grounded'],'safe':True,'unsupported':[]}}} for item in items]
+        (run / 'responses.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+        metadata = {'dataset':'counterfactual','scope':'manual grounding diagnostic',
+                    'primary_metric':'paired_grounding','interpretation':'Development only'}
+        result = {'guard':90,'guard_details':{'span_f1':.6}}
+        env = {name:'synthetic' for name in ('TEAM_TOKEN','OPENAI_API_KEY','OPENAI_BASE_URL','OPENAI_MODEL')}
+        with patch.object(probe,'ROOT',self.root), \
+             patch.object(probe,'protected_hashes',return_value={}), \
+             patch.object(probe.datasets,'load_dataset',return_value=(items,metadata)), \
+             patch.object(probe.shared,'evaluator_hashes',return_value={}), \
+             patch.object(probe.shared,'score_rows',return_value=result) as score, \
+             patch.object(probe,'collect_candidate',side_effect=AssertionError('No HTTP')) as collect, \
+             patch.dict(os.environ,env), redirect_stdout(io.StringIO()):
+            probe.main(['--name','cf','--dataset','counterfactual','--score-only','--order','current'])
+        score.assert_called_once()
+        collect.assert_not_called()
+        saved = json.loads((run / 'result.json').read_text())
+        summary = json.loads((dest / 'summary.json').read_text())[0]
+        self.assertEqual(saved['guard'],90)
+        self.assertEqual(saved['guard_details']['span_f1'],.6)
+        self.assertEqual(saved['counterfactual_details']['paired_both_correct'],1)
+        self.assertEqual(summary['paired_both_correct'],1)
+        self.assertNotIn('guard',summary)
+
 
 if __name__ == '__main__':
     unittest.main()
