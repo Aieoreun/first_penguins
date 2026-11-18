@@ -7,7 +7,7 @@
   "stop_rule": {
     "assumption": "stop_new_runs_at_used_80_percent",
     "clarification_pending": true,
-    "last_observed_used_percent": 13
+    "last_observed_used_percent": 14
   },
   "completed_comparisons": [
     "pg01_public",
@@ -24,10 +24,11 @@
     "pg12_ground_budget",
     "pg13_schedule_paraphrase",
     "pg14_schedule_reverse",
-    "pg15_counterfactual"
+    "pg15_counterfactual",
+    "pg16_mixed_public"
   ],
-  "completed_http_requests": 5096,
-  "pending_run": "pg16_mixed_public",
+  "completed_http_requests": 6296,
+  "pending_run": null,
   "next": [
     "reverse paraphrase comparison",
     "counterfactual16 paired grounding diagnostic",

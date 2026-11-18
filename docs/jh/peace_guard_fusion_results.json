@@ -2403,5 +2403,144 @@
         "interpretation": "Reviewed manual counterfactual development data with public parents. Grounded control/detection/pair accuracy is primary; official guard/span scores are supplementary, and span boundaries are subjective. Not an independent holdout; training and deployment prohibited."
       }
     ]
+  },
+  "pg16_mixed_public": {
+    "dataset": "public400_mixed",
+    "in_sample": true,
+    "results": [
+      {
+        "candidate": "jh_r4_material_budget",
+        "source_commit": "f6e53ac795c85b90f400c5136194fa7877ef02fa",
+        "total": 98.53,
+        "tutor": 97.75,
+        "guard": 99.3,
+        "invalid": 0,
+        "judge_errors": 0,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9767,
+          "span_f1": 0.9767,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "normal -> normal": 113,
+            "harmful_content -> harmful_content": 26,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "off_topic -> off_topic": 7,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 7,
+            "answer_seeking -> answer_seeking": 4,
+            "out_of_material -> out_of_material": 12,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "low_signal_input -> low_signal_input": 3,
+            "normal -> out_of_material": 1
+          }
+        },
+        "runtime": {
+          "collect_seconds": 24.23,
+          "p50": 0.5545,
+          "p95": 9.209,
+          "max": 13.975,
+          "http_errors": 0,
+          "stage_failure_requests": 11,
+          "stage_errors": {
+            "context_policy:TimeoutError": 1,
+            "material:TimeoutError": 5,
+            "material:parse": 1,
+            "context_grounding:TimeoutError": 4
+          }
+        }
+      },
+      {
+        "candidate": "jh_pg_current_span80",
+        "source_commit": "f6e53ac795c85b90f400c5136194fa7877ef02fa",
+        "total": 98.21,
+        "tutor": 97.12,
+        "guard": 99.3,
+        "invalid": 0,
+        "judge_errors": 0,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9767,
+          "span_f1": 0.9767,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "normal -> normal": 112,
+            "harmful_content -> harmful_content": 26,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "off_topic -> off_topic": 7,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 7,
+            "answer_seeking -> answer_seeking": 4,
+            "out_of_material -> out_of_material": 12,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "low_signal_input -> low_signal_input": 3,
+            "normal -> out_of_material": 2
+          }
+        },
+        "runtime": {
+          "collect_seconds": 21.03,
+          "p50": 0.5395000000000001,
+          "p95": 9.601,
+          "max": 13.981,
+          "http_errors": 0,
+          "stage_failure_requests": 7,
+          "stage_errors": {
+            "context_policy:TimeoutError": 1,
+            "material:TimeoutError": 3,
+            "context_grounding:TimeoutError": 3
+          }
+        }
+      },
+      {
+        "candidate": "jh_pg_fast_parallel",
+        "source_commit": "bc5745c68fc60fcf0d5b3e422fa3d5d244fd7d40",
+        "total": 98.34,
+        "tutor": 97.38,
+        "guard": 99.3,
+        "invalid": 0,
+        "judge_errors": 0,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9767,
+          "span_f1": 0.9767,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "normal -> normal": 113,
+            "harmful_content -> harmful_content": 26,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "off_topic -> off_topic": 7,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 7,
+            "answer_seeking -> answer_seeking": 4,
+            "out_of_material -> out_of_material": 12,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "low_signal_input -> low_signal_input": 3,
+            "normal -> out_of_material": 1
+          }
+        },
+        "runtime": {
+          "collect_seconds": 22.47,
+          "p50": 0.47450000000000003,
+          "p95": 8.709,
+          "max": 13.79,
+          "http_errors": 0,
+          "stage_failure_requests": 5,
+          "stage_errors": {
+            "context_grounding:ValueError": 1,
+            "material:TimeoutError": 3,
+            "generate:TimeoutError": 1
+          }
+        }
+      }
+    ]
   }
 }
