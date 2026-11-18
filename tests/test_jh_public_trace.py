@@ -71,6 +71,32 @@ def item(name='public1'):
 
 
 class TraceHooksTests(unittest.IsolatedAsyncioTestCase):
+    def test_joint_adapter_trace_preserves_identity_calls_and_exceptions(self):
+        class Adapter:
+            def _adapt_joint_result(self, result, ids):
+                self.calls += 1
+                if 'error' in result:
+                    raise result['error']
+                return result
+        p = trace.traced_class(Adapter)()
+        p.calls = 0
+        recorder = {'events': [], 'capture_errors': []}
+        token = trace._ACTIVE.set(recorder)
+        try:
+            raw = {'supported': True, 'section': 'A', 'quote': 'public quote'}
+            self.assertIs(p._adapt_joint_result(raw, ['A']), raw)
+            exc = ValueError('original')
+            with self.assertRaises(ValueError) as raised:
+                p._adapt_joint_result({'error': exc}, ['A'])
+            self.assertIs(raised.exception, exc)
+        finally:
+            trace._ACTIVE.reset(token)
+        self.assertEqual(p.calls, 2)
+        self.assertEqual(recorder['events'][0]['result'], raw)
+        self.assertEqual(recorder['events'][-1]['phase'], 'raise')
+        self.assertEqual(recorder['capture_errors'], [])
+        self.assertFalse(hasattr(trace.traced_class(FakePipeline), '_adapt_joint_result'))
+
     async def test_same_calls_arguments_response_and_no_extra_candidate_call(self):
         plain, observed = FakePipeline(), trace.traced_class(FakePipeline)()
         body = trace.tutor_body(item())

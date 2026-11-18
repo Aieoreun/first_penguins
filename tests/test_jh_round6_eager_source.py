@@ -14,10 +14,28 @@ from core.state import Chunk
 from pipelines.v2 import prompts
 from pipelines.kimjaehak.material_budget import Pipeline as Base
 from pipelines.kimjaehak.guard_fitted import ContextFast
-from pipelines.kimjaehak.round6_eager_source import Eager
+from pipelines.kimjaehak.round6_eager_source import Eager, Budget
 
 
 class EagerTests(unittest.IsolatedAsyncioTestCase):
+    async def test_twelve_second_variant_changes_only_bounded_source_budget(self):
+        for remaining, expected in ((26, 12), (2, 1.5)):
+            p, s = self.setup_pipeline(cls=Budget)
+            s._source_extract_deadline = time.monotonic() + remaining
+            p._source_response = AsyncMock(return_value='{"section":"B"}')
+            await p._classify(s)
+            timeout = p._source_response.call_args.args[2]
+            self.assertLessEqual(timeout, expected)
+            self.assertGreater(timeout, expected - .1)
+            await p._generate(s)
+            p._source_response.assert_awaited_once()
+            self.assertEqual(s.citations, ['B'])
+            self.assertEqual(p.tutor_prepare_limit, 16)
+            self.assertEqual(p.deadline, 26)
+        self.assertIs(Budget._collect_checks, Eager._collect_checks)
+        self.assertIs(Budget._ask, Base._ask)
+        self.assertIs(Budget.guard, Base.guard)
+
     def setup_pipeline(self, cls=Eager, category='normal', confidence=.6, section_confidence=.8, guard=False):
         p = cls.__new__(cls)
         p.searcher = Searcher([Chunk('A', 'title A\nalpha'), Chunk('B', 'title B\nbeta')])

@@ -91,3 +91,8 @@ class Eager(MaterialBudget):
             # Keep the parent's section/label and excerpt/no-section fallbacks.
             return await FocusedExcerpt._generate(self, state)
         return await super()._generate(state)
+
+
+class Budget(Eager):
+    """Allow the same selector more of the unchanged prepare/request budget."""
+    source_extract_timeout = 12

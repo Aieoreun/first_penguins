@@ -123,6 +123,16 @@ class TraceMixin:
         event('_source_response', 'return', raw=result)
         return result
 
+    def _adapt_joint_result(self, result, ids):
+        event('_adapt_joint_result', 'enter', result=result, ids=ids)
+        try:
+            adapted = super(self._trace_hook_class, self)._adapt_joint_result(result, ids)
+        except BaseException as exc:
+            event('_adapt_joint_result', 'raise', exception=type(exc).__name__)
+            raise
+        event('_adapt_joint_result', 'return', adapted=adapted)
+        return adapted
+
 
 def traced_class(base):
     # Only wrap hooks the selected variant already exposes. The explicit super
