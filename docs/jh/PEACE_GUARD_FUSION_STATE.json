@@ -2,12 +2,12 @@
   "status": "running",
   "branch": "experiment/kimjaehak-peace-guard-fusion",
   "baseline_commit": "ff0aa5e",
-  "current_code_commit": "4b5fc4b",
+  "current_code_commit": "679baa6",
   "peace_reference": "3c64079eb1af14170b3bee4578ac6f916bec433e",
   "stop_rule": {
     "assumption": "stop_new_runs_at_used_80_percent",
     "clarification_pending": true,
-    "last_observed_used_percent": 18
+    "last_observed_used_percent": 22
   },
   "completed_comparisons": [
     "pg01_public",
@@ -31,15 +31,19 @@
     "pg19_gate_reverse",
     "pg20_gate_alternative",
     "pg21_relational",
-    "pg22_mixed_transfer"
+    "pg22_mixed_transfer",
+    "pg23_cancel_ground",
+    "pg24_mixed_reverse"
   ],
-  "completed_http_requests": 9876,
-  "pending_run": null,
+  "completed_http_requests": 11432,
+  "pending_run": {},
   "next": [
-    "alternative184 input-only comparison",
-    "relational16 paired grounding comparison",
-    "leading-candidate mixed public validation",
-    "inspect remaining generalization failures"
+    "review and freeze input intent pairs",
+    "review normal-input unsafe-output diagnostic",
+    "compare neutral ALLOW output safety check against fast_cancel"
   ],
-  "recommendation": "Leading new fusion candidate jh_pg_fast_gate90; preserve original final, require alternative/novel/private validation"
+  "recommendation": "Prefer fast_cancel for next submission validation, fast_gate90 comparison retained; preserve old final. Local speed evidence stronger than quality attribution.",
+  "completed_non_score_probes": [
+    "pg25_budget_probe"
+  ]
 }
