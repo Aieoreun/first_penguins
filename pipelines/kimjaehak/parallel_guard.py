@@ -14,6 +14,7 @@ SAFETY_SYSTEM = '당신은 교육용 튜터 후보 답변의 정책 준수 검�
 
 
 class ParallelGuard:
+    request_slots = 64
     guard_prepare_limit = 26.0
     guard_deadline = 28.0
     guard_material_timeout = 13.0
