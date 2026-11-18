@@ -564,3 +564,18 @@ other Timeout1건이 있다. 서버는 문항ID를 기록하지 않으므로 시
 요청복사본만category gate를비활성화하고 기존 block/other/material 전체판정을 거친다.
 두 번째는 source confidence를답의존재증명으로 간주하지 않는다. 출처가약한경우 기존교재검사를복원하는가설이다.
 고신뢰출처·PII·guard·기존최종후보는유지한다. 대비16+primary와 새 기준선 반복을 우선하며 잔여15%에서새수집중단.
+
+### 후속 후보 검증과 I 사전 계획
+
+코드 b58bafc, 전체607개 테스트 통과(3.333초), 원본 보호 경로 diff0.
+CPU screen: 조건부재판정 대상은primary14개(전부normal), alternative16개(normal15/학업부정1),
+contrast16 중6개(normal4/OOM2)다. 현재public만 학습했고 문항은 추론·오프라인 집계에만 사용했다.
+실제 hook의 요청별 threshold 전환을389문항에서 확인했으며 API/채점/개선치 주장은 없다.
+집계 원본은 `.cache/jh_r6_conditioned_gate_screen.json`에 보존했다.
+
+H 채점을 모두 끝낸 뒤 I를 순서대로 수집한다. 매 실행 직전 사용량 확인, used≥85면 이후 실행은 시작하지 않는다.
+59contrast conditioned,60contrast support12,61primary base반복,62primary focused반복,
+63primary conditioned,64primary support12,65primary normal94_sparse반복,
+66alternative base반복,67alternative normal94_sparse반복,68alternative focused반복.
+완료한 응답은 원본 평가기로 모두 채점한다. 수집과 채점을 겹치지 않아 시간 비교의 부하 혼선을 줄인다.
+새 두 후보의 추가 확인 가치와, 현재 가장 유망한 sparse 조합의 재현 여부를 각각 확인한다.
