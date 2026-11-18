@@ -1,5 +1,7 @@
 # 김재학 실험 인수인계
 
+> **R6 진행 중 (2026-11-18):** 사용자가 잔여15%까지 계속 실험을 승인했다. [팀원 검토·계획·결과](ROUND6_TEAM.md) / [진행 상태](ROUND6_STATE.json). 기준선 material_budget 및 R5 후보를 보존하고, 가드 고정·튜터 개선부터 진행한다. 아래 종료 문구는 이전 라운드 기록이다.
+
 > **R5 별도 비교 완료:** [짧은·긴 청크 실험](DUAL_GRANULARITY.md) — 세 후보 × 두 자료 × 두 번, HTTP1,836요청 채점 완료. 신규 `dual6`·`dual_all` 분리, 기존 최종 후보 보존. 신규 제출 시험은 dual_all 우선이나 실제 비공개 점수는 아직 없음. 아래 R4 종료·사용량 기록은 과거 이력이다.
 
 > **최종 후보 보관:** [FINAL_CANDIDATES.md](FINAL_CANDIDATES.md) — 우선 material_budget, 백업 focused. 정확한 실행 명령·시간 배분 차이·전체 구조도를 함께 기록했다.

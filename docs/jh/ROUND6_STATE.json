@@ -1,0 +1,14 @@
+{
+  "status": "running",
+  "started_date_kst": "2026-11-18",
+  "branch": "experiment/kimjaehak",
+  "starting_used_percent": 63,
+  "stop_remaining_percent": 15,
+  "baseline": "jh_r4_material_budget",
+  "secondary_baseline": "jh_r5_dual_all",
+  "guard": "unchanged_ContextFast",
+  "completed_runs": 0,
+  "pending_runs": 0,
+  "last_observed_used_percent": 63,
+  "next": "topic114 baseline2 and new3, then primary/followup validation"
+}
