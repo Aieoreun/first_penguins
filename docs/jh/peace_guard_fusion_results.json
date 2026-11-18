@@ -1197,5 +1197,486 @@
         "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
       }
     ]
+  },
+  "pg11_fast_gate": {
+    "source_commit": "8c0cae1",
+    "dataset": "novel_answer60",
+    "results": [
+      {
+        "candidate": "routed_span80",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 17.006,
+          "p50": 10.52,
+          "p95": 15.65,
+          "max": 17.0,
+          "http_errors": 0,
+          "stage_failure_requests": 6,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 325,
+              "completed": 318,
+              "cancelled": 5,
+              "errors": 2
+            },
+            "embed": {
+              "started": 60,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 385,
+              "completed": 378,
+              "cancelled": 5,
+              "errors": 2
+            }
+          }
+        },
+        "guard": 98.47,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.9147,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "fast_gate",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.347,
+          "p50": 7.775,
+          "p95": 13.433,
+          "max": 14.337,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 285,
+              "completed": 285,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 60,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 345,
+              "completed": 345,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "guard": 98.24,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9667,
+          "span_f1": 0.9161,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "fast_parallel",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 13.397,
+          "p50": 8.065000000000001,
+          "p95": 12.419,
+          "max": 13.392,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 285,
+              "completed": 285,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 60,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 345,
+              "completed": 345,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "guard": 99.06,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9371,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "current_span80",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 13.755,
+          "p50": 7.093,
+          "p95": 12.97,
+          "max": 13.746,
+          "http_errors": 0,
+          "stage_failure_requests": 1,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 260,
+              "completed": 259,
+              "cancelled": 0,
+              "errors": 1
+            },
+            "embed": {
+              "started": 60,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 320,
+              "completed": 319,
+              "cancelled": 0,
+              "errors": 1
+            }
+          }
+        },
+        "guard": 99.19,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9459,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      }
+    ]
+  },
+  "pg12_ground_budget": {
+    "source_commit": "8c0cae1",
+    "dataset": "novel_answer60",
+    "results": [
+      {
+        "candidate": "routed_span80",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 16.524,
+          "p50": 8.4435,
+          "p95": 13.559,
+          "max": 16.519,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 325,
+              "completed": 325,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 60,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 385,
+              "completed": 385,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "guard": 98.48,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.9151,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "ground3",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 13.632,
+          "p50": 6.433,
+          "p95": 11.772,
+          "max": 13.625,
+          "http_errors": 0,
+          "stage_failure_requests": 1,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 205,
+              "completed": 204,
+              "cancelled": 1,
+              "errors": 0
+            },
+            "embed": {
+              "started": 60,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 265,
+              "completed": 264,
+              "cancelled": 1,
+              "errors": 0
+            }
+          }
+        },
+        "guard": 98.78,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.9354,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "medium3",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 21.056,
+          "p50": 13.8215,
+          "p95": 20.858,
+          "max": 21.037,
+          "http_errors": 0,
+          "stage_failure_requests": 23,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 206,
+              "completed": 203,
+              "cancelled": 2,
+              "errors": 1
+            },
+            "embed": {
+              "started": 60,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 266,
+              "completed": 263,
+              "cancelled": 2,
+              "errors": 1
+            }
+          }
+        },
+        "guard": 98.83,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.9389,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      }
+    ]
   }
 }
