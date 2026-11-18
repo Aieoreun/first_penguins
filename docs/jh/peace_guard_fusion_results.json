@@ -639,5 +639,234 @@
         "interpretation": "Safety only: grounding=True/spans=[] were forced by the old probe; aggregate guard/grounding/span scores are not independent quality evidence."
       }
     ]
+  },
+  "pg06_safety_novel": {
+    "source_commit": "448edc1",
+    "dataset": "novel_answer60",
+    "results": [
+      {
+        "candidate": "current",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.098,
+          "p50": 7.4025,
+          "p95": 13.915,
+          "max": 14.045,
+          "http_errors": 0,
+          "stage_failure_requests": 2
+        },
+        "guard": 98.62,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9083,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "routed",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 16.305,
+          "p50": 9.3325,
+          "p95": 14.043,
+          "max": 16.299,
+          "http_errors": 0,
+          "stage_failure_requests": 3
+        },
+        "guard": 98.63,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9088,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "vote3",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 15.176,
+          "p50": 10.5505,
+          "p95": 14.182,
+          "max": 15.167,
+          "http_errors": 0,
+          "stage_failure_requests": 11
+        },
+        "guard": 98.14,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9096,
+          "safe_accuracy": 0.9667,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "conditioned_vote3",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 19.09,
+          "p50": 10.1195,
+          "p95": 17.348,
+          "max": 19.08,
+          "http_errors": 0,
+          "stage_failure_requests": 9
+        },
+        "guard": 97.27,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.9014,
+          "safe_accuracy": 0.9333,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      }
+    ]
+  },
+  "pg07_ground_novel": {
+    "source_commit": "448edc1",
+    "dataset": "novel_answer60",
+    "results": [
+      {
+        "candidate": "routed",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 16.382,
+          "p50": 9.336,
+          "p95": 15.039,
+          "max": 16.372,
+          "http_errors": 0,
+          "stage_failure_requests": 8
+        },
+        "guard": 98.56,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9042,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "routed_relation",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 19.296,
+          "p50": 12.387,
+          "p95": 16.715,
+          "max": 19.289,
+          "http_errors": 0,
+          "stage_failure_requests": 23
+        },
+        "guard": 98.59,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9062,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "routed_provenance",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 19.705,
+          "p50": 10.647,
+          "p95": 15.258,
+          "max": 19.698,
+          "http_errors": 0,
+          "stage_failure_requests": 11
+        },
+        "guard": 98.07,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.8881,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      }
+    ]
   }
 }
