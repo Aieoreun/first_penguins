@@ -24,6 +24,8 @@ def load(name: str = ""):
         if name in {"jh_r6_evidence_first", "jh_r6_source_vote3"}:
             module = importlib.import_module("pipelines.kimjaehak.round6_source")
             return module.EvidenceFirst if name == "jh_r6_evidence_first" else module.VoteThree
+        if name == "jh_r6_trusted_sparse":
+            return importlib.import_module("pipelines.kimjaehak.round6_trusted_sparse").Pipeline
         if name == "jh_r6_joint_evidence":
             return importlib.import_module("pipelines.kimjaehak.round6_joint_evidence").Pipeline
         if name == "jh_r6_normal_gate94":
