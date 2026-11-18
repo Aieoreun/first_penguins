@@ -72,7 +72,7 @@ def main():
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective.update(dual_metadata)
     effective["source_dual_granularity"] = getattr(pipeline, "source_dual_granularity", False)
-    for key in ("tutor_short_material", "tutor_material_no_section", "tutor_verify_context_sources", "tutor_lexical_mode", "source_evidence_order", "source_selection_votes", "tutor_computable_material", "source_resolved_hint", "source_selection_effort", "source_selection_tokens", "tutor_normal_gate_threshold", "tutor_joint_evidence", "joint_evidence_tokens", "tutor_skip_trusted_embedding"):
+    for key in ("tutor_short_material", "tutor_material_no_section", "tutor_verify_context_sources", "tutor_lexical_mode", "source_evidence_order", "source_selection_votes", "tutor_computable_material", "source_resolved_hint", "source_selection_effort", "source_selection_tokens", "tutor_normal_gate_threshold", "tutor_joint_evidence", "joint_evidence_tokens", "tutor_skip_trusted_embedding", "tutor_joint_quote"):
         effective[key] = getattr(pipeline, key, None)
     effective["embedding_mode"] = args.embedding_mode
     effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None

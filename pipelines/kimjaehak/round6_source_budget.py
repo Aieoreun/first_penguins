@@ -19,4 +19,6 @@ class Budget(MaterialBudget):
 
 class Reason(Budget):
     source_selection_effort = 'medium'
-    source_selection_tokens = 3000
+    # The organizer proxy caps non-streaming completions at 2000 tokens.
+    # Keep the same cap as Budget so this ablation changes only effort.
+    source_selection_tokens = 2000

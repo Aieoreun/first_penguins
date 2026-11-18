@@ -30,6 +30,20 @@ class Pipeline(MaterialBudget):
     joint_evidence_tokens = 2000
     joint_evidence_system = JOINT_SYSTEM
 
+    def _adapt_joint_result(self, result, ids):
+        """Return classifier payload, reusable source, and optional diagnostic."""
+        supported, selected = result.get('supported'), result.get('section')
+        if not isinstance(supported, bool) or not isinstance(selected, str) or selected not in ids:
+            raise ValueError('Invalid evidence decision')
+        if supported:
+            text = self.searcher.section_text(selected)
+            if not text.strip():
+                raise ValueError('Empty selected section')
+            # Schema adapter for Voted's empty-quote OOM contract. This is
+            # actual KB text, NOT a quote claimed to be extracted by the LLM.
+            return {'quote':text, 'section':selected}, selected, None
+        return {'quote':'', 'section':selected}, None, None
+
     async def _ask(self, state, name, system, user, effort, timeout):
         if name != 'material' or getattr(state, '_material_budget_guard', True):
             return await super()._ask(state, name, system, user, effort, timeout)
@@ -49,18 +63,11 @@ class Pipeline(MaterialBudget):
                 effort=effort, max_tokens=self.joint_evidence_tokens,
                 timeout=min(self.tutor_material_timeout, remaining), json_mode=True)
             result = _json_object(raw) or {}
-            supported, selected = result.get('supported'), result.get('section')
-            if not isinstance(supported, bool) or not isinstance(selected, str) or selected not in ids:
-                raise ValueError('Invalid evidence decision')
-            if supported:
-                text = self.searcher.section_text(selected)
-                if not text.strip():
-                    raise ValueError('Empty selected section')
-                state._joint_evidence_source = selected
-                # Schema adapter for Voted's empty-quote OOM contract. This is
-                # actual KB text, NOT a quote claimed to be extracted by the LLM.
-                return {'quote':text, 'section':selected}
-            return {'quote':'', 'section':selected}
+            adapted, selected, diagnostic = self._adapt_joint_result(result, ids)
+            state._joint_evidence_source = selected
+            if diagnostic:
+                state.errors.append(diagnostic)
+            return adapted
         except Exception as exc:
             # No material retry. Cancellation propagates to the existing
             # prepare/request deadline; other failures use the parent's {} path.
