@@ -21,6 +21,11 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_r6_short_material", "jh_r6_material_nosection", "jh_r6_context_verify"}:
+            module = importlib.import_module("pipelines.kimjaehak.round6")
+            return {"jh_r6_short_material":module.ShortMaterial,
+                    "jh_r6_material_nosection":module.NoSection,
+                    "jh_r6_context_verify":module.ContextVerify}[name]
         if name in {"jh_r5_dual6", "jh_r5_dual_all"}:
             module = importlib.import_module("pipelines.kimjaehak.dual_granularity")
             return module.Six if name == "jh_r5_dual6" else module.All

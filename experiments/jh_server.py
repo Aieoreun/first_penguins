@@ -72,6 +72,8 @@ def main():
     effective["class"] = pipeline.__module__ + "." + pipeline.__name__
     effective.update(dual_metadata)
     effective["source_dual_granularity"] = getattr(pipeline, "source_dual_granularity", False)
+    for key in ("tutor_short_material", "tutor_material_no_section", "tutor_verify_context_sources"):
+        effective[key] = getattr(pipeline, key, None)
     effective["embedding_mode"] = args.embedding_mode
     effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None
     if hasattr(pipeline, "endpoint_variants"):
