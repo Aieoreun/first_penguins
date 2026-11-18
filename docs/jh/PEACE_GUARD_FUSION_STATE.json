@@ -1,0 +1,28 @@
+{
+  "status": "running",
+  "branch": "experiment/kimjaehak-peace-guard-fusion",
+  "baseline_commit": "ff0aa5e",
+  "current_code_commit": "f03a339",
+  "peace_reference": "3c64079eb1af14170b3bee4578ac6f916bec433e",
+  "stop_rule": {
+    "assumption": "stop_new_runs_at_used_80_percent",
+    "clarification_pending": true,
+    "last_observed_used_percent": 7
+  },
+  "completed_comparisons": [
+    "pg01_public",
+    "pg02_novel",
+    "pg03_paraphrase",
+    "pg04_conditioned_novel",
+    "pg05_refusal"
+  ],
+  "completed_http_requests": 1984,
+  "pending_run": null,
+  "next": [
+    "refusal safety-only comparison",
+    "conditioned baseline grounding relation/provenance comparison",
+    "requested input reverse-order repeat",
+    "mixed tutor/guard load validation"
+  ],
+  "recommendation": "Keep existing final candidate until repeatable improvements are observed; private fusion submission score unavailable"
+}
