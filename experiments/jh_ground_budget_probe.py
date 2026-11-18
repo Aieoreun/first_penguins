@@ -2,9 +2,12 @@
 
 Prepare freezes six public examples without clients/search/API calls. Execution
 uses the real CurrentSpan80 initialization and search, then freezes its top-one
-grounding payload before three sequential calls per example. No classification,
+grounding payload before two sequential calls per example. No classification,
 voting, span refinement, scoring, retries, or production behavior changes.
 Raw public payloads/responses are written only to the ignored development cache.
+Nonstream completion budgets must not exceed the provided API's 2000-token cap.
+The original six-item pg25 probe observed no length finish reason; it does not
+establish the cause of pg12 parse failures. Historical pg25 artifacts stay intact.
 """
 import argparse
 import asyncio
@@ -32,7 +35,8 @@ from pipelines.v1.pipeline import _json_object
 
 PUBLIC_SHA256 = '4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426'
 SEED = 20261118
-CONFIGS = (('low', 1500), ('medium', 2000), ('medium', 6000))
+CONFIGS = (('low', 1500), ('medium', 2000))
+MAX_COMPLETION_TOKENS = 2000
 TIMEOUT = 20.0
 SCOPE = 'public_ground_budget_development_probe_not_score'
 
@@ -43,6 +47,11 @@ def digest(data):
 
 def encoded(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True).encode()
+
+
+def validate_budget(budget):
+    if type(budget) is not int or not 1 <= budget <= MAX_COMPLETION_TOKENS:
+        raise ValueError('Nonstream max_completion_tokens must be an integer from 1 to 2000')
 
 
 def public_items():
@@ -84,7 +93,8 @@ def provenance(items):
                 selected=[{'source_id': r['id'], 'grounded_stratum': r['labels']['grounded'],
                            'item_sha256': digest(encoded(r))} for r in items],
                 configs=[{'effort': e, 'max_completion_tokens': n} for e, n in CONFIGS],
-                timeout=TIMEOUT, planned_chat_calls=18, planned_embedding_calls=6,
+                timeout=TIMEOUT, planned_chat_calls=len(items) * len(CONFIGS),
+                planned_embedding_calls=len(items),
                 source_policy='CurrentSpan80._search with candidate; first retrieved section; no gold evidence')
 
 
@@ -93,6 +103,8 @@ def write_json(path, value):
 
 
 def prepare(name):
+    for _, budget in CONFIGS:
+        validate_budget(budget)
     if not re.fullmatch(r'[A-Za-z0-9_-]+', name):
         raise ValueError('Invalid cache name')
     cache = (ROOT / 'experiments/.cache').resolve()
@@ -143,6 +155,9 @@ def token_usage(usage):
 
 
 async def completion(llm, system, user, candidate, effort, budget):
+    # Configuration errors must fail before touching the SDK, not become a
+    # recorded provider failure that could encourage another oversized attempt.
+    validate_budget(budget)
     started = time.monotonic()
     row = {'effort': effort, 'max_completion_tokens': budget, 'finish_reason': None,
            'usage': None, 'raw': None, 'error': None}

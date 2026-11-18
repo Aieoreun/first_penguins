@@ -103,7 +103,7 @@ class GroundBudgetTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(row['unsupported_valid'])
         self.assertEqual(llm._chat.chat.completions.create.await_count, 2)
 
-    async def test_search_top_one_frozen_for_all_three_budgets_actual_mro(self):
+    async def test_search_top_one_frozen_for_both_budgets_actual_mro(self):
         llm = fake_llm()
         chunks = [KBChunk('S1', 'python', 't', 'h', '검색어 파이썬'),
                   KBChunk('GOLD_SENTINEL', 'python', 'other', 'h', '다른 원문')]
@@ -122,22 +122,22 @@ class GroundBudgetTests(unittest.IsolatedAsyncioTestCase):
             await probe.collect(items, pipeline, dest, manifest)
             self.assertEqual(llm.embed.await_count, 6)
             calls = llm._chat.chat.completions.create.call_args_list
-            self.assertEqual(len(calls), 18)
-            for i in range(0, 18, 3):
-                users = [calls[i+j].kwargs['messages'][1]['content'] for j in range(3)]
+            self.assertEqual(len(calls), 12)
+            for i in range(0, 12, 2):
+                users = [calls[i+j].kwargs['messages'][1]['content'] for j in range(2)]
                 self.assertEqual(len(set(users)), 1)
                 payload = json.loads(users[0])
                 self.assertEqual([m['section'] for m in payload['교재']], ['S1'])
                 self.assertNotIn('GOLD_SENTINEL', users[0])
-                self.assertEqual([calls[i+j].kwargs['max_completion_tokens'] for j in range(3)],
-                                 [1500, 2000, 6000])
-            self.assertEqual(manifest['api_calls'], 24)
+                self.assertEqual([calls[i+j].kwargs['max_completion_tokens'] for j in range(2)],
+                                 [1500, 2000])
+            self.assertEqual(manifest['api_calls'], 18)
             self.assertEqual(manifest['status'], 'complete')
             self.assertEqual(len(manifest['retrievals']), 6)
             self.assertTrue(manifest['retrievals'][0]['source_chunks'][0]['chunk_id'].startswith('S1:'))
             self.assertNotIn('공개 후보', stdout.getvalue())
             self.assertNotIn('source_id', stdout.getvalue())
-            self.assertEqual(len((dest / 'responses.jsonl').read_text().splitlines()), 18)
+            self.assertEqual(len((dest / 'responses.jsonl').read_text().splitlines()), 12)
         self.assertEqual(items, before)
 
     async def test_error_redaction_no_retry_and_cancel_propagation(self):
@@ -161,10 +161,32 @@ class GroundBudgetTests(unittest.IsolatedAsyncioTestCase):
                 drained.set()
         llm._chat.chat.completions.create.side_effect = delayed
         with patch.object(probe, 'TIMEOUT', .01):
-            row = await probe.completion(llm, 's', 'u', 'c', 'medium', 6000)
+            row = await probe.completion(llm, 's', 'u', 'c', 'medium', 2000)
         self.assertEqual(row['error'], 'TimeoutError')
         self.assertTrue(drained.is_set())
         self.assertEqual(llm._chat.chat.completions.create.await_count, 1)
+
+    async def test_invalid_budgets_rejected_before_prepare_or_sdk(self):
+        llm = fake_llm()
+        for budget in (2001, 4000, 6000, 0, -1, True, 1500.0, '2000'):
+            with self.subTest(budget=budget):
+                with self.assertRaises(ValueError):
+                    await probe.completion(llm, 's', 'u', 'c', 'medium', budget)
+                with patch.object(probe, 'CONFIGS', (('medium', budget),)), \
+                        patch.object(probe, 'public_items') as source:
+                    with self.assertRaises(ValueError):
+                        probe.prepare('must_not_create')
+                    source.assert_not_called()
+        llm._chat.chat.completions.create.assert_not_called()
+
+    def test_planned_calls_follow_selected_items_and_configs(self):
+        items = probe.select_items(probe.public_items())
+        self.assertEqual(probe.CONFIGS, (('low', 1500), ('medium', 2000)))
+        manifest = probe.provenance(items)
+        self.assertEqual(manifest['planned_chat_calls'], 12)
+        self.assertEqual(manifest['planned_embedding_calls'], 6)
+        with patch.object(probe, 'CONFIGS', (('low', 1500),)):
+            self.assertEqual(probe.provenance(items)['planned_chat_calls'], 6)
 
     async def test_cancelled_search_preserves_attempt_manifest_and_propagates(self):
         pipeline = CurrentSpan80.__new__(CurrentSpan80)
