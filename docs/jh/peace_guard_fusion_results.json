@@ -1927,5 +1927,481 @@
         }
       }
     ]
+  },
+  "pg14_schedule_reverse": {
+    "source_commit": "f6e53ac",
+    "dataset": "paraphrase196",
+    "independent_holdout": false,
+    "results": [
+      {
+        "candidate": "fast3",
+        "dataset": "paraphrase",
+        "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 19.571,
+          "p50": 4.2905,
+          "p95": 10.816,
+          "max": 14.248,
+          "http_errors": 0,
+          "stage_failure_requests": 9,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 515,
+              "completed": 506,
+              "cancelled": 3,
+              "errors": 6
+            },
+            "embed": {
+              "started": 196,
+              "completed": 196,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 711,
+              "completed": 702,
+              "cancelled": 3,
+              "errors": 6
+            }
+          }
+        },
+        "guard": 93.83,
+        "guard_details": {
+          "block_f1": 0.9174311926605505,
+          "category_accuracy": 0.878,
+          "grounded_accuracy": 0.9647,
+          "span_f1": 0.9647,
+          "safe_accuracy": 0.9882,
+          "false_block": 4,
+          "missed_block": 5,
+          "confusion": {
+            "normal -> normal": 108,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 15,
+            "harmful_content -> normal": 2,
+            "normal -> out_of_material": 2,
+            "off_topic -> off_topic": 5,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> normal": 2,
+            "off_topic -> out_of_material": 2,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "out_of_material -> out_of_material": 9,
+            "pii_disclosure -> normal": 1,
+            "answer_seeking -> normal": 1,
+            "out_of_material -> jailbreak_injection": 1,
+            "normal -> answer_seeking": 1,
+            "normal -> academic_dishonesty": 1,
+            "normal -> jailbreak_injection": 1,
+            "jailbreak_injection -> normal": 1,
+            "normal -> off_topic": 1
+          }
+        }
+      },
+      {
+        "candidate": "fast_parallel",
+        "dataset": "paraphrase",
+        "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 24.842,
+          "p50": 5.1225000000000005,
+          "p95": 12.62,
+          "max": 14.07,
+          "http_errors": 0,
+          "stage_failure_requests": 26,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 662,
+              "completed": 635,
+              "cancelled": 8,
+              "errors": 19
+            },
+            "embed": {
+              "started": 196,
+              "completed": 195,
+              "cancelled": 0,
+              "errors": 1
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 858,
+              "completed": 830,
+              "cancelled": 8,
+              "errors": 20
+            }
+          }
+        },
+        "guard": 94.98,
+        "guard_details": {
+          "block_f1": 0.9454545454545454,
+          "category_accuracy": 0.9024,
+          "grounded_accuracy": 0.9529,
+          "span_f1": 0.9529,
+          "safe_accuracy": 0.9882,
+          "false_block": 3,
+          "missed_block": 3,
+          "confusion": {
+            "normal -> normal": 111,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "harmful_content -> normal": 2,
+            "off_topic -> off_topic": 6,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> answer_seeking": 1,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "off_topic -> normal": 1,
+            "out_of_material -> normal": 2,
+            "out_of_material -> out_of_material": 9,
+            "pii_disclosure -> normal": 1,
+            "answer_seeking -> normal": 1,
+            "normal -> academic_dishonesty": 1,
+            "normal -> jailbreak_injection": 1,
+            "normal -> off_topic": 1
+          }
+        }
+      },
+      {
+        "candidate": "current_span80",
+        "dataset": "paraphrase",
+        "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 32.011,
+          "p50": 4.5634999999999994,
+          "p95": 13.218,
+          "max": 19.78,
+          "http_errors": 0,
+          "stage_failure_requests": 34,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 619,
+              "completed": 604,
+              "cancelled": 0,
+              "errors": 15
+            },
+            "embed": {
+              "started": 196,
+              "completed": 176,
+              "cancelled": 0,
+              "errors": 20
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 815,
+              "completed": 780,
+              "cancelled": 0,
+              "errors": 35
+            }
+          }
+        },
+        "guard": 94.78,
+        "guard_details": {
+          "block_f1": 0.9357798165137615,
+          "category_accuracy": 0.8902,
+          "grounded_accuracy": 0.9647,
+          "span_f1": 0.9647,
+          "safe_accuracy": 0.9882,
+          "false_block": 3,
+          "missed_block": 4,
+          "confusion": {
+            "normal -> normal": 112,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "harmful_content -> normal": 2,
+            "off_topic -> off_topic": 5,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> normal": 2,
+            "off_topic -> out_of_material": 2,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "out_of_material -> out_of_material": 9,
+            "pii_disclosure -> answer_seeking": 1,
+            "answer_seeking -> normal": 1,
+            "out_of_material -> jailbreak_injection": 1,
+            "normal -> academic_dishonesty": 1,
+            "normal -> jailbreak_injection": 1
+          }
+        }
+      }
+    ]
+  },
+  "pg15_counterfactual": {
+    "source_commit": "f6e53ac",
+    "dataset": "counterfactual16",
+    "independent_holdout": false,
+    "results": [
+      {
+        "candidate": "current",
+        "dataset": "counterfactual",
+        "scope": "public_guard_counterfactual16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 7.784,
+          "p50": 4.5355,
+          "p95": 7.781,
+          "max": 7.781,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 80,
+              "completed": 80,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 96,
+              "completed": 96,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed manual counterfactual development data with public parents. Grounded control/detection/pair accuracy is primary; official guard/span scores are supplementary, and span boundaries are subjective. Not an independent holdout; training and deployment prohibited."
+      },
+      {
+        "candidate": "current_span80",
+        "dataset": "counterfactual",
+        "scope": "public_guard_counterfactual16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 9.106,
+          "p50": 5.2675,
+          "p95": 9.104,
+          "max": 9.104,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 80,
+              "completed": 80,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 96,
+              "completed": 96,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed manual counterfactual development data with public parents. Grounded control/detection/pair accuracy is primary; official guard/span scores are supplementary, and span boundaries are subjective. Not an independent holdout; training and deployment prohibited."
+      },
+      {
+        "candidate": "fast_parallel",
+        "dataset": "counterfactual",
+        "scope": "public_guard_counterfactual16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 7.026,
+          "p50": 4.3845,
+          "p95": 7.022,
+          "max": 7.022,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 80,
+              "completed": 80,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 96,
+              "completed": 96,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed manual counterfactual development data with public parents. Grounded control/detection/pair accuracy is primary; official guard/span scores are supplementary, and span boundaries are subjective. Not an independent holdout; training and deployment prohibited."
+      },
+      {
+        "candidate": "fast3",
+        "dataset": "counterfactual",
+        "scope": "public_guard_counterfactual16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 11.441,
+          "p50": 5.638,
+          "p95": 11.439,
+          "max": 11.439,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 48,
+              "completed": 48,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 64,
+              "completed": 64,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed manual counterfactual development data with public parents. Grounded control/detection/pair accuracy is primary; official guard/span scores are supplementary, and span boundaries are subjective. Not an independent holdout; training and deployment prohibited."
+      }
+    ]
   }
 }
