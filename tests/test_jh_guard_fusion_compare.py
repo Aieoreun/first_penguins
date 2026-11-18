@@ -41,7 +41,7 @@ class GuardFusionCompareTests(unittest.TestCase):
         return {'requested_variant': variant, 'server_variant': variant, 'class': cls,
                 'request_slots': 64, 'source_root': str(root or self.root),
                 'learned_models_enabled': False if label == 'peace' else None,
-                'guard_requested_action': label == 'requested'}
+                'guard_requested_action': label in ('requested', 'cancel_requested')}
 
     def test_snapshot_archive_hashes_exact_content_and_detects_edits_or_extras(self):
         payload = archive({'server.py': b'original server', 'core/llm.py': b'no edits'})
@@ -419,6 +419,54 @@ def run(app, **kwargs):
 
     def test_relational_scoring_retains_official_input_output_and_adds_groups(self):
         self.check_paired_scoring('relational')
+
+    def test_intent_score_only_keeps_official_scorer_and_adds_input_pair_metrics(self):
+        dest = self.root / 'experiments/.cache/jh_guard_fusion_intent'
+        (dest / 'peace_snapshot').mkdir(parents=True)
+        run = dest / 'current'
+        run.mkdir()
+        items = [{'id': kind, 'endpoint': 'guard', 'pair_id': 'pair', 'contrast_kind': kind,
+                  'messages': [{'role': 'user', 'content': 'synthetic request'}],
+                  'labels': {'category': 'normal' if kind == 'normal' else 'off_topic',
+                             'decision': 'allow' if kind == 'normal' else 'block'}}
+                 for kind in ('normal', 'blocked')]
+        data = ''.join(json.dumps(item)+'\n' for item in items)
+        (dest/'inputs.jsonl').write_text(data)
+        probe.write_json(dest/'plan.json', {'order': ['current'], 'embedding_mode': 'env',
+            'dataset_sha256': probe.digest(data.encode()), 'protected_hashes': {},
+            'peace_snapshot': {'files': {}}, 'dataset_provenance': {'dataset': 'intent'}})
+        probe.write_json(run/'manifest.json', {'effective_config': self.identity('current'), 'evaluator_hashes': {}})
+        probe.write_json(run/'runtime.json', {'collect_seconds': 1})
+        rows = [{'id': item['id'], 'response': {'input': item['labels']}} for item in items]
+        (run/'responses.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+        metadata = {'dataset': 'intent', 'scope': 'input-only fixture', 'primary_metric': 'input_only',
+                    'interpretation': 'manual development only'}
+        result = {'guard': 100, 'guard_details': {'block_f1': 1, 'category_accuracy': 1,
+                  'false_block': 0, 'missed_block': 0}}
+        env = {name: 'synthetic' for name in ('TEAM_TOKEN', 'OPENAI_API_KEY', 'OPENAI_BASE_URL', 'OPENAI_MODEL')}
+        with patch.object(probe, 'ROOT', self.root), patch.object(probe, 'protected_hashes', return_value={}), \
+             patch.object(probe.datasets, 'load_dataset', return_value=(items, metadata)), \
+             patch.object(probe.shared, 'evaluator_hashes', return_value={}), \
+             patch.object(probe.shared, 'score_rows', return_value=result) as score, \
+             patch.object(probe, 'collect_candidate', side_effect=AssertionError('No HTTP')) as collect, \
+             patch.dict(os.environ, env), redirect_stdout(io.StringIO()):
+            probe.main(['--name', 'intent', '--dataset', 'intent', '--score-only', '--order', 'current'])
+        score.assert_called_once_with(items, rows, 32, False, run/'judge.jsonl')
+        collect.assert_not_called()
+        saved = json.loads((run/'result.json').read_text())
+        summary = json.loads((dest/'summary.json').read_text())[0]
+        self.assertEqual(saved['guard'], 100)
+        self.assertEqual(saved['guard_details'], result['guard_details'])
+        self.assertEqual(saved['intent_details']['paired_both_correct'], 1)
+        self.assertEqual(summary['intent_metrics']['paired_both_correct_count'], 1)
+        self.assertNotIn('guard', summary)
+
+    def test_cancel_requested_identity_requires_requested_action_flag(self):
+        identity = self.identity('cancel_requested')
+        probe.validate_identity(identity, 'cancel_requested', self.root)
+        identity['guard_requested_action'] = False
+        with self.assertRaises(ValueError):
+            probe.validate_identity(identity, 'cancel_requested', self.root)
 
     def check_paired_scoring(self, dataset):
         dest = self.root / 'experiments/.cache/jh_guard_fusion_cf'

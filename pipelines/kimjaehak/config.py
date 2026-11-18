@@ -58,7 +58,8 @@ VARIANTS += ("jh_pg_fast_gate", "jh_pg_parallel_input", "jh_pg_fast_parallel", "
 VARIANTS += ("jh_pg_current3", "jh_pg_fast3")
 VARIANTS += ("jh_pg_current_gate90", "jh_pg_fast_gate90", "jh_pg_current_review", "jh_pg_fast_review")
 VARIANTS += ("jh_pg_current_review80", "jh_pg_fast_review80")
-VARIANTS += ("jh_pg_fast_cancel",)
+VARIANTS += ("jh_pg_fast_cancel", "jh_pg_cancel_requested")
+VARIANTS += ("jh_pg_allow_safety",)
 
 
 def configure():

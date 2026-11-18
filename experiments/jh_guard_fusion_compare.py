@@ -26,6 +26,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'allow_safety': ('jh_pg_allow_safety', 'pipelines.kimjaehak.peace_allow_safety.AllowSafety'),
+    'cancel_requested': ('jh_pg_cancel_requested', 'pipelines.kimjaehak.peace_cancel_ground.FastCancelRequested'),
     'fast_cancel': ('jh_pg_fast_cancel', 'pipelines.kimjaehak.peace_cancel_ground.FastCancelBlock'),
     'current_gate90': ('jh_pg_current_gate90', 'pipelines.kimjaehak.peace_gate_threshold.CurrentGate90'),
     'fast_gate90': ('jh_pg_fast_gate90', 'pipelines.kimjaehak.peace_gate_threshold.FastGate90'),
@@ -137,13 +139,14 @@ try:
                         counts['guard_debug'][key] += debug.get(key) is True
                     return result
                 instance.guard = observed_guard
-            if variant == 'jh_pg_requested' and getattr(instance, 'guard_requested_action', None) is not True:
+            if variant in ('jh_pg_requested', 'jh_pg_cancel_requested') and getattr(instance, 'guard_requested_action', None) is not True:
                 raise RuntimeError('Requested-action guard is not enabled')
             data = {'requested_variant': variant, 'server_variant': server.PIPELINE,
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            for key in ('guard_deadline','guard_prepare_limit','guard_material_timeout',
+            for key in ('guard_allow_safety','guard_allow_safety_timeout',
+                        'guard_deadline','guard_prepare_limit','guard_material_timeout',
                         'guard_ground_timeout','guard_safety_timeout','guard_requested_action',
                         'guard_safety_action_review','guard_safety_curriculum_context',
                         'guard_safety_after_input',
@@ -279,7 +282,7 @@ def validate_identity(value, label, source_root):
             or value.get('class') != expected or value.get('request_slots') != 64
             or value.get('source_root') != str(source_root.resolve())
             or (label == 'peace' and value.get('learned_models_enabled') is not False)
-            or (label == 'requested' and value.get('guard_requested_action') is not True)):
+            or (label in ('requested', 'cancel_requested') and value.get('guard_requested_action') is not True)):
         raise ValueError('Recorded startup identity does not match requested candidate')
 
 
@@ -450,6 +453,8 @@ def main(argv=None):
             result['counterfactual_details'] = grounding_metrics(items, rows)
         elif args.dataset == 'relational':
             result['relational_details'] = datasets.relational_metrics(items, rows)
+        elif args.dataset == 'intent':
+            result['intent_details'] = datasets.intent_metrics(items, rows)
         if shared.evaluator_hashes() != manifest['evaluator_hashes']:
             raise ValueError('Official evaluator changed during scoring')
         result['score_scope'] = 'guard'

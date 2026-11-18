@@ -7,7 +7,8 @@ from unittest.mock import AsyncMock
 from core.schema import Label
 from core.search import Searcher
 from core.state import Chunk
-from pipelines.kimjaehak.peace_cancel_ground import FastCancelBlock
+from pipelines.kimjaehak.peace_cancel_ground import FastCancelBlock, FastCancelRequested
+from pipelines.kimjaehak.peace_guard_prompt import PEACE_BLOCK_SYSTEM
 from pipelines.kimjaehak.peace_gate_threshold import FastGate90
 from pipelines.kimjaehak.peace_guard_fusion import Pipeline as Fusion
 from pipelines.kimjaehak.precise_output import POLICY_HINTS
@@ -324,6 +325,15 @@ class CancelGroundTests(unittest.IsolatedAsyncioTestCase):
         for name in ('guard_deadline', 'guard_prepare_limit', 'guard_ground_timeout',
                      'guard_safety_timeout', 'request_slots', 'guard_gate_threshold'):
             self.assertEqual(getattr(FastCancelBlock, name), getattr(FastGate90, name))
+
+    def test_requested_ablation_changes_only_guard_fallback_rubric(self):
+        p, base = self.pipeline(FastCancelRequested), self.pipeline()
+        self.assertEqual(p._block_system(p._new_state(self.body(), True)), PEACE_BLOCK_SYSTEM)
+        self.assertEqual(p._block_system(p._new_state(self.body(), False)),
+                         base._block_system(base._new_state(self.body(), False)))
+        for name in ('tutor', '_classify', '_fusion_safety', '_fusion_ground',
+                     '_ground_until_input', '_collect_checks', '_generate'):
+            self.assertIs(getattr(FastCancelRequested, name), getattr(FastCancelBlock, name))
 
 
 if __name__ == '__main__':

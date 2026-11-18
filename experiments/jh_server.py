@@ -83,6 +83,7 @@ def main():
                 "guard_fast_input_wait",
                 "guard_gate_threshold",
                 "guard_cancel_ground_after_block",
+                "guard_allow_safety", "guard_allow_safety_timeout",
                 "guard_span_review", "guard_span_review_threshold", "guard_span_review_timeout",
                 "guard_preserve_completed_ground", "guard_restore_span_refinement",
                 "guard_vote_first", "guard_prepare_limit", "guard_deadline",

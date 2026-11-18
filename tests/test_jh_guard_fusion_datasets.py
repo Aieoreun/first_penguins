@@ -8,6 +8,7 @@ from unittest.mock import patch
 from experiments import jh_guard_fusion_datasets as datasets
 from experiments import jh_guard_counterfactual as counterfactual
 from experiments import jh_guard_relational_diagnostic as relational
+from experiments import jh_guard_intent_pairs as intent
 
 
 def guard(identifier='g', candidate=True):
@@ -20,6 +21,101 @@ def guard(identifier='g', candidate=True):
 
 
 class DatasetTests(unittest.TestCase):
+    def intent_fixture(self, root):
+        spec = deepcopy(datasets.DATASETS['intent'])
+        for name in set(spec['files']) | set(intent.SOURCE_SHA):
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if name in (spec['path'], spec['proposal'], spec['manifest']):
+                path.write_bytes(intent.artifacts()[Path(name).name])
+            else:
+                path.write_bytes((intent.ROOT / name).read_bytes())
+        return spec
+
+    def test_intent_explicit_manifest_branch_and_parent_approval_provenance(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.intent_fixture(root)
+            items, metadata = datasets.load_dataset('intent', root)
+            self.assertEqual(len(items), 16)
+            self.assertTrue(all('candidate_answer' not in row for row in items))
+            self.assertEqual(metadata['primary_metric'], 'input_only')
+            self.assertTrue(metadata['parent_review_accepted'])
+            self.assertFalse(metadata['generation_evaluation_allowed'])
+            self.assertTrue(metadata['evaluation_allowed_by_parent_review'])
+            for name, checksum in intent.SOURCE_SHA.items():
+                self.assertEqual(metadata['source_files'][name], checksum)
+
+    def test_intent_frozen_bytes_and_source_pins_reject_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec = self.intent_fixture(root)
+            for name in (*spec['files'], 'kb/python/PY-02-04.md'):
+                path = root / name
+                original = path.read_bytes()
+                path.write_bytes(original + b' ')
+                with self.subTest(name=name), self.assertRaises(ValueError):
+                    datasets.load_dataset('intent', root)
+                path.write_bytes(original)
+            # Same parsed JSON is insufficient: exact stored bytes must replay.
+            name = spec['proposal']
+            original = (root/name).read_bytes()
+            (root/name).write_bytes(original + b' ')
+            spec['files'][name] = datasets.digest((root/name).read_bytes())
+            with patch.dict(datasets.DATASETS, {'intent': spec}), self.assertRaises(ValueError):
+                datasets.load_dataset('intent', root)
+
+    def test_intent_review_semantics_checked_even_if_review_pin_is_updated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec = self.intent_fixture(root)
+            review_path = root / spec['review']
+            review = json.loads(review_path.read_text())
+            for key, value in (('accepted', False), ('evaluation_allowed', False),
+                               ('new_intent_predictions_observed', True), ('training_allowed', True),
+                               ('deployment_allowed', True), ('independent_holdout', True),
+                               ('accepted_pair_ids', ['other']), ('dataset_sha256', 'changed'),
+                               ('proposal_sha256', 'changed'), ('manifest_sha256', 'changed'),
+                               ('source_manifest_sha256', 'changed'), ('source_files', {}),
+                               ('generator_sha256', 'changed')):
+                review_path.write_text(json.dumps({**review, key: value}))
+                spec['files'][spec['review']] = datasets.digest(review_path.read_bytes())
+                with self.subTest(key=key), patch.dict(datasets.DATASETS, {'intent': spec}), self.assertRaises(ValueError):
+                    datasets.load_dataset('intent', root)
+
+    def test_intent_pair_metrics_separate_category_decision_fp_fn_and_invalids(self):
+        items, rows = [], []
+        for pair in range(4):
+            for kind in ('normal', 'blocked'):
+                item = guard(f'{pair}/{kind}', candidate=False)
+                item.update(pair_id=str(pair), contrast_kind=kind)
+                if kind == 'blocked':
+                    item['labels'] = {'category': 'harmful_content', 'decision': 'block'}
+                items.append(item)
+                rows.append({'id': item['id'], 'response': {'input': deepcopy(item['labels'])}})
+        rows[0]['response']['input']['category'] = 'off_topic'  # Right decision, wrong category.
+        rows[2]['response']['input'] = {'category': 'off_topic', 'decision': 'block'}
+        rows[3]['response']['input']['decision'] = 'allow'
+        rows.pop(4)  # Missing normal result counts as wrong, separately from valid false blocks.
+        result = datasets.intent_metrics(items, rows)
+        self.assertEqual(result['normal_false_blocks'], 1)
+        self.assertEqual(result['blocked_false_allows'], 1)
+        self.assertEqual(result['invalid'], 1)
+        self.assertEqual(result['category_accuracy'], 5/8)
+        self.assertEqual(result['decision_accuracy'], 5/8)
+        self.assertEqual(result['paired_category_correct'], 1/4)
+        self.assertEqual(result['paired_decision_correct'], 2/4)
+        self.assertEqual(result['paired_both_correct'], 1/4)
+        self.assertEqual(result['paired_both_correct_count'], 1)
+        self.assertEqual(result['by_side']['normal']['invalid'], 1)
+        for broken in (rows + [rows[0]], rows + [{'id':'unknown'}]):
+            with self.assertRaises(ValueError):
+                datasets.intent_metrics(items, broken)
+        with self.assertRaises(ValueError):
+            datasets.intent_metrics(items[:-1], rows[:-1])
+        rows[0]['response']['input']['category'] = 'not-a-category'
+        self.assertEqual(datasets.intent_metrics(items, rows)['invalid'], 2)
+
     def test_relational_exact_proposal_regeneration_and_review_contract(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
