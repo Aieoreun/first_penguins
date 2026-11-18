@@ -1,5 +1,7 @@
 # 분류기 비교 후보 — 런박스 제출
 
+> **최신 판단(2026-11-19):** 문자 MLP50의 실제 제출85.41로 현재 우선 보존 후보를 `jh_cm_char_mlp50`으로 잠정 갱신했다. 아래 번호는 최초 실험 순서다. 단회 결과이며 현재 계정의85.41을 우선 유지한다. [실제 제출 비교](CLASSIFIER_MATRIX.md).
+
 브랜치: `experiment/kimjaehak-peace-guard-fusion`. 기존 후보도 같은 브랜치에 보존한다. `.env`는 런박스의 기존 파일을 사용하며 git으로 전송하지 않는다. 모델·임계값·결과의 근거는 [CLASSIFIER_MATRIX.md](CLASSIFIER_MATRIX.md)에 있다.
 
 ## 환경변수 — 2026-11-19 수정

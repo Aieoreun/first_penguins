@@ -4009,6 +4009,32 @@
       "format_or_missing": 0,
       "judge_errors": 0,
       "seed": "0b21f8d8dce67cbcc234b2b21a2fcf9a"
+    },
+    {
+      "source": "user_report",
+      "reported_date": "2026-11-19",
+      "variant_assumed": "jh_cm_char_mlp50",
+      "variant_basis": "Immediately preceding execution instructions; variant and commit not independently confirmed",
+      "instructed_commit": "492af6129434f5bd49e7ed684f6d4edb19e94f23",
+      "actual_commit_verified": false,
+      "total": 85.41,
+      "tutor": 81.25,
+      "guard": 89.57,
+      "duration_seconds": 69.468,
+      "requests": 600,
+      "timeouts": 0,
+      "format_or_missing": 0,
+      "judge_errors": 0,
+      "seed": "06ac73c87892a4d72c0a10cfa197f8e2"
     }
-  ]
+  ],
+  "current_submission_recommendation": {
+    "variant": "jh_cm_char_mlp50",
+    "status": "provisional; preserve current reported 85.41 submission",
+    "basis": "Highest reported actual total; one observation, no claim of statistically established improvement",
+    "backups": [
+      "jh_r4_material_budget",
+      "jh_r3_selected_focused"
+    ]
+  }
 }
