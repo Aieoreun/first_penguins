@@ -1,0 +1,355 @@
+{
+  "scope": "public_development_not_private_score",
+  "completed_runs": 6,
+  "total_requests": 684,
+  "pending_runs": [],
+  "runs": [
+    {
+      "run": "experiments/.cache/jh_topic_r6_01_topic_base/jh_r4_material_budget_1",
+      "variant": "jh_r4_material_budget",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "482fdd129156dca64be57597acce38c238671a98",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 88.16,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 29.17,
+        "p50": 11.4665,
+        "p95": 17.747,
+        "max": 20.608,
+        "http_errors": 0,
+        "stage_failure_requests": 14,
+        "stage_errors": {
+          "source_extract:ValueError": 1,
+          "source_extract:TimeoutError": 5,
+          "material:TimeoutError": 7,
+          "material:parse": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 88.16
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 106,
+        "abstain": 6,
+        "scaffold": 2
+      },
+      "normal_citation_hits": 86,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.material_budget.Pipeline",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_02_topic_dual/jh_r5_dual_all_1",
+      "variant": "jh_r5_dual_all",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "482fdd129156dca64be57597acce38c238671a98",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 90.13,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 30.25,
+        "p50": 10.100999999999999,
+        "p95": 16.49,
+        "max": 18.325,
+        "http_errors": 0,
+        "stage_failure_requests": 3,
+        "stage_errors": {
+          "source_extract:TimeoutError": 1,
+          "material:TimeoutError": 2
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 90.13
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 105,
+        "abstain": 8,
+        "scaffold": 1
+      },
+      "normal_citation_hits": 90,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "source_extract_sections": null,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.dual_granularity.All",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_03_topic_focused/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "482fdd129156dca64be57597acce38c238671a98",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 90.79,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 25.33,
+        "p50": 9.312000000000001,
+        "p95": 13.77,
+        "max": 18.346,
+        "http_errors": 0,
+        "stage_failure_requests": 8,
+        "stage_errors": {
+          "material:TimeoutError": 8
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 90.79
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 107,
+        "abstain": 7
+      },
+      "normal_citation_hits": 90,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": null,
+        "tutor_prepare_limit": null,
+        "class": "pipelines.kimjaehak.focused_excerpt.Selected",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_04_topic_shortmaterial/jh_r6_short_material_1",
+      "variant": "jh_r6_short_material",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "482fdd129156dca64be57597acce38c238671a98",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 89.04,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 29.58,
+        "p50": 10.343499999999999,
+        "p95": 16.996,
+        "max": 18.847,
+        "http_errors": 0,
+        "stage_failure_requests": 10,
+        "stage_errors": {
+          "source_extract:TimeoutError": 2,
+          "material:TimeoutError": 7,
+          "source_extract:ValueError": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 89.04
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 109,
+        "abstain": 4,
+        "scaffold": 1
+      },
+      "normal_citation_hits": 87,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "source_extract_sections": null,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6.ShortMaterial",
+        "tutor_short_material": 4,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_05_topic_nosection/jh_r6_material_nosection_1",
+      "variant": "jh_r6_material_nosection",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "482fdd129156dca64be57597acce38c238671a98",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 86.62,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 27.14,
+        "p50": 9.128,
+        "p95": 13.835,
+        "max": 19.374,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "source_extract:ValueError": 1,
+          "material:TimeoutError": 1,
+          "other:TimeoutError": 1,
+          "source_extract:TimeoutError": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 86.62
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 102,
+        "abstain": 8,
+        "scaffold": 3,
+        "redirect": 1
+      },
+      "normal_citation_hits": 84,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6.NoSection",
+        "tutor_short_material": null,
+        "tutor_material_no_section": true,
+        "tutor_verify_context_sources": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_06_topic_verify/jh_r6_context_verify_1",
+      "variant": "jh_r6_context_verify",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "482fdd129156dca64be57597acce38c238671a98",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 90.79,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 31.03,
+        "p50": 10.103000000000002,
+        "p95": 17.318,
+        "max": 21.231,
+        "http_errors": 0,
+        "stage_failure_requests": 5,
+        "stage_errors": {
+          "material:parse": 1,
+          "other:TimeoutError": 1,
+          "material:TimeoutError": 3
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 90.79
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 107,
+        "scaffold": 3,
+        "abstain": 4
+      },
+      "normal_citation_hits": 91,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6.ContextVerify",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": true,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    }
+  ]
+}

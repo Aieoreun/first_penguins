@@ -7,8 +7,14 @@
   "baseline": "jh_r4_material_budget",
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
-  "completed_runs": 0,
+  "completed_runs": 6,
   "pending_runs": 0,
-  "last_observed_used_percent": 63,
-  "next": "topic114 baseline2 and new3, then primary/followup validation"
+  "last_observed_used_percent": 65,
+  "next": "Kiwi bigram and resolved focused topic/followup/primary comparison",
+  "total_requests": 684,
+  "comparison_baselines": [
+    "jh_r3_selected_focused",
+    "jh_r4_material_budget",
+    "jh_r5_dual_all"
+  ]
 }

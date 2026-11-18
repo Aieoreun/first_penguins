@@ -48,5 +48,60 @@ Peace `docs/PEACE_FULL_PORT{,_RESULTS}.md`, `pipelines/kimjaehak/parallel_guard.
 
 ## 실행 결과와 다음 판단
 
-수집 전. 실행별 commit·데이터/평가기 해시·설정·오류·시간·점수는 로컬 캐시에 보존하고
-여기에 집계와 해석을 이어 적는다.
+실행별 commit·데이터/평가기 해시·설정·오류·시간·점수는 로컬 캐시와 `round6_results.json`에 보존한다. 아래는 완료된 비교이며 후속 실험을 계속한다.
+
+## 사용자 추가 조건과 CPU 진단
+
+- 추가 지시: `jh_r3_selected_focused`를 기준선에 포함한다. 사용자 확인상 R5 dual_all/dual6의 새 실제 제출 결과는 아직 없다.
+- 실제 제출 추천은 기존 기록을 유지한다. 개인 브랜치 간 통째 병합 없이 필요한 아이디어만 옮긴다.
+- 첫 API 묶음은 topic114에서 material_budget → dual_all → focused → short_material → nosection → context_verify 순서다.
+- 새 짧은 근거 추가는 같은 공개 질의 벡터를 재생한 CPU 진단에서 정답 support_quote 포함을 **102/114→104/114**로 늘렸다.
+  평균 추가량은0.56청크·123자다. 이 수치는 검색 근거 포함이고 튜터 점수가 아니다.
+
+동진의 내용어 바이그램 및 마지막 질문 우대를 동일219개 청크·같은 BM25 공식으로 분리했다.
+8개 개발 자료718질의에 대해 `jh_round6_lexical_screen.py`로 CPU 진단했고 전 결과가 재현됐다.
+질문 정규화는 이718개 자료에서 문자열 변화가 없었고, KB에서 원문/정규화 형태소 토큰 차이도0이었다.
+Kiwi 내장 의미 벡터는 사용하지 않는다.
+
+| 자료 | 기존 top1 / top3 / top6 | Kiwi+내용어 bigram (전체 대화) |
+|---|---|---|
+| public119 | 108 / 114 / 116 | 108 / 117 / 117 |
+| primary119 | 109 / 113 / 117 | 110 / 118 / 119 |
+| topic114 | 4 / 86 / 100 | 2 / 89 / 103 |
+| followup114 | 85 / 106 / 111 | 85 / 103 / 111 |
+
+마지막 질문 가중0.75는 topic top1을 크게 높였지만 followup top1을85→20(raw 혼합) 또는5(점수 정규화)로
+낮췄다. 출처 모델 confidence≥.25/.50 조건이나 지시어 보존 규칙은 후속 질문 손실을 막았지만
+public/primary에서도 top1이 하락했다. 이 가중 검색은 현재 HTTP 후보에 넣지 않는다.
+조건부 규칙은 개발 템플릿에 맞을 가능성도 있어 CPU 숫자를 실제 제출 우위로 읽지 않는다.
+
+## 2차 후보 사전 등록
+
+- `jh_r6_kiwi_bigram`: material_budget의 **튜터 최초 BM25 검색만** Kiwi+내용어 바이그램으로 교체한다.
+  긴 임베딩·원 대화·source selector·focused 원문 재정렬·가드는 유지한다. 팀원 고유명사 사전은
+  `de664f2`의 교재 어휘23개만 사용하며 번역 alias·RRF·예시 검색은 가져오지 않는다.
+  선택한 후보만 추가 의존성 `requirements-jh-kiwi.txt`의 kiwipiepy0.24.1이 필요하다.
+- `jh_r6_resolved_focused`: 과거 검증한 minimal 질문 해소기를 material_budget의 focused 출처 선택에
+  결합한다. 충돌하는 다중 발화에서만4초 이내로 검색 질문을 만들고, 실패하면 병렬 준비한 기존 검색으로 복귀한다.
+  판정/답변에 전달하는 원 대화는 바꾸지 않는다. 기존 R3은 ContextFast 생성 경로였으므로 이번 조합은 새 비교다.
+- 첫 비교는 topic114에서 시행하고 primary192·followup114에 확장한다. 필요한 기준선은 같은 시점에 다시 실행한다.
+- 구현 회귀 테스트 추가5개 및 전체476개 통과. 기존 첫 묶음 후보 코드는 수집 후에도 변경하지 않았다.
+
+## 1차 완료 — topic114 × 6후보
+
+수집 commit `482fdd1`, 전체 clean. HTTP684요청, HTTP/형식/판정 오류0. 튜터 전용 개발 점수다.
+
+| 후보 | tutor | 수집 초 | 내부 실패 요청 | normal에서 answer / 정답 인용 |
+|---|---:|---:|---:|---|
+| jh_r4_material_budget | 88.16 | 29.17 | 14 | 106 / 86 |
+| jh_r5_dual_all | 90.13 | 30.25 | 3 | 105 / 90 |
+| jh_r3_selected_focused | 90.79 | 25.33 | 8 | 107 / 90 |
+| jh_r6_short_material | 89.04 | 29.58 | 10 | 109 / 87 |
+| jh_r6_material_nosection | 86.62 | 27.14 | 4 | 102 / 84 |
+| jh_r6_context_verify | 90.79 | 31.03 | 5 | 107 / 91 |
+
+- ShortMaterial은 기준 dual_all보다1.09점 낮았다. 근거 포함은 늘었지만 전체 점수 개선은 확인되지 않았다.
+- NoSection은 material_budget보다1.54점 낮았다. 응답/시간 실패 감소가 점수 개선으로 이어지지 않았다.
+- ContextVerify는 material_budget보다2.63점 높았지만 **topic114·followup114에서 고신뢰 출처 게이트 대상이0개**였다. 이번 자료에서는 바뀐 경로가 작동하지 않았으므로 상승을 개선 효과로 해석하지 않는다. primary의 대상80개는 출처 예측이80개 모두 정답이어서 재확인 이득 근거도 없다. 후순위로 둔다.
+- focused가90.79점으로 이번 대조에서 높았다. 단회 값이며 기존 제출 추천을 교체하지 않는다.
+- 현재 사용률65%(잔여35%). 다음은 실제 검색이 바뀌는 KiwiBigram 및 ResolvedFocused를 topic/followup과primary로 비교한다.
