@@ -579,3 +579,56 @@ H 채점을 모두 끝낸 뒤 I를 순서대로 수집한다. 매 실행 직전 
 66alternative base반복,67alternative normal94_sparse반복,68alternative focused반복.
 완료한 응답은 원본 평가기로 모두 채점한다. 수집과 채점을 겹치지 않아 시간 비교의 부하 혼선을 줄인다.
 새 두 후보의 추가 확인 가치와, 현재 가장 유망한 sparse 조합의 재현 여부를 각각 확인한다.
+
+## H45–58 결과 및 후속 수집
+
+H14회·2,539 HTTP 요청을 모두 채점했다. 누적58회·8,826개이며 H의 형식·HTTP·판정 오류는0이다.
+내부 단계 실패는 아래에 별도로 기록한다. 전부 .env 임베딩/env, slots64, 원본 평가기다.
+
+| 실행 | 자료 | 후보 (jh_r6_ 생략) | tutor | guard | 수집 초 | 내부 단계 실패 요청 |
+|---|---|---|---:|---:|---:|---:|
+|45|contrast16|jh_r4_material_budget|85.94|—|13.75|0|
+|46|contrast16|jh_r3_selected_focused|93.75|—|10.70|0|
+|47|contrast16|source_support|89.06|—|13.67|2|
+|48|primary192|source_support|93.62|—|25.62|17|
+|49|alternative181|source_support|91.85|—|22.62|17|
+|50|followup114|resolved_material_hint|88.82|—|31.82|22|
+|51|primary192|resolved_material_hint|95.31|—|23.21|12|
+|52|topic114|joint_fact|92.32|—|24.37|10|
+|53|primary192|joint_fact|95.31|—|20.82|10|
+|54|topic114|eager_source12|88.16|—|24.15|15|
+|55|primary192|eager_source12|96.22|—|16.27|1|
+|56|public400|jh_r4_material_budget|98.00|98.95|18.64|2|
+|57|public400|jh_r3_selected_focused|97.12|98.9|24.04|10|
+|58|public400|normal94_sparse|97.88|99.3|22.05|12|
+
+### 해석
+
+- source_support는 primary17→48에서95.83→93.62, alternative25→49에서90.47→91.85로 방향이 다르다.
+  primary192 중152개 응답JSON은 동일했고, 동일JSON의 원점수합 변동+25/달라진40개−450이었다.
+  alternative181 중141개는 동일JSON/점수합차0, 나머지40개+250이었다. 정상 응답 변화와 판정 변동을 분리한다.
+- material_hint는 기존 source_hint 대비 followup90.35→88.82, primary93.10→95.31이다.
+  힌트를 교재 판정에도 넣는 것이 항상 유리하지 않다. H 수집 시 기존 block/other 등에서도 실패가 늘어
+  API 상황·변경에 따른 간접 부하가 섞일 수 있다. 특정 후보 원인으로 단정하지 않는다.
+- joint_fact는 엄격한 문자열 인용 검증을 제거하고 질문 속성 확인 프롬프트만 남긴 후보다.
+  topic92.32/primary95.31, 원래joint92.32/94.14보다 primary는 높지만 기존 baseline95.83 미만이다.
+  strict quote78.73/92.97의 회귀를 줄였으나 안정적 제출 개선은 미확인이다.
+- eager_source12는 topic88.16/primary96.22다. primary17 대비+.39의 원점수합+75는
+  유해요청+200/정답요청+25/정상−50/교재밖−100으로 나뉜다. 정상97.45→96.94, OOM95→90이며,
+  전체 상승은 바꾸지 않은 정책 판단의 변동에 크게 좌우된다. 단순 최고점 때문에 우선 후보로 승격하지 않는다.
+  이를 반복하려던 임시69번 계획은 수집 전에 철회했다. 69번 실행·API 결과는 없다.
+- 공개 원본400은 학습에도 사용했다. base98.47(t98.00/g98.95), focused98.01(t97.12/g98.90),
+  normal94_sparse98.59(t97.88/g99.30)이다. sparse 전체+.12는 튜터+.12가 아니라
+  튜터−.12/가드+.35의 조합이다. 가드 코드 변경이 없으므로 전체 차이를 튜터 알고리즘 개선으로 주장하지 않는다.
+  공개 입력은 tutor200 다음 guard200 순서여서 완전한 교차 혼합 부하 시험도 아니다.
+- H 주요 파생 비교의 paired bootstrap 95% 구간은 모두0을 포함했다(contrast45→47의 하한0 포함).
+  `.cache/jh_r6_paired_h.json`에 저장했다. 이는 문항쌍 재표집이며 반복 실행/판정기 변동까지 추정하지 않는다.
+
+### I59–68 수집
+
+b7b7576의 깨끗한 트리로10회·1,535요청을 추가 수집했다. 누적68회·10,361요청이며 I는 채점 중이다.
+각 실행 직전 잔여16%를 확인했다. 새16문항의59/60은 모두03/08 미제공 속성에abstain을 반환했지만,
+다른 미제공 질문과 정상 질문의 오류가 남아 있다. 두 수집 모두 내부 실패0이다.
+primary에서 조건부 재판정 대상14문항은 모두 정상이다. 기준선61은14개 모두answer/13개gold인용,
+conditioned63은12answer+scaffold1+escalate1/12개gold인용이다. support12의64는14answer/12개gold인용이다.
+이는 응답 진단이며 채점 완료 전 점수 개선을 뜻하지 않는다. `.cache/jh_r6_conditioned_response_comparison.json` 보존.

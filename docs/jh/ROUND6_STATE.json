@@ -7,17 +7,17 @@
   "baseline": "jh_r4_material_budget",
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
-  "completed_runs": 49,
-  "pending_runs": 9,
-  "last_observed_used_percent": 83,
-  "next": "Score H45–58; analyze contrast16 and public400, then matched repeats while remaining quota exceeds15%.",
-  "total_requests": 6708,
+  "completed_runs": 60,
+  "pending_runs": 8,
+  "last_observed_used_percent": 84,
+  "next": "Score collected I59–68 and inspect matched repeats; no new collection at used>=85.",
+  "total_requests": 8858,
   "comparison_baselines": [
     "jh_r3_selected_focused",
     "jh_r4_material_budget",
     "jh_r5_dual_all"
   ],
-  "collected_requests": 8826,
+  "collected_requests": 10361,
   "public_trace_requests": 8,
   "parameter_smoke_requests": 1,
   "manual_contrast_items": 16,
@@ -31,5 +31,6 @@
     ],
     "http_requests": 48,
     "deployment_data": "excluded; ignored development cache only"
-  }
+  },
+  "collected_runs": 68
 }
