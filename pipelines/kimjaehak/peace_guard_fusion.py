@@ -193,6 +193,8 @@ class Pipeline(MaterialBudget):
                 state.errors.extend(ground_state.errors)
                 state.errors.extend(safety_state.errors)
                 state.debug['fusion_completed_ground_votes'] = ground_state.debug.get('fusion_completed_ground_votes', 0)
+                if 'fusion_completed_safety_votes' in safety_state.debug:
+                    state.debug['fusion_completed_safety_votes'] = safety_state.debug['fusion_completed_safety_votes']
                 if ground_state.debug.get('learned_span'):
                     state.debug['learned_span'] = True
             elif state.has_candidate:

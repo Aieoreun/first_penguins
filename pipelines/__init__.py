@@ -34,6 +34,13 @@ def load(name: str = ""):
         if name in {"jh_pg_relation", "jh_pg_provenance"}:
             module = importlib.import_module("pipelines.kimjaehak.peace_ground_variants")
             return module.RelationGrounding if name == "jh_pg_relation" else module.ProvenanceGrounding
+        if name in {"jh_pg_vote3", "jh_pg_conditioned_vote3"}:
+            module = importlib.import_module("pipelines.kimjaehak.peace_voted_safety")
+            return module.VotedSafety if name == "jh_pg_vote3" else module.VotedConditioned
+        if name in {"jh_pg_routed", "jh_pg_routed_requested", "jh_pg_routed_relation", "jh_pg_routed_provenance"}:
+            module = importlib.import_module("pipelines.kimjaehak.peace_routed_safety")
+            return {"jh_pg_routed": module.RoutedSafety, "jh_pg_routed_requested": module.RoutedRequested,
+                    "jh_pg_routed_relation": module.RoutedRelation, "jh_pg_routed_provenance": module.RoutedProvenance}[name]
         if name in {"jh_r6_evidence_first", "jh_r6_source_vote3"}:
             module = importlib.import_module("pipelines.kimjaehak.round6_source")
             return module.EvidenceFirst if name == "jh_r6_evidence_first" else module.VoteThree

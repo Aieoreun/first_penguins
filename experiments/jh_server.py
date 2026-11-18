@@ -78,6 +78,7 @@ def main():
     for key in ("guard_fusion", "guard_fusion_reference", "guard_independent_safety", "guard_requested_action",
                 "guard_safety_action_review", "guard_safety_curriculum_context",
                 "guard_safety_after_input",
+                "guard_routed_safety", "guard_safety_votes",
                 "guard_preserve_completed_ground", "guard_restore_span_refinement",
                 "guard_vote_first", "guard_prepare_limit", "guard_deadline",
                 "guard_material_timeout", "guard_ground_timeout", "guard_safety_timeout"):

@@ -36,6 +36,12 @@ CANDIDATES = {
     'requested_conditioned': ('jh_pg_requested_conditioned', 'pipelines.kimjaehak.peace_conditioned_safety.RequestedConditioned'),
     'relation': ('jh_pg_relation', 'pipelines.kimjaehak.peace_ground_variants.RelationGrounding'),
     'provenance': ('jh_pg_provenance', 'pipelines.kimjaehak.peace_ground_variants.ProvenanceGrounding'),
+    'vote3': ('jh_pg_vote3', 'pipelines.kimjaehak.peace_voted_safety.VotedSafety'),
+    'conditioned_vote3': ('jh_pg_conditioned_vote3', 'pipelines.kimjaehak.peace_voted_safety.VotedConditioned'),
+    'routed': ('jh_pg_routed', 'pipelines.kimjaehak.peace_routed_safety.RoutedSafety'),
+    'routed_requested': ('jh_pg_routed_requested', 'pipelines.kimjaehak.peace_routed_safety.RoutedRequested'),
+    'routed_relation': ('jh_pg_routed_relation', 'pipelines.kimjaehak.peace_routed_safety.RoutedRelation'),
+    'routed_provenance': ('jh_pg_routed_provenance', 'pipelines.kimjaehak.peace_routed_safety.RoutedProvenance'),
 }
 
 # A fresh interpreter imports exclusively from the selected source tree. The
@@ -81,6 +87,7 @@ try:
                         'guard_ground_timeout','guard_safety_timeout','guard_requested_action',
                         'guard_safety_action_review','guard_safety_curriculum_context',
                         'guard_safety_after_input',
+                        'guard_routed_safety','guard_safety_votes','guard_independent_safety',
                         'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
                         'learned_gate_threshold'):
                 data[key] = getattr(instance, key, None)
