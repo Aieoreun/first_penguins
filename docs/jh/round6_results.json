@@ -1,7 +1,7 @@
 {
   "scope": "public_development_not_private_score",
-  "completed_runs": 19,
-  "total_requests": 2478,
+  "completed_runs": 23,
+  "total_requests": 2934,
   "pending_runs": [],
   "runs": [
     {
@@ -916,6 +916,270 @@
         "tutor_lexical_mode": null,
         "source_evidence_order": null,
         "source_selection_votes": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_20_topic_hint/jh_r6_resolved_source_hint_1",
+      "variant": "jh_r6_resolved_source_hint",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "14ade5ad06136bc28a93428613a809dd5f22c49c",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 92.76,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 23.62,
+        "p50": 9.126,
+        "p95": 12.614,
+        "max": 15.196,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "embed:TimeoutError": 1,
+          "source_extract:ValueError": 2,
+          "source_extract:TimeoutError": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 92.76
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 108,
+        "abstain": 5,
+        "scaffold": 1
+      },
+      "normal_citation_hits": 96,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": true,
+        "query_resolve_effort": "minimal",
+        "tutor_topic_selection": null,
+        "source_extract_timeout": 8,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_query_hint.SourceHint",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
+        "tutor_computable_material": null,
+        "source_resolved_hint": true,
+        "source_selection_effort": null,
+        "source_selection_tokens": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small",
+        "source_resolved_hint_prompt_sha256": "764b91837cd7791534c15307f67fb892e4be66a83f8f66759064656ad014b3ca"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_21_followup_hint/jh_r6_resolved_source_hint_1",
+      "variant": "jh_r6_resolved_source_hint",
+      "dataset": "controlled_followup",
+      "count": 114,
+      "commit": "14ade5ad06136bc28a93428613a809dd5f22c49c",
+      "dirty": false,
+      "dataset_sha256": "14952afc7dddc295d6efee8e8620d4f4cdcf5a2713d3c92033b6fc3e693727a9",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 90.35,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 25.75,
+        "p50": 9.736,
+        "p95": 16.902,
+        "max": 18.304,
+        "http_errors": 0,
+        "stage_failure_requests": 8,
+        "stage_errors": {
+          "source_extract:ValueError": 2,
+          "material:TimeoutError": 6
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 90.35
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 107,
+        "abstain": 7
+      },
+      "normal_citation_hits": 90,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": true,
+        "query_resolve_effort": "minimal",
+        "tutor_topic_selection": null,
+        "source_extract_timeout": 8,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_query_hint.SourceHint",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
+        "tutor_computable_material": null,
+        "source_resolved_hint": true,
+        "source_selection_effort": null,
+        "source_selection_tokens": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small",
+        "source_resolved_hint_prompt_sha256": "764b91837cd7791534c15307f67fb892e4be66a83f8f66759064656ad014b3ca"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_22_topic_computable/jh_r6_computable_material_1",
+      "variant": "jh_r6_computable_material",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "14ade5ad06136bc28a93428613a809dd5f22c49c",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 89.25,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 24.09,
+        "p50": 9.9405,
+        "p95": 15.369,
+        "max": 18.488,
+        "http_errors": 0,
+        "stage_failure_requests": 2,
+        "stage_errors": {
+          "source_extract:TimeoutError": 1,
+          "material:parse": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 89.25
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 107,
+        "scaffold": 2,
+        "abstain": 5
+      },
+      "normal_citation_hits": 88,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "tutor_topic_selection": null,
+        "source_extract_timeout": 8,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_material.Computable",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
+        "tutor_computable_material": true,
+        "source_resolved_hint": null,
+        "source_selection_effort": null,
+        "source_selection_tokens": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_23_followup_computable/jh_r6_computable_material_1",
+      "variant": "jh_r6_computable_material",
+      "dataset": "controlled_followup",
+      "count": 114,
+      "commit": "14ade5ad06136bc28a93428613a809dd5f22c49c",
+      "dirty": false,
+      "dataset_sha256": "14952afc7dddc295d6efee8e8620d4f4cdcf5a2713d3c92033b6fc3e693727a9",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 89.04,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 24.32,
+        "p50": 9.9265,
+        "p95": 14.264,
+        "max": 17.4,
+        "http_errors": 0,
+        "stage_failure_requests": 2,
+        "stage_errors": {
+          "material:TimeoutError": 2
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 89.04
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 104,
+        "abstain": 10
+      },
+      "normal_citation_hits": 90,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "tutor_topic_selection": null,
+        "source_extract_timeout": 8,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_material.Computable",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
+        "tutor_computable_material": true,
+        "source_resolved_hint": null,
+        "source_selection_effort": null,
+        "source_selection_tokens": null,
         "embedding_mode": "env",
         "embedding_model": "text-embedding-3-small"
       }

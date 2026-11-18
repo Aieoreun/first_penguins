@@ -234,3 +234,36 @@ threshold를.94로 낮춘다. 기존 전체 classify 경로와 섹션 후처리�
 만들지 않는다. labels/ID/gold는 pipeline body로 넘기지 않는다. HTTP 벤치마크/공식 점수로 읽지 않는다.
 `_ask`의 entry_*는 부모 prompt 변환 전이고 source_response는 외부 결과라 VoteThree 내부3raw는 아니다.
 모의14테스트에서 호출 수·원 응답·취소·병렬 격리·데이터 범위를 확인했다. 실제 제출 서버에서는 사용하지 않는다.
+
+## 20–23 완료 — query 보조 전달과 계산 근거
+
+| 후보 | 자료 | tutor | 수집 초 | 내부 실패 요청 |
+|---|---|---:|---:|---:|
+| resolved_source_hint | topic114 | 92.76 | 23.62 | 4 |
+| resolved_source_hint | followup114 | 90.35 | 25.75 | 8 |
+| computable_material | topic114 | 89.25 | 24.09 | 2 |
+| computable_material | followup114 | 89.04 | 24.32 | 2 |
+
+누적2934 HTTP요청, 오류(HTTP/형식/판정)0. source_hint가 유망하지만 source만 바꿨는데도
+앞단 action 정답 수가 topic107→108, followup100→107로 변했다. 이를 source 변경의 직접 효과로
+세지 않는다. 반복 및 primary/alternative 검증이 필요하다. 컴퓨팅 근거 설명도 아직 안정적인 우위는 아니다.
+
+## 단일 근거 판정 후보
+
+`jh_r6_joint_evidence`는 material 판정에 최종 selector와 같은 최대6개 full section을 주고
+supported boolean·section·짧은 reason을 한 번에 받는다. block/other와 병렬이며 기존 요청 한도 내13초,
+low/2000토큰·비스트리밍이다. 기존 chunk 기반 material_source/quote 검증과는 입력 정보와 출력 계약이
+다르지만, v2의 full-section material/model-source 선택과 연결되는 재검증이다.
+
+strict boolean 및 후보 내 ID를 확인한 뒤 기존 voted 우선순위에 맞게 supported=false는 빈 quote,
+true는 실제 선택 섹션 원문으로 호환한다. 이 quote는 **모델이 발췌한 인용이 아닌 내부 schema adapter**다.
+reason을 교재 사실이나 답변으로 사용하지 않는다. 전체 classify가 정상 완료되고 최종 normal/PII,
+기존 learned_section/tutor_section_gate가 미적용인 경우에만 joint section을 복원하고 별도 selector를 생략한다.
+최종 focused 원문과 길이 제한 fallback은 유지한다. prepare 취소, 다른 범주, 기존 section gate에서는 재사용하지 않는다.
+invalid/timeout은 추가 material 재시도 없이 기존 실패 복구를 따른다. guard 코드는 그대로다.
+
+보조 검토에서 후보 계산 예외도 fallback에 포함하도록 try 범위를 보완했다.
+실제 classify MRO를 통과하는 모의 통합검사에서 BLOCK2+OTHER2+joint1 뒤 추가 source 호출0을 확인했다.
+최종518테스트 통과. 이 호출 수는 해당 검사 조건의 수이며 모든 요청의 고정 호출 횟수는 아니다.
+
+다음 우선순위는 normal .94의 primary/alternative 대조와 새 source 후보의 교차검증이다.
