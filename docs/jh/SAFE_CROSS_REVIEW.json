@@ -1,0 +1,52 @@
+{
+  "scope": "parent_manual_safe_cross_review_before_predictions",
+  "accepted": true,
+  "reviewer": "parent_agent",
+  "review_date": "2026-11-18",
+  "approval_basis": "Parent explicitly approved all four proposed pairs before model evaluation.",
+  "model_predictions_inspected": false,
+  "evaluation_performed_before_approval": false,
+  "training_allowed": false,
+  "deployment_allowed": false,
+  "independent_source_holdout": false,
+  "accepted_pair_ids": [
+    "safe-cross-01",
+    "safe-cross-02",
+    "safe-cross-03",
+    "safe-cross-04"
+  ],
+  "excluded": [],
+  "proposal_path": "experiments/.cache/jh_guard_safe_cross_proposal_v1/proposal.json",
+  "proposal_sha256": "dde21e91ab0703a274778cdbf9761b7cf6f818077c866cfd6f204e82b365b62d",
+  "inputs_path": "experiments/.cache/jh_guard_safe_cross_proposal_v1/proposed_inputs.jsonl",
+  "inputs_sha256": "9f370619cfac6971d3fb58c662c54d0425b98f25da620665e342ed0d52ae305b",
+  "manifest_path": "experiments/.cache/jh_guard_safe_cross_proposal_v1/manifest.json",
+  "manifest_sha256": "d6ef722f002b740f08f53d7f25f9a559c352b2e1e703d7553bd87d22cefad4cb",
+  "public_source": "public/guard.jsonl",
+  "public_sha256": "4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426",
+  "kb_manifest_sha256": "8b952ddc320d0f21c2eefc8231b4856986e79e5f94ea44303b79997972e8fb2e",
+  "question_kb_files": {
+    "kb/python/PY-03-02.md": "a80707e4413cf5edc4e1ac86375c060d3c3a746b15f34d843d0787f0c6cc4e98",
+    "kb/python/PY-04-03.md": "30171eafb4524fe9204341d1365a2de33d1e72017a7afd98b5fe2eb02de42539",
+    "kb/finance/FIN-03-04-table1.csv": "5d3404771eb6c4ffd253fc5e928069fd2d5cb55af8e7b1e9369f2291884ba5d7",
+    "kb/python/PY-02-01.md": "ee7b5ec16efd2f084f81c5ee5536e4b2471021a335a71cf411b532aaec0197c0"
+  },
+  "builder_path": "experiments/jh_guard_safe_cross_diagnostic.py",
+  "builder_sha256": "da3e8535faeb0e44172c566babd11642f4890c8116e812a2ce98040385c50074",
+  "spec_sha256": "59bd33a76880d91acb3513ecaf32854167d90f226a3a4be83b835179f2189ea6",
+  "primary_evaluation": "safe-only development diagnostic; not an original-grader score",
+  "auxiliary_evaluation": "input allow/normal accuracy reported separately",
+  "unlabeled_dimensions": [
+    "grounded",
+    "unsupported"
+  ],
+  "review_notes": [
+    "All questions and candidate strings are copied unchanged from bundled public guard rows.",
+    "Normal educational questions have verified KB support; controls preserve their original question-answer pairing.",
+    "Three unsafe candidates directly offer privacy infringement; one directly insults the learner. Their new context does not turn them into quoted criticism or prevention examples.",
+    "Academic, off-topic, scam-education and ambiguous secret-disclosure examples are excluded.",
+    "Original labels are recorded only as source provenance; the new safe judgments were reviewed independently.",
+    "Frozen unreviewed cache files remain unchanged; this separate record approves their exact hashes.",
+    "Four constructed public-derived pairs cannot establish hidden-distribution performance."
+  ]
+}

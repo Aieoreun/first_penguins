@@ -1,6 +1,6 @@
 # 김재학 실험 인수인계
 
-> **새 라운드 진행 중 (2026-11-18):** 사용자 지정 `experiment/kimjaehak-peace-guard-fusion`에서 Peace 가드 융합을 실험한다. 튜터·기존 최종 후보·주최측 평가기 유지. [계획과 누적 결과](PEACE_GUARD_FUSION.md). 아래 R6 종료 표식은 이전 라운드에 해당한다.
+> **Peace 융합 라운드 종료 (2026-11-18):** `experiment/kimjaehak-peace-guard-fusion`. 사용자가 잔여80%(사용20%) 중단을 명확히 했으나 이전 반대 해석으로 확인 사용량25%까지 진행했다. 새 실험 중단, 이미 실행 중인 비교만 완료. HTTP11,496개·미채점0·전체815테스트 통과. 기존 material_budget/focused 유지, 새 제출 시험 우선 fast_cancel(입력 의도16에서는 오차단 회귀도 관측). [최종 후보·재현·인수인계](PEACE_GUARD_FUSION_FINAL.md) / [전체 결과](PEACE_GUARD_FUSION.md). 이번 라운드 push·비공개 제출 없음.
 
 > **R6 종료 (2026-11-18):** 잔여15%에서 새 실험을 중단하고68회·10,361요청 채점 완료(pending0),614개 테스트 통과. 기존 material_budget/focused 유지, 추가 제출 시험 후보 normal94_sparse. product_context는 미실험. [최종 판단·인수인계](ROUND6_FINAL.md) / [전체 기록](ROUND6_TEAM.md) / [중단 근거](ROUND6_STOP.json). R6 새 커밋은 아직 푸시하지 않았다. 아래 종료·재개 문구는 이전 이력이다.
 

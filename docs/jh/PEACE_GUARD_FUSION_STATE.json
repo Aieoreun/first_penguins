@@ -1,13 +1,17 @@
 {
-  "status": "running",
+  "status": "stopped_user_budget_clarified",
   "branch": "experiment/kimjaehak-peace-guard-fusion",
   "baseline_commit": "ff0aa5e",
-  "current_code_commit": "679baa6",
+  "current_code_commit": "f825e4e",
   "peace_reference": "3c64079eb1af14170b3bee4578ac6f916bec433e",
   "stop_rule": {
-    "assumption": "stop_new_runs_at_used_80_percent",
-    "clarification_pending": true,
-    "last_observed_used_percent": 22
+    "user_confirmed": "stop_at_80_percent_remaining_20_percent_used",
+    "previous_assumption": "stop_at_80_percent_used",
+    "clarification_pending": false,
+    "last_observed_used_percent": 25,
+    "last_observed_remaining_percent": 75,
+    "scope": "shared_account_weekly_window",
+    "overrun_reason": "User clarified the opposite interpretation after prior assumption; new runs stopped immediately, already-running pg26 finished."
   },
   "completed_comparisons": [
     "pg01_public",
@@ -33,17 +37,23 @@
     "pg21_relational",
     "pg22_mixed_transfer",
     "pg23_cancel_ground",
-    "pg24_mixed_reverse"
+    "pg24_mixed_reverse",
+    "pg26_intent"
   ],
-  "completed_http_requests": 11432,
+  "completed_http_requests": 11496,
   "pending_run": {},
   "next": [
-    "review and freeze input intent pairs",
-    "review normal-input unsafe-output diagnostic",
-    "compare neutral ALLOW output safety check against fast_cancel"
+    "Wait for explicit user restart; do not launch more experiments.",
+    "Private submission validation of fast_cancel versus preserved material_budget.",
+    "Review new intent false blocks; do not treat local mixed total as private-score prediction.",
+    "ALLOW safety candidate and reviewed safe-cross diagnostic are implemented but not API-evaluated or connected."
   ],
-  "recommendation": "Prefer fast_cancel for next submission validation, fast_gate90 comparison retained; preserve old final. Local speed evidence stronger than quality attribution.",
+  "recommendation": "Preserve existing final material_budget/focused. New submission-test candidate fast_cancel, compare fast_gate90. New intent diagnostic showed additional false blocks; no established unseen superiority.",
   "completed_non_score_probes": [
     "pg25_budget_probe"
-  ]
+  ],
+  "pending_scoring": 0,
+  "active_experiments": 0,
+  "tests_passed": 815,
+  "pushed": false
 }

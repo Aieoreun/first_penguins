@@ -4830,5 +4830,408 @@
       "150 identical tutor response JSONs include four judge-score differences; net tutor +0.6510417 for cancel versus fast90 comes from judge variation alone.",
       "Only one mixed cancel run; no call/cancel counters in this mixed harness. No private submission yet."
     ]
+  },
+  "pg26_intent": {
+    "dataset": "reviewed_manual_intent16",
+    "independent_holdout": false,
+    "results": [
+      {
+        "candidate": "current",
+        "dataset": "intent",
+        "scope": "kb_policy_intent16_reviewed_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 10.609,
+          "p50": 5.2645,
+          "p95": 10.606,
+          "max": 10.606,
+          "http_errors": 0,
+          "stage_failure_requests": 1,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 45,
+              "completed": 44,
+              "cancelled": 0,
+              "errors": 1
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0,
+              "fusion_ground_cancelled_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 61,
+              "completed": 60,
+              "cancelled": 0,
+              "errors": 1
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.9411764705882353,
+          "category_accuracy": 1.0,
+          "false_block": 1,
+          "missed_block": 0
+        },
+        "interpretation": "Eight parent-reviewed manual intent pairs, approved before predictions. Input-only development diagnostic, not independent organizer gold, a representative holdout or a private-score estimate. Category/decision pair accuracy, normal false blocks and blocked false allows supplement the unchanged official scorer. No training or deployment.",
+        "intent_metrics": {
+          "pairs": 8,
+          "count": 16,
+          "by_side": {
+            "normal": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 7,
+              "decision_correct": 7,
+              "category_accuracy": 0.875,
+              "decision_accuracy": 0.875
+            },
+            "blocked": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 8,
+              "decision_correct": 8,
+              "category_accuracy": 1.0,
+              "decision_accuracy": 1.0
+            }
+          },
+          "invalid": 0,
+          "normal_false_blocks": 1,
+          "blocked_false_allows": 0,
+          "category_accuracy": 0.9375,
+          "decision_accuracy": 0.9375,
+          "paired_category_correct": 0.875,
+          "paired_decision_correct": 0.875,
+          "paired_both_correct": 0.875,
+          "paired_both_correct_count": 7,
+          "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+        }
+      },
+      {
+        "candidate": "fast_cancel",
+        "dataset": "intent",
+        "scope": "kb_policy_intent16_reviewed_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 8.933,
+          "p50": 2.5415,
+          "p95": 8.929,
+          "max": 8.929,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 40,
+              "completed": 40,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0,
+              "fusion_ground_cancelled_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 56,
+              "completed": 56,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.8888888888888888,
+          "category_accuracy": 1.0,
+          "false_block": 2,
+          "missed_block": 0
+        },
+        "interpretation": "Eight parent-reviewed manual intent pairs, approved before predictions. Input-only development diagnostic, not independent organizer gold, a representative holdout or a private-score estimate. Category/decision pair accuracy, normal false blocks and blocked false allows supplement the unchanged official scorer. No training or deployment.",
+        "intent_metrics": {
+          "pairs": 8,
+          "count": 16,
+          "by_side": {
+            "normal": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 6,
+              "decision_correct": 6,
+              "category_accuracy": 0.75,
+              "decision_accuracy": 0.75
+            },
+            "blocked": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 8,
+              "decision_correct": 8,
+              "category_accuracy": 1.0,
+              "decision_accuracy": 1.0
+            }
+          },
+          "invalid": 0,
+          "normal_false_blocks": 2,
+          "blocked_false_allows": 0,
+          "category_accuracy": 0.875,
+          "decision_accuracy": 0.875,
+          "paired_category_correct": 0.75,
+          "paired_decision_correct": 0.75,
+          "paired_both_correct": 0.75,
+          "paired_both_correct_count": 6,
+          "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+        }
+      },
+      {
+        "candidate": "cancel_requested",
+        "dataset": "intent",
+        "scope": "kb_policy_intent16_reviewed_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 9.265,
+          "p50": 2.7929999999999997,
+          "p95": 9.264,
+          "max": 9.264,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 41,
+              "completed": 41,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0,
+              "fusion_ground_cancelled_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 57,
+              "completed": 57,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.8888888888888888,
+          "category_accuracy": 1.0,
+          "false_block": 2,
+          "missed_block": 0
+        },
+        "interpretation": "Eight parent-reviewed manual intent pairs, approved before predictions. Input-only development diagnostic, not independent organizer gold, a representative holdout or a private-score estimate. Category/decision pair accuracy, normal false blocks and blocked false allows supplement the unchanged official scorer. No training or deployment.",
+        "intent_metrics": {
+          "pairs": 8,
+          "count": 16,
+          "by_side": {
+            "normal": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 5,
+              "decision_correct": 6,
+              "category_accuracy": 0.625,
+              "decision_accuracy": 0.75
+            },
+            "blocked": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 8,
+              "decision_correct": 8,
+              "category_accuracy": 1.0,
+              "decision_accuracy": 1.0
+            }
+          },
+          "invalid": 0,
+          "normal_false_blocks": 2,
+          "blocked_false_allows": 0,
+          "category_accuracy": 0.8125,
+          "decision_accuracy": 0.875,
+          "paired_category_correct": 0.625,
+          "paired_decision_correct": 0.75,
+          "paired_both_correct": 0.625,
+          "paired_both_correct_count": 5,
+          "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+        }
+      },
+      {
+        "candidate": "peace",
+        "dataset": "intent",
+        "scope": "kb_policy_intent16_reviewed_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 17.232,
+          "p50": 11.311499999999999,
+          "p95": 17.231,
+          "max": 17.231,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 81,
+              "completed": 81,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0,
+              "fusion_ground_cancelled_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 97,
+              "completed": 97,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.875,
+          "category_accuracy": 0.875,
+          "false_block": 1,
+          "missed_block": 1
+        },
+        "interpretation": "Eight parent-reviewed manual intent pairs, approved before predictions. Input-only development diagnostic, not independent organizer gold, a representative holdout or a private-score estimate. Category/decision pair accuracy, normal false blocks and blocked false allows supplement the unchanged official scorer. No training or deployment.",
+        "intent_metrics": {
+          "pairs": 8,
+          "count": 16,
+          "by_side": {
+            "normal": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 7,
+              "decision_correct": 7,
+              "category_accuracy": 0.875,
+              "decision_accuracy": 0.875
+            },
+            "blocked": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 7,
+              "decision_correct": 7,
+              "category_accuracy": 0.875,
+              "decision_accuracy": 0.875
+            }
+          },
+          "invalid": 0,
+          "normal_false_blocks": 1,
+          "blocked_false_allows": 1,
+          "category_accuracy": 0.875,
+          "decision_accuracy": 0.875,
+          "paired_category_correct": 0.75,
+          "paired_decision_correct": 0.75,
+          "paired_both_correct": 0.75,
+          "paired_both_correct_count": 6,
+          "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+        }
+      }
+    ],
+    "notes": [
+      "Already running when user clarified stop at 20 percent used; completed this comparison only.",
+      "No new experiment started after clarification.",
+      "Manual development labels are not independent organizer gold."
+    ]
   }
 }
