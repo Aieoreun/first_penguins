@@ -75,7 +75,10 @@ def main():
     for key in ("tutor_short_material", "tutor_material_no_section", "tutor_verify_context_sources", "tutor_lexical_mode", "source_evidence_order", "source_selection_votes", "tutor_computable_material", "source_resolved_hint", "source_selection_effort", "source_selection_tokens", "tutor_normal_gate_threshold", "tutor_joint_evidence", "joint_evidence_tokens", "tutor_skip_trusted_embedding", "tutor_joint_quote", "tutor_eager_source", "tutor_joint_fact", "tutor_material_resolved_hint", "tutor_source_support", "source_support_tokens", "source_support_timeout", "tutor_source_conditioned_gate", "source_conditioned_input_threshold", "source_conditioned_section_threshold", "source_conditioned_fallback_threshold", "tutor_product_context"):
         effective[key] = getattr(pipeline, key, None)
     effective["embedding_mode"] = args.embedding_mode
-    for key in ("guard_fusion", "guard_fusion_reference", "guard_independent_safety", "guard_requested_action",
+    for key in ("classifier_kind", "classifier_threshold", "classifier_seed", "classifier_width",
+                "classifier_alpha", "classifier_c", "classifier_embedding_timeout",
+                "classifier_text_mode", "classifier_common_llm_fallback",
+                "guard_fusion", "guard_fusion_reference", "guard_independent_safety", "guard_requested_action",
                 "guard_safety_action_review", "guard_safety_curriculum_context",
                 "guard_safety_after_input",
                 "guard_routed_safety", "guard_safety_votes",

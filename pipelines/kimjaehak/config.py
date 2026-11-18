@@ -60,6 +60,7 @@ VARIANTS += ("jh_pg_current_gate90", "jh_pg_fast_gate90", "jh_pg_current_review"
 VARIANTS += ("jh_pg_current_review80", "jh_pg_fast_review80")
 VARIANTS += ("jh_pg_fast_cancel", "jh_pg_cancel_requested")
 VARIANTS += ("jh_pg_allow_safety",)
+VARIANTS += ("jh_cm_char_lr", "jh_cm_dense_lr", "jh_cm_char_mlp", "jh_cm_dense_mlp")
 
 
 def configure():

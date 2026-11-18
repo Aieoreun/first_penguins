@@ -26,6 +26,10 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'cm_char_lr': ('jh_cm_char_lr', 'pipelines.kimjaehak.classifier_matrix.CharLR'),
+    'cm_dense_lr': ('jh_cm_dense_lr', 'pipelines.kimjaehak.classifier_matrix.DenseLR'),
+    'cm_char_mlp': ('jh_cm_char_mlp', 'pipelines.kimjaehak.classifier_matrix.CharMLP'),
+    'cm_dense_mlp': ('jh_cm_dense_mlp', 'pipelines.kimjaehak.classifier_matrix.DenseMLP'),
     'allow_safety': ('jh_pg_allow_safety', 'pipelines.kimjaehak.peace_allow_safety.AllowSafety'),
     'cancel_requested': ('jh_pg_cancel_requested', 'pipelines.kimjaehak.peace_cancel_ground.FastCancelRequested'),
     'fast_cancel': ('jh_pg_fast_cancel', 'pipelines.kimjaehak.peace_cancel_ground.FastCancelBlock'),
@@ -131,7 +135,7 @@ try:
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
                     'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
-                    'fusion_ground_cancelled_block')}
+                    'fusion_ground_cancelled_block', 'matrix_gate')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})
@@ -145,7 +149,10 @@ try:
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            for key in ('guard_allow_safety','guard_allow_safety_timeout',
+            for key in ('classifier_kind','classifier_threshold','classifier_seed',
+                        'classifier_width','classifier_alpha','classifier_c',
+                        'classifier_embedding_timeout','classifier_text_mode','classifier_common_llm_fallback',
+                        'guard_allow_safety','guard_allow_safety_timeout',
                         'guard_deadline','guard_prepare_limit','guard_material_timeout',
                         'guard_ground_timeout','guard_safety_timeout','guard_requested_action',
                         'guard_safety_action_review','guard_safety_curriculum_context',

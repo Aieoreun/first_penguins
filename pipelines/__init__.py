@@ -21,6 +21,10 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_cm_char_lr", "jh_cm_dense_lr", "jh_cm_char_mlp", "jh_cm_dense_mlp"}:
+            module = importlib.import_module("pipelines.kimjaehak.classifier_matrix")
+            return {"jh_cm_char_lr": module.CharLR, "jh_cm_dense_lr": module.DenseLR,
+                    "jh_cm_char_mlp": module.CharMLP, "jh_cm_dense_mlp": module.DenseMLP}[name]
         if name == "jh_pg_allow_safety":
             return importlib.import_module("pipelines.kimjaehak.peace_allow_safety").AllowSafety
         if name in {"jh_pg_fast_cancel", "jh_pg_cancel_requested"}:

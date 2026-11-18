@@ -231,7 +231,7 @@ def run(app, **kwargs):
    pipeline.result=SimpleNamespace(debug={'span_review_triggered':True,
        'span_review_attempted':True, 'span_review_completed':True,
        'span_review_success':True, 'span_review_changed':False,
-       'fusion_ground_skipped_fast_block':1, 'private':'private text'})
+       'fusion_ground_skipped_fast_block':1, 'matrix_gate':True, 'private':'private text'})
    for _ in range(2):
     assert await pipeline.guard(pipeline.body) is pipeline.result
  asyncio.run(work())
@@ -243,7 +243,7 @@ def run(app, **kwargs):
         counts = json.loads(encoded)['guard_debug']
         self.assertEqual(counts, {'span_review_triggered': 2, 'span_review_attempted': 2,
             'span_review_completed': 2, 'span_review_success': 2, 'span_review_changed': 0,
-            'fusion_ground_skipped_fast_block': 0, 'fusion_ground_cancelled_block': 0})
+            'fusion_ground_skipped_fast_block': 0, 'fusion_ground_cancelled_block': 0, 'matrix_gate': 2})
 
     def test_counts_flush_on_sigterm_after_original_shutdown(self):
         self.fake_server_tree()
