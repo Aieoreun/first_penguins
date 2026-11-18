@@ -2,6 +2,23 @@
 
 브랜치: `experiment/kimjaehak-peace-guard-fusion`. 기존 후보도 같은 브랜치에 보존한다. `.env`는 런박스의 기존 파일을 사용하며 git으로 전송하지 않는다. 모델·임계값·결과의 근거는 [CLASSIFIER_MATRIX.md](CLASSIFIER_MATRIX.md)에 있다.
 
+## 환경변수 — 2026-11-19 수정
+
+서버 및 이번 비교에 쓰는 jh_compare / jh_guard_fusion_compare / jh_transfer_probe / jh_resume_transfer는 **프로세스 환경변수 우선, .env는 누락된 값만 보완**한다. 기존 문서의 override=True 예시는 이 실행 경로에서는 사용하지 않는다. 과거 다른 실험 스크립트의 로딩 정책은 이번에 일괄 수정하지 않았다.
+
+- 로컬 `.env`: `OPENAI_BASE_URL`, `OPENAI_MODEL`, `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL`, `OPENAI_API_KEY`, `EMBEDDING_API_KEY`, `TEAM_TOKEN` 모두 유지한다. 실제 키·주소는 git에 포함하지 않는다.
+- 런박스 `.env`: 주최측이 프로세스 환경변수로 제공하는 주소·모델 4개는 파일에서 생략하거나 주석 처리한다. 두 API 키는 같은 발급 키로 채우고, 별도의 TEAM_TOKEN도 채운다. 빈 값을 쓰기보다는 줄을 생략한다. 미리 설정된 변수가 없다면 파일 생략만으로 값이 생기지 않으므로 아래 점검이 필요하다.
+- 채팅과 임베딩의 주소·모델은 각각 독립적으로 읽는다. API 키만 같으며, 기존 임베딩 키 누락 시 채팅 키 재사용 동작은 유지한다.
+- `openai/text-embedding-3-small`과 `text-embedding-3-small`은 분류기 호환성 검사에서만 같은 별칭으로 인정한다. API 요청의 모델명은 환경변수 그대로다. 다른 임베딩 모델은 기존 학습 벡터와 호환된다고 가정하지 않는다.
+
+브랜치 업데이트 후, 서버를 시작하기 전에:
+
+```bash
+.venv/bin/python experiments/jh_environment.py
+```
+
+이 명령은 키·토큰·주소 값을 출력하지 않는다. 모델명과 설정 여부만 확인한다. Dense 후보 시작 시 `CLASSIFIER_EMBEDDING`에서 `ready: true`, `fallback_only: false`를 확인한다. 이는 로컬 설정 호환성 확인이며 API 실호출 성공을 보장하는 상태 표시는 아니다. `ready: false`이면 이번 분류기를 비교하기 위한 제출을 진행하지 말고 설정부터 확인한다.
+
 ## 공통 준비
 
 기존 서버 터미널에서 Ctrl+C로 종료한 뒤, 스크린샷에서 확인한 저장소 위치에서 실행한다.
@@ -51,7 +68,7 @@ import subprocess
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv('.env', override=True)
+load_dotenv('.env', override=False)
 p = Path('/home/elicer/competition/submission.json')
 d = json.loads(p.read_text())
 d['token'] = os.environ['TEAM_TOKEN']

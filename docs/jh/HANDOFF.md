@@ -1,5 +1,7 @@
 # 김재학 실험 인수인계
 
+> **환경/별칭 수정 완료 (2026-11-19):** 로컬 .env 7개 설정 보존, 두 API 키 동기화. 현재 서버·비교 진입점은 프로세스 환경변수 우선. 두 small 모델 표기의 호환성만 인정하고 API 모델명은 그대로 전송. API 2회에서 별칭 벡터 cosine 1.0, 전체 829테스트 통과. 런박스 업데이트 후 `CLASSIFIER_EMBEDDING ready=true` 확인하고 dense_lr50 재제출 필요. [환경·실행 안내](CLASSIFIER_MATRIX_SUBMISSION.md).
+
 > **제출 해석 정정 (2026-11-19):** 사용자 추가 로그에서 `matrix_embedding:UnavailableOrModelMismatch` 다수 확인. 해당 요청은 새 임베딩 분류기를 건너뛰었다. 84.09를 의도한 dense_lr50의 정상 성능으로 비교하지 않는다. 로컬 cm07에서는 같은 오류 0건. 다음은 런박스 설정 확인·수정 후 dense_lr50 재제출이 우선이며, 그 뒤 fast_cancel을 직접 비교한다. [추가 로그 분석](CLASSIFIER_MATRIX.md#추가-로그에-따른-해석-정정--2026-11-19). 아래 첫 제출 판단은 로그를 받기 전 이력이다.
 
 > **분류기 후보 실제 제출 보고:** 직전 안내에 따라 `jh_cm_dense_lr50`로 추정, 전체84.09 / 튜터79.58 / 가드88.59 / 73.842초, 600요청·공식 오류0. 런박스 실제 variant·커밋은 독립 확인하지 않았다. 로컬 상승의 제출 재현은 아직 확인되지 않았고 기존 material_budget/focused를 유지한다. 다음 직접 대조는 `jh_pg_fast_cancel` 권장. [기록·분석](CLASSIFIER_MATRIX.md#실제-제출-1--임베딩-lr50-사용자-보고).
