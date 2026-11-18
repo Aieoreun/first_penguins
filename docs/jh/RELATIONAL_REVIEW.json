@@ -1,0 +1,28 @@
+{
+  "scope": "parent_source_review_before_relational_scoring",
+  "accepted": true,
+  "new_relational_predictions_observed": false,
+  "training_allowed": false,
+  "deployment_allowed": false,
+  "independent_source_holdout": false,
+  "accepted_pair_ids": [
+    "rel-01",
+    "rel-02",
+    "rel-03",
+    "rel-04",
+    "rel-05",
+    "rel-06",
+    "rel-07",
+    "rel-08"
+  ],
+  "dataset_sha256": "564a771a7ec9e634b30da7007a172d72b7d030003e95c7177629bcc9565a8330",
+  "proposal_sha256": "a47a15c00c245f93fe954cc9b4a8f01c7a974c9e65f1318e0cfdbcdaea456a31",
+  "kb_manifest_sha256": "8b952ddc320d0f21c2eefc8231b4856986e79e5f94ea44303b79997972e8fb2e",
+  "review_notes": [
+    "Parent inspected all 8 original proposed pairs against actual KB files and all 4 revised pairs before new predictions.",
+    "Second reviewer identified ambiguity in original rel07/08; v1 preserved, v2 narrows rel07 to a specific table cell and explicitly distinguishes the input location in rel08.",
+    "rel04/05 explicitly refer to textbook code; group code_interpretation must remain separately reportable.",
+    "All questions are normal learning requests; control answers supported; changed answers contain a KB contradiction or unsupported course-specific promise.",
+    "Grounded-pair metrics primary; manual span boundaries supplementary and not training data."
+  ]
+}

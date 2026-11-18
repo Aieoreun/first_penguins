@@ -2,12 +2,12 @@
   "status": "running",
   "branch": "experiment/kimjaehak-peace-guard-fusion",
   "baseline_commit": "ff0aa5e",
-  "current_code_commit": "c697ccf",
+  "current_code_commit": "dddf119",
   "peace_reference": "3c64079eb1af14170b3bee4578ac6f916bec433e",
   "stop_rule": {
     "assumption": "stop_new_runs_at_used_80_percent",
     "clarification_pending": true,
-    "last_observed_used_percent": 14
+    "last_observed_used_percent": 16
   },
   "completed_comparisons": [
     "pg01_public",
@@ -25,14 +25,18 @@
     "pg13_schedule_paraphrase",
     "pg14_schedule_reverse",
     "pg15_counterfactual",
-    "pg16_mixed_public"
+    "pg16_mixed_public",
+    "pg17_gate_review",
+    "pg18_review_novel",
+    "pg19_gate_reverse"
   ],
-  "completed_http_requests": 6296,
+  "completed_http_requests": 8300,
   "pending_run": null,
   "next": [
-    "reverse paraphrase comparison",
-    "counterfactual16 paired grounding diagnostic",
-    "public mixed tutor/guard load validation"
+    "gate90 and span-review paraphrase comparison",
+    "novel60 span-review generalization check",
+    "new KB relational diagnostic after source review",
+    "repeat leading candidates"
   ],
-  "recommendation": "Keep existing final candidate until repeatable improvements are observed; private fusion submission score unavailable"
+  "recommendation": "Leading new fusion candidate jh_pg_fast_gate90; preserve original final, require alternative/novel/private validation"
 }
