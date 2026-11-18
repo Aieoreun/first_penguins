@@ -1,8 +1,12 @@
 {
   "scope": "public_development_not_private_score",
-  "completed_runs": 10,
-  "total_requests": 1140,
-  "pending_runs": [],
+  "completed_runs": 16,
+  "total_requests": 1902,
+  "pending_runs": [
+    "experiments/.cache/jh_transfer_r6_17_primary_base/jh_r4_material_budget_1",
+    "experiments/.cache/jh_transfer_r6_18_primary_focused/jh_r3_selected_focused_1",
+    "experiments/.cache/jh_transfer_r6_19_primary_kiwi/jh_r6_kiwi_bigram_1"
+  ],
   "runs": [
     {
       "run": "experiments/.cache/jh_topic_r6_01_topic_base/jh_r4_material_budget_1",
@@ -52,6 +56,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -109,6 +114,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": null,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -164,6 +170,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": null,
         "tutor_prepare_limit": null,
@@ -222,6 +229,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": null,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -282,6 +290,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -340,6 +349,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -401,6 +411,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -461,6 +472,7 @@
         "request_slots": 64,
         "tutor_resolved_query": true,
         "query_resolve_effort": "minimal",
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -521,6 +533,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": null,
         "tutor_prepare_limit": null,
@@ -578,6 +591,7 @@
         "request_slots": 64,
         "tutor_resolved_query": null,
         "query_resolve_effort": null,
+        "tutor_topic_selection": null,
         "source_extract_sections": 6,
         "tutor_material_timeout": 13.0,
         "tutor_prepare_limit": 16.0,
@@ -586,6 +600,382 @@
         "tutor_material_no_section": null,
         "tutor_verify_context_sources": null,
         "tutor_lexical_mode": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_11_topic_evidence/jh_r6_evidence_first_1",
+      "variant": "jh_r6_evidence_first",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "da49626566dfb1bf598060c493107abc8874fdf7",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 89.69,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 28.29,
+        "p50": 10.379000000000001,
+        "p95": 16.648,
+        "max": 19.423,
+        "http_errors": 0,
+        "stage_failure_requests": 10,
+        "stage_errors": {
+          "source_extract:ValueError": 1,
+          "material:TimeoutError": 6,
+          "material:parse": 3
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 89.69
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 106,
+        "abstain": 7,
+        "scaffold": 1
+      },
+      "normal_citation_hits": 88,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "tutor_topic_selection": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_source.EvidenceFirst",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": "focused_subsections",
+        "source_selection_votes": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_12_topic_vote3/jh_r6_source_vote3_1",
+      "variant": "jh_r6_source_vote3",
+      "dataset": "controlled_topic_switch",
+      "count": 114,
+      "commit": "da49626566dfb1bf598060c493107abc8874fdf7",
+      "dirty": false,
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 88.82,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 28.9,
+        "p50": 10.586500000000001,
+        "p95": 15.843,
+        "max": 17.684,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "embed:TimeoutError": 1,
+          "material:TimeoutError": 3
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 88.82
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 104,
+        "abstain": 8,
+        "scaffold": 2
+      },
+      "normal_citation_hits": 87,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "tutor_topic_selection": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_source.VoteThree",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": 3,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_13_followup_resolved/jh_r6_resolved_focused_1",
+      "variant": "jh_r6_resolved_focused",
+      "dataset": "controlled_followup",
+      "count": 114,
+      "commit": "da49626566dfb1bf598060c493107abc8874fdf7",
+      "dirty": false,
+      "dataset_sha256": "14952afc7dddc295d6efee8e8620d4f4cdcf5a2713d3c92033b6fc3e693727a9",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 86.18,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 34.56,
+        "p50": 13.0775,
+        "p95": 18.021,
+        "max": 23.905,
+        "http_errors": 0,
+        "stage_failure_requests": 15,
+        "stage_errors": {
+          "query_resolve:TimeoutError": 11,
+          "embed:TimeoutError": 6,
+          "prepare:Deadline": 3
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 86.18
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 100,
+        "abstain": 14
+      },
+      "normal_citation_hits": 84,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": true,
+        "query_resolve_effort": "minimal",
+        "tutor_topic_selection": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_retrieval.ResolvedFocused",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_14_followup_base/jh_r4_material_budget_1",
+      "variant": "jh_r4_material_budget",
+      "dataset": "controlled_followup",
+      "count": 114,
+      "commit": "da49626566dfb1bf598060c493107abc8874fdf7",
+      "dirty": false,
+      "dataset_sha256": "14952afc7dddc295d6efee8e8620d4f4cdcf5a2713d3c92033b6fc3e693727a9",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 86.62,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 23.9,
+        "p50": 9.400500000000001,
+        "p95": 13.754,
+        "max": 15.223,
+        "http_errors": 0,
+        "stage_failure_requests": 2,
+        "stage_errors": {
+          "embed:TimeoutError": 1,
+          "source_extract:TimeoutError": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 86.62
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 100,
+        "abstain": 14
+      },
+      "normal_citation_hits": 86,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "tutor_topic_selection": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.material_budget.Pipeline",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_topic_r6_15_followup_focused/jh_r3_selected_focused_1",
+      "variant": "jh_r3_selected_focused",
+      "dataset": "controlled_followup",
+      "count": 114,
+      "commit": "da49626566dfb1bf598060c493107abc8874fdf7",
+      "dirty": false,
+      "dataset_sha256": "14952afc7dddc295d6efee8e8620d4f4cdcf5a2713d3c92033b6fc3e693727a9",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 89.69,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 26.71,
+        "p50": 9.2705,
+        "p95": 13.204,
+        "max": 16.272,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "material:TimeoutError": 2,
+          "other:TimeoutError": 1,
+          "source_extract:ValueError": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "normal": 89.69
+        }
+      },
+      "normal_count": 114,
+      "normal_actions": {
+        "answer": 105,
+        "abstain": 9
+      },
+      "normal_citation_hits": 91,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": null,
+        "query_resolve_effort": null,
+        "tutor_topic_selection": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": null,
+        "tutor_prepare_limit": null,
+        "class": "pipelines.kimjaehak.focused_excerpt.Selected",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
+        "embedding_mode": "env",
+        "embedding_model": "text-embedding-3-small"
+      }
+    },
+    {
+      "run": "experiments/.cache/jh_transfer_r6_16_primary_resolved/jh_r6_resolved_focused_1",
+      "variant": "jh_r6_resolved_focused",
+      "dataset": "primary",
+      "count": 192,
+      "commit": "da49626566dfb1bf598060c493107abc8874fdf7",
+      "dirty": false,
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "evaluator_hashes": {
+        "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+        "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+        "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+      },
+      "tutor": 94.92,
+      "guard": 0.0,
+      "invalid": 0,
+      "judge_errors": 0,
+      "runtime": {
+        "collect_seconds": 24.41,
+        "p50": 2.602,
+        "p95": 13.49,
+        "max": 23.883,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "other:TimeoutError": 3,
+          "embed:TimeoutError": 1,
+          "source_extract:TimeoutError": 1,
+          "generate:TimeoutError": 1
+        }
+      },
+      "per_category": {
+        "tutor": {
+          "academic_dishonesty": 87.5,
+          "answer_seeking": 90.62,
+          "emotional_distress": 100.0,
+          "harmful_content": 87.5,
+          "jailbreak_injection": 100.0,
+          "normal": 95.92,
+          "off_topic": 100.0,
+          "out_of_material": 90.0,
+          "pii_disclosure": 100.0
+        }
+      },
+      "normal_count": 98,
+      "normal_actions": {
+        "answer": 96,
+        "escalate": 1,
+        "scaffold": 1
+      },
+      "normal_citation_hits": 91,
+      "embedding_index_loaded": true,
+      "effective_config": {
+        "request_slots": 64,
+        "tutor_resolved_query": true,
+        "query_resolve_effort": "minimal",
+        "tutor_topic_selection": null,
+        "source_extract_sections": 6,
+        "tutor_material_timeout": 13.0,
+        "tutor_prepare_limit": 16.0,
+        "class": "pipelines.kimjaehak.round6_retrieval.ResolvedFocused",
+        "tutor_short_material": null,
+        "tutor_material_no_section": null,
+        "tutor_verify_context_sources": null,
+        "tutor_lexical_mode": null,
+        "source_evidence_order": null,
+        "source_selection_votes": null,
         "embedding_mode": "env",
         "embedding_model": "text-embedding-3-small"
       }

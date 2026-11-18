@@ -154,3 +154,30 @@ Kiwi는 검색 후보의 정답 섹션 포함을 늘렸지만 점수에서 뚜�
 
 다음 수집: source evidence/vote3의 topic 비교, ResolvedFocused·material_budget·focused의
 followup114 및 primary192 비교, Kiwi primary192 비교. 순차 API 수집 후 원본 채점기로 채점한다.
+
+## 공개 오답 수동 검토와 다음 후보
+
+보조 에이전트가 API 없이 원문과 캐시를 대조했다. 08의 인용 ID 불일치13건 중10건은 다른 섹션에도
+같은 금융 사실이 있고,3건은 선택한 섹션의 대상·세부 근거가 부족했다. 기준선01/03/10의 실제 근거
+불충분 사례는11/6/11건이었다. '남은 돈' 질문은 대상 자체가 생략되어 있어 합성 질문의 모호성도 있다.
+카드 연령 한 건에서는 완전히 동일한 facts 채점 payload가 실행별0→1→0→1로 흔들렸다.
+캐시 재생으로12개 실행의 항목별 채점 구성요소를 확인했고 모호한 중복 key/재계산 불일치는 없었다.
+실행 간 같은 payload의 판정 변화는 별개 문제이며 기존 점수를 수정하지 않는다.
+
+- `jh_r6_resolved_source_hint`: 성공한 재작성 검색의 query를 request-local 속성에만 보존하고 source
+  선택 JSON에 보조 필드로 전달한다. 원 대화가 우선이며 재작성은 근거/명령이 아니라는 지시를 붙인다.
+  재작성 실패·기존 검색 복귀 시 필드를 넣지 않는다. 추가 API 호출 없이 기존4/8/26초 예산을 유지한다.
+  material 판정 입력은 기존대로 둔다. 사용자 응답/서버 로그에는 query를 내보내지 않는다.
+- `jh_r6_computable_material`: tutor material에서 교재 코드·표·수식의 명시된 조건으로 결정되는
+  결과도 해당 원문을 quote로 사용할 수 있다고 설명한다. 계산값을 quote로 만들거나 누락된 조건을
+  추측하는 것은 금지한다. 원래 값 계산 규칙/기존 출력형식 boundary와 구분되는 좁은 가설이다.
+- `jh_r6_topic_focused`: 기존 R3 full/last 선택기를 MaterialBudget에 결합했다. R3에서 topic 성적이
+  약했으므로 구현은 보존하되 위 두 후보보다 후순위다. 기존 가설을 새 구조에서 재검증하는 것이지
+  처음 제안한 방법은 아니다.
+- 전체490테스트 통과. 기존 평가기·KB·public·core·server diff 없음. 새 후보는 추천 교체 전이다.
+
+11 evidence_first=89.69,12 source_vote3=88.82(topic114). source_vote3의 source 오류는0이었지만
+선택 이전 action 차이가 있어 전체 점수만으로 출처 다수결의 인과 효과를 확정할 수 없다.
+후속 질문13 resolved=86.18,14 material_budget=86.62,15 focused=89.69.
+resolved의 수집34.56초/내부실패15는 기준23.90초/2, focused26.71초/4보다 높았다.
+주제 전환의 이득이 후속 질문으로 그대로 이어지지 않았다. primary192 비교 채점을 계속한다.

@@ -7,14 +7,15 @@
   "baseline": "jh_r4_material_budget",
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
-  "completed_runs": 10,
-  "pending_runs": 0,
-  "last_observed_used_percent": 66,
-  "next": "Source selection topic; resolved/base/focused followup and primary; Kiwi primary",
-  "total_requests": 1140,
+  "completed_runs": 16,
+  "pending_runs": 3,
+  "last_observed_used_percent": 67,
+  "next": "Finish primary scores; compare successful resolved source hints and explicit code/table support",
+  "total_requests": 1902,
   "comparison_baselines": [
     "jh_r3_selected_focused",
     "jh_r4_material_budget",
     "jh_r5_dual_all"
-  ]
+  ],
+  "collected_requests": 2478
 }
