@@ -1,0 +1,50 @@
+{
+  "scope": "parent_source_review_before_intent_scoring",
+  "accepted": true,
+  "evaluation_allowed": true,
+  "new_intent_predictions_observed": false,
+  "training_allowed": false,
+  "deployment_allowed": false,
+  "independent_holdout": false,
+  "version": 2,
+  "accepted_pair_ids": [
+    "intent-01",
+    "intent-02",
+    "intent-03",
+    "intent-04",
+    "intent-05",
+    "intent-06",
+    "intent-07",
+    "intent-08"
+  ],
+  "dataset_sha256": "112d45e5f0ddc5e12af156d463d898aae63f2e249f6edc3190e241a364824d83",
+  "proposal_sha256": "207638488a1eb6270580b431622a120748462e04675870d6eecae45e89245194",
+  "generator_sha256": "ddd3f81a74cc378ea5218f896219aa163823a9f603c9a196f15d147826853204",
+  "source_manifest_sha256": "6fe1660a1360b24e96938ed973270a09578ccfcf8b8783a48bbee0d6a6f491aa",
+  "source_files": {
+    "SPEC.md": "59bd33a76880d91acb3513ecaf32854167d90f226a3a4be83b835179f2189ea6",
+    "pipelines/v2/prompts.py": "2ca5d717df94c808bbabd9c90832d9f7de59a81411edc05e3eb27a55d05474d9",
+    "kb/finance/FIN-04-01.md": "67d43a9ad0c6438d9780bad0fa06ae240849e13f04a6b8739f2147d3deff0552",
+    "kb/prompt/PR-04-02.md": "54d6207bba9f60ae96e134914caebe3b75f943373d331219ad301cc5e5f8ded8",
+    "kb/prompt/PR-01-03.md": "fca1fcbe58b00c1d0bd9515f8a07881c1c66dacb98e4230ad8c014da50a70884",
+    "kb/prompt/PR-04-01.md": "5da5e210d02c329df5d6e76efc123984224ff194f5d56d48c1983aa9591aeacc",
+    "kb/python/PY-03-04.md": "db430161036b8bc0199f54c5fb808c560d236fcdcf6cd3edb13e0432289470ae",
+    "kb/python/PY-02-04.md": "736c98ebccbd96408efdd22208d90290a0c9c36851cd8c8f2c052c20e52e9ae3",
+    "kb/finance/FIN-01-02.md": "78c6eb1114f9583bc252319f58fb452c0ecfe475d0c9315892adbdff4fda1d61"
+  },
+  "manifest_sha256": "005c19d521681194053d8def19b0716ce03ca118fb5431b64be45f4aee480227",
+  "review_notes": [
+    "부모가 v1의 01~07을 KB와 정책에 대조해 승인했다.",
+    "v1의 08 개인 사과문 경계와 후보 자체 safety 정책을 gold 근거로 쓰는 순환 가능성을 지적해 예측 전에 교체했다.",
+    "부모가 v2의 08을 PY-02-04 실제 원문과 대조하고 게임 예제 반복 학습과 수업 밖 실제 게임 공략의 구분을 승인했다.",
+    "v2 전체 8쌍의 수동 category/decision 라벨을 새로운 예측 전에 승인했다.",
+    "생성 manifest의 pending 상태와 evaluation_allowed=false는 생성 당시 기록으로 보존한다. 이 별도 해시 고정 승인 기록이 검토 완료를 나타낸다."
+  ],
+  "limitations": [
+    "가설 개발용 수작업 8쌍이며 독립적·대표적 평가셋이나 주최 측 공식 gold가 아니다.",
+    "기존 입력 정책은 설계 근거이며 공개 라벨의 독립적인 추가 주석으로 과장하지 않는다.",
+    "정상/위반의 어휘 일치보다 요청 의미의 명확성을 우선했으므로 순수한 단어 하나의 인과 효과를 측정하지 않는다.",
+    "학습·배포·질문 ID lookup에 사용하지 않는다.",
+    "입력 전용이며 grounding/span/safety 개선이나 실제 비공개 제출 점수로 해석하지 않는다."
+  ]
+}
