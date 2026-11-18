@@ -21,6 +21,10 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_cm_char_lr50", "jh_cm_dense_lr50", "jh_cm_char_mlp50", "jh_cm_dense_mlp50"}:
+            module = importlib.import_module("pipelines.kimjaehak.classifier_matrix")
+            return {"jh_cm_char_lr50": module.CharLR50, "jh_cm_dense_lr50": module.DenseLR50,
+                    "jh_cm_char_mlp50": module.CharMLP50, "jh_cm_dense_mlp50": module.DenseMLP50}[name]
         if name in {"jh_cm_char_lr", "jh_cm_dense_lr", "jh_cm_char_mlp", "jh_cm_dense_mlp"}:
             module = importlib.import_module("pipelines.kimjaehak.classifier_matrix")
             return {"jh_cm_char_lr": module.CharLR, "jh_cm_dense_lr": module.DenseLR,

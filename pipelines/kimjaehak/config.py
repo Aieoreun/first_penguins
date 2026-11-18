@@ -66,3 +66,5 @@ VARIANTS += ("jh_cm_char_lr", "jh_cm_dense_lr", "jh_cm_char_mlp", "jh_cm_dense_m
 def configure():
     # Called before importing v1/v2: their controls are module-level constants.
     os.environ.update(BASELINE_ENV)
+
+VARIANTS += ("jh_cm_char_lr50", "jh_cm_dense_lr50", "jh_cm_char_mlp50", "jh_cm_dense_mlp50")

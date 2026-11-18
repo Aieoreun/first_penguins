@@ -104,3 +104,23 @@ class DenseMLP(MatrixGate):
     classifier_kind = 'dense_mlp'
     # Fixed cm02 OOF top-25% nonharmful coverage; not a calibrated probability.
     classifier_threshold = 0.9725386873537929
+
+
+class CharLR50(CharLR):
+    """Precomputed OOF top-50% coverage operating point."""
+    classifier_threshold = 0.9490020303305121
+
+
+class DenseLR50(DenseLR):
+    """Precomputed OOF top-50% coverage operating point."""
+    classifier_threshold = 0.9580305994371136
+
+
+class CharMLP50(CharMLP):
+    """Precomputed OOF top-50% coverage operating point."""
+    classifier_threshold = 0.8556677733093049
+
+
+class DenseMLP50(DenseMLP):
+    """Precomputed OOF top-50% coverage operating point."""
+    classifier_threshold = 0.8705725282964085

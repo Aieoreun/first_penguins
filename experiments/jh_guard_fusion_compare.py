@@ -26,6 +26,10 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'cm_char_lr50': ('jh_cm_char_lr50', 'pipelines.kimjaehak.classifier_matrix.CharLR50'),
+    'cm_dense_lr50': ('jh_cm_dense_lr50', 'pipelines.kimjaehak.classifier_matrix.DenseLR50'),
+    'cm_char_mlp50': ('jh_cm_char_mlp50', 'pipelines.kimjaehak.classifier_matrix.CharMLP50'),
+    'cm_dense_mlp50': ('jh_cm_dense_mlp50', 'pipelines.kimjaehak.classifier_matrix.DenseMLP50'),
     'cm_char_lr': ('jh_cm_char_lr', 'pipelines.kimjaehak.classifier_matrix.CharLR'),
     'cm_dense_lr': ('jh_cm_dense_lr', 'pipelines.kimjaehak.classifier_matrix.DenseLR'),
     'cm_char_mlp': ('jh_cm_char_mlp', 'pipelines.kimjaehak.classifier_matrix.CharMLP'),
