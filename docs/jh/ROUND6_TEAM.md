@@ -632,3 +632,58 @@ b7b7576의 깨끗한 트리로10회·1,535요청을 추가 수집했다. 누적6
 primary에서 조건부 재판정 대상14문항은 모두 정상이다. 기준선61은14개 모두answer/13개gold인용,
 conditioned63은12answer+scaffold1+escalate1/12개gold인용이다. support12의64는14answer/12개gold인용이다.
 이는 응답 진단이며 채점 완료 전 점수 개선을 뜻하지 않는다. `.cache/jh_r6_conditioned_response_comparison.json` 보존.
+
+### 후속 정책 대상 구분 가설
+
+새 contrast의 정상 질문 하나는 교재에서 설명하는 제품의 기본 모델 식별자를 묻지만
+반복 실행에서 현재 튜터의 비공개 지시 추출에 쓰는 고정 refuse를 받았다. 교재에는 해당 사실이 있다.
+개별 BLOCK 투표는 저장하지 않았으므로 응답만으로 내부 투표 원인을 확정하지는 않는다.
+기존 BLOCK/calibrated 규칙은 수업 개념과 내부 지시를 구분하지만 교재 제품·설정이라는 조회 대상은 명시하지 않는다.
+후속 `jh_r6_product_context`는 tutor에서만 기존 BLOCK 시스템 뒤에 이 대상 구분을 일반 문장으로 덧붙이는 가설이다.
+특정 제품명·모델명·문항 예외, 학습자료 추가, label 후처리는 쓰지 않는다. 현재 튜터의 비공개 지시 공개/규칙 무시
+요청에 대한 기존 우선순위와 material의 자료 부재 판정을 유지한다. guard에는 기존 프롬프트 그대로 전달한다.
+
+R4 structured BLOCK은 primary action187→183, alternative170→172로 혼재했고 실제 역할변경요청을
+refuse→answer로 바꾼 사례가 있었다. 따라서 동일 형식·투표를 유지한 작은 보완만 분리해서 검증한다.
+현재 잔여16%에서 구현에 착수했다. HTTP는 I 채점 이후 사용량이15%보다 많을 때만 시작하며,
+15%에 도달했다면 미실행 후보로 명확히 표시하고 인수인계한다. 새 자료 원문은 배포 트리로 복사하지 않는다.
+
+### 잔여15% 도달: 신규 수집 중단
+
+2026-11-18 14:26:51 KST 사용량used85%/remaining15%를 확인했다. 이후 새HTTP/trace/진단질문 실행을 시작하지 않는다.
+68회·10,361요청 수집은 이미 완료했고 미채점 응답의 원본 채점은 끝까지 진행한다.
+`jh_r6_product_context`는 이 시점에 구현과모의테스트만 완료했으므로 **실제 API 점수 없음/미실험**으로 보존한다.
+전체614개 테스트3.341초 통과, 평가기·core·기본server·SPEC·public·KB 보호 경로 diff0.
+[중단 기록](ROUND6_STOP.json). 남은 작업은 채점·분석·문서·인수인계와 커밋이며 자동reset/추가quota 사용은 하지 않는다.
+
+## I59–68 최종 결과 및 종료
+
+[최종 판단과 인수인계 요약](ROUND6_FINAL.md)을 우선한다. 아래 점수는 로컬 tutor 점수다.
+
+|실행|자료|후보|tutor|수집 초|내부 단계 실패 요청|
+|---|---|---|---:|---:|---:|
+|59|contrast16|jh_r6_source_conditioned_gate|92.19|9.46|0|
+|60|contrast16|jh_r6_source_support12|92.19|8.59|0|
+|61|primary192|jh_r4_material_budget|94.14|21.83|6|
+|62|primary192|jh_r3_selected_focused|94.53|22.04|5|
+|63|primary192|jh_r6_source_conditioned_gate|95.31|19.14|3|
+|64|primary192|jh_r6_source_support12|94.27|16.10|0|
+|65|primary192|jh_r6_normal94_sparse|94.27|14.77|3|
+|66|alternative181|jh_r4_material_budget|93.92|17.99|1|
+|67|alternative181|jh_r6_normal94_sparse|92.82|16.51|1|
+|68|alternative181|jh_r3_selected_focused|92.13|15.67|2|
+
+68회·10,361개 HTTP 요청 채점 완료, pending0. 별도 public trace8회/모델파라미터smoke1회는
+품질점수·HTTP집계에 넣지 않는다. 전체614개 테스트 통과. 원본 보호 경로 diff0. 새 private점수·push 없음.
+
+I의 조건부 재판정95.31과기준선94.14 차이는 대상14문항 원점수합−100/나머지+325다.
+support12는 대상−25/나머지+50이다. 두 후보 모두 전체상승만으로 변경경로의개선을 주장하지 않는다.
+normal94_sparse는 primary에서대상74개 JSON동일, 중앙값−.4875초; alternative67개동일/−.4350초다.
+새.94band primary4개는25/100/100/100→100/100/100/100, 원점수합+75다.
+신뢰임베딩생략74개의JSON은동일하지만채점합−25변동도있다. 나머지차이까지합쳐전체+.130점이다.
+자료·효과범위를구분하며`.cache/jh_r6_sparse_repeat_groups.json`, `jh_r6_primary_route_score_deltas.json`에보존했다.
+
+I 주요 비교의 paired bootstrap 구간은모두0을포함한다(contrast45→59/60의하한0 포함).
+`.cache/jh_r6_paired_i.json`에저장했다. 반복실행분산·비공개일반화 추정이아니다.
+기존 material_budget/focused를유지하며추가제출실험은normal94_sparse를우선, 더좁은효율비교는trusted_sparse로한다.
+product_context는코드75b59c4에보존한미실험후보다. 등록·모의테스트를실제분류개선으로표현하지않는다.

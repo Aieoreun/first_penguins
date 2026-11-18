@@ -1,5 +1,5 @@
 {
-  "status": "running",
+  "status": "complete_at_user_quota",
   "started_date_kst": "2026-11-18",
   "branch": "experiment/kimjaehak",
   "starting_used_percent": 63,
@@ -7,11 +7,11 @@
   "baseline": "jh_r4_material_budget",
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
-  "completed_runs": 60,
-  "pending_runs": 8,
-  "last_observed_used_percent": 84,
-  "next": "Score collected I59–68 and inspect matched repeats; no new collection at used>=85.",
-  "total_requests": 8858,
+  "completed_runs": 68,
+  "pending_runs": 0,
+  "last_observed_used_percent": 85,
+  "next": "No automatic experiments. Await user-authorized resumption or submission comparison.",
+  "total_requests": 10361,
   "comparison_baselines": [
     "jh_r3_selected_focused",
     "jh_r4_material_budget",
@@ -32,5 +32,12 @@
     "http_requests": 48,
     "deployment_data": "excluded; ignored development cache only"
   },
-  "collected_runs": 68
+  "collected_runs": 68,
+  "stop_record": "docs/jh/ROUND6_STOP.json",
+  "final_summary": "docs/jh/ROUND6_FINAL.md",
+  "recommended_submission": "jh_r4_material_budget",
+  "backup_submission": "jh_r3_selected_focused",
+  "next_submission_experiment": "jh_r6_normal94_sparse",
+  "unrun_variant": "jh_r6_product_context",
+  "tests_passed": 614
 }

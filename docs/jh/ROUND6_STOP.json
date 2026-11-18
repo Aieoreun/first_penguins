@@ -1,0 +1,28 @@
+{
+  "status": "stopped_at_user_quota_all_collected_scored",
+  "reason": "user_remaining_quota_threshold",
+  "observed_at_utc": "2026-11-18T05:26:51Z",
+  "used_percent": 85,
+  "remaining_percent": 15,
+  "threshold_remaining_percent": 15,
+  "last_collected_run": 68,
+  "collected_runs": 68,
+  "collected_http_requests": 10361,
+  "new_collection_allowed": false,
+  "unrun_variant": "jh_r6_product_context",
+  "unrun_variant_status": "implemented; mock/full tests passed; no API quality result",
+  "tests_passed": 614,
+  "protected_paths_diff_zero": true,
+  "manual_questions_deployment_excluded": true,
+  "push_performed": false,
+  "completed_runs": 68,
+  "pending_runs": 0,
+  "scored_http_requests": 10361,
+  "quality_comparison_exclusions": [
+    {
+      "run": 29,
+      "reason": "unsupported medium3000 proxy configuration; fixed separate run40"
+    }
+  ],
+  "final_summary": "docs/jh/ROUND6_FINAL.md"
+}
