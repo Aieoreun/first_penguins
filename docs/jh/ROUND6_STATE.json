@@ -7,10 +7,10 @@
   "baseline": "jh_r4_material_budget",
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
-  "completed_runs": 7,
-  "pending_runs": 3,
+  "completed_runs": 10,
+  "pending_runs": 0,
   "last_observed_used_percent": 66,
-  "next": "Finish scoring 07–10; compare source ordering/votes and expand promising retrieval candidates",
+  "next": "Source selection topic; resolved/base/focused followup and primary; Kiwi primary",
   "total_requests": 1140,
   "comparison_baselines": [
     "jh_r3_selected_focused",
