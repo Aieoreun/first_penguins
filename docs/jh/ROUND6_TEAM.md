@@ -309,3 +309,67 @@ primary74/192,alternative67/181의245쌍에서 고의로 dense 검색 결과를 
 실험 중 추가 fetch에서 Peace export/peace-jh-full-no-trained만2f51c1f→6f7281c로 갱신됐다.
 새 변경은 guard의 block/other 뒤 material 직렬 실행, prepare22초이며 tutor는 기존 경로에 위임한다.
 새 동일조건 전후 점수 파일은 없었다. 가드 고정 조건에서 이식하지 않는다. 다른 개인 브랜치 ref 변화 없음.
+
+## 28–35 수집과 후속 후보 사전 등록
+
+28 source_budget12 / 29 source_reason12 / 30 joint_evidence는 topic114,
+31 source_hint / 32 computable_material / 33 joint_evidence는 primary192,
+34 material_budget / 35 selected_focused는 topic114 재실행이다. 수집 commit 1e9a43e, 모두 clean.
+8개를 순차 수집한 뒤 원본 평가기로 순차 채점한다. 누적 수집4815요청이며 API 수집과 채점을 겹치지 않는다.
+
+29에서는 source_extract:BadRequestError가104건 발생했다. 당시 source medium/3000 설정이
+기존 01_experiments.md에 기록된 프록시의 비스트리밍2000토큰 제한을 위반했다. 개발 시 제한을
+재확인하지 않은 실수다. tutor52.19와 원본 결과를 보존하되 medium 추론의 품질 비교로 해석하지 않는다.
+수정 commit c466086은 medium/2000으로 제한하고 모든 등록 R6 후보의 토큰 상한·deadline 회귀 검사를 추가했다.
+수정본은 작은 실제 API smoke를 먼저 확인하며, 옛29 실행의 manifest/응답/점수를 덮어쓰지 않는다.
+
+새 후보 두 개를 별도 등록했다. 기존 제출 후보·평가기·가드는 그대로이며 전체537개 테스트 통과.
+
+- `jh_r6_normal94_sparse`: normal .94 분류와 trusted_sparse 검색만 조합한다. 검색 시 임베딩 생략은
+  기존 .95 이상 입력/.90 이상 출처 조건 그대로이며 새 [.94,.95) 정상 질문에서는 임베딩을 유지한다.
+  실제 분류·출처 후처리·생성까지의 모의 동등성과 동시 요청의 모델/임계값/클라이언트 불변성을 검사했다.
+- `jh_r6_joint_quote`: joint 한 호출에서 질문 대상/요청 속성을 분리한 asked_fact와 연속 원문 quote를
+  먼저 적고 supported를 결정하도록 한다. quote가 선택 섹션의 공백 정규화 부분문자열이 아니면 빈 quote와
+  InvalidQuote 진단으로 기존 OOM 우선순위에 전달한다. 추가 호출·재시도는 없다. 최종 focused 전체 인용은 유지한다.
+  **문자열 포함 검사는 의미적 답변 가능성의 증명이 아니다.** 무관하지만 실제 원문인 quote도 통과할 수 있다.
+  원본 joint adapter를 동작 동일한 hook으로 분리했으며 기존10개+새9개 테스트에서 원래 결과·가드·취소·우선순위를 확인했다.
+
+joint primary33에서 OOM20건 중 answer8건은 material 실패가 아니라 판정의 과잉지원으로 보인다.
+8건 모두 입력 .95 gate 미달이며 material_joint/prepare 오류0이다. 기존17은 answer2건이었다.
+원래 입력모델 argmax OOM, .5≤p<.95로 재확인 대상을 좁히면 이8건 중4건만 포착한다.
+primary 전체 대상9건은 OOM8/normal1, alternative7건은 OOM5/normal1/PII1이다.
+grouped OOF10건에는 normal4건도 포함되어 확률만으로 OOM을 강제하는 방식은 채택하지 않는다.
+선택적 재확인은 후속 가설로 남기고 먼저 quote 후보의 이득/정상 질문 손실을 확인한다.
+
+다음 비교는 trusted_sparse와 normal94_sparse의 primary/alternative, 수정 medium의 topic,
+joint_quote의 topic/primary, 기존 두 기준선과 유망 조합의 public400 혼합 부하다.
+public 원본은 학습 자료이므로 일반화 점수로 쓰지 않고 tutor/guard 동시 실행의 회귀·지연 확인에 쓴다.
+
+## 28–35 채점 완료
+
+| 번호 / 자료 | 후보 | tutor | 수집 초 | 내부 실패 요청 |
+|---|---|---:|---:|---:|
+| 28 topic114 | source_budget12 | 89.69 | 25.90 | 2 |
+| 29 topic114 | source_reason12 **잘못된 3000토큰 설정** | 52.19 | 20.36 | 104 |
+| 30 topic114 | joint_evidence | 92.32 | 13.65 | 3 |
+| 31 primary192 | resolved_source_hint | 93.10 | 23.36 | 5 |
+| 32 primary192 | computable_material | 93.62 | 22.18 | 9 |
+| 33 primary192 | joint_evidence | 94.14 | 19.40 | 1 |
+| 34 topic114 | material_budget 반복 | 86.18 | 29.59 | 9 |
+| 35 topic114 | selected_focused 반복 | 89.04 | 25.15 | 11 |
+
+35회4815 HTTP요청 채점 완료, 미채점0. HTTP/형식/판정 오류0이지만29의 내부 API104실패는 별도로 명시한다.
+topic에서 material_budget 세 번88.16/88.60/86.18 평균87.647, focused90.79/87.94/89.04 평균89.257이다.
+단일 좋은 후보를 이 반복 범위와 비교한다. source_hint92.76, joint92.32가 topic에서 유망하지만
+primary에서는 각각93.10/94.14로 baseline95.83보다 낮다. computable도primary93.62로 전체 채택 근거가 없다.
+source budget12는 source 단계 오류0으로 감소했지만89.69 단회이며 예산 증가만으로 점수 상승을 확정하지 않는다.
+
+joint의 topic 응답 p50은5.121초로 신규 기준선34의10.293초, focused35의10.291초보다 짧았다.
+이는 다른 시점의 단회 비교이고 반복 필요. 기존 material 대신 full section 지원 판정을 사용해 OOM 회귀가 나타났다.
+다음 성능 가설은 **기존 material 판정을 유지하며 출처 선택만 병렬로 미리 수행**하는 것이다.
+입력 정상/PII 확률이 높은 fallback 요청에 한정하고, 최종 정책 우선순위/출처 gate가 우선하며
+가드·원본 selector 프롬프트·후보 풀·최종 focused 답변은 유지하는 별도 후보로 검증한다.
+
+medium/2000 비스트리밍·JSON 실제 smoke1회는 정상 JSON으로 성공했다(1.965초).
+`experiments/.cache/jh_r6_medium2000_smoke.json`에 파라미터와 성공 여부만 보존했다.
+기능 확인이며 품질/HTTP 요청 수에는 합산하지 않는다. 현재 사용률75%, 잔여25%로 후속 실험을 계속한다.

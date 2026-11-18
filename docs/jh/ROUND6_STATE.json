@@ -7,16 +7,17 @@
   "baseline": "jh_r4_material_budget",
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
-  "completed_runs": 27,
+  "completed_runs": 35,
   "pending_runs": 0,
-  "last_observed_used_percent": 72,
-  "next": "Source budget/reasoning/joint topic; hint/computable/joint primary; trusted sparse mixed load and normal .94 repeats",
-  "total_requests": 3669,
+  "last_observed_used_percent": 75,
+  "next": "Trusted sparse / normal94_sparse transfer and mixed load; joint quote; medium2000 smoke and topic; eager source design",
+  "total_requests": 4815,
   "comparison_baselines": [
     "jh_r3_selected_focused",
     "jh_r4_material_budget",
     "jh_r5_dual_all"
   ],
-  "collected_requests": 3669,
-  "public_trace_requests": 5
+  "collected_requests": 4815,
+  "public_trace_requests": 5,
+  "parameter_smoke_requests": 1
 }
