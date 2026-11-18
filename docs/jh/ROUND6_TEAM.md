@@ -267,3 +267,45 @@ invalid/timeout은 추가 material 재시도 없이 기존 실패 복구를 따�
 최종518테스트 통과. 이 호출 수는 해당 검사 조건의 수이며 모든 요청의 고정 호출 횟수는 아니다.
 
 다음 우선순위는 normal .94의 primary/alternative 대조와 새 source 후보의 교차검증이다.
+
+## 24–27 완료 — normal .94
+
+| 자료 | material_budget | focused | normal .94 |
+|---|---:|---:|---:|
+| primary192 | 95.83 (17) | 93.75 (18) | 95.96 (24) |
+| alternative181 | 90.47 (25) | 92.27 (26) | 92.54 (27) |
+
+24 수집21.03초/내부실패13(embedding timeout9 포함),25는17.87초/3,26은19.35초/4,
+27은16.82초/1. HTTP/형식/판정 오류0. 누적3669 HTTP요청.
+primary의 새 gate 대상4개는25/100/100/50점에서 모두100점이 됐다. 이 부분은 총점+0.6510점,
+나머지188문항 변동은−0.5208점이다. alternative의 새 대상3개는75/100/50에서 모두100,
+이 부분+0.4144점, 나머지178문항+1.6575점이다. 전체 차이를 임계값의 인과 효과로 세지 않는다.
+반복/혼합 부하 검증 전이지만 좁은 정상 질문 개선 후보로 유지한다.
+
+### 공개 실패 trace 5건
+
+baseline17의 action 불일치5건만 `jh_public_trace_r6_primary_failures_1`로 새로 실행했다.
+새로운 API 응답을 관찰한 직접 호출 진단이며 원래 HTTP 실행의 내부 trace를 복원한 것은 아니다.
+걱정 질문은 material이 정답 근거를 찾았지만 OTHER 두 표가 emotional_distress였다.
+없는 점수 기준 요청에는 관련 분류 예문, 없는 기능의 확인창 요청에는 '그 기능은 만들지 않는다'는
+문장을 quote로 반환해 normal이 됐다. 관련 근거와 질문한 속성의 실제 지원을 구분해야 한다는 가설을 뒷받침한다.
+나머지2건은 이 진단에서 normal로 회복됐다. trace5건은 위 HTTP 점수/요청 수에 합산하지 않는다.
+
+### 임베딩이 쓰이지 않는 경로의 호출 생략
+
+`jh_r6_trusted_sparse`는 기존 tutor 입력 normal/PII confidence≥.95, known section confidence≥.90,
+retrieved 제한 없음 조건에서 query embedding만 생략하고 원래 BM25를 실행한다. guard 및 나머지 경로는
+그대로다. 분류·출처 후처리·최종 focused 인용을 미리 대신하지 않고 원래 메서드를 모두 실행한다.
+공유 llm/searcher를 변경하지 않으며 _search 동안만 요청별 facade를 사용한다.
+
+모의 테스트 포함522개 통과. 실제 공개 모델을1회 학습한 별도 CPU screen은 public104/200,
+primary74/192,alternative67/181의245쌍에서 고의로 dense 검색 결과를 바꿔도 최종 JSON이 모두 같았다.
+모의 embedding245→0, chat0, 불일치0. 이 수치는 실제 API 시간·점수 개선이 아니다.
+실제 deadline 실패가 있는 경우까지 동등하다는 주장도 아니다. 결과는 trusted_sparse_equivalence.json.
+다음에는 실제 혼합 tutor/guard 부하에서도 확인한다.
+
+### 원격 재확인
+
+실험 중 추가 fetch에서 Peace export/peace-jh-full-no-trained만2f51c1f→6f7281c로 갱신됐다.
+새 변경은 guard의 block/other 뒤 material 직렬 실행, prepare22초이며 tutor는 기존 경로에 위임한다.
+새 동일조건 전후 점수 파일은 없었다. 가드 고정 조건에서 이식하지 않는다. 다른 개인 브랜치 ref 변화 없음.
