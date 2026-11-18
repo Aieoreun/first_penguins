@@ -1,4 +1,4 @@
-"""Compare public guard200 with the unchanged scorer and an exact Peace snapshot.
+"""Compare pinned public guard diagnostics and an exact Peace snapshot.
 
 No production module imports this development recorder. Snapshot source files,
 the official evaluator and both servers remain unmodified. --prepare-only never
@@ -22,19 +22,23 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from experiments import jh_compare as shared
+from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
     'current': ('jh_r4_material_budget', 'pipelines.kimjaehak.material_budget.Pipeline'),
     'fusion': ('jh_pg_fusion', 'pipelines.kimjaehak.peace_guard_fusion.Pipeline'),
     'peace': ('jh_parallel_guard', 'pipelines.kimjaehak.parallel_guard.Pipeline'),
+    'requested': ('jh_pg_requested', 'pipelines.kimjaehak.peace_guard_variants.RequestedAction'),
+    'action': ('jh_pg_action', 'pipelines.kimjaehak.peace_safety_variants.ActionSafety'),
+    'context': ('jh_pg_context', 'pipelines.kimjaehak.peace_safety_variants.ContextSafety'),
 }
 
 # A fresh interpreter imports exclusively from the selected source tree. The
 # wrapper only observes original lifespan startup; it does not replace routing.
 # Peace's server ignores PIPELINE, so require its actual hard-coded route too.
 BOOTSTRAP = r'''
-import asyncio, contextlib, inspect, json, logging, os, pathlib, sys
+import asyncio, contextlib, hashlib, inspect, json, logging, os, pathlib, sys
 logging.disable(logging.CRITICAL)
 try:
     root, variant, expected, port, identity_path, reference = sys.argv[1:]
@@ -63,13 +67,30 @@ try:
                 raise RuntimeError('Pipeline imported outside selected source tree')
             if reference == '1' and getattr(instance, 'learned_models_enabled', None) is not False:
                 raise RuntimeError('Peace reference must disable trained models')
+            if variant == 'jh_pg_requested' and getattr(instance, 'guard_requested_action', None) is not True:
+                raise RuntimeError('Requested-action guard is not enabled')
             data = {'requested_variant': variant, 'server_variant': server.PIPELINE,
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
             for key in ('guard_deadline','guard_prepare_limit','guard_material_timeout',
-                        'deadline','prepare_limit','output_votes','learned_gate_threshold'):
+                        'guard_ground_timeout','guard_safety_timeout','guard_requested_action',
+                        'guard_safety_action_review','guard_safety_curriculum_context',
+                        'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
+                        'learned_gate_threshold'):
                 data[key] = getattr(instance, key, None)
+            prompts = sys.modules.get('pipelines.v2.prompts')
+            block = getattr(instance, 'guard_block_system', getattr(prompts, 'BLOCK_SYSTEM', None))
+            if hasattr(instance, '_block_system'):
+                guard_state = instance._new_state({'messages': [
+                    {'role': 'user', 'content': 'startup configuration check'}]}, True)
+                block = instance._block_system(guard_state)
+            safety = getattr(instance, 'guard_safety_system', None)
+            if safety is None:
+                method = getattr(instance, '_parallel_safety', None)
+                safety = getattr(method, '__globals__', {}).get('SAFETY_SYSTEM')
+            for key, text in (('guard_safety_system_sha256', safety), ('guard_block_system_sha256', block)):
+                data[key] = hashlib.sha256(text.encode()).hexdigest() if isinstance(text, str) else None
             pathlib.Path(identity_path).write_text(json.dumps(data))
             yield
     server.app.router.lifespan_context = observed
@@ -135,7 +156,7 @@ def prepare_snapshot(root, dest):
 
 
 def protected_hashes(root):
-    paths = [root / 'server.py', root / 'harness/score_local.py']
+    paths = [root / 'SPEC.md', root / 'server.py', root / 'harness/score_local.py']
     for folder in ('core', 'grader', 'kb', 'public'):
         paths += [p for p in (root / folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts]
     return {str(p.relative_to(root)): digest(p.read_bytes()) for p in sorted(paths)}
@@ -160,7 +181,8 @@ def validate_identity(value, label, source_root):
     if (value.get('requested_variant') != variant or value.get('server_variant') != variant
             or value.get('class') != expected or value.get('request_slots') != 64
             or value.get('source_root') != str(source_root.resolve())
-            or (label == 'peace' and value.get('learned_models_enabled') is not False)):
+            or (label == 'peace' and value.get('learned_models_enabled') is not False)
+            or (label == 'requested' and value.get('guard_requested_action') is not True)):
         raise ValueError('Recorded startup identity does not match requested candidate')
 
 
@@ -176,7 +198,7 @@ def server_env(env, root, embedding_mode):
     return result
 
 
-def collect_candidate(label, source_root, items, dest, env, judge_workers, embedding_mode):
+def collect_candidate(label, source_root, items, dest, env, judge_workers, embedding_mode, dataset_metadata=None):
     """Small process adapter; requests and official scoring are shared, not copied."""
     dest.mkdir()
     variant, expected = CANDIDATES[label]
@@ -189,6 +211,9 @@ def collect_candidate(label, source_root, items, dest, env, judge_workers, embed
                 'count': len(items), 'endpoints': ['guard'], 'score_scope': 'guard',
                 'evaluator_hashes': shared.evaluator_hashes(), 'embedding_mode': embedding_mode,
                 'scoring_deferred': True, 'judge_enabled': True}
+    if dataset_metadata is not None:
+        manifest['dataset_provenance'] = dataset_metadata
+        manifest['scope'] = dataset_metadata['scope']
     write_json(dest / 'manifest.json', manifest)
     command = [sys.executable, '-B', '-c', BOOTSTRAP, str(source_root), variant, expected,
                str(port), str(identity_path), '1' if label == 'peace' else '0']
@@ -224,7 +249,8 @@ def collect_candidate(label, source_root, items, dest, env, judge_workers, embed
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--name', required=True)
-    parser.add_argument('--order', nargs='+', choices=CANDIDATES, default=list(CANDIDATES))
+    parser.add_argument('--dataset', choices=datasets.DATASETS, default='public')
+    parser.add_argument('--order', nargs='+', choices=CANDIDATES, default=['current','fusion','peace'])
     parser.add_argument('--embedding-mode', choices=('env', 'off'), default='env')
     parser.add_argument('--judge-workers', type=int, default=32)
     phase = parser.add_mutually_exclusive_group()
@@ -240,15 +266,14 @@ def main(argv=None):
         dest.mkdir(exist_ok=False)
         snapshot = prepare_snapshot(ROOT, dest / 'peace_snapshot')
         protected = verify_common_inputs(ROOT, dest / 'peace_snapshot', snapshot)
-        items = shared.load_public(endpoints=('guard',))
-        if len(items) != 200 or any(row['endpoint'] != 'guard' for row in items):
-            raise ValueError('Expected complete public guard200')
+        items, dataset_metadata = datasets.load_dataset(args.dataset, ROOT)
         data = ''.join(json.dumps(row, ensure_ascii=False) + '\n' for row in items)
         (dest / 'inputs.jsonl').write_text(data)
-        plan = {'scope': 'public_guard200_comparison_not_submission_total', 'order': args.order,
+        plan = {'scope': dataset_metadata['scope'], 'dataset_provenance': dataset_metadata, 'order': args.order,
                 'peace_snapshot': snapshot, 'protected_hashes': protected,
                 'pipeline_hashes': pipeline_hashes(ROOT), 'bootstrap_sha256': digest(BOOTSTRAP.encode()),
                 'runner_sha256': digest(Path(__file__).read_bytes()),
+                'dataset_module_sha256': digest(Path(datasets.__file__).read_bytes()),
                 'dataset_sha256': digest(data.encode()), 'embedding_mode': args.embedding_mode,
                 'current_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                 'environment_policy': 'One inherited environment for all children; no secrets recorded'}
@@ -261,11 +286,30 @@ def main(argv=None):
         if digest(data) != plan['dataset_sha256']:
             raise ValueError('Frozen public dataset changed')
         items = [json.loads(line) for line in data.splitlines()]
-    if protected_hashes(ROOT) != plan['protected_hashes']:
+        expected_items, dataset_metadata = datasets.load_dataset(args.dataset, ROOT)
+        if (items != expected_items
+                or plan.get('dataset_provenance', {}).get('dataset', 'public') != args.dataset):
+            raise ValueError('Resume dataset differs from pinned inputs')
+    current_protected = protected_hashes(ROOT)
+    if args.score_only:
+        # Cached responses no longer execute pipeline/server/recorder code.
+        # Retain their recorded code hashes, but permit newer experimental code.
+        scoring_files = lambda rows: {k: v for k, v in rows.items()
+                                     if k.startswith(('grader/', 'harness/', 'kb/', 'public/'))}
+        protected_equal = scoring_files(current_protected) == scoring_files(plan['protected_hashes'])
+    else:
+        protected_equal = current_protected == plan['protected_hashes']
+    if not protected_equal:
         raise ValueError('Protected current files changed')
-    if (pipeline_hashes(ROOT) != plan['pipeline_hashes']
+    # Older public plans did not list SPEC separately; their exact reference
+    # snapshot still pins its original content for resumed scoring.
+    expected_spec = plan['protected_hashes'].get('SPEC.md', plan['peace_snapshot']['files'].get('SPEC.md'))
+    if expected_spec is not None and digest((ROOT / 'SPEC.md').read_bytes()) != expected_spec:
+        raise ValueError('Original competition specification changed')
+    if not args.score_only and (pipeline_hashes(ROOT) != plan['pipeline_hashes']
             or digest(BOOTSTRAP.encode()) != plan['bootstrap_sha256']
-            or digest(Path(__file__).read_bytes()) != plan['runner_sha256']):
+            or digest(Path(__file__).read_bytes()) != plan['runner_sha256']
+            or digest(Path(datasets.__file__).read_bytes()) != plan['dataset_module_sha256']):
         raise ValueError('Experiment implementation changed after preparation')
     verify_snapshot(dest / 'peace_snapshot', plan['peace_snapshot']['files'])
     if args.prepare_only:
@@ -280,7 +324,8 @@ def main(argv=None):
     if not args.score_only:
         for label in args.order:
             source = dest / 'peace_snapshot' if label == 'peace' else ROOT
-            collect_candidate(label, source, items, dest / label, env, args.judge_workers, args.embedding_mode)
+            collect_candidate(label, source, items, dest / label, env, args.judge_workers,
+                              args.embedding_mode, dataset_metadata)
             verify_snapshot(dest / 'peace_snapshot', plan['peace_snapshot']['files'])
             if protected_hashes(ROOT) != plan['protected_hashes']:
                 raise ValueError('Protected files changed during collection')
@@ -302,10 +347,11 @@ def main(argv=None):
         if shared.evaluator_hashes() != manifest['evaluator_hashes']:
             raise ValueError('Official evaluator changed during scoring')
         result['score_scope'] = 'guard'
+        result['diagnostic_scope'] = dataset_metadata['scope']
+        result['dataset_provenance'] = dataset_metadata
         result['runtime'] = json.loads((run / 'runtime.json').read_text())
         write_json(run / 'result.json', result)
-        summary.append({'candidate': label, 'guard': result['guard'],
-                        'guard_details': result['guard_details'], 'runtime': result['runtime']})
+        summary.append(datasets.summarize_result(label, result, dataset_metadata))
     write_json(dest / 'summary.json', summary)
     print(json.dumps(summary, ensure_ascii=False))
 

@@ -2,6 +2,7 @@ import asyncio
 from contextlib import redirect_stdout
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -38,7 +39,8 @@ class GuardFusionCompareTests(unittest.TestCase):
         variant, cls = probe.CANDIDATES[label]
         return {'requested_variant': variant, 'server_variant': variant, 'class': cls,
                 'request_slots': 64, 'source_root': str(root or self.root),
-                'learned_models_enabled': False if label == 'peace' else None}
+                'learned_models_enabled': False if label == 'peace' else None,
+                'guard_requested_action': label == 'requested'}
 
     def test_snapshot_archive_hashes_exact_content_and_detects_edits_or_extras(self):
         payload = archive({'server.py': b'original server', 'core/llm.py': b'no edits'})
@@ -95,6 +97,13 @@ class GuardFusionCompareTests(unittest.TestCase):
         self.assertEqual(original['EMBEDDING_MODEL'], 'fixture-embedding')
         self.assertEqual(env['KB_DIR'], str(self.root / 'kb'))
 
+    def test_requested_candidate_identity_requires_enabled_action_rubric(self):
+        identity = self.identity('requested')
+        probe.validate_identity(identity, 'requested', self.root)
+        identity['guard_requested_action'] = False
+        with self.assertRaises(ValueError):
+            probe.validate_identity(identity, 'requested', self.root)
+
     def fake_server_tree(self, variant='jh_parallel_guard', trained=False):
         package = self.root / 'pipelines'
         package.mkdir()
@@ -102,6 +111,9 @@ class GuardFusionCompareTests(unittest.TestCase):
         (package / 'fake.py').write_text(
             'import asyncio\nfrom types import SimpleNamespace\n'
             'class Pipeline:\n request_slots=32\n learned_models_enabled='+repr(trained)+'\n'
+            ' guard_safety_system="synthetic safety"\n guard_block_system="synthetic block"\n'
+            ' def _new_state(self, body, guard): return SimpleNamespace(guard=guard)\n'
+            ' def _block_system(self, state):\n  assert state.guard\n  return "resolved synthetic block"\n'
             ' def __init__(self):\n  self._slots=asyncio.Semaphore(self.request_slots)\n'
             '  self.searcher=SimpleNamespace(has_embeddings=False)\n')
         (self.root / 'server.py').write_text(
@@ -131,6 +143,8 @@ class GuardFusionCompareTests(unittest.TestCase):
         self.assertEqual(identity['server_variant'], 'jh_parallel_guard')
         self.assertEqual(identity['request_slots'], 64)
         self.assertIs(identity['learned_models_enabled'], False)
+        self.assertEqual(identity['guard_safety_system_sha256'], probe.digest(b'synthetic safety'))
+        self.assertEqual(identity['guard_block_system_sha256'], probe.digest(b'resolved synthetic block'))
         self.assertEqual((self.root / 'server.py').read_bytes(), before)
 
     def test_bootstrap_refuses_server_ignoring_selection_before_initialization(self):
@@ -176,7 +190,8 @@ class GuardFusionCompareTests(unittest.TestCase):
              patch.object(probe, 'prepare_snapshot', side_effect=snapshot), \
              patch.object(probe, 'verify_common_inputs', return_value={}), \
              patch.object(probe, 'protected_hashes', return_value={}), \
-             patch.object(probe.shared, 'load_public', return_value=rows), \
+             patch.object(probe.datasets, 'load_dataset', return_value=(rows, {
+                 'dataset':'public', 'scope':'public_guard200_comparison_not_submission_total'})), \
              patch.object(probe.subprocess, 'check_output', return_value='fixture-head\n'), \
              patch.object(probe, 'collect_candidate', side_effect=AssertionError('No HTTP')) as collect, \
              patch.object(probe.shared, 'score_rows', side_effect=AssertionError('No API')) as score, \
@@ -189,6 +204,40 @@ class GuardFusionCompareTests(unittest.TestCase):
         self.assertEqual(plan['dataset_sha256'], probe.digest((dest / 'inputs.jsonl').read_bytes()))
         self.assertEqual(len((dest / 'inputs.jsonl').read_text().splitlines()), 200)
         self.assertEqual(plan['order'], ['current','fusion','peace'])
+
+    def test_score_only_allows_new_pipeline_code_but_uses_frozen_responses_and_grader(self):
+        dest = self.root / 'experiments/.cache/jh_guard_fusion_old'
+        (dest / 'peace_snapshot').mkdir(parents=True)
+        run = dest / 'current'
+        run.mkdir()
+        items = [{'id':'a','endpoint':'guard','messages':[{'role':'user','content':'fixture'}]}]
+        data = json.dumps(items[0])+'\n'
+        (dest / 'inputs.jsonl').write_text(data)
+        probe.write_json(dest / 'plan.json', {
+            'order':['current'],'embedding_mode':'env','dataset_sha256':probe.digest(data.encode()),
+            'protected_hashes':{'server.py':'old','core/llm.py':'old'},
+            'pipeline_hashes':{'old':'implementation'},'runner_sha256':'old',
+            'peace_snapshot':{'files':{}},
+        })
+        probe.write_json(run / 'manifest.json', {'effective_config':self.identity('current'), 'evaluator_hashes':{}})
+        probe.write_json(run / 'runtime.json', {'collect_seconds':1})
+        (run / 'responses.jsonl').write_text(json.dumps({'id':'a','response':{}})+'\n')
+        metadata = {'dataset':'public','scope':'public diagnostic','primary_metric':'guard'}
+        result = {'guard':90,'guard_details':{'safe_accuracy':1}}
+        env = {name:'synthetic' for name in ('TEAM_TOKEN','OPENAI_API_KEY','OPENAI_BASE_URL','OPENAI_MODEL')}
+        with patch.object(probe, 'ROOT', self.root), \
+             patch.object(probe, 'protected_hashes', return_value={'server.py':'new','core/llm.py':'new'}), \
+             patch.object(probe.datasets, 'load_dataset', return_value=(items,metadata)), \
+             patch.object(probe.shared, 'evaluator_hashes', return_value={}), \
+             patch.object(probe.shared, 'score_rows', return_value=result) as score, \
+             patch.object(probe, 'collect_candidate', side_effect=AssertionError('Must not recollect')) as collect, \
+             patch.dict(os.environ, env), redirect_stdout(io.StringIO()):
+            probe.main(['--name','old','--score-only','--order','current'])
+        collect.assert_not_called()
+        score.assert_called_once()
+        saved = json.loads((run / 'result.json').read_text())
+        self.assertEqual(saved['guard'],90)
+        self.assertEqual(saved['diagnostic_scope'],'public diagnostic')
 
 
 if __name__ == '__main__':
