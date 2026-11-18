@@ -77,12 +77,15 @@ def main():
     effective["embedding_mode"] = args.embedding_mode
     for key in ("guard_fusion", "guard_fusion_reference", "guard_independent_safety", "guard_requested_action",
                 "guard_safety_action_review", "guard_safety_curriculum_context",
+                "guard_safety_after_input",
                 "guard_preserve_completed_ground", "guard_restore_span_refinement",
                 "guard_vote_first", "guard_prepare_limit", "guard_deadline",
                 "guard_material_timeout", "guard_ground_timeout", "guard_safety_timeout"):
         effective[key] = getattr(pipeline, key, None)
     if hasattr(pipeline, "guard_safety_system"):
         effective["guard_safety_prompt_sha256"] = hashlib.sha256(pipeline.guard_safety_system.encode()).hexdigest()
+    effective["guard_safety_hints_sha256"] = {k: hashlib.sha256(v.encode()).hexdigest()
+        for k, v in getattr(pipeline, "guard_safety_hint_systems", {}).items()}
     if hasattr(pipeline, "guard_block_system"):
         effective["guard_block_prompt_sha256"] = hashlib.sha256(pipeline.guard_block_system.encode()).hexdigest()
     effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None

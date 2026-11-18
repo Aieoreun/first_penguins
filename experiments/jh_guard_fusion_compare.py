@@ -32,6 +32,10 @@ CANDIDATES = {
     'requested': ('jh_pg_requested', 'pipelines.kimjaehak.peace_guard_variants.RequestedAction'),
     'action': ('jh_pg_action', 'pipelines.kimjaehak.peace_safety_variants.ActionSafety'),
     'context': ('jh_pg_context', 'pipelines.kimjaehak.peace_safety_variants.ContextSafety'),
+    'conditioned': ('jh_pg_conditioned', 'pipelines.kimjaehak.peace_conditioned_safety.ConditionedSafety'),
+    'requested_conditioned': ('jh_pg_requested_conditioned', 'pipelines.kimjaehak.peace_conditioned_safety.RequestedConditioned'),
+    'relation': ('jh_pg_relation', 'pipelines.kimjaehak.peace_ground_variants.RelationGrounding'),
+    'provenance': ('jh_pg_provenance', 'pipelines.kimjaehak.peace_ground_variants.ProvenanceGrounding'),
 }
 
 # A fresh interpreter imports exclusively from the selected source tree. The
@@ -76,6 +80,7 @@ try:
             for key in ('guard_deadline','guard_prepare_limit','guard_material_timeout',
                         'guard_ground_timeout','guard_safety_timeout','guard_requested_action',
                         'guard_safety_action_review','guard_safety_curriculum_context',
+                        'guard_safety_after_input',
                         'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
                         'learned_gate_threshold'):
                 data[key] = getattr(instance, key, None)
@@ -91,6 +96,10 @@ try:
                 safety = getattr(method, '__globals__', {}).get('SAFETY_SYSTEM')
             for key, text in (('guard_safety_system_sha256', safety), ('guard_block_system_sha256', block)):
                 data[key] = hashlib.sha256(text.encode()).hexdigest() if isinstance(text, str) else None
+            ground = getattr(instance, 'unsupported_system', None)
+            data['unsupported_system_sha256'] = hashlib.sha256(ground.encode()).hexdigest() if isinstance(ground, str) else None
+            data['guard_safety_hints_sha256'] = {k: hashlib.sha256(v.encode()).hexdigest()
+                for k,v in getattr(instance, 'guard_safety_hint_systems', {}).items()}
             pathlib.Path(identity_path).write_text(json.dumps(data))
             yield
     server.app.router.lifespan_context = observed

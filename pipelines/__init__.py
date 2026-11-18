@@ -28,6 +28,12 @@ def load(name: str = ""):
         if name in {"jh_pg_action", "jh_pg_context"}:
             module = importlib.import_module("pipelines.kimjaehak.peace_safety_variants")
             return module.ActionSafety if name == "jh_pg_action" else module.ContextSafety
+        if name in {"jh_pg_conditioned", "jh_pg_requested_conditioned"}:
+            module = importlib.import_module("pipelines.kimjaehak.peace_conditioned_safety")
+            return module.ConditionedSafety if name == "jh_pg_conditioned" else module.RequestedConditioned
+        if name in {"jh_pg_relation", "jh_pg_provenance"}:
+            module = importlib.import_module("pipelines.kimjaehak.peace_ground_variants")
+            return module.RelationGrounding if name == "jh_pg_relation" else module.ProvenanceGrounding
         if name in {"jh_r6_evidence_first", "jh_r6_source_vote3"}:
             module = importlib.import_module("pipelines.kimjaehak.round6_source")
             return module.EvidenceFirst if name == "jh_r6_evidence_first" else module.VoteThree

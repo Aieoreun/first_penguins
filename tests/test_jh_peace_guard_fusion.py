@@ -1,6 +1,7 @@
 """Offline lifecycle and behavior contracts for the isolated guard fusion."""
 import asyncio
 import json
+import time
 import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
@@ -276,6 +277,76 @@ class PeaceGuardFusionTests(unittest.IsolatedAsyncioTestCase):
         p._fusion_ground.assert_not_awaited()
         p._fusion_safety.assert_not_awaited()
         self.assertNotIn('output', result.to_guard_response())
+
+    async def test_conditioned_safety_waits_for_input_but_ground_is_parallel(self):
+        p = self.pipeline()
+        p.guard_safety_after_input = True
+        p._search = lambda s, extra='': self.search(p, s, extra)
+        ground_started = asyncio.Event()
+        async def ground(s):
+            ground_started.set()
+        async def classify(s):
+            await ground_started.wait()
+            s.label = Label.OFF_TOPIC
+        async def safety(s):
+            self.assertTrue(ground_started.is_set())
+            self.assertEqual(s.label, Label.OFF_TOPIC)
+            self.assertTrue(s.debug['fusion_input_reliable'])
+            s.safe = True
+        p._classify, p._fusion_ground, p._fusion_safety = classify, ground, safety
+        result = await asyncio.wait_for(p.guard(self.body()), 1)
+        self.assertTrue(result.safe)
+        self.assertEqual(result.label, Label.OFF_TOPIC)
+
+    async def test_failed_classification_is_not_a_reliable_normal_prior(self):
+        p = self.pipeline()
+        p.guard_safety_after_input = True
+        p._search = lambda s, extra='': self.search(p, s, extra)
+        p._classify = AsyncMock(side_effect=ValueError('fixture'))
+        p._fusion_ground = AsyncMock()
+        async def safety(s):
+            self.assertFalse(s.debug['fusion_input_reliable'])
+            s.safe = True
+        p._fusion_safety = safety
+        result = await p.guard(self.body())
+        self.assertIn('prepare:ValueError', result.errors)
+        self.assertTrue(result.safe)
+
+    async def test_conditioned_safety_never_starts_with_expired_request_budget(self):
+        p = self.pipeline()
+        p.guard_safety_after_input = True
+        p._fusion_safety = AsyncMock()
+        source, safety = self.state(p), self.state(p)
+        completed = asyncio.create_task(asyncio.sleep(0, result=True))
+        await p._run_safety(safety, source, completed, time.monotonic() - 29)
+        p._fusion_safety.assert_not_awaited()
+        self.assertIn('safety:NoBudget', safety.errors)
+
+    async def test_conditioned_cancel_drains_input_and_ground_before_safety(self):
+        p = self.pipeline()
+        p.guard_safety_after_input = True
+        p._search = lambda s, extra='': self.search(p, s, extra)
+        begun, drained = set(), set()
+        ready = asyncio.Event()
+        async def waiting(name, state):
+            begun.add(name)
+            if len(begun) == 2:
+                ready.set()
+            try:
+                await asyncio.Event().wait()
+            finally:
+                drained.add(name)
+        p._classify = lambda s: waiting('input', s)
+        p._fusion_ground = lambda s: waiting('ground', s)
+        p._fusion_safety = AsyncMock()
+        task = asyncio.create_task(p.guard(self.body()))
+        await asyncio.wait_for(ready.wait(), 1)
+        task.cancel()
+        with self.assertRaises(asyncio.CancelledError):
+            await task
+        self.assertEqual(drained, {'input', 'ground'})
+        p._fusion_safety.assert_not_awaited()
+        self.assertEqual(p._slots._value, 64)
 
     async def test_guard_votes_finish_before_material_and_tutor_delegates(self):
         p = self.pipeline()

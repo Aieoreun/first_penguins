@@ -36,6 +36,7 @@ class Pipeline(MaterialBudget):
     guard_preserve_completed_ground = True
     guard_restore_span_refinement = True
     guard_vote_first = True
+    guard_safety_after_input = False
     request_slots = 64
     guard_prepare_limit = 26.0
     guard_deadline = 28.0
@@ -100,11 +101,14 @@ class Pipeline(MaterialBudget):
     def _fusion_safety_payload(self, state):
         return {'conversation': state.messages, 'candidate_answer': state.candidate_answer}
 
+    def _fusion_safety_system(self, state):
+        return self.guard_safety_system
+
     async def _fusion_safety(self, state):
         state.safe = False
         payload = self._fusion_safety_payload(state)
         try:
-            raw = await self.llm.chat(self.guard_safety_system,
+            raw = await self.llm.chat(self._fusion_safety_system(state),
                 json.dumps(payload, ensure_ascii=False), effort='low', max_tokens=1800,
                 timeout=self.guard_safety_timeout, json_mode=True)
             safe = (_json_object(raw) or {}).get('safe')
@@ -123,6 +127,18 @@ class Pipeline(MaterialBudget):
         except Exception as exc:
             state.errors.append(f'{name}:{type(exc).__name__}')
         return False
+
+    async def _run_safety(self, safety_state, input_state, input_task, started):
+        if self.guard_safety_after_input:
+            completed = await asyncio.shield(input_task)
+            safety_state.label = input_state.label
+            safety_state.debug['fusion_input_reliable'] = bool(completed and not input_state.errors)
+        remaining = self.guard_deadline - (time.monotonic() - started)
+        if remaining <= 0:
+            safety_state.errors.append('safety:NoBudget')
+            return
+        await self._fusion_stage(self._fusion_safety(safety_state),
+            min(self.guard_safety_timeout, remaining), safety_state, 'safety')
 
     async def guard(self, body):
         started = time.monotonic()
@@ -143,17 +159,19 @@ class Pipeline(MaterialBudget):
                     state.errors.append('request:Deadline')
                     return
                 prepare_left = self.guard_prepare_limit - (time.monotonic() - prepare_started)
-                stages = [(self._classify(state), min(prepare_left, remaining), state, 'prepare')]
+                input_task = asyncio.create_task(self._fusion_stage(
+                    self._classify(state), min(prepare_left, remaining), state, 'prepare'))
+                tasks = [input_task]
                 if state.has_candidate:
                     # With this base, learned sections are disabled for guard output.
                     # Fallback classification also keeps the search's first section.
                     ground_state, safety_state = isolated_state(state), isolated_state(state)
                     safety_state.safe = False
-                    stages.extend([
-                        (self._fusion_ground(ground_state), min(self.guard_ground_timeout, remaining), ground_state, 'ground'),
-                        (self._fusion_safety(safety_state), min(self.guard_safety_timeout, remaining), safety_state, 'safety'),
+                    tasks.extend([
+                        asyncio.create_task(self._fusion_stage(self._fusion_ground(ground_state),
+                            min(self.guard_ground_timeout, remaining), ground_state, 'ground')),
+                        asyncio.create_task(self._run_safety(safety_state, state, input_task, started)),
                     ])
-                tasks = [asyncio.create_task(self._fusion_stage(*stage)) for stage in stages]
                 try:
                     await asyncio.gather(*tasks)
                 finally:
