@@ -21,6 +21,10 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_pg_fast_gate", "jh_pg_parallel_input", "jh_pg_fast_parallel", "jh_pg_fast_requested"}:
+            module = importlib.import_module("pipelines.kimjaehak.peace_guard_scheduling")
+            return {"jh_pg_fast_gate": module.FastGate, "jh_pg_parallel_input": module.ParallelInput,
+                    "jh_pg_fast_parallel": module.FastParallelInput, "jh_pg_fast_requested": module.FastRequestedParallel}[name]
         if name in {"jh_pg_ground3", "jh_pg_medium3"}:
             module = importlib.import_module("pipelines.kimjaehak.peace_ground_budget")
             return module.LowThree if name == "jh_pg_ground3" else module.MediumThree

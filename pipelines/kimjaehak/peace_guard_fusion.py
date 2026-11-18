@@ -43,6 +43,7 @@ class Pipeline(MaterialBudget):
     guard_material_timeout = 13.0
     guard_ground_timeout = 13.0
     guard_safety_timeout = 13.0
+    guard_fast_input_wait = 0.0
     guard_safety_system = SAFETY_SYSTEM
 
     async def _collect_checks(self, state, check, material):
@@ -159,20 +160,37 @@ class Pipeline(MaterialBudget):
                     state.errors.append('request:Deadline')
                     return
                 prepare_left = self.guard_prepare_limit - (time.monotonic() - prepare_started)
-                input_task = asyncio.create_task(self._fusion_stage(
-                    self._classify(state), min(prepare_left, remaining), state, 'prepare'))
-                tasks = [input_task]
-                if state.has_candidate:
-                    # With this base, learned sections are disabled for guard output.
-                    # Fallback classification also keeps the search's first section.
-                    ground_state, safety_state = isolated_state(state), isolated_state(state)
-                    safety_state.safe = False
-                    tasks.extend([
-                        asyncio.create_task(self._fusion_stage(self._fusion_ground(ground_state),
-                            min(self.guard_ground_timeout, remaining), ground_state, 'ground')),
-                        asyncio.create_task(self._run_safety(safety_state, state, input_task, started)),
-                    ])
+                tasks = []
                 try:
+                    if state.has_candidate:
+                        # Snapshot before classification can mutate label/section.
+                        # Guard output retains the original first search section.
+                        ground_state, safety_state = isolated_state(state), isolated_state(state)
+                        safety_state.safe = False
+                    input_task = asyncio.create_task(self._fusion_stage(
+                        self._classify(state), min(prepare_left, remaining), state, 'prepare'))
+                    tasks.append(input_task)
+                    if state.has_candidate:
+                        skip_ground = False
+                        if self.guard_fast_input_wait > 0:
+                            await asyncio.wait({input_task},
+                                timeout=min(self.guard_fast_input_wait, remaining))
+                            skip_ground = (input_task.done() and not input_task.cancelled()
+                                and input_task.exception() is None and input_task.result() is True
+                                and not state.errors and state.label is not None
+                                and state.decision is Decision.BLOCK)
+                        remaining = self.guard_deadline - (time.monotonic() - started)
+                        if remaining <= 0:
+                            state.errors.append('request:Deadline')
+                            return
+                        if skip_ground:
+                            ground_state.debug['fusion_ground_skipped_fast_block'] = True
+                        else:
+                            tasks.append(asyncio.create_task(self._fusion_stage(
+                                self._fusion_ground(ground_state),
+                                min(self.guard_ground_timeout, remaining), ground_state, 'ground')))
+                        tasks.append(asyncio.create_task(
+                            self._run_safety(safety_state, state, input_task, started)))
                     await asyncio.gather(*tasks)
                 finally:
                     for task in tasks:
@@ -193,6 +211,8 @@ class Pipeline(MaterialBudget):
                 state.errors.extend(ground_state.errors)
                 state.errors.extend(safety_state.errors)
                 state.debug['fusion_completed_ground_votes'] = ground_state.debug.get('fusion_completed_ground_votes', 0)
+                if ground_state.debug.get('fusion_ground_skipped_fast_block'):
+                    state.debug['fusion_ground_skipped_fast_block'] = True
                 if 'fusion_completed_safety_votes' in safety_state.debug:
                     state.debug['fusion_completed_safety_votes'] = safety_state.debug['fusion_completed_safety_votes']
                 if ground_state.debug.get('learned_span'):
