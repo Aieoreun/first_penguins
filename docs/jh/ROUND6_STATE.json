@@ -10,7 +10,7 @@
   "completed_runs": 44,
   "pending_runs": 0,
   "last_observed_used_percent": 81,
-  "next": "H45-58: contrast support boundary, source support, material hint, joint fact, eager12, public mixed baselines and sparse combination",
+  "next": "H48-58 on existing public data; contrast45-47 pending explicit transfer approval",
   "total_requests": 6287,
   "comparison_baselines": [
     "jh_r3_selected_focused",
@@ -20,5 +20,15 @@
   "collected_requests": 6287,
   "public_trace_requests": 8,
   "parameter_smoke_requests": 1,
-  "manual_contrast_items": 16
+  "manual_contrast_items": 16,
+  "pending_approval": {
+    "runs": [
+      45,
+      46,
+      47
+    ],
+    "action": "New manual contrast16 questions to existing organizer mlapi.run API",
+    "reason": "Automatic approval review rejected unclear export authorization",
+    "api_calls": 0
+  }
 }
