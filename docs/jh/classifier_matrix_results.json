@@ -3956,7 +3956,7 @@
       "source": "user_report",
       "reported_date": "2026-11-19",
       "variant_assumed": "jh_cm_dense_lr50",
-      "variant_basis": "Following instructions to restart patched candidate; actual server configuration not independently verified",
+      "variant_basis": "User supplied startup log confirms variant and classifier readiness; commit not shown",
       "instructed_commit": "492af6129434f5bd49e7ed684f6d4edb19e94f23",
       "actual_commit_verified": false,
       "total": 83.7,
@@ -3978,8 +3978,20 @@
         "embedding_effective_key_configured": true,
         "team_token_configured": true
       },
-      "server_ready_log_verified": false,
-      "runtime_matrix_embedding_error_status": "not reported"
+      "server_ready_log_verified": true,
+      "runtime_matrix_embedding_error_status": "not reported",
+      "variant_confirmed_by_user_startup_log": "jh_cm_dense_lr50",
+      "server_ready_log_verification_source": "user_supplied_log",
+      "startup_status": {
+        "ready": true,
+        "configured_model": "openai/text-embedding-3-small",
+        "trained_model": "text-embedding-3-small",
+        "can_embed": true,
+        "fallback_only": false,
+        "kb_chunks": 219,
+        "kb_embeddings_loaded": true,
+        "application_startup_complete": true
+      }
     }
   ]
 }
