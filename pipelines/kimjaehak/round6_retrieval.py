@@ -6,7 +6,7 @@ import re
 
 from core.search import BM25
 from .material_budget import Pipeline as MaterialBudget
-from .resolved_query import Minimal as ResolvedMinimal
+from .resolved_query import Minimal as ResolvedMinimal, TopicSelect
 
 
 # KB course vocabulary from bsuk1 de664f2 app/kb_index.py; no bilingual aliases
@@ -78,4 +78,9 @@ class KiwiBigram(MaterialBudget):
 
 class ResolvedFocused(ResolvedMinimal, MaterialBudget):
     """Previously tested query resolver, now paired with focused source output."""
+    pass
+
+
+class TopicFocused(TopicSelect, MaterialBudget):
+    """Choose full dialogue or last message without generating a new query."""
     pass

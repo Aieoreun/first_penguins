@@ -24,6 +24,12 @@ def load(name: str = ""):
         if name in {"jh_r6_evidence_first", "jh_r6_source_vote3"}:
             module = importlib.import_module("pipelines.kimjaehak.round6_source")
             return module.EvidenceFirst if name == "jh_r6_evidence_first" else module.VoteThree
+        if name == "jh_r6_resolved_source_hint":
+            return importlib.import_module("pipelines.kimjaehak.round6_query_hint").SourceHint
+        if name == "jh_r6_computable_material":
+            return importlib.import_module("pipelines.kimjaehak.round6_material").Computable
+        if name == "jh_r6_topic_focused":
+            return importlib.import_module("pipelines.kimjaehak.round6_retrieval").TopicFocused
         if name in {"jh_r6_kiwi_bigram", "jh_r6_resolved_focused"}:
             module = importlib.import_module("pipelines.kimjaehak.round6_retrieval")
             return module.KiwiBigram if name == "jh_r6_kiwi_bigram" else module.ResolvedFocused
