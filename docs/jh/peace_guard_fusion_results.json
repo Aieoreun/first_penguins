@@ -868,5 +868,135 @@
         }
       }
     ]
+  },
+  "pg08_span_novel": {
+    "source_commit": "904f381",
+    "dataset": "novel_answer60",
+    "results": [
+      {
+        "candidate": "current",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.06,
+          "p50": 7.411,
+          "p95": 13.743,
+          "max": 14.008,
+          "http_errors": 0,
+          "stage_failure_requests": 5
+        },
+        "guard": 98.68,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9121,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "current_span80",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.071,
+          "p50": 7.663,
+          "p95": 13.495,
+          "max": 14.04,
+          "http_errors": 0,
+          "stage_failure_requests": 5
+        },
+        "guard": 99.02,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9344,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "routed",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.044,
+          "p50": 9.052,
+          "p95": 12.684,
+          "max": 14.035,
+          "http_errors": 0,
+          "stage_failure_requests": 2
+        },
+        "guard": 98.73,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9154,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "routed_span80",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 16.402,
+          "p50": 9.6375,
+          "p95": 13.908,
+          "max": 16.394,
+          "http_errors": 0,
+          "stage_failure_requests": 7
+        },
+        "guard": 98.5,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.9169,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      }
+    ]
   }
 }

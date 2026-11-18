@@ -2,7 +2,7 @@
   "status": "running",
   "branch": "experiment/kimjaehak-peace-guard-fusion",
   "baseline_commit": "ff0aa5e",
-  "current_code_commit": "31f9e1e",
+  "current_code_commit": "7833ee8",
   "peace_reference": "3c64079eb1af14170b3bee4578ac6f916bec433e",
   "stop_rule": {
     "assumption": "stop_new_runs_at_used_80_percent",
@@ -16,9 +16,10 @@
     "pg04_conditioned_novel",
     "pg05_refusal",
     "pg06_safety_novel",
-    "pg07_ground_novel"
+    "pg07_ground_novel",
+    "pg08_span_novel"
   ],
-  "completed_http_requests": 2404,
+  "completed_http_requests": 2644,
   "pending_run": null,
   "next": [
     "refusal safety-only comparison",
