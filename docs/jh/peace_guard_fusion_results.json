@@ -3653,5 +3653,771 @@
         }
       }
     ]
+  },
+  "pg20_gate_alternative": {
+    "source_commit": "acf2608",
+    "dataset": "alternative184",
+    "independent_holdout": false,
+    "results": [
+      {
+        "candidate": "current_span80",
+        "dataset": "alternative",
+        "scope": "public_guard_alternative184_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 15.441,
+          "p50": 1.049,
+          "p95": 10.771,
+          "max": 13.022,
+          "http_errors": 0,
+          "stage_failure_requests": 28,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 263,
+              "completed": 252,
+              "cancelled": 0,
+              "errors": 11
+            },
+            "embed": {
+              "started": 184,
+              "completed": 165,
+              "cancelled": 0,
+              "errors": 19
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 447,
+              "completed": 417,
+              "cancelled": 0,
+              "errors": 30
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.9622641509433962,
+          "category_accuracy": 0.9241,
+          "false_block": 2,
+          "missed_block": 2
+        },
+        "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+      },
+      {
+        "candidate": "current_gate90",
+        "dataset": "alternative",
+        "scope": "public_guard_alternative184_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 15.293,
+          "p50": 0.86,
+          "p95": 10.773,
+          "max": 13.207,
+          "http_errors": 0,
+          "stage_failure_requests": 22,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 207,
+              "completed": 194,
+              "cancelled": 0,
+              "errors": 13
+            },
+            "embed": {
+              "started": 184,
+              "completed": 172,
+              "cancelled": 0,
+              "errors": 12
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 391,
+              "completed": 366,
+              "cancelled": 0,
+              "errors": 25
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.9433962264150944,
+          "category_accuracy": 0.9114,
+          "false_block": 3,
+          "missed_block": 3
+        },
+        "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+      },
+      {
+        "candidate": "fast_parallel",
+        "dataset": "alternative",
+        "scope": "public_guard_alternative184_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 13.237,
+          "p50": 0.915,
+          "p95": 9.479,
+          "max": 12.293,
+          "http_errors": 0,
+          "stage_failure_requests": 3,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 267,
+              "completed": 264,
+              "cancelled": 0,
+              "errors": 3
+            },
+            "embed": {
+              "started": 184,
+              "completed": 184,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 451,
+              "completed": 448,
+              "cancelled": 0,
+              "errors": 3
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.9622641509433962,
+          "category_accuracy": 0.9494,
+          "false_block": 2,
+          "missed_block": 2
+        },
+        "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+      },
+      {
+        "candidate": "fast_gate90",
+        "dataset": "alternative",
+        "scope": "public_guard_alternative184_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 12.243,
+          "p50": 0.778,
+          "p95": 7.202,
+          "max": 10.586,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 206,
+              "completed": 206,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 184,
+              "completed": 184,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 390,
+              "completed": 390,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "input_metrics": {
+          "block_f1": 0.9719626168224299,
+          "category_accuracy": 0.9494,
+          "false_block": 2,
+          "missed_block": 1
+        },
+        "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+      }
+    ]
+  },
+  "pg21_relational": {
+    "source_commit": "acf2608",
+    "dataset": "relational16",
+    "independent_holdout": false,
+    "results": [
+      {
+        "candidate": "current_span80",
+        "dataset": "relational",
+        "scope": "kb_relational16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 15.136,
+          "p50": 10.3155,
+          "p95": 15.132,
+          "max": 15.132,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 130,
+              "completed": 130,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 146,
+              "completed": 146,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed hand-written KB-derived relational development data. Whole-set grounded pair metrics are primary; code/course groups and official guard/span scores are supplementary. Not an independent holdout; training and deployment prohibited.",
+        "relational_details": {
+          "pairs": 8,
+          "count": 16,
+          "invalid": 0,
+          "control_accuracy": 1.0,
+          "counterfactual_detection": 1.0,
+          "paired_both_correct": 1.0,
+          "by_group": {
+            "code_interpretation": {
+              "pairs": 2,
+              "count": 4,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            },
+            "course_relation": {
+              "pairs": 6,
+              "count": 12,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            }
+          }
+        },
+        "supplementary_input": {
+          "block_f1": 1.0,
+          "category_accuracy": null,
+          "false_block": 0,
+          "missed_block": 0
+        }
+      },
+      {
+        "candidate": "fast_parallel",
+        "dataset": "relational",
+        "scope": "kb_relational16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 11.472,
+          "p50": 6.167,
+          "p95": 11.469,
+          "max": 11.469,
+          "http_errors": 0,
+          "stage_failure_requests": 1,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 131,
+              "completed": 130,
+              "cancelled": 0,
+              "errors": 1
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 147,
+              "completed": 146,
+              "cancelled": 0,
+              "errors": 1
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed hand-written KB-derived relational development data. Whole-set grounded pair metrics are primary; code/course groups and official guard/span scores are supplementary. Not an independent holdout; training and deployment prohibited.",
+        "relational_details": {
+          "pairs": 8,
+          "count": 16,
+          "invalid": 0,
+          "control_accuracy": 1.0,
+          "counterfactual_detection": 1.0,
+          "paired_both_correct": 1.0,
+          "by_group": {
+            "code_interpretation": {
+              "pairs": 2,
+              "count": 4,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            },
+            "course_relation": {
+              "pairs": 6,
+              "count": 12,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            }
+          }
+        },
+        "supplementary_input": {
+          "block_f1": 1.0,
+          "category_accuracy": null,
+          "false_block": 0,
+          "missed_block": 0
+        }
+      },
+      {
+        "candidate": "fast_gate90",
+        "dataset": "relational",
+        "scope": "kb_relational16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 10.307,
+          "p50": 6.531,
+          "p95": 10.304,
+          "max": 10.304,
+          "http_errors": 0,
+          "stage_failure_requests": 0,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 100,
+              "completed": 100,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 116,
+              "completed": 116,
+              "cancelled": 0,
+              "errors": 0
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed hand-written KB-derived relational development data. Whole-set grounded pair metrics are primary; code/course groups and official guard/span scores are supplementary. Not an independent holdout; training and deployment prohibited.",
+        "relational_details": {
+          "pairs": 8,
+          "count": 16,
+          "invalid": 0,
+          "control_accuracy": 1.0,
+          "counterfactual_detection": 1.0,
+          "paired_both_correct": 1.0,
+          "by_group": {
+            "code_interpretation": {
+              "pairs": 2,
+              "count": 4,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            },
+            "course_relation": {
+              "pairs": 6,
+              "count": 12,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            }
+          }
+        },
+        "supplementary_input": {
+          "block_f1": 1.0,
+          "category_accuracy": null,
+          "false_block": 0,
+          "missed_block": 0
+        }
+      },
+      {
+        "candidate": "fast_review80",
+        "dataset": "relational",
+        "scope": "kb_relational16_reviewed_grounding_development",
+        "primary_metric": "paired_grounding",
+        "runtime": {
+          "collect_seconds": 13.6,
+          "p50": 9.372,
+          "p95": 13.597,
+          "max": 13.597,
+          "http_errors": 0,
+          "stage_failure_requests": 4,
+          "api_calls": {
+            "instrumented": true,
+            "scope": "server_lifespan_llm_method_invocations",
+            "chat": {
+              "started": 130,
+              "completed": 126,
+              "cancelled": 2,
+              "errors": 2
+            },
+            "embed": {
+              "started": 16,
+              "completed": 16,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "guard_debug": {
+              "span_review_triggered": 0,
+              "span_review_attempted": 0,
+              "span_review_completed": 0,
+              "span_review_success": 0,
+              "span_review_changed": 0,
+              "fusion_ground_skipped_fast_block": 0
+            },
+            "startup": {
+              "chat": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 0,
+                "completed": 0,
+                "cancelled": 0,
+                "errors": 0
+              }
+            },
+            "total": {
+              "started": 146,
+              "completed": 142,
+              "cancelled": 2,
+              "errors": 2
+            }
+          }
+        },
+        "control_accuracy": 1.0,
+        "counterfactual_detection": 1.0,
+        "paired_both_correct": 1.0,
+        "invalid": 0,
+        "interpretation": "Reviewed hand-written KB-derived relational development data. Whole-set grounded pair metrics are primary; code/course groups and official guard/span scores are supplementary. Not an independent holdout; training and deployment prohibited.",
+        "relational_details": {
+          "pairs": 8,
+          "count": 16,
+          "invalid": 0,
+          "control_accuracy": 1.0,
+          "counterfactual_detection": 1.0,
+          "paired_both_correct": 1.0,
+          "by_group": {
+            "code_interpretation": {
+              "pairs": 2,
+              "count": 4,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            },
+            "course_relation": {
+              "pairs": 6,
+              "count": 12,
+              "invalid": 0,
+              "control_accuracy": 1.0,
+              "counterfactual_detection": 1.0,
+              "paired_both_correct": 1.0
+            }
+          }
+        },
+        "supplementary_input": {
+          "block_f1": 1.0,
+          "category_accuracy": null,
+          "false_block": 0,
+          "missed_block": 0
+        }
+      }
+    ]
+  },
+  "pg22_mixed_transfer": {
+    "dataset": "public_question_paraphrase388_mixed",
+    "independent_holdout": false,
+    "results": [
+      {
+        "candidate": "jh_r4_material_budget",
+        "source_commit": "acf2608d4c9363f3e3367b9616687b92ff6b3908",
+        "total": 94.87,
+        "tutor": 93.36,
+        "guard": 96.37,
+        "guard_details": {
+          "block_f1": 0.9629629629629629,
+          "category_accuracy": 0.9268,
+          "grounded_accuracy": 0.9647,
+          "span_f1": 0.9647,
+          "safe_accuracy": 0.9882,
+          "false_block": 1,
+          "missed_block": 3,
+          "confusion": {
+            "normal -> normal": 112,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "harmful_content -> normal": 2,
+            "off_topic -> off_topic": 6,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> out_of_material": 11,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "off_topic -> out_of_material": 1,
+            "out_of_material -> normal": 1,
+            "pii_disclosure -> normal": 1,
+            "answer_seeking -> normal": 1,
+            "normal -> out_of_material": 1,
+            "normal -> jailbreak_injection": 1
+          }
+        },
+        "runtime": {
+          "collect_seconds": 31.93,
+          "p50": 3.09,
+          "p95": 10.886,
+          "max": 19.271,
+          "http_errors": 0,
+          "stage_failure_requests": 14,
+          "stage_errors": {
+            "context_policy:TimeoutError": 2,
+            "material:TimeoutError": 5,
+            "other:TimeoutError": 3,
+            "material:parse": 1,
+            "context_grounding:TimeoutError": 1,
+            "block:TimeoutError": 1,
+            "generate:TimeoutError": 1
+          }
+        },
+        "judge_errors": 0,
+        "invalid": 0
+      },
+      {
+        "candidate": "jh_pg_fast_gate90",
+        "source_commit": "acf2608d4c9363f3e3367b9616687b92ff6b3908",
+        "total": 95.7,
+        "tutor": 95.7,
+        "guard": 95.7,
+        "guard_details": {
+          "block_f1": 0.9454545454545454,
+          "category_accuracy": 0.939,
+          "grounded_accuracy": 0.9647,
+          "span_f1": 0.9647,
+          "safe_accuracy": 0.9882,
+          "false_block": 3,
+          "missed_block": 3,
+          "confusion": {
+            "normal -> normal": 111,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "harmful_content -> normal": 2,
+            "off_topic -> off_topic": 6,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> out_of_material": 12,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "off_topic -> out_of_material": 1,
+            "pii_disclosure -> normal": 1,
+            "answer_seeking -> normal": 1,
+            "normal -> academic_dishonesty": 1,
+            "normal -> jailbreak_injection": 1,
+            "normal -> off_topic": 1
+          }
+        },
+        "runtime": {
+          "collect_seconds": 28.39,
+          "p50": 2.1725000000000003,
+          "p95": 10.753,
+          "max": 17.006,
+          "http_errors": 0,
+          "stage_failure_requests": 11,
+          "stage_errors": {
+            "material:TimeoutError": 3,
+            "material:parse": 2,
+            "context_policy:TimeoutError": 1,
+            "block:TimeoutError": 1,
+            "other:TimeoutError": 2,
+            "ground:Deadline": 1,
+            "source_extract:TimeoutError": 1
+          }
+        },
+        "judge_errors": 0,
+        "invalid": 0
+      }
+    ]
   }
 }
