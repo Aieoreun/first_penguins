@@ -119,5 +119,356 @@
         }
       }
     ]
+  },
+  "pg02_novel": {
+    "source_commit": "bac5f2f",
+    "dataset": "novel_answer60",
+    "in_sample_parent": true,
+    "results": [
+      {
+        "candidate": "current",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.255,
+          "p50": 6.992,
+          "p95": 11.92,
+          "max": 14.205,
+          "http_errors": 0,
+          "stage_failure_requests": 2
+        },
+        "guard": 97.97,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9667,
+          "span_f1": 0.8977,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "fusion",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.459,
+          "p50": 6.7844999999999995,
+          "p95": 14.09,
+          "max": 14.454,
+          "http_errors": 0,
+          "stage_failure_requests": 5
+        },
+        "guard": 97.09,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.8896,
+          "safe_accuracy": 0.9333,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "action",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 13.868,
+          "p50": 8.336500000000001,
+          "p95": 13.043,
+          "max": 13.863,
+          "http_errors": 0,
+          "stage_failure_requests": 2
+        },
+        "guard": 97.33,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9219,
+          "safe_accuracy": 0.9,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "context",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.091,
+          "p50": 8.6065,
+          "p95": 13.211,
+          "max": 14.081,
+          "http_errors": 0,
+          "stage_failure_requests": 0
+        },
+        "guard": 96.62,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.8914,
+          "safe_accuracy": 0.9,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "peace",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 22.885,
+          "p50": 14.0105,
+          "p95": 19.991,
+          "max": 22.875,
+          "http_errors": 0,
+          "stage_failure_requests": 10
+        },
+        "guard": 96.5,
+        "guard_details": {
+          "block_f1": 0.9629629629629629,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 1.0,
+          "span_f1": 0.9109,
+          "safe_accuracy": 0.9667,
+          "false_block": 1,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 42,
+            "normal -> out_of_material": 1,
+            "normal -> harmful_content": 1,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3,
+            "normal -> answer_seeking": 3
+          }
+        }
+      }
+    ]
+  },
+  "pg03_paraphrase": {
+    "source_commit": "bac5f2f",
+    "dataset": "paraphrase_guard196",
+    "weak_inherited_labels": true,
+    "results": [
+      {
+        "candidate": "current",
+        "dataset": "paraphrase",
+        "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 19.822,
+          "p50": 4.3475,
+          "p95": 10.641,
+          "max": 18.11,
+          "http_errors": 0,
+          "stage_failure_requests": 10
+        },
+        "guard": 94.85,
+        "guard_details": {
+          "block_f1": 0.9345794392523364,
+          "category_accuracy": 0.9024,
+          "grounded_accuracy": 0.9647,
+          "span_f1": 0.9647,
+          "safe_accuracy": 0.9882,
+          "false_block": 2,
+          "missed_block": 5,
+          "confusion": {
+            "normal -> normal": 110,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 15,
+            "harmful_content -> normal": 2,
+            "normal -> out_of_material": 2,
+            "off_topic -> off_topic": 5,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> out_of_material": 11,
+            "off_topic -> out_of_material": 2,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "out_of_material -> normal": 1,
+            "pii_disclosure -> normal": 1,
+            "answer_seeking -> normal": 1,
+            "normal -> jailbreak_injection": 1,
+            "jailbreak_injection -> out_of_material": 1,
+            "normal -> off_topic": 1
+          }
+        }
+      },
+      {
+        "candidate": "fusion",
+        "dataset": "paraphrase",
+        "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 26.6,
+          "p50": 6.095000000000001,
+          "p95": 13.905,
+          "max": 16.977,
+          "http_errors": 0,
+          "stage_failure_requests": 9
+        },
+        "guard": 92.42,
+        "guard_details": {
+          "block_f1": 0.9174311926605505,
+          "category_accuracy": 0.878,
+          "grounded_accuracy": 0.9412,
+          "span_f1": 0.9412,
+          "safe_accuracy": 0.9412,
+          "false_block": 4,
+          "missed_block": 5,
+          "confusion": {
+            "normal -> normal": 111,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 15,
+            "harmful_content -> normal": 2,
+            "off_topic -> off_topic": 5,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> normal": 2,
+            "off_topic -> out_of_material": 2,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "out_of_material -> out_of_material": 9,
+            "pii_disclosure -> normal": 1,
+            "answer_seeking -> normal": 1,
+            "out_of_material -> jailbreak_injection": 1,
+            "normal -> academic_dishonesty": 1,
+            "normal -> jailbreak_injection": 1,
+            "jailbreak_injection -> normal": 1,
+            "normal -> off_topic": 1
+          }
+        }
+      },
+      {
+        "candidate": "requested",
+        "dataset": "paraphrase",
+        "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 29.072,
+          "p50": 6.6579999999999995,
+          "p95": 15.191,
+          "max": 18.722,
+          "http_errors": 0,
+          "stage_failure_requests": 10
+        },
+        "guard": 95.2,
+        "guard_details": {
+          "block_f1": 0.9369369369369369,
+          "category_accuracy": 0.9268,
+          "grounded_accuracy": 0.9765,
+          "span_f1": 0.9765,
+          "safe_accuracy": 0.9647,
+          "false_block": 4,
+          "missed_block": 3,
+          "confusion": {
+            "normal -> normal": 110,
+            "harmful_content -> harmful_content": 23,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "harmful_content -> normal": 2,
+            "normal -> out_of_material": 1,
+            "off_topic -> off_topic": 6,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> pii_disclosure": 6,
+            "answer_seeking -> answer_seeking": 3,
+            "out_of_material -> out_of_material": 11,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "off_topic -> out_of_material": 1,
+            "pii_disclosure -> normal": 1,
+            "answer_seeking -> normal": 1,
+            "out_of_material -> jailbreak_injection": 1,
+            "normal -> academic_dishonesty": 1,
+            "normal -> jailbreak_injection": 1,
+            "normal -> off_topic": 1
+          }
+        }
+      },
+      {
+        "candidate": "peace",
+        "dataset": "paraphrase",
+        "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 48.781,
+          "p50": 12.0715,
+          "p95": 18.571,
+          "max": 22.829,
+          "http_errors": 0,
+          "stage_failure_requests": 21
+        },
+        "guard": 91.3,
+        "guard_details": {
+          "block_f1": 0.8907563025210085,
+          "category_accuracy": 0.939,
+          "grounded_accuracy": 0.9647,
+          "span_f1": 0.8592,
+          "safe_accuracy": 0.9647,
+          "false_block": 11,
+          "missed_block": 2,
+          "confusion": {
+            "normal -> answer_seeking": 2,
+            "normal -> normal": 92,
+            "normal -> out_of_material": 9,
+            "harmful_content -> harmful_content": 24,
+            "jailbreak_injection -> jailbreak_injection": 16,
+            "normal -> jailbreak_injection": 4,
+            "harmful_content -> normal": 1,
+            "normal -> academic_dishonesty": 3,
+            "off_topic -> off_topic": 6,
+            "emotional_distress -> emotional_distress": 4,
+            "pii_disclosure -> out_of_material": 1,
+            "pii_disclosure -> pii_disclosure": 5,
+            "answer_seeking -> answer_seeking": 4,
+            "normal -> harmful_content": 2,
+            "out_of_material -> out_of_material": 11,
+            "off_topic -> out_of_material": 1,
+            "academic_dishonesty -> academic_dishonesty": 7,
+            "out_of_material -> normal": 1,
+            "normal -> off_topic": 2,
+            "pii_disclosure -> normal": 1
+          }
+        }
+      }
+    ]
   }
 }
