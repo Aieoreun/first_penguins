@@ -81,6 +81,8 @@ def main():
                 "guard_routed_safety", "guard_safety_votes",
                 "guard_ground_effort", "guard_ground_max_tokens",
                 "guard_fast_input_wait",
+                "guard_gate_threshold",
+                "guard_span_review", "guard_span_review_threshold", "guard_span_review_timeout",
                 "guard_preserve_completed_ground", "guard_restore_span_refinement",
                 "guard_vote_first", "guard_prepare_limit", "guard_deadline",
                 "guard_material_timeout", "guard_ground_timeout", "guard_safety_timeout"):
@@ -104,6 +106,8 @@ def main():
     effective["answer_prompts_sha256"] = hashlib.sha256(json.dumps(
         {k.value: v for k, v in pipeline.answer_systems.items()}, sort_keys=True).encode()).hexdigest()
     effective["unsupported_prompt_sha256"] = hashlib.sha256(pipeline.unsupported_system.encode()).hexdigest()
+    if hasattr(pipeline, "guard_span_review_system"):
+        effective["guard_span_review_system_sha256"] = hashlib.sha256(pipeline.guard_span_review_system.encode()).hexdigest()
     if hasattr(pipeline, "policy_system"):
         effective["policy_prompt_sha256"] = hashlib.sha256(pipeline.policy_system.encode()).hexdigest()
     if hasattr(pipeline, "source_choice_system"):

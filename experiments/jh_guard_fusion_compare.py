@@ -26,6 +26,12 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'current_gate90': ('jh_pg_current_gate90', 'pipelines.kimjaehak.peace_gate_threshold.CurrentGate90'),
+    'fast_gate90': ('jh_pg_fast_gate90', 'pipelines.kimjaehak.peace_gate_threshold.FastGate90'),
+    'current_review': ('jh_pg_current_review', 'pipelines.kimjaehak.peace_span_review.CurrentReview'),
+    'fast_review': ('jh_pg_fast_review', 'pipelines.kimjaehak.peace_span_review.FastReview'),
+    'current_review80': ('jh_pg_current_review80', 'pipelines.kimjaehak.peace_span_review.CurrentReview80'),
+    'fast_review80': ('jh_pg_fast_review80', 'pipelines.kimjaehak.peace_span_review.FastReview80'),
     'current3': ('jh_pg_current3', 'pipelines.kimjaehak.peace_ground_budget.CurrentThree'),
     'fast3': ('jh_pg_fast3', 'pipelines.kimjaehak.peace_ground_budget.FastParallelThree'),
     'fast_gate': ('jh_pg_fast_gate', 'pipelines.kimjaehak.peace_guard_scheduling.FastGate'),
@@ -115,6 +121,20 @@ try:
                 raise RuntimeError('Pipeline imported outside selected source tree')
             if reference == '1' and getattr(instance, 'learned_models_enabled', None) is not False:
                 raise RuntimeError('Peace reference must disable trained models')
+            # Count explicit diagnostic booleans only; preserve the exact state
+            # object and never record request/response text or predicted spans.
+            original_guard = getattr(instance, 'guard', None)
+            if callable(original_guard):
+                counts['guard_debug'] = {key: 0 for key in (
+                    'span_review_triggered', 'span_review_attempted', 'span_review_completed',
+                    'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block')}
+                async def observed_guard(body):
+                    result = await original_guard(body)
+                    debug = getattr(result, 'debug', {})
+                    for key in counts['guard_debug']:
+                        counts['guard_debug'][key] += debug.get(key) is True
+                    return result
+                instance.guard = observed_guard
             if variant == 'jh_pg_requested' and getattr(instance, 'guard_requested_action', None) is not True:
                 raise RuntimeError('Requested-action guard is not enabled')
             data = {'requested_variant': variant, 'server_variant': server.PIPELINE,
@@ -128,6 +148,8 @@ try:
                         'guard_routed_safety','guard_safety_votes','guard_independent_safety',
                         'guard_ground_effort','guard_ground_max_tokens',
                         'guard_fast_input_wait','guard_vote_first',
+                        'guard_gate_threshold',
+                        'guard_span_review','guard_span_review_threshold','guard_span_review_timeout',
                         'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
                         'learned_gate_threshold','learned_span_threshold'):
                 data[key] = getattr(instance, key, None)
@@ -145,6 +167,8 @@ try:
                 data[key] = hashlib.sha256(text.encode()).hexdigest() if isinstance(text, str) else None
             ground = getattr(instance, 'unsupported_system', None)
             data['unsupported_system_sha256'] = hashlib.sha256(ground.encode()).hexdigest() if isinstance(ground, str) else None
+            review = getattr(instance, 'guard_span_review_system', None)
+            data['guard_span_review_system_sha256'] = hashlib.sha256(review.encode()).hexdigest() if isinstance(review, str) else None
             data['guard_safety_hints_sha256'] = {k: hashlib.sha256(v.encode()).hexdigest()
                 for k,v in getattr(instance, 'guard_safety_hint_systems', {}).items()}
             counts['startup'] = {name: dict(counts[name]) for name in ('chat', 'embed')}

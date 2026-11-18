@@ -211,6 +211,40 @@ def run(app, **kwargs):
         self.assertEqual(counts['total']['started'], 4)
         self.assertEqual(counts['startup']['chat']['started'], 0)
 
+    def test_guard_diagnostics_count_only_booleans_without_recording_text(self):
+        self.fake_server_tree()
+        with (self.root / 'pipelines/fake.py').open('a') as stream:
+            stream.write('''
+ async def guard(self, body):
+  assert body is self.body
+  return self.result
+''')
+        (self.root / 'uvicorn.py').write_text('''
+import asyncio
+from types import SimpleNamespace
+import server
+def run(app, **kwargs):
+ async def work():
+  async with app.router.lifespan_context(app):
+   pipeline=server.state['pipeline']
+   pipeline.body={'candidate_answer':'private text'}
+   pipeline.result=SimpleNamespace(debug={'span_review_triggered':True,
+       'span_review_attempted':True, 'span_review_completed':True,
+       'span_review_success':True, 'span_review_changed':False,
+       'fusion_ground_skipped_fast_block':1, 'private':'private text'})
+   for _ in range(2):
+    assert await pipeline.guard(pipeline.body) is pipeline.result
+ asyncio.run(work())
+''')
+        result = self.run_fake_bootstrap()
+        self.assertEqual(result.returncode, 0, result.stdout)
+        encoded = (self.root / 'api_counts.json').read_text()
+        self.assertNotIn('private', encoded)
+        counts = json.loads(encoded)['guard_debug']
+        self.assertEqual(counts, {'span_review_triggered': 2, 'span_review_attempted': 2,
+            'span_review_completed': 2, 'span_review_success': 2, 'span_review_changed': 0,
+            'fusion_ground_skipped_fast_block': 0})
+
     def test_counts_flush_on_sigterm_after_original_shutdown(self):
         self.fake_server_tree()
         self.fake_counted_llm()

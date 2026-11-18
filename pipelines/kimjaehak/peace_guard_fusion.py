@@ -141,6 +141,10 @@ class Pipeline(MaterialBudget):
         await self._fusion_stage(self._fusion_safety(safety_state),
             min(self.guard_safety_timeout, remaining), safety_state, 'safety')
 
+    async def _fusion_post_checks(self, input_state, ground_state, started):
+        """Optional bounded postprocessing inside the existing guard deadline."""
+        return
+
     async def guard(self, body):
         started = time.monotonic()
         state = self._new_state(body, True)
@@ -192,6 +196,7 @@ class Pipeline(MaterialBudget):
                         tasks.append(asyncio.create_task(
                             self._run_safety(safety_state, state, input_task, started)))
                     await asyncio.gather(*tasks)
+                    await self._fusion_post_checks(state, ground_state, started)
                 finally:
                     for task in tasks:
                         if not task.done():
