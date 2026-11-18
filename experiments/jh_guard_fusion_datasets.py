@@ -6,6 +6,23 @@ import random
 
 PUBLIC_SHA = '4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426'
 DATASETS = {
+    'relational': {
+        'path': 'experiments/.cache/jh_guard_relational_v2/inputs.jsonl',
+        'proposal': 'experiments/.cache/jh_guard_relational_v2/proposal.json',
+        'manifest': 'experiments/.cache/jh_guard_relational_v2/manifest.json',
+        'manifest_scope': 'kb_manual_relational_guard_development',
+        'review': 'docs/jh/RELATIONAL_REVIEW.json',
+        'raw_count': 16, 'count': 16, 'candidate_count': 16,
+        'files': {
+            'experiments/.cache/jh_guard_relational_v2/inputs.jsonl': '564a771a7ec9e634b30da7007a172d72b7d030003e95c7177629bcc9565a8330',
+            'experiments/.cache/jh_guard_relational_v2/proposal.json': '9db3af3575a627389b42867e8d782d161c672b81b9abdd8dc793579e08d98501',
+            'experiments/.cache/jh_guard_relational_v2/manifest.json': '46b69a010ef1344ee343e60498494b63c27fe1b86b4134b77e8fd0669a9c74a8',
+            'docs/jh/RELATIONAL_REVIEW.json': '7362bcd929f3869b8ea54a469ab6ca2fdf1952e3ecdcfb64de47fbef585c6234',
+        },
+        'scope': 'kb_relational16_reviewed_grounding_development',
+        'primary_metric': 'paired_grounding', 'old_input_predictions_fixed': False,
+        'interpretation': 'Reviewed hand-written KB-derived relational development data. Whole-set grounded pair metrics are primary; code/course groups and official guard/span scores are supplementary. Not an independent holdout; training and deployment prohibited.',
+    },
     'counterfactual': {
         'path': 'experiments/.cache/jh_guard_counterfactual_v1/inputs.jsonl',
         'manifest': 'experiments/.cache/jh_guard_counterfactual_v1/manifest.json',
@@ -127,6 +144,42 @@ def validate_counterfactual(root, spec, rows, manifest):
         raise ValueError('Counterfactual parent review does not approve these exact sources')
 
 
+def validate_relational(root, spec, rows, manifest):
+    from experiments import jh_guard_relational_diagnostic as relational
+    proposals, rebuilt, rebuilt_manifest = relational.build(root)
+    data = ''.join(json.dumps(item, ensure_ascii=False) + '\n' for item in rebuilt).encode()
+    rebuilt_manifest['dataset_sha256'] = digest(data)
+    stored_proposals = json.loads((root / spec['proposal']).read_text())
+    if rows != rebuilt or manifest != rebuilt_manifest or stored_proposals != proposals:
+        raise ValueError('Relational regeneration differs from frozen proposal/dataset/manifest')
+    review = json.loads((root / spec['review']).read_text())
+    if (review.get('scope') != 'parent_source_review_before_relational_scoring'
+            or review.get('accepted') is not True
+            or review.get('new_relational_predictions_observed') is not False
+            or review.get('training_allowed') is not False or review.get('deployment_allowed') is not False
+            or review.get('independent_source_holdout') is not False
+            or review.get('accepted_pair_ids') != [pair['pair_id'] for pair in proposals]
+            or any(review.get(key) != manifest[key] for key in
+                   ('dataset_sha256', 'proposal_sha256', 'kb_manifest_sha256'))):
+        raise ValueError('Relational parent review does not approve these exact pairs')
+
+
+def relational_metrics(items, rows):
+    from experiments.jh_guard_counterfactual import grounding_metrics
+    # Compute the whole set first; never average the unequal-sized groups.
+    result = grounding_metrics(items, rows)
+    groups = {'code_interpretation', 'course_relation'}
+    if any(item.get('error_group') not in groups for item in items):
+        raise ValueError('Missing relational diagnostic group')
+    result['by_group'] = {}
+    for group in sorted(groups):
+        subset = [item for item in items if item['error_group'] == group]
+        if subset:
+            identifiers = {item['id'] for item in subset}
+            result['by_group'][group] = grounding_metrics(subset, [row for row in rows if row['id'] in identifiers])
+    return result
+
+
 def validate_rows(rows, spec, name, public_parents=None):
     if len(rows) != spec['raw_count']:
         raise ValueError('Unexpected source dataset count')
@@ -216,6 +269,8 @@ def load_dataset(name, root):
     rows = [json.loads(line) for line in (root / spec['path']).read_text().splitlines() if line.strip()]
     if name == 'counterfactual':
         validate_counterfactual(root, spec, rows, manifest)
+    elif name == 'relational':
+        validate_relational(root, spec, rows, manifest)
     parents = None
     if name == 'alternative':
         parents = {}
@@ -236,7 +291,7 @@ def load_dataset(name, root):
                 'historical_component_input_predictions_fixed': spec['old_input_predictions_fixed'],
                 'interpretation': spec.get('interpretation',
                     'Full own input/output routing on public-derived development data; not a private score estimate.')}
-    if name == 'counterfactual':
+    if name in ('counterfactual', 'relational'):
         metadata['source_files'].update(manifest['kb_files'])
         metadata['parent_review'] = spec['review']
         metadata['parent_review_sha256'] = spec['files'][spec['review']]
@@ -249,7 +304,8 @@ def summarize_result(label, result, metadata):
     summary = {'candidate': label, 'dataset': metadata['dataset'], 'scope': metadata['scope'],
                'primary_metric': metadata['primary_metric'], 'runtime': result['runtime']}
     if metadata['primary_metric'] == 'paired_grounding':
-        summary.update({key: result['counterfactual_details'][key] for key in
+        details = result['relational_details'] if metadata['dataset'] == 'relational' else result['counterfactual_details']
+        summary.update({key: details[key] for key in
                         ('control_accuracy', 'counterfactual_detection', 'paired_both_correct', 'invalid')})
         summary['interpretation'] = metadata['interpretation']
     elif metadata['primary_metric'] == 'input_only':

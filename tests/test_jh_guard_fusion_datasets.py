@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 from experiments import jh_guard_fusion_datasets as datasets
 from experiments import jh_guard_counterfactual as counterfactual
+from experiments import jh_guard_relational_diagnostic as relational
 
 
 def guard(identifier='g', candidate=True):
@@ -19,6 +20,75 @@ def guard(identifier='g', candidate=True):
 
 
 class DatasetTests(unittest.TestCase):
+    def test_relational_exact_proposal_regeneration_and_review_contract(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            proposals = [{'pair_id':'r','manual':'synthetic reason'}]
+            rows = [guard('r/control'),guard('r/counterfactual')]
+            base_manifest = {'proposal_sha256':'proposal','kb_manifest_sha256':'kb'}
+            manifest = {**base_manifest,'dataset_sha256':datasets.digest(
+                ''.join(json.dumps(row,ensure_ascii=False)+'\n' for row in rows).encode())}
+            review = {'scope':'parent_source_review_before_relational_scoring','accepted':True,
+                      'new_relational_predictions_observed':False,'training_allowed':False,
+                      'deployment_allowed':False,'independent_source_holdout':False,
+                      'accepted_pair_ids':['r'],**manifest}
+            spec = {'review':'review.json','proposal':'proposal.json'}
+            (root/'review.json').write_text(json.dumps(review))
+            (root/'proposal.json').write_text(json.dumps(proposals))
+            with patch.object(relational,'build',side_effect=lambda root: (
+                    deepcopy(proposals),deepcopy(rows),deepcopy(base_manifest))):
+                datasets.validate_relational(root,spec,rows,manifest)
+                for key,value in (('accepted',False),('accepted_pair_ids',['changed']),
+                                  ('dataset_sha256','changed'),('proposal_sha256','changed'),
+                                  ('kb_manifest_sha256','changed'),('new_relational_predictions_observed',True)):
+                    (root/'review.json').write_text(json.dumps({**review,key:value}))
+                    with self.subTest(key=key), self.assertRaises(ValueError):
+                        datasets.validate_relational(root,spec,rows,manifest)
+                (root/'review.json').write_text(json.dumps(review))
+                (root/'proposal.json').write_text(json.dumps([{'pair_id':'r','manual':'changed'}]))
+                with self.assertRaises(ValueError):
+                    datasets.validate_relational(root,spec,rows,manifest)
+
+    def test_relational_group_metrics_keep_whole_set_weighting_and_invalids(self):
+        items,rows = [],[]
+        for pair,group in (('code','code_interpretation'),('course1','course_relation'),('course2','course_relation')):
+            for kind in ('control','counterfactual'):
+                item = guard(pair+'/'+kind)
+                item.update(pair_id=pair,contrast_kind=kind,error_group=group)
+                item['labels']['grounded'] = kind == 'control'
+                items.append(item)
+                rows.append({'id':item['id'],'response':{'input':{'category':'normal','decision':'allow'},
+                    'output':{'grounded':kind=='control','safe':True,'unsupported':[]}}})
+        rows.pop(1)  # Missing code counterfactual must count as wrong in both scopes.
+        result = datasets.relational_metrics(items,rows)
+        self.assertEqual(result['paired_both_correct'],2/3)
+        self.assertEqual(result['invalid'],1)
+        self.assertEqual(result['by_group']['code_interpretation']['paired_both_correct'],0)
+        self.assertEqual(result['by_group']['course_relation']['paired_both_correct'],1)
+        broken = deepcopy(items)
+        broken[0]['error_group'] = 'course_relation'
+        with self.assertRaises(ValueError): datasets.relational_metrics(broken,rows)
+        metadata = {'dataset':'relational','scope':'synthetic','primary_metric':'paired_grounding','interpretation':'dev only'}
+        summary = datasets.summarize_result('current',{'runtime':{},'relational_details':result},metadata)
+        self.assertEqual(summary['paired_both_correct'],2/3)
+        self.assertNotIn('by_group',summary)
+        self.assertNotIn('guard',summary)
+
+    def test_relational_pinned_artifacts_rejected_before_any_rebuild(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paths = ['inputs.jsonl','proposal.json','manifest.json','review.json']
+            for name in paths: (root/name).write_text('synthetic '+name)
+            spec = {'files':{name:datasets.digest((root/name).read_bytes()) for name in paths}}
+            with patch.dict(datasets.DATASETS,{'relational':spec}),patch.object(relational,'build') as build:
+                for name in paths:
+                    original = (root/name).read_bytes()
+                    (root/name).write_bytes(b'changed')
+                    with self.subTest(name=name),self.assertRaises(ValueError):
+                        datasets.load_dataset('relational',root)
+                    (root/name).write_bytes(original)
+                build.assert_not_called()
+
     def test_counterfactual_regeneration_and_separate_review_contract(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

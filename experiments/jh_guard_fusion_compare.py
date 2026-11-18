@@ -445,6 +445,8 @@ def main(argv=None):
         if args.dataset == 'counterfactual':
             from experiments.jh_guard_counterfactual import grounding_metrics
             result['counterfactual_details'] = grounding_metrics(items, rows)
+        elif args.dataset == 'relational':
+            result['relational_details'] = datasets.relational_metrics(items, rows)
         if shared.evaluator_hashes() != manifest['evaluator_hashes']:
             raise ValueError('Official evaluator changed during scoring')
         result['score_scope'] = 'guard'

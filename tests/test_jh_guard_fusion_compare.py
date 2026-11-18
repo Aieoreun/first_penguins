@@ -415,24 +415,31 @@ def run(app, **kwargs):
         self.assertEqual(saved['diagnostic_scope'],'public diagnostic')
 
     def test_counterfactual_scoring_retains_official_result_and_adds_pair_metrics(self):
+        self.check_paired_scoring('counterfactual')
+
+    def test_relational_scoring_retains_official_input_output_and_adds_groups(self):
+        self.check_paired_scoring('relational')
+
+    def check_paired_scoring(self, dataset):
         dest = self.root / 'experiments/.cache/jh_guard_fusion_cf'
         (dest / 'peace_snapshot').mkdir(parents=True)
         run = dest / 'current'
         run.mkdir()
         items = [{'id':kind,'endpoint':'guard','pair_id':'pair','contrast_kind':kind,
+                  'error_group':'course_relation',
                   'labels':{'grounded':kind == 'control'}} for kind in ('control','counterfactual')]
         data = ''.join(json.dumps(item)+'\n' for item in items)
         (dest / 'inputs.jsonl').write_text(data)
         probe.write_json(dest / 'plan.json', {
             'order':['current'],'embedding_mode':'env','dataset_sha256':probe.digest(data.encode()),
             'protected_hashes':{},'peace_snapshot':{'files':{}},
-            'dataset_provenance':{'dataset':'counterfactual'}})
+            'dataset_provenance':{'dataset':dataset}})
         probe.write_json(run / 'manifest.json', {'effective_config':self.identity('current'),'evaluator_hashes':{}})
         probe.write_json(run / 'runtime.json', {'collect_seconds':1})
         rows = [{'id':item['id'],'response':{'input':{'category':'normal','decision':'allow'},
                   'output':{'grounded':item['labels']['grounded'],'safe':True,'unsupported':[]}}} for item in items]
         (run / 'responses.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
-        metadata = {'dataset':'counterfactual','scope':'manual grounding diagnostic',
+        metadata = {'dataset':dataset,'scope':'manual grounding diagnostic',
                     'primary_metric':'paired_grounding','interpretation':'Development only'}
         result = {'guard':90,'guard_details':{'span_f1':.6}}
         env = {name:'synthetic' for name in ('TEAM_TOKEN','OPENAI_API_KEY','OPENAI_BASE_URL','OPENAI_MODEL')}
@@ -443,14 +450,17 @@ def run(app, **kwargs):
              patch.object(probe.shared,'score_rows',return_value=result) as score, \
              patch.object(probe,'collect_candidate',side_effect=AssertionError('No HTTP')) as collect, \
              patch.dict(os.environ,env), redirect_stdout(io.StringIO()):
-            probe.main(['--name','cf','--dataset','counterfactual','--score-only','--order','current'])
+            probe.main(['--name','cf','--dataset',dataset,'--score-only','--order','current'])
         score.assert_called_once()
         collect.assert_not_called()
         saved = json.loads((run / 'result.json').read_text())
         summary = json.loads((dest / 'summary.json').read_text())[0]
         self.assertEqual(saved['guard'],90)
         self.assertEqual(saved['guard_details']['span_f1'],.6)
-        self.assertEqual(saved['counterfactual_details']['paired_both_correct'],1)
+        self.assertEqual(saved[dataset+'_details']['paired_both_correct'],1)
+        if dataset == 'relational':
+            self.assertEqual(saved['relational_details']['by_group']['course_relation']['paired_both_correct'],1)
+            self.assertNotIn('counterfactual_details',saved)
         self.assertEqual(summary['paired_both_correct'],1)
         self.assertNotIn('guard',summary)
 
