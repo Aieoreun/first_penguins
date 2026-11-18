@@ -24,6 +24,9 @@ def load(name: str = ""):
         if name in {"jh_r6_evidence_first", "jh_r6_source_vote3"}:
             module = importlib.import_module("pipelines.kimjaehak.round6_source")
             return module.EvidenceFirst if name == "jh_r6_evidence_first" else module.VoteThree
+        if name in {"jh_r6_source_budget12", "jh_r6_source_reason12"}:
+            module = importlib.import_module("pipelines.kimjaehak.round6_source_budget")
+            return module.Budget if name == "jh_r6_source_budget12" else module.Reason
         if name == "jh_r6_resolved_source_hint":
             return importlib.import_module("pipelines.kimjaehak.round6_query_hint").SourceHint
         if name == "jh_r6_computable_material":
