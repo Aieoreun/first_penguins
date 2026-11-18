@@ -430,8 +430,8 @@ def main(argv=None):
     if args.prepare_only:
         print(json.dumps({'prepared': str(dest), 'count': len(items), 'api_calls': 0}))
         return
-    from dotenv import load_dotenv
-    load_dotenv(ROOT / '.env', override=True)
+    from experiments.jh_environment import load_environment
+    load_environment(ROOT)
     for key in ('TEAM_TOKEN', 'OPENAI_API_KEY', 'OPENAI_BASE_URL', 'OPENAI_MODEL'):
         if not os.environ.get(key):
             raise ValueError('Required environment setting missing: ' + key)

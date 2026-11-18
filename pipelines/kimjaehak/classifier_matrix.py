@@ -5,12 +5,14 @@ preserved. Never fall through to the old category gates after a new gate abstain
 that would hide the effect of the replacement behind a second trained model.
 """
 import asyncio
+import json
 
 import numpy as np
 
 from core.schema import Label, parse_label
 from .calibrated import low_signal
 from .classifier_models import CategoryModel, public_data
+from .embedding_identity import same_embedding_model
 from .peace_cancel_ground import FastCancelBlock
 from .voted import Pipeline as Voted
 
@@ -32,6 +34,15 @@ class MatrixGate(FastCancelBlock):
         self.matrix_model = CategoryModel(self.classifier_kind, self.classifier_seed,
             self.classifier_width, self.classifier_alpha, self.classifier_c).fit(
                 texts, [r['labels']['category'] for r in rows], vectors)
+        if self.classifier_kind.startswith('dense'):
+            ready = self.llm.can_embed and same_embedding_model(
+                self.llm.embedding_model, self.classifier_embedding_model)
+            print('CLASSIFIER_EMBEDDING ' + json.dumps({
+                'ready': ready, 'configured_model': self.llm.embedding_model,
+                'trained_model': self.classifier_embedding_model,
+                'can_embed': self.llm.can_embed,
+                'fallback_only': not ready,
+            }), flush=True)
 
     async def _classify(self, state):
         if getattr(state, '_material_budget_guard', False) is not True:
@@ -42,8 +53,10 @@ class MatrixGate(FastCancelBlock):
             return
         vectors = None
         if self.classifier_kind.startswith('dense'):
-            if (not self.llm.can_embed or self.llm.embedding_model != self.classifier_embedding_model):
-                state.errors.append('matrix_embedding:UnavailableOrModelMismatch')
+            if (not self.llm.can_embed or not same_embedding_model(
+                    self.llm.embedding_model, self.classifier_embedding_model)):
+                reason = 'Unavailable' if not self.llm.can_embed else 'ModelMismatch'
+                state.errors.append('matrix_embedding:' + reason)
                 return await Voted._classify(self, state)
             try:
                 # This is a classification vector, not the retrieval query that

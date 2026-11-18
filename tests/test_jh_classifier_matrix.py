@@ -8,6 +8,7 @@ import numpy as np
 from core.schema import Label
 from pipelines.kimjaehak.classifier_matrix import MatrixGate, DenseMLP
 from pipelines.kimjaehak.classifier_models import CategoryModel
+from pipelines.kimjaehak.embedding_identity import same_embedding_model
 from pipelines.kimjaehak.peace_cancel_ground import FastCancelBlock
 from pipelines.kimjaehak.voted import Pipeline as Voted
 from experiments.jh_classifier_matrix import selective
@@ -60,6 +61,36 @@ class MatrixTests(unittest.IsolatedAsyncioTestCase):
     async def test_external_cancel_propagates(self):
         p=self.pipeline('dense_mlp'); p.llm.embed.side_effect=asyncio.CancelledError()
         with self.assertRaises(asyncio.CancelledError): await p._classify(self.state(p))
+
+    async def test_gateway_alias_uses_classifier_and_preserves_api_model(self):
+        p=self.pipeline('dense_lr')
+        p.llm.embedding_model='openai/text-embedding-3-small'
+        state=self.state(p)
+        with patch.object(Voted,'_classify',new_callable=AsyncMock) as fallback:
+            await p._classify(state)
+            fallback.assert_not_awaited()
+        p.llm.embed.assert_awaited_once()
+        self.assertEqual(p.llm.embedding_model,'openai/text-embedding-3-small')
+        self.assertTrue(state.debug['matrix_gate'])
+        self.assertEqual(state.errors,[])
+
+    async def test_unavailable_and_different_models_remain_distinct_fallbacks(self):
+        for can_embed,model,error in (
+            (False,'text-embedding-3-small','Unavailable'),
+            (True,'openai/text-embedding-3-large','ModelMismatch'),
+            (True,'other/text-embedding-3-small','ModelMismatch')):
+            p=self.pipeline('dense_lr');p.llm.can_embed=can_embed;p.llm.embedding_model=model
+            state=self.state(p)
+            with patch.object(Voted,'_classify',new_callable=AsyncMock) as fallback:
+                await p._classify(state)
+                fallback.assert_awaited_once_with(p,state)
+            p.llm.embed.assert_not_awaited()
+            self.assertEqual(state.errors,['matrix_embedding:'+error])
+
+    def test_only_explicit_embedding_alias_is_compatible(self):
+        self.assertTrue(same_embedding_model('text-embedding-3-small','openai/text-embedding-3-small'))
+        self.assertFalse(same_embedding_model('',''))
+        self.assertFalse(same_embedding_model('openai/text-embedding-3-large','text-embedding-3-small'))
 
     async def test_harmful_subtype_confidence_still_required(self):
         p=self.pipeline(category='harmful_content')

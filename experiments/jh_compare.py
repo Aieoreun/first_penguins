@@ -257,8 +257,8 @@ def run_variant(args, variant, repetition, items, root):
 
 
 def main():
-    from dotenv import load_dotenv
-    load_dotenv(ROOT / ".env", override=True)
+    from experiments.jh_environment import load_environment
+    load_environment(ROOT)
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--variants", nargs="+", choices=(*VARIANTS, "v4"), default=list(INITIAL_VARIANTS))
     ap.add_argument("--repeat", type=int, default=1)

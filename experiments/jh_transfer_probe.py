@@ -65,8 +65,8 @@ def build_items(source, alternative=False):
 
 
 def main():
-    from dotenv import load_dotenv
-    load_dotenv(ROOT / ".env",override=True)
+    from experiments.jh_environment import load_environment
+    load_environment(ROOT)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source",type=Path,required=True)
     parser.add_argument("--variant",choices=VARIANTS,required=True)

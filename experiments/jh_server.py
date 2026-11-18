@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 
 def main():
-    from dotenv import load_dotenv
+    from experiments.jh_environment import load_environment
     import uvicorn
     from pipelines.kimjaehak.config import VARIANTS
     parser = argparse.ArgumentParser()
@@ -23,7 +23,7 @@ def main():
     args = parser.parse_args()
     if args.request_slots is not None and not 1 <= args.request_slots <= 64:
         parser.error("request-slots must be between 1 and 64")
-    load_dotenv(ROOT / ".env", override=True)
+    load_environment(ROOT)
     if args.embedding_mode == "off":
         for key in ("EMBEDDING_BASE_URL", "EMBEDDING_MODEL", "EMBEDDING_API_KEY"):
             os.environ[key] = ""

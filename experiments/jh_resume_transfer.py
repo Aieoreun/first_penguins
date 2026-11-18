@@ -9,8 +9,8 @@ from jh_compare import ROOT, evaluator_hashes, score_rows
 
 
 def main():
-    from dotenv import load_dotenv
-    load_dotenv(ROOT / ".env",override=True)
+    from experiments.jh_environment import load_environment
+    load_environment(ROOT)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run",type=Path)
     args = parser.parse_args()
