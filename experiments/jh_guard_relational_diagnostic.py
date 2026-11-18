@@ -205,10 +205,17 @@ def build(root=ROOT, pairs=PAIRS, expected_kb_sha=KB_SHA, expected_count=8):
 
 def write(root=ROOT):
     root = Path(root).resolve()
-    for name, expected in PREVIOUS_VERSION['files'].items():
-        previous = root / PREVIOUS_VERSION['path'] / name
-        if digest(previous.read_bytes()) != expected:
-            raise ValueError('Preserved previous version changed')
+    previous_dir = root / PREVIOUS_VERSION['path']
+    # A fresh clone has no ignored v1 cache. Its fixed historical hashes remain
+    # in the v2 manifest; any locally present v1 must still be complete/intact.
+    if previous_dir.exists() or previous_dir.is_symlink():
+        if not previous_dir.is_dir() or previous_dir.is_symlink():
+            raise ValueError('Invalid previous version directory')
+        for name, expected in PREVIOUS_VERSION['files'].items():
+            previous = previous_dir / name
+            if (not previous.is_file() or previous.is_symlink()
+                    or digest(previous.read_bytes()) != expected):
+                raise ValueError('Preserved previous version incomplete or changed')
     proposals, items, manifest = build(root)
     data = ''.join(json.dumps(item, ensure_ascii=False) + '\n' for item in items).encode()
     manifest['dataset_sha256'] = digest(data)

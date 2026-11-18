@@ -1,4 +1,5 @@
 from copy import deepcopy
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -70,6 +71,44 @@ class RelationalDiagnosticTests(unittest.TestCase):
             with self.assertRaises(FileExistsError): diagnostic.write(self.root)
             artifact.write_text('changed old proposal')
             with self.assertRaises(ValueError): diagnostic.write(self.root)
+
+    def test_fresh_clone_without_prior_cache_rebuilds_same_payload_and_history(self):
+        original_build = diagnostic.build
+        proposals,items,expected_manifest = self.build()
+        expected_bytes = ''.join(json.dumps(item,ensure_ascii=False)+'\n' for item in items).encode()
+        expected_manifest['dataset_sha256'] = diagnostic.digest(expected_bytes)
+        self.assertFalse((self.root/diagnostic.PREVIOUS_VERSION['path']).exists())
+        with patch.object(diagnostic,'build',side_effect=lambda root: original_build(root,[self.pair],self.sha,1)):
+            dest,manifest = diagnostic.write(self.root)
+        self.assertEqual(manifest,expected_manifest)
+        self.assertEqual(manifest['previous_version'],diagnostic.PREVIOUS_VERSION)
+        self.assertEqual((dest/'inputs.jsonl').read_bytes(),expected_bytes)
+        self.assertEqual(json.loads((dest/'proposal.json').read_text()),proposals)
+        self.assertFalse((self.root/diagnostic.PREVIOUS_VERSION['path']).exists())
+
+    def test_present_empty_or_partial_prior_cache_rejected_before_build(self):
+        previous_dir = self.root/'experiments/.cache/prior'
+        previous_dir.mkdir(parents=True)
+        names = ('inputs.jsonl','proposal.json','manifest.json')
+        previous = {'path':'experiments/.cache/prior',
+                    'files':{name:diagnostic.digest(name.encode()) for name in names}}
+        with patch.object(diagnostic,'PREVIOUS_VERSION',previous), \
+             patch.object(diagnostic,'build') as build:
+            for count in range(3):
+                if count: (previous_dir/names[count-1]).write_text(names[count-1])
+                with self.subTest(present_files=count),self.assertRaises(ValueError):
+                    diagnostic.write(self.root)
+            build.assert_not_called()
+        self.assertFalse((self.root/diagnostic.DESTINATION).exists())
+
+    def test_broken_prior_directory_link_is_not_treated_as_absent(self):
+        previous_dir = self.root/'experiments/.cache/prior'
+        previous_dir.parent.mkdir(parents=True)
+        previous_dir.symlink_to(self.root/'missing')
+        with patch.object(diagnostic,'PREVIOUS_VERSION',{'path':'experiments/.cache/prior','files':{}}), \
+             patch.object(diagnostic,'build') as build:
+            with self.assertRaises(ValueError): diagnostic.write(self.root)
+            build.assert_not_called()
 
     def test_tampered_kb_and_nonmatching_quotes_are_rejected(self):
         self.source.write_text('Different fact.\n')
