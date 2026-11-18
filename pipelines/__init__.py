@@ -25,9 +25,10 @@ def load(name: str = ""):
             module = importlib.import_module("pipelines.kimjaehak.peace_guard_scheduling")
             return {"jh_pg_fast_gate": module.FastGate, "jh_pg_parallel_input": module.ParallelInput,
                     "jh_pg_fast_parallel": module.FastParallelInput, "jh_pg_fast_requested": module.FastRequestedParallel}[name]
-        if name in {"jh_pg_ground3", "jh_pg_medium3"}:
+        if name in {"jh_pg_ground3", "jh_pg_medium3", "jh_pg_current3", "jh_pg_fast3"}:
             module = importlib.import_module("pipelines.kimjaehak.peace_ground_budget")
-            return module.LowThree if name == "jh_pg_ground3" else module.MediumThree
+            return {"jh_pg_ground3": module.LowThree, "jh_pg_medium3": module.MediumThree,
+                    "jh_pg_current3": module.CurrentThree, "jh_pg_fast3": module.FastParallelThree}[name]
         if name in {"jh_pg_current_span80", "jh_pg_routed_span80", "jh_pg_requested_span80"}:
             module = importlib.import_module("pipelines.kimjaehak.peace_span_variants")
             return {"jh_pg_current_span80": module.CurrentSpan80, "jh_pg_routed_span80": module.RoutedSpan80,

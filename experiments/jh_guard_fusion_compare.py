@@ -26,6 +26,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'current3': ('jh_pg_current3', 'pipelines.kimjaehak.peace_ground_budget.CurrentThree'),
+    'fast3': ('jh_pg_fast3', 'pipelines.kimjaehak.peace_ground_budget.FastParallelThree'),
     'fast_gate': ('jh_pg_fast_gate', 'pipelines.kimjaehak.peace_guard_scheduling.FastGate'),
     'parallel_input': ('jh_pg_parallel_input', 'pipelines.kimjaehak.peace_guard_scheduling.ParallelInput'),
     'fast_parallel': ('jh_pg_fast_parallel', 'pipelines.kimjaehak.peace_guard_scheduling.FastParallelInput'),

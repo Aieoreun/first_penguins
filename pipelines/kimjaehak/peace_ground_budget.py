@@ -1,7 +1,16 @@
 """Compare fewer low-effort votes with bounded non-streaming medium reasoning."""
 import json
 
-from .peace_span_variants import RoutedSpan80
+from .peace_span_variants import RoutedSpan80, CurrentSpan80
+from .peace_guard_scheduling import FastParallelInput
+
+
+class CurrentThree(CurrentSpan80):
+    output_votes = 3
+
+
+class FastParallelThree(FastParallelInput):
+    output_votes = 3
 
 
 class LowThree(RoutedSpan80):

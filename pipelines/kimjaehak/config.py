@@ -55,6 +55,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_pg_fusion", "jh_pg_requested", "jh_pg_action"
 
 VARIANTS += ("jh_pg_current_span80", "jh_pg_routed_span80", "jh_pg_requested_span80", "jh_pg_ground3", "jh_pg_medium3")
 VARIANTS += ("jh_pg_fast_gate", "jh_pg_parallel_input", "jh_pg_fast_parallel", "jh_pg_fast_requested")
+VARIANTS += ("jh_pg_current3", "jh_pg_fast3")
 
 
 def configure():
