@@ -16,6 +16,10 @@ DEFAULT = "v1"
 def load(name: str = ""):
     """흐름 이름으로 Pipeline 클래스를 돌려준다."""
     name = name or os.environ.get("PIPELINE", DEFAULT)
+    if name == "jh_parallel_guard":
+        from pipelines.kimjaehak.config import configure
+        configure()
+        return importlib.import_module("pipelines.kimjaehak.parallel_guard").Pipeline
     if name.startswith("jh_"):
         from pipelines.kimjaehak.config import VARIANTS, configure
         if name not in VARIANTS:

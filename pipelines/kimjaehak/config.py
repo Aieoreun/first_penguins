@@ -53,6 +53,8 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r4_normalized_tutor", "jh_r4_last_dense", "jh_r4_conditional_dense", "jh_r4_structured_block", "jh_r4_source_conversation_last", "jh_r4_material_budget", "jh_r4_source_stream", "jh_r4_budget_stream", "jh_r4_source_id_only", "jh_r4_source_disambiguated", "jh_r4_source_minimal", "jh_r5_dual6", "jh_r5_dual_all")
 
 
+VARIANTS += ("jh_parallel_guard",)
+
 def configure():
     # Called before importing v1/v2: their controls are module-level constants.
     os.environ.update(BASELINE_ENV)

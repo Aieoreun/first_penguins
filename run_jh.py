@@ -12,7 +12,7 @@ def main():
                  "EMBEDDING_API_KEY", "EMBEDDING_BASE_URL", "EMBEDDING_MODEL"):
         if not os.environ.get(name):
             parser.error(f"Missing environment variable: {name}; load .env first")
-    os.environ["PIPELINE"] = "jh_r4_material_budget"
+    os.environ["PIPELINE"] = "jh_parallel_guard"
     from pipelines import load
     pipeline = load(os.environ["PIPELINE"])
     pipeline.request_slots = 64
