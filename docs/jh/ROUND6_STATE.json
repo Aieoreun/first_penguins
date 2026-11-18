@@ -8,14 +8,14 @@
   "secondary_baseline": "jh_r5_dual_all",
   "guard": "unchanged_ContextFast",
   "completed_runs": 19,
-  "pending_runs": 0,
-  "last_observed_used_percent": 68,
-  "next": "Compare resolved source hint, computable material, source time/reasoning budgets; inspect public-only traces",
+  "pending_runs": 4,
+  "last_observed_used_percent": 70,
+  "next": "Score source hints/computable support; source budgets and normal .94 comparisons; public traces",
   "total_requests": 2478,
   "comparison_baselines": [
     "jh_r3_selected_focused",
     "jh_r4_material_budget",
     "jh_r5_dual_all"
   ],
-  "collected_requests": 2478
+  "collected_requests": 2934
 }

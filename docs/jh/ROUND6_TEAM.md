@@ -208,3 +208,29 @@ ResolvedFocused는 topic92.11이 높지만 followup86.18/primary94.92에서 일�
 
 모든 실제 수집은 다음 clean commit에서 시작하며 공개 추적 도구는 HTTP 성능 비교와 별도 실행한다.
 현재 사용률68%(잔여32%). 중단 기준은 여전히 잔여15%이며 실험은 진행 중이다.
+
+## 정상 학습 질문 gate의 좁은 완화
+
+primary16–19에서 일상적 공부 걱정이4회 모두 escalate로 잘못 분류됐다. 공개 학습 분류기 자체는
+normal=.944385였고 기존.95보다 낮아 LLM fallback으로 넘어간 경우였다. learned emotional 오판이
+아니므로 emotional gate 재확인은 이 오류를 고치지 않는다. 기존 raw CPU 예측을 다시 학습하지 않고
+재생했고 모든 원본 source 해시가 일치했다(`jh_normal_gate94_screen.py`, `normal_gate94_screen.json`).
+
+| normal cutoff | primary 추가 우회 | alternative 추가 우회 | grouped OOF tutor 추가 우회 |
+|---|---|---|---|
+| .94 | normal4 | normal3 | PII1 |
+| .92 | normal9, 학업부정1 | normal5 | normal4, OOM1, off-topic1, PII1 |
+| .90 | normal9, 학업부정1 | normal6 | normal8, 유해2, OOM2, off-topic1, PII1 |
+
+추가 우회만 센 수치이며 기존 gate 전체 오류가0이라는 뜻은 아니다. 개발 자료에서 고른 기준이고
+PII의 tutor action은 answer라 같지만 범주가 normal과 일치하는 것은 아니다.
+`jh_r6_normal_gate94`는 tutor의 argmax가 normal이고 확률이[.94,.95)일 때만 요청별 pipeline copy의
+threshold를.94로 낮춘다. 기존 전체 classify 경로와 섹션 후처리를 통과하며 label을 직접 지정하지 않는다.
+다른 범주·guard·섹션 .98/.90 임계값은 유지한다. .92/.90은 실제 차단 누락 반례가 있어 구현하지 않는다.
+전체508테스트 통과. primary192와alternative181에서 양 기준선과 비교할 계획이다.
+
+공개 추적 도구 `jh_public_trace.py`를 추가했다. 완료된 public/파생 실행의 해시·모델·채점 완료를 확인한
+자료만 받아 직접 tutor를 호출하며, 원래 hook의 인자·결과·예외·취소를 관찰한다. 추가 검색·모델 호출을
+만들지 않는다. labels/ID/gold는 pipeline body로 넘기지 않는다. HTTP 벤치마크/공식 점수로 읽지 않는다.
+`_ask`의 entry_*는 부모 prompt 변환 전이고 source_response는 외부 결과라 VoteThree 내부3raw는 아니다.
+모의14테스트에서 호출 수·원 응답·취소·병렬 격리·데이터 범위를 확인했다. 실제 제출 서버에서는 사용하지 않는다.
