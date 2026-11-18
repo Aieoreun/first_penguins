@@ -31,16 +31,5 @@ NUMBER_HINT = """
 후보 답변의 숫자 중 [교재]에 같은 글자로 나오지 않는 것: {numbers}
 교재의 값으로 계산해서 나온 숫자일 수 있으니 그대로 틀렸다고 보지는 않는다. 이 숫자가 든 구절이 교재와 맞는지 특히 꼼꼼히 확인한다."""
 
-
-def _without_section(system: str) -> str:
-    """교재 확인 프롬프트에서 근거 섹션을 적는 부분을 뺀다. 근거 섹션은 낱말 검색 1위를 쓰니 모델이 적은 값은 쓰이지 않는다."""
-    start = "4. 근거 섹션(section):"
-    assert system.count(start) == 1
-    head, rest = system.split(start, 1)
-    system = head.rstrip("\n") + "\n" + rest.split("\n", 1)[1]
-    field = '"section": "<섹션 ID>", '
-    assert system.count(field) == 1
-    return system.replace(field, "")
-
-
-MATERIAL_NO_SECTION = _without_section(v2.MATERIAL_SYSTEM)
+# 교재 확인에서 근거 섹션을 뺀 프롬프트. v9가 쓰는 것과 같다
+from pipelines.v9.prompts import MATERIAL_SYSTEM as MATERIAL_NO_SECTION  # noqa: E402

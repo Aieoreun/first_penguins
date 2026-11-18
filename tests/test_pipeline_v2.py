@@ -422,5 +422,62 @@ class VxTest(unittest.TestCase):
         self.assertEqual((out["grounded"], out["unsupported"]), (True, []))
 
 
+class V9V10Test(unittest.TestCase):
+    """v9는 교재 확인에서 섹션을 뺀다. v10은 거기에 더해 세 범주의 낮은 확신 판정을 버린다."""
+
+    CANDIDATE = "하루 이체 한도는 10만 원이에요. 천천히 확인해 보세요."
+
+    def setUp(self):
+        from pipelines.v9 import prompts as v9_prompts
+        from pipelines.v9.pipeline import Pipeline as V9
+        from pipelines.v10.pipeline import Pipeline as V10
+        self.V9, self.V10, self.material = V9, V10, v9_prompts.MATERIAL_SYSTEM
+
+    def replies(self, **more):
+        base = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
+                self.material: '{"asked": "한도", "quote": "하루 이체 한도는 5만 원", "confidence": 90}',
+                prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["하루 이체 한도는 10만 원이에요"]}'}
+        base.update(more)
+        return base
+
+    def guard(self, cls, llm):
+        return asyncio.run(cls(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": self.CANDIDATE}))
+
+    def test_v9_material_prompt_has_no_section(self):
+        self.assertNotIn("section", self.material)
+        self.assertIn('"quote"', self.material)
+        llm = FakeLLM(self.replies())
+        state = self.guard(self.V9, llm)
+        self.assertNotIn(prompts.MATERIAL_SYSTEM, llm.calls)
+        self.assertEqual(state.section, TOP1)  # 근거 섹션은 낱말 검색 1위
+        out = state.to_guard_response()["output"]
+        self.assertEqual((out["grounded"], out["unsupported"]), (False, ["10만 원"]))  # v8의 구간 다듬기도 그대로
+        self.assertEqual(len(llm.calls), 4)
+
+    def test_v9_empty_quote_is_out_of_material(self):
+        llm = FakeLLM(self.replies(**{self.material: '{"asked": "x", "quote": "", "confidence": 60}'}))
+        self.assertEqual(self.guard(self.V9, llm).category.value, "out_of_material")
+
+    def test_v10_drops_unsure_flags_in_three_categories(self):
+        for category in ("jailbreak_injection", "academic_dishonesty"):
+            low = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "%s", "confidence": 80}' % category}))
+            self.assertEqual(self.guard(self.V10, low).decision.value, "allow", category)
+            high = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "%s", "confidence": 85}' % category}))
+            self.assertEqual(self.guard(self.V10, high).decision.value, "block", category)
+        low = FakeLLM(self.replies(**{prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "confidence": 70, "self_info": false}'}))
+        self.assertEqual(self.guard(self.V10, low).category.value, "normal")
+
+    def test_v10_keeps_other_categories_even_when_unsure(self):
+        for category, decision in (("harmful_request", "block"), ("harmful_speech", "block"), ("off_topic", "block")):
+            llm = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "%s", "confidence": 60}' % category}))
+            self.assertEqual(self.guard(self.V10, llm).decision.value, decision, category)
+        llm = FakeLLM(self.replies(**{prompts.OTHER_SYSTEM: '{"category": "low_signal_input", "confidence": 60, "self_info": false}'}))
+        self.assertEqual(self.guard(self.V10, llm).category.value, "low_signal_input")
+
+    def test_v9_does_not_drop_unsure_flags(self):
+        llm = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "jailbreak_injection", "confidence": 60}'}))
+        self.assertEqual(self.guard(self.V9, llm).decision.value, "block")
+
+
 if __name__ == "__main__":
     unittest.main()
