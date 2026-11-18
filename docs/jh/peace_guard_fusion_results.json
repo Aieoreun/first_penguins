@@ -998,5 +998,204 @@
         }
       }
     ]
+  },
+  "pg09_span_reverse": {
+    "source_commit": "8f258dd",
+    "dataset": "novel_answer60",
+    "results": [
+      {
+        "candidate": "routed_span80",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.502,
+          "p50": 8.901,
+          "p95": 13.73,
+          "max": 14.496,
+          "http_errors": 0,
+          "stage_failure_requests": 0
+        },
+        "guard": 98.67,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.9278,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "routed",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 20.911,
+          "p50": 10.2255,
+          "p95": 13.916,
+          "max": 20.905,
+          "http_errors": 0,
+          "stage_failure_requests": 10
+        },
+        "guard": 98.18,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.8954,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "current_span80",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 13.943,
+          "p50": 6.734,
+          "p95": 13.526,
+          "max": 13.938,
+          "http_errors": 0,
+          "stage_failure_requests": 4
+        },
+        "guard": 98.64,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.926,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      },
+      {
+        "candidate": "current",
+        "dataset": "novel",
+        "scope": "public_guard_novel_answer60_full_pipeline_development",
+        "primary_metric": "guard",
+        "runtime": {
+          "collect_seconds": 14.039,
+          "p50": 8.559000000000001,
+          "p95": 13.626,
+          "max": 14.029,
+          "http_errors": 0,
+          "stage_failure_requests": 7
+        },
+        "guard": 98.11,
+        "guard_details": {
+          "block_f1": 1.0,
+          "category_accuracy": 1.0,
+          "grounded_accuracy": 0.9833,
+          "span_f1": 0.8907,
+          "safe_accuracy": 1.0,
+          "false_block": 0,
+          "missed_block": 0,
+          "confusion": {
+            "jailbreak_injection -> jailbreak_injection": 2,
+            "normal -> normal": 47,
+            "harmful_content -> harmful_content": 6,
+            "academic_dishonesty -> academic_dishonesty": 2,
+            "off_topic -> off_topic": 3
+          }
+        }
+      }
+    ]
+  },
+  "pg10_alternative": {
+    "source_commit": "8f258dd",
+    "dataset": "alternative184_input_only",
+    "results": [
+      {
+        "candidate": "current",
+        "dataset": "alternative",
+        "scope": "public_guard_alternative184_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 12.836,
+          "p50": 0.7635000000000001,
+          "p95": 10.517,
+          "max": 11.042,
+          "http_errors": 0,
+          "stage_failure_requests": 11
+        },
+        "input_metrics": {
+          "block_f1": 0.9719626168224299,
+          "category_accuracy": 0.962,
+          "false_block": 2,
+          "missed_block": 1
+        },
+        "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+      },
+      {
+        "candidate": "routed",
+        "dataset": "alternative",
+        "scope": "public_guard_alternative184_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 24.424,
+          "p50": 0.7535000000000001,
+          "p95": 14.716,
+          "max": 23.513,
+          "http_errors": 0,
+          "stage_failure_requests": 4
+        },
+        "input_metrics": {
+          "block_f1": 0.9615384615384616,
+          "category_accuracy": 0.9367,
+          "false_block": 1,
+          "missed_block": 3
+        },
+        "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+      },
+      {
+        "candidate": "routed_requested",
+        "dataset": "alternative",
+        "scope": "public_guard_alternative184_input_only_development",
+        "primary_metric": "input_only",
+        "runtime": {
+          "collect_seconds": 24.662,
+          "p50": 0.808,
+          "p95": 14.826,
+          "max": 23.694,
+          "http_errors": 0,
+          "stage_failure_requests": 5
+        },
+        "input_metrics": {
+          "block_f1": 0.9523809523809523,
+          "category_accuracy": 0.9241,
+          "false_block": 2,
+          "missed_block": 3
+        },
+        "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+      }
+    ]
   }
 }
