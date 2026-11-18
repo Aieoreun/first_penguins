@@ -1,0 +1,2 @@
+-r requirements-jh-research.txt
+kiwipiepy==0.24.1

@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_r6_kiwi_bigram", "jh_r6_resolved_focused"}:
+            module = importlib.import_module("pipelines.kimjaehak.round6_retrieval")
+            return module.KiwiBigram if name == "jh_r6_kiwi_bigram" else module.ResolvedFocused
         if name in {"jh_r6_short_material", "jh_r6_material_nosection", "jh_r6_context_verify"}:
             module = importlib.import_module("pipelines.kimjaehak.round6")
             return {"jh_r6_short_material":module.ShortMaterial,
