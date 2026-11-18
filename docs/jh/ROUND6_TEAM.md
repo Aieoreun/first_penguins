@@ -510,3 +510,9 @@ true는 선택한 실제 KB의 focused 원문, false는 기존 고정 OOM 문구
 material_hint followup/primary, joint_fact topic/primary, eager12 topic/primary,
 public400 혼합부하 baseline/focused/normal94_sparse. 각 실행 전 사용량을 확인하며 잔여15% 이하이면 새 실행을 시작하지 않는다.
 현재 잔여19%; 진행 중 채점은 중단하지 않고 끝낸 뒤 자료·인수인계·커밋을 정리한다.
+
+strict quote의 이전 abstain 3건을 새 public trace로 관찰했다. HTML 역할 질문은 정상 인용으로 answer,
+실습 채점 순서 질문은 정답 섹션이 실제 후보에 없어 supported=false, 용돈 기입장 질문은 후보에 없는
+section ID를 반환해 ValueError fallback이었다. 새3회에서 InvalidQuote는 재현되지 않았다.
+따라서 이전26건의 구체적인 문자열 실패 원인을 이 trace로 단정하지 않는다. 재실행 변동과 후보 누락·ID오류가
+함께 남아 있음을 기록한다. public trace 누적8요청이며 HTTP 점수 집계에는 포함하지 않는다.

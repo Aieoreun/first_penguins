@@ -18,7 +18,7 @@
     "jh_r5_dual_all"
   ],
   "collected_requests": 6287,
-  "public_trace_requests": 5,
+  "public_trace_requests": 8,
   "parameter_smoke_requests": 1,
   "manual_contrast_items": 16
 }
