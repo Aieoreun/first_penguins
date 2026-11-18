@@ -50,7 +50,7 @@ VARIANTS = INITIAL_VARIANTS + ("jh_guided_input", "jh_guided_output", "jh_guided
                               "jh_r3_extract_focused", "jh_r3_grounded_extract", "jh_r3_material_vote3",
                               "jh_r3_selected_focused", "jh_r3_grounded_focused", "jh_r3_quote_selected_focused",
                               "jh_r3_safe_alternative", "jh_r3_safe_menu", "jh_r3_expanded_focused",
-                              "jh_r4_normalized_tutor", "jh_r4_last_dense", "jh_r4_conditional_dense", "jh_r4_structured_block", "jh_r4_source_conversation_last", "jh_r4_material_budget", "jh_r4_source_stream", "jh_r4_budget_stream", "jh_r4_source_id_only", "jh_r4_source_disambiguated", "jh_r4_source_minimal", "jh_r5_dual6", "jh_r5_dual_all", "jh_r6_short_material", "jh_r6_material_nosection", "jh_r6_context_verify", "jh_r6_kiwi_bigram", "jh_r6_resolved_focused")
+                              "jh_r4_normalized_tutor", "jh_r4_last_dense", "jh_r4_conditional_dense", "jh_r4_structured_block", "jh_r4_source_conversation_last", "jh_r4_material_budget", "jh_r4_source_stream", "jh_r4_budget_stream", "jh_r4_source_id_only", "jh_r4_source_disambiguated", "jh_r4_source_minimal", "jh_r5_dual6", "jh_r5_dual_all", "jh_r6_short_material", "jh_r6_material_nosection", "jh_r6_context_verify", "jh_r6_kiwi_bigram", "jh_r6_resolved_focused", "jh_r6_evidence_first", "jh_r6_source_vote3")
 
 
 def configure():
