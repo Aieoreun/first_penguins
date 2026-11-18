@@ -37,6 +37,9 @@ class Pipeline(Broad):
 
     async def _classify(self, state):
         await super()._classify(state)
+        self._apply_learned_section(state)
+
+    def _apply_learned_section(self, state):
         if state.has_candidate and not self.learned_section_use_for_output:
             return
         probability = self.section_classifier.predict_proba(self.section_vectorizer.transform([state.last_user]))[0]

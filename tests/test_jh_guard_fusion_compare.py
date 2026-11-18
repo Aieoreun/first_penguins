@@ -349,7 +349,7 @@ def run(app, **kwargs):
              patch.object(probe.shared, 'wait_ready', side_effect=ready), \
              patch.object(probe.shared, 'evaluator_hashes', return_value={}), \
              patch.object(probe.shared, 'collect', new=AsyncMock(return_value=[{'seconds':.1,'error':None}])):
-            probe.collect_candidate('peace', self.root, [{'id':'a'}], dest,
+            probe.collect_candidate('peace', self.root, [{'id':'a','endpoint':'guard'}], dest,
                                     {'TEAM_TOKEN':'fixture'}, 32, 'off')
         runtime = json.loads((dest / 'runtime.json').read_text())
         self.assertEqual(runtime['api_calls'], counts)

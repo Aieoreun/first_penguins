@@ -26,6 +26,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'tm_selective': ('jh_tm_selective', 'pipelines.kimjaehak.tutor_mlp.Selective'),
+    'tm_replace': ('jh_tm_replace', 'pipelines.kimjaehak.tutor_mlp.Replace'),
     'cm_char_lr50': ('jh_cm_char_lr50', 'pipelines.kimjaehak.classifier_matrix.CharLR50'),
     'cm_dense_lr50': ('jh_cm_dense_lr50', 'pipelines.kimjaehak.classifier_matrix.DenseLR50'),
     'cm_char_mlp50': ('jh_cm_char_mlp50', 'pipelines.kimjaehak.classifier_matrix.CharMLP50'),
@@ -147,13 +149,24 @@ try:
                         counts['guard_debug'][key] += debug.get(key) is True
                     return result
                 instance.guard = observed_guard
+            original_tutor = getattr(instance, 'tutor', None)
+            if callable(original_tutor):
+                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0}
+                async def observed_tutor(body):
+                    result = await original_tutor(body)
+                    debug = getattr(result, 'debug', {})
+                    for key in counts['tutor_debug']:
+                        counts['tutor_debug'][key] += debug.get(key) is True
+                    return result
+                instance.tutor = observed_tutor
             if variant in ('jh_pg_requested', 'jh_pg_cancel_requested') and getattr(instance, 'guard_requested_action', None) is not True:
                 raise RuntimeError('Requested-action guard is not enabled')
             data = {'requested_variant': variant, 'server_variant': server.PIPELINE,
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            for key in ('classifier_kind','classifier_threshold','classifier_seed',
+            for key in ('tutor_mlp_threshold','tutor_mlp_single_turn','tutor_mlp_fallback',
+                        'classifier_kind','classifier_threshold','classifier_seed',
                         'classifier_width','classifier_alpha','classifier_c',
                         'classifier_embedding_timeout','classifier_text_mode','classifier_common_llm_fallback',
                         'guard_allow_safety','guard_allow_safety_timeout',
@@ -322,6 +335,8 @@ def collect_candidate(label, source_root, items, dest, env, judge_workers, embed
                 'count': len(items), 'endpoints': ['guard'], 'score_scope': 'guard',
                 'evaluator_hashes': shared.evaluator_hashes(), 'embedding_mode': embedding_mode,
                 'scoring_deferred': True, 'judge_enabled': True}
+    manifest['endpoints'] = sorted({item['endpoint'] for item in items})
+    manifest['score_scope'] = '+'.join(manifest['endpoints'])
     if dataset_metadata is not None:
         manifest['dataset_provenance'] = dataset_metadata
         manifest['scope'] = dataset_metadata['scope']
