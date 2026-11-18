@@ -3948,9 +3948,38 @@
         "affected_total_unknown": true,
         "behavior": "Affected requests skipped new classifier and used common LLM input classification",
         "valid_as_intended_dense_classifier_comparison": false,
-        "cause_pending": "Embedding client unavailable or configured model name differs from public embedding asset model",
-        "expected_model": "text-embedding-3-small"
+        "expected_model": "text-embedding-3-small",
+        "cause_confirmed": "Configured model name openai/text-embedding-3-small differed from training asset name text-embedding-3-small; client configuration was present"
       }
+    },
+    {
+      "source": "user_report",
+      "reported_date": "2026-11-19",
+      "variant_assumed": "jh_cm_dense_lr50",
+      "variant_basis": "Following instructions to restart patched candidate; actual server configuration not independently verified",
+      "instructed_commit": "492af6129434f5bd49e7ed684f6d4edb19e94f23",
+      "actual_commit_verified": false,
+      "total": 83.7,
+      "tutor": 81.58,
+      "guard": 85.82,
+      "duration_seconds": 57.132,
+      "requests": 600,
+      "timeouts": 0,
+      "format_or_missing": 0,
+      "judge_errors": 0,
+      "seed": "f00c6606007e77216e5566fb7467673f",
+      "environment_check_user_report": {
+        "OPENAI_MODEL": "openai/gpt-5-nano",
+        "EMBEDDING_MODEL": "openai/text-embedding-3-small",
+        "chat_base_configured": true,
+        "embedding_base_configured": true,
+        "chat_key_configured": true,
+        "embedding_key_configured": true,
+        "embedding_effective_key_configured": true,
+        "team_token_configured": true
+      },
+      "server_ready_log_verified": false,
+      "runtime_matrix_embedding_error_status": "not reported"
     }
   ]
 }
