@@ -3941,7 +3941,16 @@
       "timeouts": 0,
       "format_or_missing": 0,
       "judge_errors": 0,
-      "seed": "4478a433324b53ec55c3bdbd5aa4f050"
+      "seed": "4478a433324b53ec55c3bdbd5aa4f050",
+      "runtime_followup": {
+        "source": "user_supplied_metadata_logs",
+        "observed_error": "matrix_embedding:UnavailableOrModelMismatch",
+        "affected_total_unknown": true,
+        "behavior": "Affected requests skipped new classifier and used common LLM input classification",
+        "valid_as_intended_dense_classifier_comparison": false,
+        "cause_pending": "Embedding client unavailable or configured model name differs from public embedding asset model",
+        "expected_model": "text-embedding-3-small"
+      }
     }
   ]
 }
