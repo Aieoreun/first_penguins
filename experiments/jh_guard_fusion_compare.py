@@ -26,6 +26,9 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'current_span80': ('jh_pg_current_span80', 'pipelines.kimjaehak.peace_span_variants.CurrentSpan80'),
+    'routed_span80': ('jh_pg_routed_span80', 'pipelines.kimjaehak.peace_span_variants.RoutedSpan80'),
+    'requested_span80': ('jh_pg_requested_span80', 'pipelines.kimjaehak.peace_span_variants.RoutedRequestedSpan80'),
     'current': ('jh_r4_material_budget', 'pipelines.kimjaehak.material_budget.Pipeline'),
     'fusion': ('jh_pg_fusion', 'pipelines.kimjaehak.peace_guard_fusion.Pipeline'),
     'peace': ('jh_parallel_guard', 'pipelines.kimjaehak.parallel_guard.Pipeline'),
@@ -89,7 +92,7 @@ try:
                         'guard_safety_after_input',
                         'guard_routed_safety','guard_safety_votes','guard_independent_safety',
                         'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
-                        'learned_gate_threshold'):
+                        'learned_gate_threshold','learned_span_threshold'):
                 data[key] = getattr(instance, key, None)
             prompts = sys.modules.get('pipelines.v2.prompts')
             block = getattr(instance, 'guard_block_system', getattr(prompts, 'BLOCK_SYSTEM', None))

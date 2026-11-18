@@ -53,6 +53,9 @@ VARIANTS = INITIAL_VARIANTS + ("jh_pg_fusion", "jh_pg_requested", "jh_pg_action"
                               "jh_r4_normalized_tutor", "jh_r4_last_dense", "jh_r4_conditional_dense", "jh_r4_structured_block", "jh_r4_source_conversation_last", "jh_r4_material_budget", "jh_r4_source_stream", "jh_r4_budget_stream", "jh_r4_source_id_only", "jh_r4_source_disambiguated", "jh_r4_source_minimal", "jh_r5_dual6", "jh_r5_dual_all", "jh_r6_short_material", "jh_r6_material_nosection", "jh_r6_context_verify", "jh_r6_kiwi_bigram", "jh_r6_resolved_focused", "jh_r6_evidence_first", "jh_r6_source_vote3", "jh_r6_computable_material", "jh_r6_topic_focused", "jh_r6_resolved_source_hint", "jh_r6_source_budget12", "jh_r6_source_reason12", "jh_r6_normal_gate94", "jh_r6_joint_evidence", "jh_r6_trusted_sparse", "jh_r6_normal94_sparse", "jh_r6_joint_quote", "jh_r6_eager_source", "jh_r6_eager_source12", "jh_r6_joint_fact", "jh_r6_resolved_material_hint", "jh_r6_source_support", "jh_r6_source_support12", "jh_r6_source_conditioned_gate", "jh_r6_product_context")
 
 
+VARIANTS += ("jh_pg_current_span80", "jh_pg_routed_span80", "jh_pg_requested_span80")
+
+
 def configure():
     # Called before importing v1/v2: their controls are module-level constants.
     os.environ.update(BASELINE_ENV)
