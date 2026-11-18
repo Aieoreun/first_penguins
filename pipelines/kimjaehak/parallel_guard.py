@@ -14,7 +14,9 @@ SAFETY_SYSTEM = '당신은 교육용 튜터 후보 답변의 정책 준수 검�
 
 
 class ParallelGuard:
-    guard_prepare_limit = 22.0
+    guard_prepare_limit = 26.0
+    guard_deadline = 28.0
+    guard_material_timeout = 13.0
 
     async def _parallel_ground(self, state):
         trials = [replace(state, unsupported=[], errors=[], debug=dict(state.debug))
@@ -77,7 +79,7 @@ class ParallelGuard:
                     await asyncio.gather(*tasks, return_exceptions=True)
 
         try:
-            await asyncio.wait_for(work(), self.deadline)
+            await asyncio.wait_for(work(), self.guard_deadline)
         except asyncio.TimeoutError:
             state.errors.append("request:Deadline")
         finally:
@@ -104,5 +106,5 @@ class Pipeline(ParallelGuard, MaterialBudget):
             self._vote_group(state, "block", prompts.BLOCK_SYSTEM, check),
             self._vote_group(state, "other", prompts.OTHER_SYSTEM, check))
         outcome = await self._ask(state, "material", prompts.MATERIAL_SYSTEM,
-                                  material, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT)
+                                  material, CLASSIFY_EFFORT, self.guard_material_timeout)
         return block, other, outcome

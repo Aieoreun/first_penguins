@@ -15,6 +15,7 @@ class Fake(ParallelGuard):
     deadline = 1.0
     prepare_limit = 0.7
     guard_prepare_limit = 0.7
+    guard_deadline = 1.0
     output_votes = 5
 
     def __init__(self):
@@ -146,6 +147,7 @@ class ParallelGuardTests(unittest.IsolatedAsyncioTestCase):
     async def test_request_deadline_cancels_pending_work(self):
         p = Fake()
         p.deadline = .08
+        p.guard_deadline = .08
         p.prepare_limit = .07
         p.guard_prepare_limit = .07
         cancelled = []

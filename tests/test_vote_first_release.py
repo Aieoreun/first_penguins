@@ -20,13 +20,16 @@ class VoteFirstTests(unittest.IsolatedAsyncioTestCase):
   out=await p._collect_checks(SimpleNamespace(_material_budget_guard=True),'check','material')
   self.assertEqual(out,(['block'],['other'],{'quote':'source'}))
   p._ask.assert_awaited_once()
+  self.assertEqual(p._ask.await_args.args[-1], 13.0)
  async def test_tutor_delegates_unchanged_collect_checks(self):
   p=Pipeline.__new__(Pipeline);expected=(['b'],['o'],{'quote':'q'})
   with patch.object(MaterialBudget,'_collect_checks',new_callable=AsyncMock,return_value=expected) as original:
    result=await p._collect_checks(SimpleNamespace(_material_budget_guard=False),'c','m')
   self.assertEqual(result,expected);original.assert_awaited_once()
  def test_guard_budget_and_tutor_unchanged(self):
-  self.assertEqual(Pipeline.guard_prepare_limit,22)
+  self.assertEqual(Pipeline.guard_prepare_limit,26)
+  self.assertEqual(Pipeline.guard_deadline,28)
+  self.assertEqual(Pipeline.guard_material_timeout,13)
   self.assertEqual(Pipeline.deadline,26)
   self.assertIs(Pipeline.tutor,MaterialBudget.tutor)
   self.assertEqual(Pipeline.prepare_limit,MaterialBudget.prepare_limit)
