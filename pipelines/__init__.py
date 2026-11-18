@@ -23,6 +23,11 @@ def load(name: str = ""):
         configure()
         if name == "jh_pg_fusion":
             return importlib.import_module("pipelines.kimjaehak.peace_guard_fusion").Pipeline
+        if name == "jh_pg_requested":
+            return importlib.import_module("pipelines.kimjaehak.peace_guard_variants").RequestedAction
+        if name in {"jh_pg_action", "jh_pg_context"}:
+            module = importlib.import_module("pipelines.kimjaehak.peace_safety_variants")
+            return module.ActionSafety if name == "jh_pg_action" else module.ContextSafety
         if name in {"jh_r6_evidence_first", "jh_r6_source_vote3"}:
             module = importlib.import_module("pipelines.kimjaehak.round6_source")
             return module.EvidenceFirst if name == "jh_r6_evidence_first" else module.VoteThree

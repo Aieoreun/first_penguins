@@ -75,13 +75,16 @@ def main():
     for key in ("tutor_short_material", "tutor_material_no_section", "tutor_verify_context_sources", "tutor_lexical_mode", "source_evidence_order", "source_selection_votes", "tutor_computable_material", "source_resolved_hint", "source_selection_effort", "source_selection_tokens", "tutor_normal_gate_threshold", "tutor_joint_evidence", "joint_evidence_tokens", "tutor_skip_trusted_embedding", "tutor_joint_quote", "tutor_eager_source", "tutor_joint_fact", "tutor_material_resolved_hint", "tutor_source_support", "source_support_tokens", "source_support_timeout", "tutor_source_conditioned_gate", "source_conditioned_input_threshold", "source_conditioned_section_threshold", "source_conditioned_fallback_threshold", "tutor_product_context"):
         effective[key] = getattr(pipeline, key, None)
     effective["embedding_mode"] = args.embedding_mode
-    for key in ("guard_fusion", "guard_fusion_reference", "guard_independent_safety",
+    for key in ("guard_fusion", "guard_fusion_reference", "guard_independent_safety", "guard_requested_action",
+                "guard_safety_action_review", "guard_safety_curriculum_context",
                 "guard_preserve_completed_ground", "guard_restore_span_refinement",
                 "guard_vote_first", "guard_prepare_limit", "guard_deadline",
                 "guard_material_timeout", "guard_ground_timeout", "guard_safety_timeout"):
         effective[key] = getattr(pipeline, key, None)
     if hasattr(pipeline, "guard_safety_system"):
         effective["guard_safety_prompt_sha256"] = hashlib.sha256(pipeline.guard_safety_system.encode()).hexdigest()
+    if hasattr(pipeline, "guard_block_system"):
+        effective["guard_block_prompt_sha256"] = hashlib.sha256(pipeline.guard_block_system.encode()).hexdigest()
     effective["embedding_model"] = os.environ.get("EMBEDDING_MODEL") or None
     if hasattr(pipeline, "endpoint_variants"):
         effective["endpoint_variants"] = pipeline.endpoint_variants

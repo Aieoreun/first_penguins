@@ -97,9 +97,12 @@ class Pipeline(MaterialBudget):
                     # A boundary-model failure must not erase a completed LLM verdict.
                     state.errors.append(f'fusion_span:{type(exc).__name__}')
 
+    def _fusion_safety_payload(self, state):
+        return {'conversation': state.messages, 'candidate_answer': state.candidate_answer}
+
     async def _fusion_safety(self, state):
         state.safe = False
-        payload = {'conversation': state.messages, 'candidate_answer': state.candidate_answer}
+        payload = self._fusion_safety_payload(state)
         try:
             raw = await self.llm.chat(self.guard_safety_system,
                 json.dumps(payload, ensure_ascii=False), effort='low', max_tokens=1800,
