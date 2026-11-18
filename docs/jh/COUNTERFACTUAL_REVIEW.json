@@ -1,0 +1,23 @@
+{
+  "scope": "parent_source_review_before_counterfactual_scoring",
+  "accepted": true,
+  "reviewer": "parent assistant",
+  "dataset_sha256": "fe90fb26e9442429db4c1c86389cff574bb4f9517f1ccf64260eed2300d689d3",
+  "proposal_sha256": "d9fa5beeeab4aa1b1b3255edd9e6c11bdcaad9abbc818087cba418b33ae165e6",
+  "kb_manifest_sha256": "8b952ddc320d0f21c2eefc8231b4856986e79e5f94ea44303b79997972e8fb2e",
+  "accepted_source_ids": [
+    "pub-78410d6c",
+    "pub-5333d544",
+    "pub-946de9f8",
+    "pub-7cba6fa3",
+    "pub-f15ab968",
+    "pub-5d501bc6",
+    "pub-242ef221",
+    "pub-995e13b6"
+  ],
+  "new_counterfactual_predictions_observed": false,
+  "review": "Read every original conversation and edited candidate. Verified exact KB quotes and one changed fixed rule; controls retain original public ground truth. No subset-preserving numerical changes accepted. Span boundaries remain subjective; grounded pair accuracy is primary.",
+  "training_allowed": false,
+  "deployment_allowed": false,
+  "independent_source_holdout": false
+}
