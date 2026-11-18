@@ -44,6 +44,7 @@ class Pipeline(MaterialBudget):
     guard_ground_timeout = 13.0
     guard_safety_timeout = 13.0
     guard_fast_input_wait = 0.0
+    guard_cancel_ground_after_block = False
     guard_safety_system = SAFETY_SYSTEM
 
     async def _collect_checks(self, state, check, material):
@@ -145,6 +146,40 @@ class Pipeline(MaterialBudget):
         """Optional bounded postprocessing inside the existing guard deadline."""
         return
 
+    async def _ground_until_input(self, ground_state, input_state, input_task, seconds):
+        """Cancel only unnecessary grounding after a reliable final BLOCK."""
+        ground = asyncio.create_task(self._fusion_stage(
+            self._fusion_ground(ground_state), seconds, ground_state, 'ground'))
+        intentional = False
+
+        async def watch_input():
+            nonlocal intentional
+            completed = await asyncio.shield(input_task)
+            if (completed is True and not input_state.errors and input_state.label is not None
+                    and input_state.decision is Decision.BLOCK and not ground.done()):
+                intentional = True
+                ground_state.debug['fusion_ground_cancelled_block'] = True
+                ground.cancel()
+
+        async def observe_ground():
+            try:
+                await ground
+            except asyncio.CancelledError:
+                # A child cancellation does not cancel this observer. A request
+                # cancellation does, including a race with our BLOCK decision.
+                if not intentional or asyncio.current_task().cancelling():
+                    raise
+
+        observer = asyncio.create_task(observe_ground())
+        watcher = asyncio.create_task(watch_input())
+        try:
+            await asyncio.gather(observer, watcher)
+        finally:
+            for task in (observer, watcher, ground):
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(observer, watcher, ground, return_exceptions=True)
+
     async def guard(self, body):
         started = time.monotonic()
         state = self._new_state(body, True)
@@ -189,6 +224,10 @@ class Pipeline(MaterialBudget):
                             return
                         if skip_ground:
                             ground_state.debug['fusion_ground_skipped_fast_block'] = True
+                        elif self.guard_cancel_ground_after_block:
+                            tasks.append(asyncio.create_task(self._ground_until_input(
+                                ground_state, state, input_task,
+                                min(self.guard_ground_timeout, remaining))))
                         else:
                             tasks.append(asyncio.create_task(self._fusion_stage(
                                 self._fusion_ground(ground_state),
@@ -218,6 +257,9 @@ class Pipeline(MaterialBudget):
                 state.debug['fusion_completed_ground_votes'] = ground_state.debug.get('fusion_completed_ground_votes', 0)
                 if ground_state.debug.get('fusion_ground_skipped_fast_block'):
                     state.debug['fusion_ground_skipped_fast_block'] = True
+                if self.guard_cancel_ground_after_block:
+                    state.debug['fusion_ground_cancelled_block'] = bool(
+                        ground_state.debug.get('fusion_ground_cancelled_block'))
                 if 'fusion_completed_safety_votes' in safety_state.debug:
                     state.debug['fusion_completed_safety_votes'] = safety_state.debug['fusion_completed_safety_votes']
                 if ground_state.debug.get('learned_span'):

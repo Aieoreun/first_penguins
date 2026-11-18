@@ -21,6 +21,8 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_pg_fast_cancel":
+            return importlib.import_module("pipelines.kimjaehak.peace_cancel_ground").FastCancelBlock
         if name in {"jh_pg_current_gate90", "jh_pg_fast_gate90"}:
             module = importlib.import_module("pipelines.kimjaehak.peace_gate_threshold")
             return module.CurrentGate90 if name == "jh_pg_current_gate90" else module.FastGate90

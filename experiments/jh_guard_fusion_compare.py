@@ -26,6 +26,7 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'fast_cancel': ('jh_pg_fast_cancel', 'pipelines.kimjaehak.peace_cancel_ground.FastCancelBlock'),
     'current_gate90': ('jh_pg_current_gate90', 'pipelines.kimjaehak.peace_gate_threshold.CurrentGate90'),
     'fast_gate90': ('jh_pg_fast_gate90', 'pipelines.kimjaehak.peace_gate_threshold.FastGate90'),
     'current_review': ('jh_pg_current_review', 'pipelines.kimjaehak.peace_span_review.CurrentReview'),
@@ -127,7 +128,8 @@ try:
             if callable(original_guard):
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
-                    'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block')}
+                    'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
+                    'fusion_ground_cancelled_block')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})
@@ -149,6 +151,7 @@ try:
                         'guard_ground_effort','guard_ground_max_tokens',
                         'guard_fast_input_wait','guard_vote_first',
                         'guard_gate_threshold',
+                        'guard_cancel_ground_after_block',
                         'guard_span_review','guard_span_review_threshold','guard_span_review_timeout',
                         'guard_restore_span_refinement','deadline','prepare_limit','output_votes',
                         'learned_gate_threshold','learned_span_threshold'):
