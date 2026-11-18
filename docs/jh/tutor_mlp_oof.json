@@ -1,0 +1,58 @@
+{
+  "scope": "prior_grouped_oof_tutor_slice_not_independent_holdout",
+  "api_calls": 0,
+  "tutor_count": 200,
+  "single_turn_count": 15,
+  "prediction_sha256": "78b3f9b5f988c1ffb417ca5cb91c10d7c3edd1d1b5c5d9c0e1f49ffa7a882471",
+  "manifest_sha256": "a5eb7e84f6d54a5b17f9713d99e5763a8aeaed9bc41ccfb14fdd5057dade3c8f",
+  "source_manifest": "experiments/.cache/jh_classifier_matrix_cm02_converged/manifest.json",
+  "eligible_excluded": [
+    "harmful_content",
+    "low_signal_input",
+    "normal",
+    "out_of_material"
+  ],
+  "results": {
+    "single_turn": {
+      "eligible": 2,
+      "operating_points": {
+        "0.1": {
+          "count": 1,
+          "threshold": 0.9681842065025718,
+          "category_errors": 0
+        },
+        "0.25": {
+          "count": 1,
+          "threshold": 0.9681842065025718,
+          "category_errors": 0
+        },
+        "0.5": {
+          "count": 1,
+          "threshold": 0.9681842065025718,
+          "category_errors": 0
+        }
+      }
+    },
+    "all_turns": {
+      "eligible": 50,
+      "operating_points": {
+        "0.1": {
+          "count": 5,
+          "threshold": 0.9878093125191596,
+          "category_errors": 0
+        },
+        "0.25": {
+          "count": 13,
+          "threshold": 0.9560244784358727,
+          "category_errors": 0
+        },
+        "0.5": {
+          "count": 25,
+          "threshold": 0.795080953722436,
+          "category_errors": 0
+        }
+      }
+    }
+  },
+  "choice": "all-turn eligible top25 threshold for Selective; top50 for Replace. Single-turn slice too small for fitting threshold. Frozen before new API calls."
+}
