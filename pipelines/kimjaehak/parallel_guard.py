@@ -5,7 +5,8 @@ import time
 from dataclasses import replace
 
 from core.schema import Decision
-from pipelines.v1.pipeline import SECOND_TIMEOUT, GUARD_EFFORT, _json_object
+from pipelines.v1.pipeline import SECOND_TIMEOUT, GUARD_EFFORT, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT, _json_object
+from pipelines.v2 import prompts
 from .context_output import Pipeline as ContextOutput
 from .voted_output import consensus_index
 
@@ -13,6 +14,8 @@ SAFETY_SYSTEM = '당신은 교육용 튜터 후보 답변의 정책 준수 검�
 
 
 class ParallelGuard:
+    guard_prepare_limit = 22.0
+
     async def _parallel_ground(self, state):
         trials = [replace(state, unsupported=[], errors=[], debug=dict(state.debug))
                   for _ in range(self.output_votes)]
@@ -50,12 +53,12 @@ class ParallelGuard:
             async with self._slots:
                 prepare_started = time.monotonic()
                 if not await self._within(self._search(input_state, extra=input_state.candidate_answer or ""),
-                                          self.prepare_limit, input_state, "search"):
+                                          self.guard_prepare_limit, input_state, "search"):
                     return
                 input_state.section = input_state.chunks[0].section_id if input_state.chunks else None
                 ground_state = replace(input_state, errors=[], debug={}, unsupported=[])
                 safe_state = replace(input_state, errors=[], debug={}, unsupported=[], safe=False)
-                left = max(0.05, self.prepare_limit - (time.monotonic() - prepare_started))
+                left = max(0.05, self.guard_prepare_limit - (time.monotonic() - prepare_started))
                 checks = [self._within(self._classify(input_state), left, input_state, "prepare")]
                 if input_state.has_candidate:
                     checks.extend([
@@ -94,4 +97,12 @@ from .material_budget import Pipeline as MaterialBudget
 
 
 class Pipeline(ParallelGuard, MaterialBudget):
-    pass
+    async def _collect_checks(self, state, check, material):
+        if not getattr(state, "_material_budget_guard", False):
+            return await super()._collect_checks(state, check, material)
+        block, other = await asyncio.gather(
+            self._vote_group(state, "block", prompts.BLOCK_SYSTEM, check),
+            self._vote_group(state, "other", prompts.OTHER_SYSTEM, check))
+        outcome = await self._ask(state, "material", prompts.MATERIAL_SYSTEM,
+                                  material, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT)
+        return block, other, outcome
