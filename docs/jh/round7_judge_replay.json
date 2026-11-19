@@ -315,6 +315,152 @@
           }
         }
       ]
+    },
+    {
+      "run": "jh_tutor_mlp_r7_t03",
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "order": [
+        "cm_char_mlp50",
+        "r7_apply_numeric",
+        "r7_apply_all"
+      ],
+      "identical_judge_payloads_repeated": 177,
+      "repeated_payloads_with_differing_judgments": 2,
+      "candidates": [
+        {
+          "candidate": "cm_char_mlp50",
+          "live_tutor": 93.1,
+          "replayed": {
+            "first_observed": {
+              "tutor": 93.1,
+              "guard": 0.0,
+              "total": 46.55,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 93.1,
+              "guard": 0.0,
+              "total": 46.55,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_apply_numeric",
+          "live_tutor": 95.05,
+          "replayed": {
+            "first_observed": {
+              "tutor": 96.09,
+              "guard": 0.0,
+              "total": 48.05,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 96.09,
+              "guard": 0.0,
+              "total": 48.05,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_apply_all",
+          "live_tutor": 95.05,
+          "replayed": {
+            "first_observed": {
+              "tutor": 95.05,
+              "guard": 0.0,
+              "total": 47.52,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 95.05,
+              "guard": 0.0,
+              "total": 47.52,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "jh_tutor_mlp_r7_t04",
+      "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
+      "order": [
+        "r7_apply_all",
+        "r7_apply_numeric",
+        "cm_char_mlp50"
+      ],
+      "identical_judge_payloads_repeated": 160,
+      "repeated_payloads_with_differing_judgments": 5,
+      "candidates": [
+        {
+          "candidate": "r7_apply_all",
+          "live_tutor": 89.78,
+          "replayed": {
+            "first_observed": {
+              "tutor": 89.78,
+              "guard": 0.0,
+              "total": 44.89,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 89.78,
+              "guard": 0.0,
+              "total": 44.89,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_apply_numeric",
+          "live_tutor": 92.54,
+          "replayed": {
+            "first_observed": {
+              "tutor": 92.54,
+              "guard": 0.0,
+              "total": 46.27,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 92.4,
+              "guard": 0.0,
+              "total": 46.2,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "live_tutor": 93.37,
+          "replayed": {
+            "first_observed": {
+              "tutor": 93.51,
+              "guard": 0.0,
+              "total": 46.76,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 93.37,
+              "guard": 0.0,
+              "total": 46.69,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        }
+      ]
     }
   ]
 }

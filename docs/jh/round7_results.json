@@ -5173,6 +5173,1281 @@
       "medium_calls": 0
     },
     {
+      "run": "r7_t03",
+      "kind": "tutor",
+      "candidate": "cm_char_mlp50",
+      "variant": "jh_cm_char_mlp50",
+      "count": 192,
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "scope": "public_derived_tutor_mlp_development_not_independent_holdout",
+      "score_scope": "tutor",
+      "scores": {
+        "tutor": 93.1,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "runtime": {
+        "collect_seconds": 19.75,
+        "p50": 2.252,
+        "p95": 11.552,
+        "max": 17.28,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "embed:TimeoutError": 2,
+          "context_policy:TimeoutError": 1,
+          "material:TimeoutError": 2
+        },
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 319,
+            "completed": 316,
+            "cancelled": 0,
+            "errors": 3
+          },
+          "embed": {
+            "started": 192,
+            "completed": 190,
+            "cancelled": 0,
+            "errors": 2
+          },
+          "r7_policy_calls": {
+            "product": 0,
+            "other": 0,
+            "scaffold": 0
+          },
+          "r7_guard_aggregation": {
+            "requests": 0,
+            "changed": 0
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 319,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 316,
+              "prompt_tokens": 769610,
+              "completion_tokens": 86842,
+              "reasoning_tokens": 72896,
+              "finish_reasons": {
+                "stop": 316
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 0,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 0,
+            "guard_unlearned_input": 0,
+            "learned_span": 0,
+            "r7_hybrid_fast": 0,
+            "r7_embedding_reused": 0
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0,
+            "r7_product_check": 0,
+            "r7_other_check": 0,
+            "r7_scaffold_generated": 0,
+            "r7_apply_attempted": 0,
+            "r7_apply_completed": 0
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 511,
+            "completed": 506,
+            "cancelled": 0,
+            "errors": 5
+          }
+        }
+      },
+      "endpoint_runtime": {
+        "tutor": {
+          "count": 192,
+          "p50": 2.252,
+          "p95": 11.552,
+          "max": 17.28,
+          "logged_requests": 192,
+          "stage_failure_requests": 4,
+          "timeout_requests": 4,
+          "stage_errors": {
+            "embed:TimeoutError": 2,
+            "context_policy:TimeoutError": 1,
+            "material:TimeoutError": 2
+          }
+        }
+      },
+      "effective_config": {
+        "requested_variant": "jh_cm_char_mlp50",
+        "server_variant": "jh_cm_char_mlp50",
+        "class": "pipelines.kimjaehak.classifier_matrix.CharMLP50",
+        "request_slots": 64,
+        "source_root": ".",
+        "embedding_index_loaded": true,
+        "learned_models_enabled": null,
+        "tutor_apply_numeric": null,
+        "tutor_apply_all": null,
+        "tutor_apply_timeout": null,
+        "classifier_embedding_batched": null,
+        "classifier_hybrid_dense_weight": null,
+        "classifier_hybrid_fast_threshold": null,
+        "classifier_representation": null,
+        "guard_verdict_first": null,
+        "r7_product_context": null,
+        "r7_other_boundary": null,
+        "r7_scaffold_guide": null,
+        "reasoning_guard_input_tokens": null,
+        "reasoning_guard_ground_tokens": null,
+        "reasoning_guard_input": null,
+        "reasoning_guard_ground": null,
+        "reasoning_guard_safety": null,
+        "reasoning_tutor_input": null,
+        "reasoning_tutor_source": null,
+        "answer_effort": "low",
+        "tutor_mlp_threshold": null,
+        "tutor_mlp_single_turn": null,
+        "tutor_mlp_fallback": null,
+        "classifier_kind": "char_mlp",
+        "classifier_threshold": 0.8556677733093049,
+        "classifier_seed": 20261118,
+        "classifier_width": 32,
+        "classifier_alpha": 0.1,
+        "classifier_c": 3000,
+        "classifier_embedding_timeout": 3.0,
+        "classifier_text_mode": "last_user",
+        "classifier_common_llm_fallback": true,
+        "guard_allow_safety": null,
+        "guard_allow_safety_timeout": null,
+        "guard_deadline": 28.0,
+        "guard_prepare_limit": 26.0,
+        "guard_material_timeout": 13.0,
+        "guard_ground_timeout": 13.0,
+        "guard_safety_timeout": 8,
+        "guard_requested_action": null,
+        "guard_safety_action_review": null,
+        "guard_safety_curriculum_context": null,
+        "guard_safety_after_input": true,
+        "guard_safety_launch_early": false,
+        "guard_short_timeout": null,
+        "guard_learned_input_enabled": null,
+        "guard_routed_safety": true,
+        "guard_safety_votes": null,
+        "guard_independent_safety": false,
+        "guard_ground_effort": null,
+        "guard_ground_max_tokens": null,
+        "guard_fast_input_wait": 0.005,
+        "guard_vote_first": false,
+        "guard_gate_threshold": 0.9,
+        "guard_cancel_ground_after_block": true,
+        "guard_span_review": null,
+        "guard_span_review_threshold": null,
+        "guard_span_review_timeout": null,
+        "guard_restore_span_refinement": true,
+        "deadline": 26,
+        "prepare_limit": 14.0,
+        "output_votes": 5,
+        "learned_gate_threshold": 0.95,
+        "learned_span_threshold": 0.8,
+        "guard_safety_system_sha256": "583e35714f283e5bf3d9134e65558e9f4f09fb4975cd18186deb6d6bbe3c94b4",
+        "guard_block_system_sha256": "772cee6480194eced0621b8acea30af5a542574bc2ba7a471834f44655e7a8de",
+        "unsupported_system_sha256": "d4f1e98eee58e653384c5f11721f16ea60dcc27f34076401ae9ebf1c3f0b0f0d",
+        "guard_span_review_system_sha256": null,
+        "guard_safety_hints_sha256": {}
+      },
+      "source_commit": "3b25463405c8fb0461137f1b1631f0cf7dae62e5",
+      "cache": "experiments/.cache/jh_tutor_mlp_r7_t03/cm_char_mlp50",
+      "medium_calls": 0
+    },
+    {
+      "run": "r7_t03",
+      "kind": "tutor",
+      "candidate": "r7_apply_numeric",
+      "variant": "jh_r7_apply_numeric",
+      "count": 192,
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "scope": "public_derived_tutor_mlp_development_not_independent_holdout",
+      "score_scope": "tutor",
+      "scores": {
+        "tutor": 95.05,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "runtime": {
+        "collect_seconds": 14.768,
+        "p50": 3.2415000000000003,
+        "p95": 10.763,
+        "max": 12.867,
+        "http_errors": 0,
+        "stage_failure_requests": 0,
+        "stage_errors": {},
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 346,
+            "completed": 346,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "embed": {
+            "started": 192,
+            "completed": 192,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "r7_policy_calls": {
+            "product": 0,
+            "other": 0,
+            "scaffold": 0
+          },
+          "r7_guard_aggregation": {
+            "requests": 0,
+            "changed": 0
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 346,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 346,
+              "prompt_tokens": 835006,
+              "completion_tokens": 97713,
+              "reasoning_tokens": 81472,
+              "finish_reasons": {
+                "stop": 346
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 0,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 0,
+            "guard_unlearned_input": 0,
+            "learned_span": 0,
+            "r7_hybrid_fast": 0,
+            "r7_embedding_reused": 0
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0,
+            "r7_product_check": 0,
+            "r7_other_check": 0,
+            "r7_scaffold_generated": 0,
+            "r7_apply_attempted": 25,
+            "r7_apply_completed": 24
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 538,
+            "completed": 538,
+            "cancelled": 0,
+            "errors": 0
+          }
+        }
+      },
+      "endpoint_runtime": {
+        "tutor": {
+          "count": 192,
+          "p50": 3.2415000000000003,
+          "p95": 10.763,
+          "max": 12.867,
+          "logged_requests": 192,
+          "stage_failure_requests": 0,
+          "timeout_requests": 0,
+          "stage_errors": {}
+        }
+      },
+      "effective_config": {
+        "requested_variant": "jh_r7_apply_numeric",
+        "server_variant": "jh_r7_apply_numeric",
+        "class": "pipelines.kimjaehak.round7_answer.NumericApply",
+        "request_slots": 64,
+        "source_root": ".",
+        "embedding_index_loaded": true,
+        "learned_models_enabled": null,
+        "tutor_apply_numeric": true,
+        "tutor_apply_all": false,
+        "tutor_apply_timeout": 8.0,
+        "classifier_embedding_batched": null,
+        "classifier_hybrid_dense_weight": null,
+        "classifier_hybrid_fast_threshold": null,
+        "classifier_representation": null,
+        "guard_verdict_first": null,
+        "r7_product_context": null,
+        "r7_other_boundary": null,
+        "r7_scaffold_guide": null,
+        "reasoning_guard_input_tokens": null,
+        "reasoning_guard_ground_tokens": null,
+        "reasoning_guard_input": null,
+        "reasoning_guard_ground": null,
+        "reasoning_guard_safety": null,
+        "reasoning_tutor_input": null,
+        "reasoning_tutor_source": null,
+        "answer_effort": "low",
+        "tutor_mlp_threshold": null,
+        "tutor_mlp_single_turn": null,
+        "tutor_mlp_fallback": null,
+        "classifier_kind": "char_mlp",
+        "classifier_threshold": 0.8556677733093049,
+        "classifier_seed": 20261118,
+        "classifier_width": 32,
+        "classifier_alpha": 0.1,
+        "classifier_c": 3000,
+        "classifier_embedding_timeout": 3.0,
+        "classifier_text_mode": "last_user",
+        "classifier_common_llm_fallback": true,
+        "guard_allow_safety": null,
+        "guard_allow_safety_timeout": null,
+        "guard_deadline": 28.0,
+        "guard_prepare_limit": 26.0,
+        "guard_material_timeout": 13.0,
+        "guard_ground_timeout": 13.0,
+        "guard_safety_timeout": 8,
+        "guard_requested_action": null,
+        "guard_safety_action_review": null,
+        "guard_safety_curriculum_context": null,
+        "guard_safety_after_input": true,
+        "guard_safety_launch_early": false,
+        "guard_short_timeout": null,
+        "guard_learned_input_enabled": null,
+        "guard_routed_safety": true,
+        "guard_safety_votes": null,
+        "guard_independent_safety": false,
+        "guard_ground_effort": null,
+        "guard_ground_max_tokens": null,
+        "guard_fast_input_wait": 0.005,
+        "guard_vote_first": false,
+        "guard_gate_threshold": 0.9,
+        "guard_cancel_ground_after_block": true,
+        "guard_span_review": null,
+        "guard_span_review_threshold": null,
+        "guard_span_review_timeout": null,
+        "guard_restore_span_refinement": true,
+        "deadline": 26,
+        "prepare_limit": 14.0,
+        "output_votes": 5,
+        "learned_gate_threshold": 0.95,
+        "learned_span_threshold": 0.8,
+        "guard_safety_system_sha256": "583e35714f283e5bf3d9134e65558e9f4f09fb4975cd18186deb6d6bbe3c94b4",
+        "guard_block_system_sha256": "772cee6480194eced0621b8acea30af5a542574bc2ba7a471834f44655e7a8de",
+        "unsupported_system_sha256": "d4f1e98eee58e653384c5f11721f16ea60dcc27f34076401ae9ebf1c3f0b0f0d",
+        "guard_span_review_system_sha256": null,
+        "guard_safety_hints_sha256": {}
+      },
+      "source_commit": "3b25463405c8fb0461137f1b1631f0cf7dae62e5",
+      "cache": "experiments/.cache/jh_tutor_mlp_r7_t03/r7_apply_numeric",
+      "medium_calls": 0
+    },
+    {
+      "run": "r7_t03",
+      "kind": "tutor",
+      "candidate": "r7_apply_all",
+      "variant": "jh_r7_apply_all",
+      "count": 192,
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "scope": "public_derived_tutor_mlp_development_not_independent_holdout",
+      "score_scope": "tutor",
+      "scores": {
+        "tutor": 95.05,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "runtime": {
+        "collect_seconds": 22.981,
+        "p50": 4.429,
+        "p95": 11.254,
+        "max": 15.416,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "r7_apply:ValueError": 1
+        },
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 435,
+            "completed": 435,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "embed": {
+            "started": 192,
+            "completed": 192,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "r7_policy_calls": {
+            "product": 0,
+            "other": 0,
+            "scaffold": 0
+          },
+          "r7_guard_aggregation": {
+            "requests": 0,
+            "changed": 0
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 435,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 435,
+              "prompt_tokens": 996337,
+              "completion_tokens": 129960,
+              "reasoning_tokens": 105600,
+              "finish_reasons": {
+                "stop": 435
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 0,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 0,
+            "guard_unlearned_input": 0,
+            "learned_span": 0,
+            "r7_hybrid_fast": 0,
+            "r7_embedding_reused": 0
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0,
+            "r7_product_check": 0,
+            "r7_other_check": 0,
+            "r7_scaffold_generated": 0,
+            "r7_apply_attempted": 115,
+            "r7_apply_completed": 114
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 627,
+            "completed": 627,
+            "cancelled": 0,
+            "errors": 0
+          }
+        }
+      },
+      "endpoint_runtime": {
+        "tutor": {
+          "count": 192,
+          "p50": 4.429,
+          "p95": 11.254,
+          "max": 15.416,
+          "logged_requests": 192,
+          "stage_failure_requests": 1,
+          "timeout_requests": 0,
+          "stage_errors": {
+            "r7_apply:ValueError": 1
+          }
+        }
+      },
+      "effective_config": {
+        "requested_variant": "jh_r7_apply_all",
+        "server_variant": "jh_r7_apply_all",
+        "class": "pipelines.kimjaehak.round7_answer.AllApply",
+        "request_slots": 64,
+        "source_root": ".",
+        "embedding_index_loaded": true,
+        "learned_models_enabled": null,
+        "tutor_apply_numeric": true,
+        "tutor_apply_all": true,
+        "tutor_apply_timeout": 8.0,
+        "classifier_embedding_batched": null,
+        "classifier_hybrid_dense_weight": null,
+        "classifier_hybrid_fast_threshold": null,
+        "classifier_representation": null,
+        "guard_verdict_first": null,
+        "r7_product_context": null,
+        "r7_other_boundary": null,
+        "r7_scaffold_guide": null,
+        "reasoning_guard_input_tokens": null,
+        "reasoning_guard_ground_tokens": null,
+        "reasoning_guard_input": null,
+        "reasoning_guard_ground": null,
+        "reasoning_guard_safety": null,
+        "reasoning_tutor_input": null,
+        "reasoning_tutor_source": null,
+        "answer_effort": "low",
+        "tutor_mlp_threshold": null,
+        "tutor_mlp_single_turn": null,
+        "tutor_mlp_fallback": null,
+        "classifier_kind": "char_mlp",
+        "classifier_threshold": 0.8556677733093049,
+        "classifier_seed": 20261118,
+        "classifier_width": 32,
+        "classifier_alpha": 0.1,
+        "classifier_c": 3000,
+        "classifier_embedding_timeout": 3.0,
+        "classifier_text_mode": "last_user",
+        "classifier_common_llm_fallback": true,
+        "guard_allow_safety": null,
+        "guard_allow_safety_timeout": null,
+        "guard_deadline": 28.0,
+        "guard_prepare_limit": 26.0,
+        "guard_material_timeout": 13.0,
+        "guard_ground_timeout": 13.0,
+        "guard_safety_timeout": 8,
+        "guard_requested_action": null,
+        "guard_safety_action_review": null,
+        "guard_safety_curriculum_context": null,
+        "guard_safety_after_input": true,
+        "guard_safety_launch_early": false,
+        "guard_short_timeout": null,
+        "guard_learned_input_enabled": null,
+        "guard_routed_safety": true,
+        "guard_safety_votes": null,
+        "guard_independent_safety": false,
+        "guard_ground_effort": null,
+        "guard_ground_max_tokens": null,
+        "guard_fast_input_wait": 0.005,
+        "guard_vote_first": false,
+        "guard_gate_threshold": 0.9,
+        "guard_cancel_ground_after_block": true,
+        "guard_span_review": null,
+        "guard_span_review_threshold": null,
+        "guard_span_review_timeout": null,
+        "guard_restore_span_refinement": true,
+        "deadline": 26,
+        "prepare_limit": 14.0,
+        "output_votes": 5,
+        "learned_gate_threshold": 0.95,
+        "learned_span_threshold": 0.8,
+        "guard_safety_system_sha256": "583e35714f283e5bf3d9134e65558e9f4f09fb4975cd18186deb6d6bbe3c94b4",
+        "guard_block_system_sha256": "772cee6480194eced0621b8acea30af5a542574bc2ba7a471834f44655e7a8de",
+        "unsupported_system_sha256": "d4f1e98eee58e653384c5f11721f16ea60dcc27f34076401ae9ebf1c3f0b0f0d",
+        "guard_span_review_system_sha256": null,
+        "guard_safety_hints_sha256": {}
+      },
+      "source_commit": "3b25463405c8fb0461137f1b1631f0cf7dae62e5",
+      "cache": "experiments/.cache/jh_tutor_mlp_r7_t03/r7_apply_all",
+      "medium_calls": 0
+    },
+    {
+      "run": "r7_t04",
+      "kind": "tutor",
+      "candidate": "r7_apply_all",
+      "variant": "jh_r7_apply_all",
+      "count": 181,
+      "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
+      "scope": "public_derived_tutor_mlp_development_not_independent_holdout",
+      "score_scope": "tutor",
+      "scores": {
+        "tutor": 89.78,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "runtime": {
+        "collect_seconds": 22.1,
+        "p50": 4.53,
+        "p95": 12.754,
+        "max": 15.277,
+        "http_errors": 0,
+        "stage_failure_requests": 0,
+        "stage_errors": {},
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 402,
+            "completed": 402,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "embed": {
+            "started": 181,
+            "completed": 181,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "r7_policy_calls": {
+            "product": 0,
+            "other": 0,
+            "scaffold": 0
+          },
+          "r7_guard_aggregation": {
+            "requests": 0,
+            "changed": 0
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 402,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 402,
+              "prompt_tokens": 902166,
+              "completion_tokens": 125589,
+              "reasoning_tokens": 103232,
+              "finish_reasons": {
+                "stop": 402
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 0,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 0,
+            "guard_unlearned_input": 0,
+            "learned_span": 0,
+            "r7_hybrid_fast": 0,
+            "r7_embedding_reused": 0
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0,
+            "r7_product_check": 0,
+            "r7_other_check": 0,
+            "r7_scaffold_generated": 0,
+            "r7_apply_attempted": 106,
+            "r7_apply_completed": 106
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 583,
+            "completed": 583,
+            "cancelled": 0,
+            "errors": 0
+          }
+        }
+      },
+      "endpoint_runtime": {
+        "tutor": {
+          "count": 181,
+          "p50": 4.53,
+          "p95": 12.754,
+          "max": 15.277,
+          "logged_requests": 181,
+          "stage_failure_requests": 0,
+          "timeout_requests": 0,
+          "stage_errors": {}
+        }
+      },
+      "effective_config": {
+        "requested_variant": "jh_r7_apply_all",
+        "server_variant": "jh_r7_apply_all",
+        "class": "pipelines.kimjaehak.round7_answer.AllApply",
+        "request_slots": 64,
+        "source_root": ".",
+        "embedding_index_loaded": true,
+        "learned_models_enabled": null,
+        "tutor_apply_numeric": true,
+        "tutor_apply_all": true,
+        "tutor_apply_timeout": 8.0,
+        "classifier_embedding_batched": null,
+        "classifier_hybrid_dense_weight": null,
+        "classifier_hybrid_fast_threshold": null,
+        "classifier_representation": null,
+        "guard_verdict_first": null,
+        "r7_product_context": null,
+        "r7_other_boundary": null,
+        "r7_scaffold_guide": null,
+        "reasoning_guard_input_tokens": null,
+        "reasoning_guard_ground_tokens": null,
+        "reasoning_guard_input": null,
+        "reasoning_guard_ground": null,
+        "reasoning_guard_safety": null,
+        "reasoning_tutor_input": null,
+        "reasoning_tutor_source": null,
+        "answer_effort": "low",
+        "tutor_mlp_threshold": null,
+        "tutor_mlp_single_turn": null,
+        "tutor_mlp_fallback": null,
+        "classifier_kind": "char_mlp",
+        "classifier_threshold": 0.8556677733093049,
+        "classifier_seed": 20261118,
+        "classifier_width": 32,
+        "classifier_alpha": 0.1,
+        "classifier_c": 3000,
+        "classifier_embedding_timeout": 3.0,
+        "classifier_text_mode": "last_user",
+        "classifier_common_llm_fallback": true,
+        "guard_allow_safety": null,
+        "guard_allow_safety_timeout": null,
+        "guard_deadline": 28.0,
+        "guard_prepare_limit": 26.0,
+        "guard_material_timeout": 13.0,
+        "guard_ground_timeout": 13.0,
+        "guard_safety_timeout": 8,
+        "guard_requested_action": null,
+        "guard_safety_action_review": null,
+        "guard_safety_curriculum_context": null,
+        "guard_safety_after_input": true,
+        "guard_safety_launch_early": false,
+        "guard_short_timeout": null,
+        "guard_learned_input_enabled": null,
+        "guard_routed_safety": true,
+        "guard_safety_votes": null,
+        "guard_independent_safety": false,
+        "guard_ground_effort": null,
+        "guard_ground_max_tokens": null,
+        "guard_fast_input_wait": 0.005,
+        "guard_vote_first": false,
+        "guard_gate_threshold": 0.9,
+        "guard_cancel_ground_after_block": true,
+        "guard_span_review": null,
+        "guard_span_review_threshold": null,
+        "guard_span_review_timeout": null,
+        "guard_restore_span_refinement": true,
+        "deadline": 26,
+        "prepare_limit": 14.0,
+        "output_votes": 5,
+        "learned_gate_threshold": 0.95,
+        "learned_span_threshold": 0.8,
+        "guard_safety_system_sha256": "583e35714f283e5bf3d9134e65558e9f4f09fb4975cd18186deb6d6bbe3c94b4",
+        "guard_block_system_sha256": "772cee6480194eced0621b8acea30af5a542574bc2ba7a471834f44655e7a8de",
+        "unsupported_system_sha256": "d4f1e98eee58e653384c5f11721f16ea60dcc27f34076401ae9ebf1c3f0b0f0d",
+        "guard_span_review_system_sha256": null,
+        "guard_safety_hints_sha256": {}
+      },
+      "source_commit": "baccbc85696e3c8a267cefa3c8ff2d7f0d317cda",
+      "cache": "experiments/.cache/jh_tutor_mlp_r7_t04/r7_apply_all",
+      "medium_calls": 0
+    },
+    {
+      "run": "r7_t04",
+      "kind": "tutor",
+      "candidate": "r7_apply_numeric",
+      "variant": "jh_r7_apply_numeric",
+      "count": 181,
+      "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
+      "scope": "public_derived_tutor_mlp_development_not_independent_holdout",
+      "score_scope": "tutor",
+      "scores": {
+        "tutor": 92.54,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "runtime": {
+        "collect_seconds": 20.971,
+        "p50": 3.624,
+        "p95": 9.673,
+        "max": 15.273,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "r7_apply:TimeoutError": 1
+        },
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 313,
+            "completed": 312,
+            "cancelled": 1,
+            "errors": 0
+          },
+          "embed": {
+            "started": 181,
+            "completed": 181,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "r7_policy_calls": {
+            "product": 0,
+            "other": 0,
+            "scaffold": 0
+          },
+          "r7_guard_aggregation": {
+            "requests": 0,
+            "changed": 0
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 313,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 312,
+              "prompt_tokens": 744233,
+              "completion_tokens": 93013,
+              "reasoning_tokens": 78016,
+              "finish_reasons": {
+                "stop": 312
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 0,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 0,
+            "guard_unlearned_input": 0,
+            "learned_span": 0,
+            "r7_hybrid_fast": 0,
+            "r7_embedding_reused": 0
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0,
+            "r7_product_check": 0,
+            "r7_other_check": 0,
+            "r7_scaffold_generated": 0,
+            "r7_apply_attempted": 23,
+            "r7_apply_completed": 22
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 494,
+            "completed": 493,
+            "cancelled": 1,
+            "errors": 0
+          }
+        }
+      },
+      "endpoint_runtime": {
+        "tutor": {
+          "count": 181,
+          "p50": 3.624,
+          "p95": 9.673,
+          "max": 15.273,
+          "logged_requests": 181,
+          "stage_failure_requests": 1,
+          "timeout_requests": 1,
+          "stage_errors": {
+            "r7_apply:TimeoutError": 1
+          }
+        }
+      },
+      "effective_config": {
+        "requested_variant": "jh_r7_apply_numeric",
+        "server_variant": "jh_r7_apply_numeric",
+        "class": "pipelines.kimjaehak.round7_answer.NumericApply",
+        "request_slots": 64,
+        "source_root": ".",
+        "embedding_index_loaded": true,
+        "learned_models_enabled": null,
+        "tutor_apply_numeric": true,
+        "tutor_apply_all": false,
+        "tutor_apply_timeout": 8.0,
+        "classifier_embedding_batched": null,
+        "classifier_hybrid_dense_weight": null,
+        "classifier_hybrid_fast_threshold": null,
+        "classifier_representation": null,
+        "guard_verdict_first": null,
+        "r7_product_context": null,
+        "r7_other_boundary": null,
+        "r7_scaffold_guide": null,
+        "reasoning_guard_input_tokens": null,
+        "reasoning_guard_ground_tokens": null,
+        "reasoning_guard_input": null,
+        "reasoning_guard_ground": null,
+        "reasoning_guard_safety": null,
+        "reasoning_tutor_input": null,
+        "reasoning_tutor_source": null,
+        "answer_effort": "low",
+        "tutor_mlp_threshold": null,
+        "tutor_mlp_single_turn": null,
+        "tutor_mlp_fallback": null,
+        "classifier_kind": "char_mlp",
+        "classifier_threshold": 0.8556677733093049,
+        "classifier_seed": 20261118,
+        "classifier_width": 32,
+        "classifier_alpha": 0.1,
+        "classifier_c": 3000,
+        "classifier_embedding_timeout": 3.0,
+        "classifier_text_mode": "last_user",
+        "classifier_common_llm_fallback": true,
+        "guard_allow_safety": null,
+        "guard_allow_safety_timeout": null,
+        "guard_deadline": 28.0,
+        "guard_prepare_limit": 26.0,
+        "guard_material_timeout": 13.0,
+        "guard_ground_timeout": 13.0,
+        "guard_safety_timeout": 8,
+        "guard_requested_action": null,
+        "guard_safety_action_review": null,
+        "guard_safety_curriculum_context": null,
+        "guard_safety_after_input": true,
+        "guard_safety_launch_early": false,
+        "guard_short_timeout": null,
+        "guard_learned_input_enabled": null,
+        "guard_routed_safety": true,
+        "guard_safety_votes": null,
+        "guard_independent_safety": false,
+        "guard_ground_effort": null,
+        "guard_ground_max_tokens": null,
+        "guard_fast_input_wait": 0.005,
+        "guard_vote_first": false,
+        "guard_gate_threshold": 0.9,
+        "guard_cancel_ground_after_block": true,
+        "guard_span_review": null,
+        "guard_span_review_threshold": null,
+        "guard_span_review_timeout": null,
+        "guard_restore_span_refinement": true,
+        "deadline": 26,
+        "prepare_limit": 14.0,
+        "output_votes": 5,
+        "learned_gate_threshold": 0.95,
+        "learned_span_threshold": 0.8,
+        "guard_safety_system_sha256": "583e35714f283e5bf3d9134e65558e9f4f09fb4975cd18186deb6d6bbe3c94b4",
+        "guard_block_system_sha256": "772cee6480194eced0621b8acea30af5a542574bc2ba7a471834f44655e7a8de",
+        "unsupported_system_sha256": "d4f1e98eee58e653384c5f11721f16ea60dcc27f34076401ae9ebf1c3f0b0f0d",
+        "guard_span_review_system_sha256": null,
+        "guard_safety_hints_sha256": {}
+      },
+      "source_commit": "baccbc85696e3c8a267cefa3c8ff2d7f0d317cda",
+      "cache": "experiments/.cache/jh_tutor_mlp_r7_t04/r7_apply_numeric",
+      "medium_calls": 0
+    },
+    {
+      "run": "r7_t04",
+      "kind": "tutor",
+      "candidate": "cm_char_mlp50",
+      "variant": "jh_cm_char_mlp50",
+      "count": 181,
+      "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
+      "scope": "public_derived_tutor_mlp_development_not_independent_holdout",
+      "score_scope": "tutor",
+      "scores": {
+        "tutor": 93.37,
+        "invalid": 0,
+        "judge_errors": 0
+      },
+      "runtime": {
+        "collect_seconds": 17.98,
+        "p50": 0.995,
+        "p95": 9.48,
+        "max": 16.012,
+        "http_errors": 0,
+        "stage_failure_requests": 1,
+        "stage_errors": {
+          "material:parse": 1
+        },
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 292,
+            "completed": 292,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "embed": {
+            "started": 181,
+            "completed": 181,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "r7_policy_calls": {
+            "product": 0,
+            "other": 0,
+            "scaffold": 0
+          },
+          "r7_guard_aggregation": {
+            "requests": 0,
+            "changed": 0
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 292,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 292,
+              "prompt_tokens": 714516,
+              "completion_tokens": 85760,
+              "reasoning_tokens": 72476,
+              "finish_reasons": {
+                "stop": 291,
+                "length": 1
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 0,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 0,
+            "guard_unlearned_input": 0,
+            "learned_span": 0,
+            "r7_hybrid_fast": 0,
+            "r7_embedding_reused": 0
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0,
+            "r7_product_check": 0,
+            "r7_other_check": 0,
+            "r7_scaffold_generated": 0,
+            "r7_apply_attempted": 0,
+            "r7_apply_completed": 0
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 473,
+            "completed": 473,
+            "cancelled": 0,
+            "errors": 0
+          }
+        }
+      },
+      "endpoint_runtime": {
+        "tutor": {
+          "count": 181,
+          "p50": 0.995,
+          "p95": 9.48,
+          "max": 16.012,
+          "logged_requests": 181,
+          "stage_failure_requests": 1,
+          "timeout_requests": 0,
+          "stage_errors": {
+            "material:parse": 1
+          }
+        }
+      },
+      "effective_config": {
+        "requested_variant": "jh_cm_char_mlp50",
+        "server_variant": "jh_cm_char_mlp50",
+        "class": "pipelines.kimjaehak.classifier_matrix.CharMLP50",
+        "request_slots": 64,
+        "source_root": ".",
+        "embedding_index_loaded": true,
+        "learned_models_enabled": null,
+        "tutor_apply_numeric": null,
+        "tutor_apply_all": null,
+        "tutor_apply_timeout": null,
+        "classifier_embedding_batched": null,
+        "classifier_hybrid_dense_weight": null,
+        "classifier_hybrid_fast_threshold": null,
+        "classifier_representation": null,
+        "guard_verdict_first": null,
+        "r7_product_context": null,
+        "r7_other_boundary": null,
+        "r7_scaffold_guide": null,
+        "reasoning_guard_input_tokens": null,
+        "reasoning_guard_ground_tokens": null,
+        "reasoning_guard_input": null,
+        "reasoning_guard_ground": null,
+        "reasoning_guard_safety": null,
+        "reasoning_tutor_input": null,
+        "reasoning_tutor_source": null,
+        "answer_effort": "low",
+        "tutor_mlp_threshold": null,
+        "tutor_mlp_single_turn": null,
+        "tutor_mlp_fallback": null,
+        "classifier_kind": "char_mlp",
+        "classifier_threshold": 0.8556677733093049,
+        "classifier_seed": 20261118,
+        "classifier_width": 32,
+        "classifier_alpha": 0.1,
+        "classifier_c": 3000,
+        "classifier_embedding_timeout": 3.0,
+        "classifier_text_mode": "last_user",
+        "classifier_common_llm_fallback": true,
+        "guard_allow_safety": null,
+        "guard_allow_safety_timeout": null,
+        "guard_deadline": 28.0,
+        "guard_prepare_limit": 26.0,
+        "guard_material_timeout": 13.0,
+        "guard_ground_timeout": 13.0,
+        "guard_safety_timeout": 8,
+        "guard_requested_action": null,
+        "guard_safety_action_review": null,
+        "guard_safety_curriculum_context": null,
+        "guard_safety_after_input": true,
+        "guard_safety_launch_early": false,
+        "guard_short_timeout": null,
+        "guard_learned_input_enabled": null,
+        "guard_routed_safety": true,
+        "guard_safety_votes": null,
+        "guard_independent_safety": false,
+        "guard_ground_effort": null,
+        "guard_ground_max_tokens": null,
+        "guard_fast_input_wait": 0.005,
+        "guard_vote_first": false,
+        "guard_gate_threshold": 0.9,
+        "guard_cancel_ground_after_block": true,
+        "guard_span_review": null,
+        "guard_span_review_threshold": null,
+        "guard_span_review_timeout": null,
+        "guard_restore_span_refinement": true,
+        "deadline": 26,
+        "prepare_limit": 14.0,
+        "output_votes": 5,
+        "learned_gate_threshold": 0.95,
+        "learned_span_threshold": 0.8,
+        "guard_safety_system_sha256": "583e35714f283e5bf3d9134e65558e9f4f09fb4975cd18186deb6d6bbe3c94b4",
+        "guard_block_system_sha256": "772cee6480194eced0621b8acea30af5a542574bc2ba7a471834f44655e7a8de",
+        "unsupported_system_sha256": "d4f1e98eee58e653384c5f11721f16ea60dcc27f34076401ae9ebf1c3f0b0f0d",
+        "guard_span_review_system_sha256": null,
+        "guard_safety_hints_sha256": {}
+      },
+      "source_commit": "baccbc85696e3c8a267cefa3c8ff2d7f0d317cda",
+      "cache": "experiments/.cache/jh_tutor_mlp_r7_t04/cm_char_mlp50",
+      "medium_calls": 0
+    },
+    {
       "run": "r7_m01",
       "kind": "mixed",
       "candidate": "r7_other",
@@ -7636,8 +8911,8 @@
       }
     }
   ],
-  "requests": 6622,
-  "runs_count": 28,
+  "requests": 7741,
+  "runs_count": 34,
   "summary": [
     {
       "scope": "guard",
@@ -7979,12 +9254,40 @@
       "scope": "tutor",
       "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
       "candidate": "cm_char_mlp50",
+      "repetitions": 2,
+      "scores": {
+        "tutor": {
+          "mean": 92.885,
+          "min": 92.4,
+          "max": 93.37,
+          "stdev": 0.6858935777509503
+        }
+      }
+    },
+    {
+      "scope": "tutor",
+      "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
+      "candidate": "r7_apply_all",
       "repetitions": 1,
       "scores": {
         "tutor": {
-          "mean": 92.4,
-          "min": 92.4,
-          "max": 92.4,
+          "mean": 89.78,
+          "min": 89.78,
+          "max": 89.78,
+          "stdev": null
+        }
+      }
+    },
+    {
+      "scope": "tutor",
+      "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
+      "candidate": "r7_apply_numeric",
+      "repetitions": 1,
+      "scores": {
+        "tutor": {
+          "mean": 92.54,
+          "min": 92.54,
+          "max": 92.54,
           "stdev": null
         }
       }
@@ -8021,12 +9324,40 @@
       "scope": "tutor",
       "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
       "candidate": "cm_char_mlp50",
+      "repetitions": 2,
+      "scores": {
+        "tutor": {
+          "mean": 93.62,
+          "min": 93.1,
+          "max": 94.14,
+          "stdev": 0.7353910524340138
+        }
+      }
+    },
+    {
+      "scope": "tutor",
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "candidate": "r7_apply_all",
       "repetitions": 1,
       "scores": {
         "tutor": {
-          "mean": 94.14,
-          "min": 94.14,
-          "max": 94.14,
+          "mean": 95.05,
+          "min": 95.05,
+          "max": 95.05,
+          "stdev": null
+        }
+      }
+    },
+    {
+      "scope": "tutor",
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "candidate": "r7_apply_numeric",
+      "repetitions": 1,
+      "scores": {
+        "tutor": {
+          "mean": 95.05,
+          "min": 95.05,
+          "max": 95.05,
           "stdev": null
         }
       }
