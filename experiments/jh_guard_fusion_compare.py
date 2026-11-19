@@ -27,6 +27,11 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_adaptive3': ('jh_r7_adaptive3', 'pipelines.kimjaehak.round7_adaptive_ground.AdaptiveThree'),
+    'r7_structured_calc': ('jh_r7_structured_calc', 'pipelines.kimjaehak.round7_structured_calculator.StructuredCalculator'),
+    'r7_scope_structured': ('jh_r7_scope_structured', 'pipelines.kimjaehak.round7_structured_calculator.ScopedStructuredCalculator'),
+    'r7_examples1': ('jh_r7_examples1', 'pipelines.kimjaehak.round7_examples.RetrievedOne'),
+    'r7_examples3': ('jh_r7_examples3', 'pipelines.kimjaehak.round7_examples.RetrievedExamples'),
     'r7_material_calculator': ('jh_r7_material_calculator', 'pipelines.kimjaehak.round7_calculator.MaterialCalculator'),
     'r7_calculator': ('jh_r7_calculator', 'pipelines.kimjaehak.round7_calculator.CalculatorApply'),
     'r7_minimal_span': ('jh_r7_minimal_span', 'pipelines.kimjaehak.round7_span_prompt.MinimalClause'),
@@ -234,7 +239,7 @@ try:
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
                     'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
-                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early', 'r7_material_cancelled')}
+                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early', 'r7_material_cancelled', 'r7_examples_used')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})

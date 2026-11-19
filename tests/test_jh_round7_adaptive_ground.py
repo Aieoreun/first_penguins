@@ -6,7 +6,7 @@ load('jh_cm_char_mlp50')
 from core.schema import Label
 from pipelines.kimjaehak.classifier_matrix import CharMLP50
 from pipelines.kimjaehak.context_output import Pipeline as ContextOutput
-from pipelines.kimjaehak.round7_adaptive_ground import GroundThree,AdaptiveGround
+from pipelines.kimjaehak.round7_adaptive_ground import GroundThree,AdaptiveGround,AdaptiveThree
 from tests import test_jh_reasoning_ablation as reasoning
 
 
@@ -75,6 +75,19 @@ class AdaptiveTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(s.unsupported,[])
         self.assertEqual(s.debug['fusion_completed_ground_votes'],0)
         self.assertEqual(len(s.errors),5)
+
+    async def test_three_initial_votes_require_all_three_to_agree(self):
+        for dissent in (False,True):
+            p,s=self.ready(AdaptiveThree);calls=[]
+            async def check(instance,trial):
+                index=len(calls);calls.append(trial)
+                trial.unsupported=[] if dissent and index==2 else ['bad']
+            with patch.object(ContextOutput,'_check_output',new=check):await p._fusion_ground(s)
+            self.assertEqual(len(calls),5 if dissent else 3)
+            self.assertEqual(s.unsupported,['bad'])
+            self.assertEqual(s.debug.get('r7_ground_early',False),not dissent)
+        self.assertIs(load('jh_r7_adaptive3'),AdaptiveThree)
+        self.assertEqual(AdaptiveThree.guard_ground_timeout,CharMLP50.guard_ground_timeout)
 
     async def test_three_parallel_and_original_five_remain_separate(self):
         for cls,count in ((GroundThree,3),(CharMLP50,5)):

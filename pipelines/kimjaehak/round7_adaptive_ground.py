@@ -15,8 +15,11 @@ class GroundThree(CharMLP50):
 class AdaptiveGround(CharMLP50):
     guard_adaptive_ground=True
     output_votes=5
+    guard_adaptive_initial_votes=2
 
     async def _fusion_ground(self,state):
+        initial=self.guard_adaptive_initial_votes
+        if initial not in (2,3):raise ValueError("Unsupported initial vote count")
         trials=[isolated_state(state) for _ in range(self.output_votes)]
         completed=set()
         tasks=[]
@@ -37,14 +40,14 @@ class AdaptiveGround(CharMLP50):
             return batch
 
         try:
-            await asyncio.gather(*launch(range(2)))
+            await asyncio.gather(*launch(range(initial)))
             candidate=state.candidate_answer or ''
-            if (not trials[0].errors and not trials[1].errors
-                    and covered_positions(candidate,trials[0].unsupported)
-                    ==covered_positions(candidate,trials[1].unsupported)):
+            masks=[covered_positions(candidate,trial.unsupported) for trial in trials[:initial]]
+            if (all(not trial.errors for trial in trials[:initial])
+                    and all(mask==masks[0] for mask in masks[1:])):
                 state.debug['r7_ground_early']=True
             else:
-                await asyncio.gather(*launch(range(2,self.output_votes)))
+                await asyncio.gather(*launch(range(initial,self.output_votes)))
         finally:
             for task in tasks:
                 if not task.done():task.cancel()
@@ -68,3 +71,7 @@ class AdaptiveGround(CharMLP50):
                         state.debug['learned_span']=True
                 except Exception as exc:
                     state.errors.append(f'fusion_span:{type(exc).__name__}')
+
+
+class AdaptiveThree(AdaptiveGround):
+    guard_adaptive_initial_votes=3

@@ -21,6 +21,14 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == 'jh_r7_adaptive3':
+            return importlib.import_module('pipelines.kimjaehak.round7_adaptive_ground').AdaptiveThree
+        if name in {'jh_r7_structured_calc', 'jh_r7_scope_structured'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_structured_calculator')
+            return module.StructuredCalculator if name == 'jh_r7_structured_calc' else module.ScopedStructuredCalculator
+        if name in {'jh_r7_examples1', 'jh_r7_examples3'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_examples')
+            return module.RetrievedOne if name == 'jh_r7_examples1' else module.RetrievedExamples
         if name in {'jh_r7_calculator', 'jh_r7_material_calculator'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_calculator')
             return module.CalculatorApply if name == 'jh_r7_calculator' else module.MaterialCalculator
