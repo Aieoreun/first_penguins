@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r7_batchconcat', 'jh_r7_batchblend'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_batch')
+            return module.BatchedConcat if name == 'jh_r7_batchconcat' else module.BatchedBlend
         if name in {'jh_r7_concat', 'jh_r7_blend', 'jh_r7_fastblend'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_hybrid')
             return {'jh_r7_concat': module.ConcatGate, 'jh_r7_blend': module.BlendGate,
