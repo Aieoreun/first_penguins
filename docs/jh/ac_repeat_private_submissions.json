@@ -134,6 +134,28 @@
       "internal_errors_verified": false,
       "internal_errors": null,
       "notes": null
+    },
+    {
+      "run": "A4",
+      "sequence": 7,
+      "candidate": "A",
+      "variant": "jh_cm_char_mlp50",
+      "submitted_at_reported": null,
+      "submitted_timezone_reported": null,
+      "execution_commit": null,
+      "execution_commit_verified": false,
+      "total": 84.81,
+      "tutor": 81.0,
+      "guard": 88.61,
+      "duration_seconds": 67.195,
+      "seed": "66fcd29ce1540cc54cb3f1f03245de9d",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors_verified": false,
+      "internal_errors": null,
+      "notes": null
     }
   ]
 }
