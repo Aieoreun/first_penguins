@@ -29,6 +29,7 @@ PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
     'r7_tax_scope': ('jh_r7_tax_scope', 'pipelines.kimjaehak.round7_tax_scope.ExplicitTaxScope'),
     'r7_tax_concrete': ('jh_r7_tax_concrete', 'pipelines.kimjaehak.round7_tax_scope.TaxScopedConcrete'),
+    'r7_binary_guard75': ('jh_r7_binary_guard75', 'pipelines.kimjaehak.round7_binary_guard.BinaryGuard75'),
     'r7_binary_guard': ('jh_r7_binary_guard', 'pipelines.kimjaehak.round7_binary_guard.BinaryGuard'),
     'r7_calc_review': ('jh_r7_calc_review', 'pipelines.kimjaehak.round7_calculator_review.ReviewedCalculator'),
     'r7_numeric_verdict': ('jh_r7_numeric_verdict', 'pipelines.kimjaehak.round7_numeric_combined.NumericMaterialVerdict'),

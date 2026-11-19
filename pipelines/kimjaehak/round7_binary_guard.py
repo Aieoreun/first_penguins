@@ -15,3 +15,8 @@ class BinaryGuard(CharMLP50):
         labels=['block' if r['labels']['category'] in BLOCKED else 'allow' for r in rows]
         decision=CategoryModel('char_mlp').fit(texts,labels)
         self.matrix_model=BinaryAdjustedModel(self.matrix_model,decision,self.classifier_binary_weight)
+
+
+class BinaryGuard75(BinaryGuard):
+    # Same grouped OOF model, top-75% nonharmful coverage threshold.
+    classifier_threshold=.6289247426305958

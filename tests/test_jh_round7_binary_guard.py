@@ -5,7 +5,7 @@ import numpy as np
 from pipelines import load
 load('jh_cm_char_mlp50')
 from pipelines.kimjaehak.classifier_matrix import CharMLP50
-from pipelines.kimjaehak.round7_binary_guard import BinaryGuard
+from pipelines.kimjaehak.round7_binary_guard import BinaryGuard,BinaryGuard75
 from pipelines.kimjaehak.round7_binary_model import BinaryAdjustedModel,BLOCKED
 from core.schema import POLICY
 
@@ -21,6 +21,8 @@ class BinaryGuardTests(unittest.TestCase):
     def test_policy_block_mapping_and_unmodified_methods(self):
         self.assertEqual(BLOCKED,{p.category.value for p in POLICY.values() if p.decision.value=='block'})
         self.assertIs(load('jh_r7_binary_guard'),BinaryGuard)
+        self.assertIs(load('jh_r7_binary_guard75'),BinaryGuard75)
+        self.assertIs(BinaryGuard75._classify,CharMLP50._classify)
         for method in ['tutor','guard','_classify','_generate','_fusion_ground','_fusion_safety','_search']:
             self.assertIs(getattr(BinaryGuard,method),getattr(CharMLP50,method))
 

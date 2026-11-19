@@ -24,8 +24,9 @@ def load(name: str = ""):
         if name in {'jh_r7_tax_scope', 'jh_r7_tax_concrete'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_tax_scope')
             return module.ExplicitTaxScope if name == 'jh_r7_tax_scope' else module.TaxScopedConcrete
-        if name == 'jh_r7_binary_guard':
-            return importlib.import_module('pipelines.kimjaehak.round7_binary_guard').BinaryGuard
+        if name in {'jh_r7_binary_guard', 'jh_r7_binary_guard75'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_binary_guard')
+            return module.BinaryGuard if name == 'jh_r7_binary_guard' else module.BinaryGuard75
         if name == 'jh_r7_calc_review':
             return importlib.import_module('pipelines.kimjaehak.round7_calculator_review').ReviewedCalculator
         if name in {'jh_r7_numeric_verdict', 'jh_r7_numeric_compact', 'jh_r7_numeric_direct'}:
