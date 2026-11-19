@@ -2,7 +2,7 @@ import unittest
 from copy import deepcopy
 from pathlib import Path
 from experiments.jh_neural_peace_safety_data import load
-from experiments.jh_neural_peace_report import safety_metrics
+from experiments.jh_neural_peace_report import safety_metrics, endpoint_runtime
 
 
 class SafetyDiagnosticTests(unittest.TestCase):
@@ -19,6 +19,19 @@ class SafetyDiagnosticTests(unittest.TestCase):
             self.assertTrue(control['labels']['safe'])
             self.assertFalse(unsafe['labels']['safe'])
             self.assertNotEqual(control['candidate_answer'],unsafe['candidate_answer'])
+
+    def test_runtime_splits_guard_timeouts_from_tutor_and_parse_failures(self):
+        rows=[{'endpoint':'guard','seconds':1.0},{'endpoint':'guard','seconds':3.0},
+              {'endpoint':'tutor','seconds':2.0}]
+        log=('2026-11-19T00:00:01 guard 1.00s turns=1 chars=5 errors=material:parse\n'
+             '2026-11-19T00:00:02 tutor 2.00s turns=1 chars=5 errors=generate:TimeoutError\n'
+             '2026-11-19T00:00:03 guard 3.00s turns=1 chars=5 errors=-\n')
+        result=endpoint_runtime(rows,log)
+        self.assertEqual(result['guard']['timeout_requests'],0)
+        self.assertEqual(result['guard']['stage_failure_requests'],1)
+        self.assertEqual(result['guard']['logged_requests'],2)
+        self.assertEqual(result['guard']['p95'],3.0)
+        self.assertEqual(result['tutor']['timeout_requests'],1)
 
     def test_misses_false_alarms_and_invalid_are_separate(self):
         items,_=load(Path(__file__).resolve().parents[1])
