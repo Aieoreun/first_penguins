@@ -27,6 +27,10 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_product': ('jh_r7_product', 'pipelines.kimjaehak.round7_policy.ProductContext'),
+    'r7_other': ('jh_r7_other', 'pipelines.kimjaehak.round7_policy.OtherBoundary'),
+    'r7_scaffold': ('jh_r7_scaffold', 'pipelines.kimjaehak.round7_policy.ScaffoldGuide'),
+
     're_c_groundlow2k': ('jh_re_c_groundlow2k', 'pipelines.kimjaehak.reasoning_ablation.GuardGroundLowBudget'),
     're_c_input2k': ('jh_re_c_input2k', 'pipelines.kimjaehak.reasoning_ablation.GuardInputMediumBudget'),
     're_c_ground2k': ('jh_re_c_ground2k', 'pipelines.kimjaehak.reasoning_ablation.GuardGroundMediumBudget'),
@@ -204,7 +208,7 @@ try:
                 instance.guard = observed_guard
             original_tutor = getattr(instance, 'tutor', None)
             if callable(original_tutor):
-                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0}
+                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0}
                 async def observed_tutor(body):
                     result = await original_tutor(body)
                     debug = getattr(result, 'debug', {})
@@ -218,7 +222,8 @@ try:
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            for key in ('reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
+            for key in ('r7_product_context','r7_other_boundary','r7_scaffold_guide',
+                        'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',
                         'tutor_mlp_threshold','tutor_mlp_single_turn','tutor_mlp_fallback',

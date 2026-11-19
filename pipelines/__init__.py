@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r7_scaffold', 'jh_r7_other', 'jh_r7_product'}:
+            module = importlib.import_module("pipelines.kimjaehak.round7_policy")
+            return {'jh_r7_product': module.ProductContext, 'jh_r7_other': module.OtherBoundary, 'jh_r7_scaffold': module.ScaffoldGuide}[name]
         if name in {'jh_re_c_groundlow2k', 'jh_re_c_input2k', 'jh_re_c_ground2k', 'jh_re_a_input', 'jh_re_a_source', 'jh_re_c_ground', 'jh_re_c_input', 'jh_re_c_safety', 'jh_re_a_answer'}:
             module = importlib.import_module("pipelines.kimjaehak.reasoning_ablation")
             return {'jh_re_c_groundlow2k': module.GuardGroundLowBudget, 'jh_re_c_input2k': module.GuardInputMediumBudget, 'jh_re_c_ground2k': module.GuardGroundMediumBudget, 'jh_re_c_input': module.GuardInputMedium, 'jh_re_c_ground': module.GuardGroundMedium, 'jh_re_c_safety': module.GuardSafetyMedium, 'jh_re_a_input': module.TutorInputMedium, 'jh_re_a_source': module.TutorSourceMedium, 'jh_re_a_answer': module.TutorAnswerMedium}[name]
