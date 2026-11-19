@@ -1,0 +1,320 @@
+{
+  "scope": "fixed_public_judgment_counterfactual_not_live_not_private",
+  "api_calls": 0,
+  "evaluation_code_unchanged": true,
+  "runs": [
+    {
+      "run": "jh_tutor_mlp_r7_t01",
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "order": [
+        "cm_char_mlp50",
+        "r7_other",
+        "r7_scaffold",
+        "r7_product"
+      ],
+      "identical_judge_payloads_repeated": 228,
+      "repeated_payloads_with_differing_judgments": 5,
+      "candidates": [
+        {
+          "candidate": "cm_char_mlp50",
+          "live_tutor": 94.14,
+          "replayed": {
+            "first_observed": {
+              "tutor": 94.14,
+              "guard": 0.0,
+              "total": 47.07,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 93.62,
+              "guard": 0.0,
+              "total": 46.81,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_other",
+          "live_tutor": 97.14,
+          "replayed": {
+            "first_observed": {
+              "tutor": 96.61,
+              "guard": 0.0,
+              "total": 48.3,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 96.09,
+              "guard": 0.0,
+              "total": 48.05,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_scaffold",
+          "live_tutor": 94.01,
+          "replayed": {
+            "first_observed": {
+              "tutor": 93.49,
+              "guard": 0.0,
+              "total": 46.74,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 92.97,
+              "guard": 0.0,
+              "total": 46.48,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_product",
+          "live_tutor": 94.14,
+          "replayed": {
+            "first_observed": {
+              "tutor": 94.66,
+              "guard": 0.0,
+              "total": 47.33,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 94.14,
+              "guard": 0.0,
+              "total": 47.07,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "jh_tutor_mlp_r7_t02",
+      "dataset_sha256": "95a5f5f50528c265908ceedec201cc75c0a046674b1ce65f961cffac6cf07c0a",
+      "order": [
+        "r7_product",
+        "r7_other",
+        "cm_char_mlp50"
+      ],
+      "identical_judge_payloads_repeated": 205,
+      "repeated_payloads_with_differing_judgments": 4,
+      "candidates": [
+        {
+          "candidate": "r7_product",
+          "live_tutor": 91.99,
+          "replayed": {
+            "first_observed": {
+              "tutor": 91.99,
+              "guard": 0.0,
+              "total": 45.99,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 92.27,
+              "guard": 0.0,
+              "total": 46.13,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_other",
+          "live_tutor": 92.96,
+          "replayed": {
+            "first_observed": {
+              "tutor": 92.96,
+              "guard": 0.0,
+              "total": 46.48,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 93.23,
+              "guard": 0.0,
+              "total": 46.62,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "live_tutor": 92.4,
+          "replayed": {
+            "first_observed": {
+              "tutor": 92.13,
+              "guard": 0.0,
+              "total": 46.06,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 92.4,
+              "guard": 0.0,
+              "total": 46.2,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "jh_tutor_mlp_r7_m02",
+      "dataset_sha256": "9bf7a76449ffeb76f1bcd236523220b30c13b62afc5d14f5a76e7c3c2b7d429b",
+      "order": [
+        "cm_char_mlp50",
+        "r7_batchconcat",
+        "r7_batchblend"
+      ],
+      "identical_judge_payloads_repeated": 228,
+      "repeated_payloads_with_differing_judgments": 4,
+      "candidates": [
+        {
+          "candidate": "cm_char_mlp50",
+          "live_tutor": 93.75,
+          "replayed": {
+            "first_observed": {
+              "tutor": 93.75,
+              "guard": 95.55,
+              "total": 94.65,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 93.62,
+              "guard": 95.55,
+              "total": 94.59,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_batchconcat",
+          "live_tutor": 95.57,
+          "replayed": {
+            "first_observed": {
+              "tutor": 95.7,
+              "guard": 95.82,
+              "total": 95.76,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 95.57,
+              "guard": 95.82,
+              "total": 95.69,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_batchblend",
+          "live_tutor": 96.48,
+          "replayed": {
+            "first_observed": {
+              "tutor": 96.61,
+              "guard": 95.73,
+              "total": 96.17,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 96.48,
+              "guard": 95.73,
+              "total": 96.11,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": "jh_tutor_mlp_r7_m03",
+      "dataset_sha256": "44278b9fdea38b4c4cc468e3b07deb1484c869bbfe1d00093505b79d7df3cff3",
+      "order": [
+        "r7_batchblend",
+        "r7_batchconcat",
+        "cm_char_mlp50"
+      ],
+      "identical_judge_payloads_repeated": 202,
+      "repeated_payloads_with_differing_judgments": 6,
+      "candidates": [
+        {
+          "candidate": "r7_batchblend",
+          "live_tutor": 92.82,
+          "replayed": {
+            "first_observed": {
+              "tutor": 92.82,
+              "guard": 96.87,
+              "total": 94.84,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 92.96,
+              "guard": 96.87,
+              "total": 94.91,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_batchconcat",
+          "live_tutor": 93.23,
+          "replayed": {
+            "first_observed": {
+              "tutor": 93.51,
+              "guard": 94.85,
+              "total": 94.18,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 93.65,
+              "guard": 94.85,
+              "total": 94.25,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "live_tutor": 92.68,
+          "replayed": {
+            "first_observed": {
+              "tutor": 92.4,
+              "guard": 95.13,
+              "total": 93.77,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 92.68,
+              "guard": 95.13,
+              "total": 93.91,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
