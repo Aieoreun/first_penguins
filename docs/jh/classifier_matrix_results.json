@@ -4043,11 +4043,29 @@
       "format_or_missing": 0,
       "judge_errors": 0,
       "seed": "86248809a7b989d4a5f678b7e90dec67"
+    },
+    {
+      "source": "user_report",
+      "reported_date": "2026-11-19",
+      "variant_assumed": "jh_tm_replace",
+      "variant_basis": "Immediately preceding submission instructions; actual variant and commit not independently confirmed",
+      "instructed_commit": "d1dba6237cc36622fccfc4e1da74db987e6b51e1",
+      "actual_commit_verified": false,
+      "change_scope": "tutor policy category classifier with char_mlp50 guard fixed",
+      "total": 84.17,
+      "tutor": 79.83,
+      "guard": 88.51,
+      "duration_seconds": 65.124,
+      "requests": 600,
+      "timeouts": 0,
+      "format_or_missing": 0,
+      "judge_errors": 0,
+      "seed": "7fc0cf9ff10354282791b0ca73a19fd8"
     }
   ],
   "current_submission_recommendation": {
     "variant": "jh_cm_char_mlp50",
-    "status": "provisional preference for char_mlp50; highest observed 85.41, latest reported submission is dense_mlp50 84.81",
+    "status": "provisional preference for char_mlp50; highest observed 85.41, latest reported submission is tutor replace 84.17",
     "basis": "Highest reported actual total; one observation, no claim of statistically established improvement",
     "backups": [
       "jh_cm_dense_mlp50",
