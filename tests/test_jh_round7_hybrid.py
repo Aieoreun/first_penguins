@@ -6,12 +6,24 @@ import numpy as np
 from pipelines import load
 load('jh_cm_char_mlp50')
 from pipelines.kimjaehak.classifier_matrix import CharMLP50, MatrixGate
-from pipelines.kimjaehak.round7_hybrid import ConcatModel, BlendModel, ConcatGate, BlendGate, FastBlendGate
+from pipelines.kimjaehak.round7_hybrid import ConcatModel, BlendModel, ConcatGate, BlendGate, FastBlendGate, CommonFallback
 from tests import test_jh_classifier_matrix as matrix_tests
 
 
 class HybridTests(unittest.IsolatedAsyncioTestCase):
     state=matrix_tests.MatrixTests.state
+
+    async def test_common_fallback_bypasses_only_guard_trained_gates(self):
+        from pipelines.kimjaehak.voted import Pipeline as Voted
+        p=CommonFallback.__new__(CommonFallback)
+        with patch.object(Voted,'_classify',new_callable=AsyncMock) as fallback, \
+             patch.object(MatrixGate,'_classify',new_callable=AsyncMock) as parent:
+            s=self.state(p,True);await p._classify(s)
+            fallback.assert_awaited_once_with(p,s);parent.assert_not_awaited()
+            self.assertTrue(s.debug['guard_unlearned_input'])
+            s=self.state(p,False);await p._classify(s);parent.assert_awaited_once_with(s)
+        for method in ('tutor','_generate','_fusion_ground','_fusion_safety','_search','guard'):
+            self.assertIs(getattr(CommonFallback,method),getattr(CharMLP50,method))
 
     def test_concat_uses_dense_information_even_when_text_is_identical(self):
         texts=['동일한 학습 문장']*12;labels=['normal']*6+['off_topic']*6

@@ -19,6 +19,8 @@ from pipelines.kimjaehak.classifier_models import CategoryModel, public_data
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--name',required=True)
+    ap.add_argument('--models',nargs='+',choices=['char_mlp','dense_mlp','concat050','concat100','concat256','concat512'],
+        default=['char_mlp','dense_mlp','concat050','concat100'])
     args=ap.parse_args()
     if not args.name.replace('_','').isalnum():ap.error('Simple name required')
     dest=ROOT/'experiments/.cache'/('jh_r7_hybrid_'+args.name);dest.mkdir()
@@ -29,7 +31,7 @@ def main():
         'embedding_model':embedding_model,'seed':20261118,'width':32,'alpha':.1,
         'source_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'ids':[r['id'] for r in rows],'folds':[{'train':a.tolist(),'test':b.tolist()} for a,b in folds],
-        'models':['char_mlp','dense_mlp','concat050','concat100'],'blends':[.25,.5,.75]}
+        'models':args.models,'blends':[.25,.5,.75] if {'char_mlp','dense_mlp'}<=set(args.models) else []}
     (dest/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     stored={};reports=[]
     def record(name,probs):
@@ -48,10 +50,13 @@ def main():
                 p=model.probabilities([texts[i] for i in b],vectors[b]);model_classes=model.classes
             else:
                 weight=.5 if kind=='concat050' else 1.0
+                dimensions={'concat256':256,'concat512':512}.get(kind,1536)
+                dense=vectors[:,:dimensions]
+                dense=dense/np.linalg.norm(dense,axis=1,keepdims=True)
                 with threadpool_limits(limits=1):
                     tf=TfidfVectorizer(analyzer='char',ngram_range=(2,5),min_df=2,max_features=60000,sublinear_tf=True)
-                    x=hstack([tf.fit_transform([texts[i] for i in a]),csr_matrix(CategoryModel._vectors(vectors[a],len(a))*weight)],format='csr')
-                    y=hstack([tf.transform([texts[i] for i in b]),csr_matrix(CategoryModel._vectors(vectors[b],len(b))*weight)],format='csr')
+                    x=hstack([tf.fit_transform([texts[i] for i in a]),csr_matrix(dense[a]*weight)],format='csr')
+                    y=hstack([tf.transform([texts[i] for i in b]),csr_matrix(dense[b]*weight)],format='csr')
                     model=MLPClassifier(hidden_layer_sizes=(32,),solver='lbfgs',alpha=.1,
                         max_iter=600,max_fun=30000,random_state=20261118,tol=1e-5)
                     model.fit(x,gold[a],sample_weight=compute_sample_weight('balanced',gold[a]))
@@ -61,10 +66,11 @@ def main():
         record(kind,probs)
     for w in manifest['blends']:
         record('blend_dense'+str(w),stored['char_mlp']*(1-w)+stored['dense_mlp']*w)
-    cp=classes[stored['char_mlp'].argmax(axis=1)];dp=classes[stored['dense_mlp'].argmax(axis=1)]
-    mask=(cp==dp)&(cp!='harmful_content')&(stored['char_mlp'].max(axis=1)>=.8556677733093049)
-    (dest/'agreement.json').write_text(json.dumps({'count':int(mask.sum()),
-        'errors':int((cp[mask]!=gold[mask]).sum()),'char_threshold':.8556677733093049},indent=2)+'\n')
+    if manifest['blends']:
+        cp=classes[stored['char_mlp'].argmax(axis=1)];dp=classes[stored['dense_mlp'].argmax(axis=1)]
+        mask=(cp==dp)&(cp!='harmful_content')&(stored['char_mlp'].max(axis=1)>=.8556677733093049)
+        (dest/'agreement.json').write_text(json.dumps({'count':int(mask.sum()),
+            'errors':int((cp[mask]!=gold[mask]).sum()),'char_threshold':.8556677733093049},indent=2)+'\n')
     (dest/'COMPLETE').write_text('Offline public grouped hybrid screen complete.\n')
 
 

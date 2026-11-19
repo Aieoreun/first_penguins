@@ -24,10 +24,10 @@ def load(name: str = ""):
         if name in {'jh_r7_batchconcat', 'jh_r7_batchblend'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_batch')
             return module.BatchedConcat if name == 'jh_r7_batchconcat' else module.BatchedBlend
-        if name in {'jh_r7_concat', 'jh_r7_blend', 'jh_r7_fastblend'}:
+        if name in {'jh_r7_concat', 'jh_r7_blend', 'jh_r7_fastblend', 'jh_r7_llm_input'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_hybrid')
             return {'jh_r7_concat': module.ConcatGate, 'jh_r7_blend': module.BlendGate,
-                    'jh_r7_fastblend': module.FastBlendGate}[name]
+                    'jh_r7_fastblend': module.FastBlendGate, 'jh_r7_llm_input': module.CommonFallback}[name]
         if name in {'jh_r7_boundary', 'jh_r7_verdict'}:
             module = importlib.import_module("pipelines.kimjaehak.round7_guard")
             return {'jh_r7_boundary': module.BoundaryGate, 'jh_r7_verdict': module.VerdictFirst}[name]

@@ -27,6 +27,7 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_llm_input': ('jh_r7_llm_input', 'pipelines.kimjaehak.round7_hybrid.CommonFallback'),
     'r7_batchconcat': ('jh_r7_batchconcat', 'pipelines.kimjaehak.round7_batch.BatchedConcat'),
     'r7_batchblend': ('jh_r7_batchblend', 'pipelines.kimjaehak.round7_batch.BatchedBlend'),
     'r7_concat': ('jh_r7_concat', 'pipelines.kimjaehak.round7_hybrid.ConcatGate'),

@@ -6,10 +6,23 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.utils.class_weight import compute_sample_weight
 from threadpoolctl import threadpool_limits
 
-from .classifier_matrix import DenseMLP50
+from .classifier_matrix import DenseMLP50, CharMLP50
 from .classifier_models import CategoryModel, public_data
 from .calibrated import low_signal
 from core.schema import parse_label
+from .voted import Pipeline as Voted
+
+
+class CommonFallback(CharMLP50):
+    """A's exact fallback without trained input gates, for controlled replay."""
+    guard_learned_input_enabled=False
+
+    async def _classify(self, state):
+        if getattr(state,'_material_budget_guard',False) is True and not low_signal(state.last_user):
+            await Voted._classify(self,state)
+            state.debug['guard_unlearned_input']=True
+            return
+        await super()._classify(state)
 
 
 class ConcatModel(CategoryModel):
