@@ -124,6 +124,8 @@ def main():
                     entry['guard_details']={k:result['guard_details'][k] for k in
                         ('block_f1','category_accuracy','false_block','missed_block','confusion','safe_accuracy')}
                 if 'intent_details' in result:entry['intent']=result['intent_details']
+                if 'relational_details' in result:entry['paired_grounding']=result['relational_details']
+                if 'counterfactual_details' in result:entry['paired_grounding']=result['counterfactual_details']
                 report['runs'].append(entry)
     report['requests']=sum(x['count'] for x in report['runs'])
     report['runs_count']=len(report['runs'])
