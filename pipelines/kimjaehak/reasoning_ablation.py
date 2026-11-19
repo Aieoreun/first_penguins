@@ -82,11 +82,11 @@ class GuardSafetyMedium(StageEffort, CheckBudgets):
 
 
 class GuardInputMediumBudget(GuardInputMedium):
-    reasoning_guard_input_tokens = 4000
+    reasoning_guard_input_tokens = 2000
 
 
 class GuardGroundMediumBudget(GuardGroundMedium):
-    reasoning_guard_ground_tokens = 4000
+    reasoning_guard_ground_tokens = 2000
 
 
 class TutorInputMedium(StageEffort, CharMLP50):

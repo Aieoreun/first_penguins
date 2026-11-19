@@ -149,7 +149,7 @@ class ReasoningTests(unittest.IsolatedAsyncioTestCase):
                 finally: _guard_deadline.reset(token)
                 call, ref = client.chat.await_args, q.llm.chat.await_args
                 self.assertEqual(call.args,ref.args)
-                self.assertEqual(call.kwargs,{**ref.kwargs,'max_tokens':4000} if guard else ref.kwargs)
+                self.assertEqual(call.kwargs,{**ref.kwargs,'max_tokens':2000} if guard else ref.kwargs)
                 self.assertIs(p.llm,client)
                 await p._fusion_safety(self.state(p,True))
                 self.assertEqual(client.chat.await_args.kwargs['effort'],'low')
@@ -161,7 +161,7 @@ class ReasoningTests(unittest.IsolatedAsyncioTestCase):
         try: await p._ground_response({})
         finally: _guard_deadline.reset(token)
         self.assertLessEqual(p.llm.chat.await_args.kwargs['timeout'],.3)
-        self.assertEqual(p.llm.chat.await_args.kwargs['max_tokens'],4000)
+        self.assertEqual(p.llm.chat.await_args.kwargs['max_tokens'],2000)
 
     def test_existing_a_c_names_classes_and_limits_preserved(self):
         self.assertIs(load('jh_cm_char_mlp50'),CharMLP50)
