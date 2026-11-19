@@ -29,6 +29,8 @@ PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
     'r7_apply_numeric': ('jh_r7_apply_numeric', 'pipelines.kimjaehak.round7_answer.NumericApply'),
     'r7_apply_all': ('jh_r7_apply_all', 'pipelines.kimjaehak.round7_answer.AllApply'),
+    'r7_ground_input': ('jh_r7_ground_input', 'pipelines.kimjaehak.round7_ground_source.InputGroundSource'),
+    'r7_ground_union': ('jh_r7_ground_union', 'pipelines.kimjaehak.round7_ground_source.UnionGroundSource'),
     'r7_llm_input': ('jh_r7_llm_input', 'pipelines.kimjaehak.round7_hybrid.CommonFallback'),
     'r7_batchconcat': ('jh_r7_batchconcat', 'pipelines.kimjaehak.round7_batch.BatchedConcat'),
     'r7_batchblend': ('jh_r7_batchblend', 'pipelines.kimjaehak.round7_batch.BatchedBlend'),
@@ -250,7 +252,7 @@ try:
                         counts['r7_guard_aggregation']['requests'] += 1
                         counts['r7_guard_aggregation']['changed'] += state.debug.get('r7_verdict_changed') is True
                 instance._fusion_ground = observed_ground
-            for key in ('tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
+            for key in ('guard_ground_context','tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
                         'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',

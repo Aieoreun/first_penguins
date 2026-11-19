@@ -74,3 +74,5 @@ VARIANTS += ("jh_r7_batchconcat", "jh_r7_batchblend")
 VARIANTS += ("jh_tm_selective", "jh_tm_replace")
 
 VARIANTS += ("jh_r7_apply_numeric", "jh_r7_apply_all")
+
+VARIANTS += ("jh_r7_ground_input", "jh_r7_ground_union")
