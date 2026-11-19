@@ -37,6 +37,7 @@ class Pipeline(MaterialBudget):
     guard_restore_span_refinement = True
     guard_vote_first = True
     guard_safety_after_input = False
+    guard_safety_launch_early = False
     request_slots = 64
     guard_prepare_limit = 26.0
     guard_deadline = 28.0
@@ -210,6 +211,9 @@ class Pipeline(MaterialBudget):
                         self._classify(state), min(prepare_left, remaining), state, 'prepare'))
                     tasks.append(input_task)
                     if state.has_candidate:
+                        if self.guard_safety_launch_early:
+                            tasks.append(asyncio.create_task(
+                                self._run_safety(safety_state, state, input_task, started)))
                         skip_ground = False
                         if self.guard_fast_input_wait > 0:
                             await asyncio.wait({input_task},
@@ -232,8 +236,9 @@ class Pipeline(MaterialBudget):
                             tasks.append(asyncio.create_task(self._fusion_stage(
                                 self._fusion_ground(ground_state),
                                 min(self.guard_ground_timeout, remaining), ground_state, 'ground')))
-                        tasks.append(asyncio.create_task(
-                            self._run_safety(safety_state, state, input_task, started)))
+                        if not self.guard_safety_launch_early:
+                            tasks.append(asyncio.create_task(
+                                self._run_safety(safety_state, state, input_task, started)))
                     await asyncio.gather(*tasks)
                     await self._fusion_post_checks(state, ground_state, started)
                 finally:

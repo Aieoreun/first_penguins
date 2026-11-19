@@ -6,6 +6,7 @@ import random
 
 PUBLIC_SHA = '4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426'
 DATASETS = {
+    'cross_safety': {'primary_metric': 'safe_accuracy'},
     'intent': {
         'path': 'experiments/.cache/jh_guard_intent_pairs_v2/inputs.jsonl',
         'proposal': 'experiments/.cache/jh_guard_intent_pairs_v2/proposal.json',
@@ -336,6 +337,9 @@ def validate_rows(rows, spec, name, public_parents=None):
 
 def load_dataset(name, root):
     root = Path(root).resolve()
+    if name == "cross_safety":
+        from experiments.jh_neural_peace_safety_data import load
+        return load(root)
     spec = DATASETS[name]
     for filename, expected in spec['files'].items():
         path = (root / filename).resolve()

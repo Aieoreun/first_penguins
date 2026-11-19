@@ -5,6 +5,7 @@ the official evaluator and both servers remain unmodified. --prepare-only never
 starts a server; --collect-only checkpoints HTTP before separate scoring.
 """
 import argparse
+from collections import Counter
 import asyncio
 import hashlib
 import io
@@ -26,6 +27,10 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'np_parallel': ('jh_np_parallel', 'pipelines.kimjaehak.neural_peace_guard.ParallelSafety'),
+    'np_timeouts': ('jh_np_timeouts', 'pipelines.kimjaehak.neural_peace_guard.CheckBudgets'),
+    'np_peace_block': ('jh_np_peace_block', 'pipelines.kimjaehak.neural_peace_guard.PeaceBlock'),
+    'np_unlearned': ('jh_np_unlearned', 'pipelines.kimjaehak.neural_peace_guard.UnlearnedInput'),
     'tm_selective': ('jh_tm_selective', 'pipelines.kimjaehak.tutor_mlp.Selective'),
     'tm_replace': ('jh_tm_replace', 'pipelines.kimjaehak.tutor_mlp.Replace'),
     'cm_char_lr50': ('jh_cm_char_lr50', 'pipelines.kimjaehak.classifier_matrix.CharLR50'),
@@ -141,7 +146,7 @@ try:
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
                     'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
-                    'fusion_ground_cancelled_block', 'matrix_gate')}
+                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})
@@ -173,7 +178,8 @@ try:
                         'guard_deadline','guard_prepare_limit','guard_material_timeout',
                         'guard_ground_timeout','guard_safety_timeout','guard_requested_action',
                         'guard_safety_action_review','guard_safety_curriculum_context',
-                        'guard_safety_after_input',
+                        'guard_safety_after_input','guard_safety_launch_early','guard_short_timeout',
+                        'guard_learned_input_enabled',
                         'guard_routed_safety','guard_safety_votes','guard_independent_safety',
                         'guard_ground_effort','guard_ground_max_tokens',
                         'guard_fast_input_wait','guard_vote_first',
@@ -366,7 +372,9 @@ def collect_candidate(label, source_root, items, dest, env, judge_workers, embed
     runtime = {'collect_seconds': seconds, 'p50': statistics.median(durations),
                'p95': durations[min(len(durations)-1, int(.95*len(durations)))], 'max': max(durations),
                'http_errors': sum(bool(row['error']) for row in rows),
-               'stage_failure_requests': sum(error != '-' for error in errors)}
+               'stage_failure_requests': sum(error != '-' for error in errors),
+               'stage_errors': dict(Counter(part for error in errors if error != '-'
+                                            for part in error.split(',')))}
     # Read only after SIGTERM/wait: graceful lifespan shutdown writes final counts.
     counts_path = dest / 'api_counts.json'
     runtime['api_calls'] = json.loads(counts_path.read_text()) if counts_path.exists() else {
@@ -483,6 +491,8 @@ def main(argv=None):
             result['intent_details'] = datasets.intent_metrics(items, rows)
         if shared.evaluator_hashes() != manifest['evaluator_hashes']:
             raise ValueError('Official evaluator changed during scoring')
+        from experiments.jh_neural_peace_report import safety_metrics
+        result['safety_details'] = safety_metrics(items, rows)
         result['score_scope'] = 'guard'
         result['diagnostic_scope'] = dataset_metadata['scope']
         result['dataset_provenance'] = dataset_metadata
