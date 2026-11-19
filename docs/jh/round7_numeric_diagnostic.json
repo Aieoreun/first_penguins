@@ -1,335 +1,799 @@
 {
   "scope": "manual_public_kb_tutor_development_not_private_not_holdout",
   "independent_review": false,
-  "proposal_sha256": "3a8407e33d592d2c3c433dcf07ee4817d1a46550f7ee1c56330fed9222a51599",
-  "results": [
+  "runs": [
     {
-      "candidate": "cm_char_mlp50",
-      "tutor": 80.21,
-      "invalid": 0,
-      "judge_errors": 0,
-      "runtime": {
-        "collect_seconds": 15.895,
-        "p50": 4.7669999999999995,
-        "p95": 15.893,
-        "max": 15.893,
-        "http_errors": 0,
-        "stage_failure_requests": 1,
-        "stage_errors": {
-          "material:TimeoutError": 1
-        },
-        "api_calls": {
-          "instrumented": true,
-          "scope": "server_lifespan_llm_method_invocations",
-          "chat": {
-            "started": 53,
-            "completed": 52,
-            "cancelled": 0,
-            "errors": 1
-          },
-          "embed": {
-            "started": 16,
-            "completed": 16,
-            "cancelled": 0,
-            "errors": 0
-          },
-          "r7_policy_calls": {
-            "product": 0,
-            "other": 0,
-            "scaffold": 0
-          },
-          "r7_guard_aggregation": {
-            "requests": 0,
-            "changed": 0
-          },
-          "chat_efforts": {
-            "minimal": 0,
-            "low": 53,
-            "medium": 0,
-            "high": 0,
-            "other": 0
-          },
-          "completion_metadata": {
-            "low": {
-              "responses": 52,
-              "prompt_tokens": 154778,
-              "completion_tokens": 13367,
-              "reasoning_tokens": 11072,
-              "finish_reasons": {
-                "stop": 52
+      "run": "numeric01",
+      "proposal_sha256": "3a8407e33d592d2c3c433dcf07ee4817d1a46550f7ee1c56330fed9222a51599",
+      "results": [
+        {
+          "candidate": "cm_char_mlp50",
+          "tutor": 80.21,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 15.895,
+            "p50": 4.7669999999999995,
+            "p95": 15.893,
+            "max": 15.893,
+            "http_errors": 0,
+            "stage_failure_requests": 1,
+            "stage_errors": {
+              "material:TimeoutError": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 53,
+                "completed": 52,
+                "cancelled": 0,
+                "errors": 1
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 53,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 52,
+                  "prompt_tokens": 154778,
+                  "completion_tokens": 13367,
+                  "reasoning_tokens": 11072,
+                  "finish_reasons": {
+                    "stop": 52
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 69,
+                "completed": 68,
+                "cancelled": 0,
+                "errors": 1
               }
             }
-          },
-          "guard_debug": {
-            "span_review_triggered": 0,
-            "span_review_attempted": 0,
-            "span_review_completed": 0,
-            "span_review_success": 0,
-            "span_review_changed": 0,
-            "fusion_ground_skipped_fast_block": 0,
-            "fusion_ground_cancelled_block": 0,
-            "matrix_gate": 0,
-            "guard_unlearned_input": 0,
-            "learned_span": 0,
-            "r7_hybrid_fast": 0,
-            "r7_embedding_reused": 0
-          },
-          "tutor_debug": {
-            "tutor_mlp_gate": 0,
-            "tutor_mlp_llm": 0,
-            "r7_product_check": 0,
-            "r7_other_check": 0,
-            "r7_scaffold_generated": 0,
-            "r7_apply_attempted": 0,
-            "r7_apply_completed": 0
-          },
-          "startup_chat_efforts": {
-            "minimal": 0,
-            "low": 0,
-            "medium": 0,
-            "high": 0,
-            "other": 0
-          },
-          "startup": {
-            "chat": {
-              "started": 0,
-              "completed": 0,
-              "cancelled": 0,
-              "errors": 0
+          }
+        },
+        {
+          "candidate": "r7_apply_numeric",
+          "tutor": 88.8,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 23.311,
+            "p50": 8.686,
+            "p95": 23.307,
+            "max": 23.307,
+            "http_errors": 0,
+            "stage_failure_requests": 2,
+            "stage_errors": {
+              "r7_apply:TimeoutError": 2
             },
-            "embed": {
-              "started": 0,
-              "completed": 0,
-              "cancelled": 0,
-              "errors": 0
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 66,
+                "completed": 64,
+                "cancelled": 2,
+                "errors": 0
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 66,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 64,
+                  "prompt_tokens": 176177,
+                  "completion_tokens": 19160,
+                  "reasoning_tokens": 15424,
+                  "finish_reasons": {
+                    "stop": 64
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 13,
+                "r7_apply_completed": 11
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 82,
+                "completed": 80,
+                "cancelled": 2,
+                "errors": 0
+              }
             }
-          },
-          "total": {
-            "started": 69,
-            "completed": 68,
-            "cancelled": 0,
-            "errors": 1
+          }
+        },
+        {
+          "candidate": "r7_apply_all",
+          "tutor": 84.9,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 16.834,
+            "p50": 8.503,
+            "p95": 16.829,
+            "max": 16.829,
+            "http_errors": 0,
+            "stage_failure_requests": 0,
+            "stage_errors": {},
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 66,
+                "completed": 66,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 66,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 66,
+                  "prompt_tokens": 173078,
+                  "completion_tokens": 20012,
+                  "reasoning_tokens": 16064,
+                  "finish_reasons": {
+                    "stop": 66
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 12,
+                "r7_apply_completed": 12
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 82,
+                "completed": 82,
+                "cancelled": 0,
+                "errors": 0
+              }
+            }
           }
         }
-      }
+      ]
     },
     {
-      "candidate": "r7_apply_numeric",
-      "tutor": 88.8,
-      "invalid": 0,
-      "judge_errors": 0,
-      "runtime": {
-        "collect_seconds": 23.311,
-        "p50": 8.686,
-        "p95": 23.307,
-        "max": 23.307,
-        "http_errors": 0,
-        "stage_failure_requests": 2,
-        "stage_errors": {
-          "r7_apply:TimeoutError": 2
+      "run": "numeric02",
+      "proposal_sha256": "3a8407e33d592d2c3c433dcf07ee4817d1a46550f7ee1c56330fed9222a51599",
+      "results": [
+        {
+          "candidate": "r7_apply_joint",
+          "tutor": 89.58,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 15.36,
+            "p50": 6.156499999999999,
+            "p95": 15.357,
+            "max": 15.357,
+            "http_errors": 0,
+            "stage_failure_requests": 0,
+            "stage_errors": {},
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 53,
+                "completed": 53,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 53,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 53,
+                  "prompt_tokens": 163870,
+                  "completion_tokens": 17907,
+                  "reasoning_tokens": 14976,
+                  "finish_reasons": {
+                    "stop": 53
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 13,
+                "r7_apply_completed": 12,
+                "r7_joint_apply_started": 13,
+                "r7_joint_apply_completed": 12
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 69,
+                "completed": 69,
+                "cancelled": 0,
+                "errors": 0
+              }
+            }
+          }
         },
-        "api_calls": {
-          "instrumented": true,
-          "scope": "server_lifespan_llm_method_invocations",
-          "chat": {
-            "started": 66,
-            "completed": 64,
-            "cancelled": 2,
-            "errors": 0
-          },
-          "embed": {
-            "started": 16,
-            "completed": 16,
-            "cancelled": 0,
-            "errors": 0
-          },
-          "r7_policy_calls": {
-            "product": 0,
-            "other": 0,
-            "scaffold": 0
-          },
-          "r7_guard_aggregation": {
-            "requests": 0,
-            "changed": 0
-          },
-          "chat_efforts": {
-            "minimal": 0,
-            "low": 66,
-            "medium": 0,
-            "high": 0,
-            "other": 0
-          },
-          "completion_metadata": {
-            "low": {
-              "responses": 64,
-              "prompt_tokens": 176177,
-              "completion_tokens": 19160,
-              "reasoning_tokens": 15424,
-              "finish_reasons": {
-                "stop": 64
+        {
+          "candidate": "r7_apply_concrete",
+          "tutor": 90.62,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 19.224,
+            "p50": 8.932,
+            "p95": 19.221,
+            "max": 19.221,
+            "http_errors": 0,
+            "stage_failure_requests": 1,
+            "stage_errors": {
+              "material:parse": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 66,
+                "completed": 66,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 66,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 66,
+                  "prompt_tokens": 181231,
+                  "completion_tokens": 21942,
+                  "reasoning_tokens": 18012,
+                  "finish_reasons": {
+                    "stop": 65,
+                    "length": 1
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 13,
+                "r7_apply_completed": 13,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 82,
+                "completed": 82,
+                "cancelled": 0,
+                "errors": 0
               }
             }
-          },
-          "guard_debug": {
-            "span_review_triggered": 0,
-            "span_review_attempted": 0,
-            "span_review_completed": 0,
-            "span_review_success": 0,
-            "span_review_changed": 0,
-            "fusion_ground_skipped_fast_block": 0,
-            "fusion_ground_cancelled_block": 0,
-            "matrix_gate": 0,
-            "guard_unlearned_input": 0,
-            "learned_span": 0,
-            "r7_hybrid_fast": 0,
-            "r7_embedding_reused": 0
-          },
-          "tutor_debug": {
-            "tutor_mlp_gate": 0,
-            "tutor_mlp_llm": 0,
-            "r7_product_check": 0,
-            "r7_other_check": 0,
-            "r7_scaffold_generated": 0,
-            "r7_apply_attempted": 13,
-            "r7_apply_completed": 11
-          },
-          "startup_chat_efforts": {
-            "minimal": 0,
-            "low": 0,
-            "medium": 0,
-            "high": 0,
-            "other": 0
-          },
-          "startup": {
-            "chat": {
-              "started": 0,
-              "completed": 0,
-              "cancelled": 0,
-              "errors": 0
-            },
-            "embed": {
-              "started": 0,
-              "completed": 0,
-              "cancelled": 0,
-              "errors": 0
-            }
-          },
-          "total": {
-            "started": 82,
-            "completed": 80,
-            "cancelled": 2,
-            "errors": 0
           }
-        }
-      }
-    },
-    {
-      "candidate": "r7_apply_all",
-      "tutor": 84.9,
-      "invalid": 0,
-      "judge_errors": 0,
-      "runtime": {
-        "collect_seconds": 16.834,
-        "p50": 8.503,
-        "p95": 16.829,
-        "max": 16.829,
-        "http_errors": 0,
-        "stage_failure_requests": 0,
-        "stage_errors": {},
-        "api_calls": {
-          "instrumented": true,
-          "scope": "server_lifespan_llm_method_invocations",
-          "chat": {
-            "started": 66,
-            "completed": 66,
-            "cancelled": 0,
-            "errors": 0
-          },
-          "embed": {
-            "started": 16,
-            "completed": 16,
-            "cancelled": 0,
-            "errors": 0
-          },
-          "r7_policy_calls": {
-            "product": 0,
-            "other": 0,
-            "scaffold": 0
-          },
-          "r7_guard_aggregation": {
-            "requests": 0,
-            "changed": 0
-          },
-          "chat_efforts": {
-            "minimal": 0,
-            "low": 66,
-            "medium": 0,
-            "high": 0,
-            "other": 0
-          },
-          "completion_metadata": {
-            "low": {
-              "responses": 66,
-              "prompt_tokens": 173078,
-              "completion_tokens": 20012,
-              "reasoning_tokens": 16064,
-              "finish_reasons": {
-                "stop": 66
+        },
+        {
+          "candidate": "r7_apply_numeric",
+          "tutor": 88.02,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 24.258,
+            "p50": 8.02,
+            "p95": 24.255,
+            "max": 24.255,
+            "http_errors": 0,
+            "stage_failure_requests": 2,
+            "stage_errors": {
+              "r7_apply:TimeoutError": 1,
+              "material:TimeoutError": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 70,
+                "completed": 68,
+                "cancelled": 1,
+                "errors": 1
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 70,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 68,
+                  "prompt_tokens": 177936,
+                  "completion_tokens": 21220,
+                  "reasoning_tokens": 17088,
+                  "finish_reasons": {
+                    "stop": 68
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 13,
+                "r7_apply_completed": 12,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 86,
+                "completed": 84,
+                "cancelled": 1,
+                "errors": 1
               }
             }
-          },
-          "guard_debug": {
-            "span_review_triggered": 0,
-            "span_review_attempted": 0,
-            "span_review_completed": 0,
-            "span_review_success": 0,
-            "span_review_changed": 0,
-            "fusion_ground_skipped_fast_block": 0,
-            "fusion_ground_cancelled_block": 0,
-            "matrix_gate": 0,
-            "guard_unlearned_input": 0,
-            "learned_span": 0,
-            "r7_hybrid_fast": 0,
-            "r7_embedding_reused": 0
-          },
-          "tutor_debug": {
-            "tutor_mlp_gate": 0,
-            "tutor_mlp_llm": 0,
-            "r7_product_check": 0,
-            "r7_other_check": 0,
-            "r7_scaffold_generated": 0,
-            "r7_apply_attempted": 12,
-            "r7_apply_completed": 12
-          },
-          "startup_chat_efforts": {
-            "minimal": 0,
-            "low": 0,
-            "medium": 0,
-            "high": 0,
-            "other": 0
-          },
-          "startup": {
-            "chat": {
-              "started": 0,
-              "completed": 0,
-              "cancelled": 0,
-              "errors": 0
+          }
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "tutor": 83.33,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 13.98,
+            "p50": 5.601,
+            "p95": 13.977,
+            "max": 13.977,
+            "http_errors": 0,
+            "stage_failure_requests": 1,
+            "stage_errors": {
+              "material:parse": 1
             },
-            "embed": {
-              "started": 0,
-              "completed": 0,
-              "cancelled": 0,
-              "errors": 0
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 53,
+                "completed": 53,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 53,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 53,
+                  "prompt_tokens": 153395,
+                  "completion_tokens": 16108,
+                  "reasoning_tokens": 13788,
+                  "finish_reasons": {
+                    "stop": 52,
+                    "length": 1
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 69,
+                "completed": 69,
+                "cancelled": 0,
+                "errors": 0
+              }
             }
-          },
-          "total": {
-            "started": 82,
-            "completed": 82,
-            "cancelled": 0,
-            "errors": 0
           }
         }
-      }
+      ]
     }
   ]
 }
