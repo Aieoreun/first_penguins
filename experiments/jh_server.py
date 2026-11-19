@@ -42,7 +42,8 @@ def main():
         if not hasattr(pipeline, "request_slots"):
             parser.error("This pipeline has no configurable request semaphore")
         pipeline.request_slots = args.request_slots
-    fields = ("answer_effort", "answer_max_tokens", "votes", "seek_first", "safe_by_rule",
+    fields = ("reasoning_guard_input", "reasoning_guard_ground", "reasoning_guard_safety",
+              "reasoning_tutor_input", "reasoning_tutor_source", "answer_effort", "answer_max_tokens", "votes", "seek_first", "safe_by_rule",
               "deadline", "prepare_limit", "peace_input", "peace_output",
               "guided_input", "guided_output", "focus_input", "request_slots", "short_votes", "other_vote_count", "block_min_votes",
               "short_effort", "short_max_tokens", "short_timeout", "answer_sections", "material_review_timeout",

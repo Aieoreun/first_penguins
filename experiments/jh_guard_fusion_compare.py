@@ -27,6 +27,13 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    're_c_input': ('jh_re_c_input', 'pipelines.kimjaehak.reasoning_ablation.GuardInputMedium'),
+    're_c_ground': ('jh_re_c_ground', 'pipelines.kimjaehak.reasoning_ablation.GuardGroundMedium'),
+    're_c_safety': ('jh_re_c_safety', 'pipelines.kimjaehak.reasoning_ablation.GuardSafetyMedium'),
+    're_a_input': ('jh_re_a_input', 'pipelines.kimjaehak.reasoning_ablation.TutorInputMedium'),
+    're_a_source': ('jh_re_a_source', 'pipelines.kimjaehak.reasoning_ablation.TutorSourceMedium'),
+    're_a_answer': ('jh_re_a_answer', 'pipelines.kimjaehak.reasoning_ablation.TutorAnswerMedium'),
+
     'np_input_budgets': ('jh_np_input_budgets', 'pipelines.kimjaehak.neural_peace_guard.InputBudgets'),
     'np_block_only': ('jh_np_block_only', 'pipelines.kimjaehak.neural_peace_guard.BlockOnly'),
     'np_parallel': ('jh_np_parallel', 'pipelines.kimjaehak.neural_peace_guard.ParallelSafety'),
@@ -107,11 +114,15 @@ try:
     counts = {'instrumented': False, 'scope': 'server_lifespan_llm_method_invocations',
               'chat': {key: 0 for key in ('started', 'completed', 'cancelled', 'errors')},
               'embed': {key: 0 for key in ('started', 'completed', 'cancelled', 'errors')}}
+    counts['chat_efforts'] = {key: 0 for key in ('minimal','low','medium','high','other')}
     llm_class = getattr(server, 'LLM', None)
     def counted_method(method, counters):
         @functools.wraps(method)
         async def wrapped(self, *args, **kwargs):
             counters['started'] += 1
+            if counters is counts['chat']:
+                effort = kwargs.get('effort')
+                counts['chat_efforts'][effort if effort in ('minimal','low','medium','high') else 'other'] += 1
             try:
                 result = await method(self, *args, **kwargs)
             except asyncio.CancelledError:
@@ -129,6 +140,38 @@ try:
         for name in ('chat', 'embed'):
             setattr(llm_class, name, counted_method(getattr(llm_class, name), counts[name]))
         counts['instrumented'] = True
+    # Public-development observability only: aggregate response metadata, never text.
+    counts['completion_metadata'] = {}
+    if llm_class is not None:
+        original_init = llm_class.__init__
+        @functools.wraps(original_init)
+        def measured_init(self, *args, **kwargs):
+            original_init(self, *args, **kwargs)
+            endpoint = getattr(getattr(getattr(self, '_chat', None), 'chat', None), 'completions', None)
+            create = getattr(endpoint, 'create', None)
+            if not callable(create):
+                return
+            @functools.wraps(create)
+            async def measured_create(*args, **kwargs):
+                response = await create(*args, **kwargs)
+                effort = (kwargs.get('extra_body') or {}).get('reasoning_effort')
+                effort = effort if effort in ('minimal','low','medium','high') else 'other'
+                row = counts['completion_metadata'].setdefault(effort, {'responses':0,
+                    'prompt_tokens':0,'completion_tokens':0,'reasoning_tokens':0,'finish_reasons':{}})
+                row['responses'] += 1
+                usage = getattr(response, 'usage', None)
+                for key in ('prompt_tokens','completion_tokens'):
+                    value = getattr(usage, key, None)
+                    if isinstance(value, int): row[key] += value
+                value = getattr(getattr(usage, 'completion_tokens_details', None), 'reasoning_tokens', None)
+                if isinstance(value, int): row['reasoning_tokens'] += value
+                for choice in getattr(response, 'choices', []) or []:
+                    reason = getattr(choice, 'finish_reason', None)
+                    reason = reason if reason in ('stop','length','content_filter','tool_calls','function_call') else 'other'
+                    row['finish_reasons'][reason] = row['finish_reasons'].get(reason,0) + 1
+                return response
+            endpoint.create = measured_create
+        llm_class.__init__ = measured_init
     original = server.app.router.lifespan_context
     @contextlib.asynccontextmanager
     async def observed(app):
@@ -172,7 +215,9 @@ try:
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            for key in ('tutor_mlp_threshold','tutor_mlp_single_turn','tutor_mlp_fallback',
+            for key in ('reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
+                        'reasoning_tutor_input','reasoning_tutor_source','answer_effort',
+                        'tutor_mlp_threshold','tutor_mlp_single_turn','tutor_mlp_fallback',
                         'classifier_kind','classifier_threshold','classifier_seed',
                         'classifier_width','classifier_alpha','classifier_c',
                         'classifier_embedding_timeout','classifier_text_mode','classifier_common_llm_fallback',
@@ -209,6 +254,7 @@ try:
             data['guard_span_review_system_sha256'] = hashlib.sha256(review.encode()).hexdigest() if isinstance(review, str) else None
             data['guard_safety_hints_sha256'] = {k: hashlib.sha256(v.encode()).hexdigest()
                 for k,v in getattr(instance, 'guard_safety_hint_systems', {}).items()}
+            counts['startup_chat_efforts'] = dict(counts['chat_efforts'])
             counts['startup'] = {name: dict(counts[name]) for name in ('chat', 'embed')}
             pathlib.Path(identity_path).write_text(json.dumps(data))
             yield

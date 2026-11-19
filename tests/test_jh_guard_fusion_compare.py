@@ -211,6 +211,39 @@ def run(app, **kwargs):
         self.assertEqual(counts['total']['started'], 4)
         self.assertEqual(counts['startup']['chat']['started'], 0)
 
+    def test_response_metadata_counts_effort_tokens_and_limits_without_content(self):
+        self.fake_server_tree()
+        with (self.root / 'server.py').open('a') as out:
+            out.write('''
+from types import SimpleNamespace as NS
+class LLM:
+ def __init__(self):
+  async def create(**kwargs):
+   return NS(choices=[NS(finish_reason='length',message=NS(content='private-answer'))],
+             usage=NS(prompt_tokens=12,completion_tokens=20,completion_tokens_details=NS(reasoning_tokens=18)))
+  self._chat=NS(chat=NS(completions=NS(create=create)))
+ async def chat(self,system,user,*,effort):
+  response=await self._chat.chat.completions.create(extra_body={'reasoning_effort':effort})
+  return response.choices[0].message.content
+ async def embed(self,*args,**kwargs): return []
+''')
+        (self.root / 'uvicorn.py').write_text('''
+import asyncio,server
+def run(app,**kwargs):
+ async def work():
+  async with app.router.lifespan_context(app):
+   assert await server.LLM().chat('private-system','private-user',effort='medium')=='private-answer'
+ asyncio.run(work())
+''')
+        result=self.run_fake_bootstrap()
+        self.assertEqual(result.returncode,0,result.stdout)
+        encoded=(self.root/'api_counts.json').read_text()
+        self.assertNotIn('private',encoded)
+        counts=json.loads(encoded)
+        self.assertEqual(counts['chat_efforts']['medium'],1)
+        self.assertEqual(counts['completion_metadata']['medium'],{'responses':1,'prompt_tokens':12,
+            'completion_tokens':20,'reasoning_tokens':18,'finish_reasons':{'length':1}})
+
     def test_guard_diagnostics_count_only_booleans_without_recording_text(self):
         self.fake_server_tree()
         with (self.root / 'pipelines/fake.py').open('a') as stream:
