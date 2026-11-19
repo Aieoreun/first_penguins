@@ -166,3 +166,28 @@ fastblend의 문자 직접처리95건을 실제 집계했으며 임베딩 호출
 다음은 실행 변동을 분리하는 보조 진단이다. `jh_r7_llm_input`은 A의 학습형 가드 입력 gate만 제거하고 정확히 같은 Voted fallback·출력·검색·예산을 쓴다. 고정된 동일 fallback 응답에 각 분류기의 직접처리 결과를 덮어 입력 지표만 비교한다. 출력 취소·지연·부하 효과를 모사하지 않으므로 **실제 전체 가드 점수로 취급하지 않는다**. 공개자료 임베딩은 로컬 개발 캐시에만 저장하고 runtime/학습에 사용하지 않는다.
 
 `r7_g07` 일반196 공통 fallback 수집 → 고정 replay, `r7_g08` 검토된 intent16에서 A/특징 결합/확률 결합/fastblend/common fallback을 비교한다. 이후 유망 결합 후보를 혼합 부하에서 반복한다.
+
+## 고정 fallback 진단 완료
+
+같은 LLM fallback 결과에 입력 gate만 바꾼 입력-only 보조 결과:
+
+|분류기|block F1|비정상 범주 정확도|직접처리/직접 오류|
+|---|---:|---:|---:|
+|LLM만|.8966|.8659|0/0|
+|char(A)|.9369|.9268|147/2|
+|boundary|.9455|.9512|145/1|
+|concat|.9455|.9512|152/1|
+|blend|.9455|.9512|151/1|
+|fastblend|.9455|.9512|152/1|
+
+blend는 char 대비3문항을 교정하고1문항을 회귀시켰다. 미제공 속성 구분/정상 요청 직접처리/정답 요구 fallback이 좋아졌고, 차별 설명의 정상 질문을 LLM에 넘겨 out_of_material로 판정한 회귀가 있었다. 이는 동일 fallback 하에서의 입력 변경 기여이며 실제 전체 점수나 지연은 아니다. [전체 지표](round7_fixed_fallback.json).
+
+intent16의 paired-both-correct는 A6/8, batchconcat7/8, batchblend6/8, fastblend6/8, LLM-only6/8이었다. batchconcat의 정상 오차단1/8, 위험 미차단0/8; A/두 blend는2/8,0/8. 작은 수동 개발 진단으로만 해석한다.
+
+## 결합 가중치 학습과 보류한 추가 가설
+
+char/dense OOF 확률을 결합하는 작은 LR을 nested grouped outer5/inner3으로 비교했다. balanced combiner는 상위200 오류32~65로 고정 blend24보다 나빴다. 동일 base fold 예측으로 unweighted를 비교하면 log-probability/C.1의 오류23이 가장 작았다. 그러나 별도 학습한 전체400 모델로 기존 고정 fallback에 적용하면 직접오류3건/전체 범주93.37%, 고정 blend는1건/94.90%였다. class weighting을 다시 적용해 정상 사전비율을 과소평가하는 등의 분포 변화 가능성이 있으나 원인은 확정하지 않는다. 운영 복잡도를 늘리지 않고 서버 이식을 보류한다. [nested 결과](round7_stack_cv.json).
+
+또한 blend가 abstain할 때 기존 char의 고신뢰 normal을 유지하는 normal-backstop을 오프라인으로 확인했다. OOF217직접/오류28로 원래char200/30보다 나았지만 고정 fallback에서는 전체 정확도가blend와 같고 비정상 범주 정확도는 .9512→.9390으로 낮아졌다. 이를 현재 서버에 추가하지 않는다. [후속 gate 진단](round7_followup_gate_probe.json).
+
+다음 `r7_m02` 일반388 혼합은 A→batchconcat→batchblend, `r7_m03` 대체365 혼합은 batchblend→batchconcat→A로 순서를 바꾸어 비교한다. 튜터 코드는 세 후보 모두 A와 같다.
