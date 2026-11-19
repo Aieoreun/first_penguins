@@ -92,3 +92,5 @@ VARIANTS += ("jh_r7_early_consensus", "jh_r7_task_examples1", "jh_r7_task_exampl
 VARIANTS += ("jh_r7_calc_noquote", "jh_r7_calc_compact", "jh_r7_material_verdict")
 
 VARIANTS += ("jh_r7_numeric_verdict", "jh_r7_numeric_compact", "jh_r7_numeric_direct")
+
+VARIANTS += ("jh_r7_calc_review",)
