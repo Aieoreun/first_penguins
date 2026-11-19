@@ -76,6 +76,7 @@ class Pipeline(V1Pipeline):
     votes = VOTES            # 각 확인을 몇 번 불러 다수결할지
     seek_first = SEEK_FIRST  # 정답만 요구를 과제 대행보다 앞에 둘지
     material_timeout = CLASSIFY_TIMEOUT  # 교재 확인 호출의 제한 시간(초). 세 확인 중 가장 느리다
+    block_prompt = prompts.BLOCK_SYSTEM_LEGACY  # 차단 확인 프롬프트. v11은 자기 것(prompts.BLOCK_SYSTEM에 덧붙인 것)으로 바꿔 부른다
 
     async def _ask(self, state: State, name: str, system: str, user: str, effort: str, timeout: float) -> dict:
         try:
@@ -111,7 +112,7 @@ class Pipeline(V1Pipeline):
         calls = []
         for _ in range(max(1, self.votes)):
             calls += [
-                self._ask(state, "block", prompts.BLOCK_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
+                self._ask(state, "block", self.block_prompt, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
                 self._ask(state, "other", prompts.OTHER_SYSTEM, check, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT),
                 self._ask(state, "material", prompts.MATERIAL_SYSTEM, material_user,
                           MATERIAL_EFFORT or CLASSIFY_EFFORT, self.material_timeout),

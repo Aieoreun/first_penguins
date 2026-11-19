@@ -1,0 +1,15 @@
+{
+  "reason": "user_requested_remaining40",
+  "observed_used_percent": 60,
+  "observed_remaining_percent": 40,
+  "recorded_at": "2026-11-17T04:30:42.872449+09:00",
+  "limit_window_minutes": 10080,
+  "new_experiments_allowed": false,
+  "inflight_scoring": null,
+  "queue_boundary_note": "Usage check and existing runner poll were in one tool cell. Before its return and stop-sentinel write, the serial driver started and collected the already queued final minimal condition. Preserve and finish original scoring; no further collection.",
+  "recommended_variant": "jh_r3_selected_focused",
+  "completed_http": 48,
+  "pending_http": 0,
+  "total_requests": 8118,
+  "cleanup_complete": true
+}

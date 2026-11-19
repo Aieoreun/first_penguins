@@ -26,7 +26,7 @@ from pipelines.v2 import prompts as P  # noqa: E402
 from pipelines.v6.pipeline import Pipeline  # noqa: E402
 
 CACHE = Path(__file__).resolve().parent / ".cache"
-NAMES = {P.BLOCK_SYSTEM: "block", P.OTHER_SYSTEM: "other", P.MATERIAL_SYSTEM: "material", P.UNSUPPORTED_SYSTEM: "unsupported"}
+NAMES = {P.BLOCK_SYSTEM_LEGACY: "block", P.OTHER_SYSTEM: "other", P.MATERIAL_SYSTEM: "material", P.UNSUPPORTED_SYSTEM: "unsupported"}
 
 
 async def run(name: str, delay: float) -> None:

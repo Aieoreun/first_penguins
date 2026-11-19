@@ -1,0 +1,41 @@
+{
+  "scope": "public_derived_raw_retrieval_before_gates",
+  "datasets": [
+    {
+      "source": "experiments/.cache/jh_transfer_r5_dual_primary_jh_r5_dual_all_a/derived_inputs.jsonl",
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "count": 192,
+      "normal_with_evidence": 98,
+      "baseline_hits": 97,
+      "dual_hits": 98,
+      "short_rescues": 1,
+      "raw_dual_sections": {
+        "mean": 8.739583,
+        "median": 9.0,
+        "max": 17
+      },
+      "raw_dual_material_chars": {
+        "mean": 18205.28125,
+        "max": 35277
+      }
+    },
+    {
+      "source": "experiments/.cache/jh_topic_r5_dual_topic_jh_r4_material_budget_a/derived_inputs.jsonl",
+      "dataset_sha256": "3b39fa95aebe41807c619515d37b5ed1bc215b5a1bce9ecfff78ec2a88467b75",
+      "count": 114,
+      "normal_with_evidence": 114,
+      "baseline_hits": 108,
+      "dual_hits": 110,
+      "short_rescues": 2,
+      "raw_dual_sections": {
+        "mean": 8.482456,
+        "median": 8.0,
+        "max": 15
+      },
+      "raw_dual_material_chars": {
+        "mean": 17493.350877,
+        "max": 31216
+      }
+    }
+  ]
+}

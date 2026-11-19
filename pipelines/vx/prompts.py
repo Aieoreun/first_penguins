@@ -11,8 +11,8 @@ CURRICULUM = """
 """
 
 _MARKER = "\n판정 대상은 마지막 사용자 발화다."
-assert v2.BLOCK_SYSTEM.count(_MARKER) == 1
-BLOCK_KB = v2.BLOCK_SYSTEM.replace(_MARKER, CURRICULUM + _MARKER)
+assert v2.BLOCK_SYSTEM_LEGACY.count(_MARKER) == 1
+BLOCK_KB = v2.BLOCK_SYSTEM_LEGACY.replace(_MARKER, CURRICULUM + _MARKER)
 
 GATE_OUTPUT = """# 출력
 아래 JSON 하나만 낸다. 다섯 가지 중 하나라도 해당하면 block은 true, 어디에도 해당하지 않으면 false다. 어느 것인지는 적지 않는다.

@@ -1,0 +1,22 @@
+{
+  "reason": "usage_remaining_threshold",
+  "threshold_remaining_percent": 60,
+  "observed_remaining_percent": 60,
+  "observed_used_percent": 40,
+  "window_duration_mins": 10080,
+  "observed_at": "2026-11-17T02:10:10.872124+09:00",
+  "new_experiments_stopped": true,
+  "branch": "experiment/kimjaehak",
+  "pending_at_stop": [
+    "jh_transfer_r3_repeat23_alternative_jh_guard_fitted_contextfast/jh_guard_fitted_contextfast_1",
+    "jh_transfer_r3_repeat23_alternative_jh_r3_selected_focused/jh_r3_selected_focused_1"
+  ],
+  "remaining_work": "No pending collection/scoring. Remote push and private submission were not performed.",
+  "finalized_at": "2026-11-17T02:14:07.102167+09:00",
+  "pending_at_finish": [],
+  "candidate": "jh_r3_selected_focused",
+  "embedding_mode": "env",
+  "request_slots": 64,
+  "tests_passed": 350,
+  "probe_self_tests_passed": 6
+}

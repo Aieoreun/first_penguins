@@ -25,7 +25,7 @@ MISSING = '{"asked": "한도", "quote": "", "section": "%s"}' % TOP1
 
 
 def classify(block=NONE_BLOCK, other=NONE_OTHER, material=FOUND, **more):
-    replies = {prompts.BLOCK_SYSTEM: block, prompts.OTHER_SYSTEM: other, prompts.MATERIAL_SYSTEM: material}
+    replies = {prompts.BLOCK_SYSTEM_LEGACY: block, prompts.OTHER_SYSTEM: other, prompts.MATERIAL_SYSTEM: material}
     replies.update(more)
     llm = FakeLLM(replies)
     state = asyncio.run(_prepare(Pipeline(SEARCHER, llm)))
@@ -89,7 +89,7 @@ class FailureTest(unittest.TestCase):
 
 class EndToEndTest(unittest.TestCase):
     def test_tutor_and_guard_responses_are_valid(self):
-        replies = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+        replies = {prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
                    v1_prompts.ANSWER_SYSTEM: "하루 이체 한도는 5만 원이에요.",
                    v1_prompts.UNSUPPORTED_SYSTEM: '{"unsupported": []}'}
         pipe = Pipeline(SEARCHER, FakeLLM(replies))
@@ -115,24 +115,24 @@ class V3Test(unittest.TestCase):
         return state, llm
 
     def test_three_votes_per_check(self):
-        _, llm = self.prepare({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
+        _, llm = self.prepare({prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
                                prompts.MATERIAL_SYSTEM: FOUND})
         self.assertEqual(len(llm.calls), 9)
 
     def test_majority_wins(self):
         answers = iter(['{"category": "off_topic"}', NONE_BLOCK, NONE_BLOCK])
-        state, _ = self.prepare({prompts.BLOCK_SYSTEM: lambda user: next(answers),
+        state, _ = self.prepare({prompts.BLOCK_SYSTEM_LEGACY: lambda user: next(answers),
                                  prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND})
         self.assertEqual(state.label.value, "normal")
 
     def test_answer_seeking_beats_academic(self):
-        state, _ = self.prepare({prompts.BLOCK_SYSTEM: '{"category": "academic_dishonesty"}',
+        state, _ = self.prepare({prompts.BLOCK_SYSTEM_LEGACY: '{"category": "academic_dishonesty"}',
                                  prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "self_info": false}',
                                  prompts.MATERIAL_SYSTEM: FOUND})
         self.assertEqual(state.label.value, "answer_seeking")
 
     def test_blocked_candidate_is_unsafe_without_model_call(self):
-        llm = FakeLLM({prompts.BLOCK_SYSTEM: '{"category": "harmful_request"}', prompts.OTHER_SYSTEM: NONE_OTHER,
+        llm = FakeLLM({prompts.BLOCK_SYSTEM_LEGACY: '{"category": "harmful_request"}', prompts.OTHER_SYSTEM: NONE_OTHER,
                        prompts.MATERIAL_SYSTEM: FOUND})
         state = asyncio.run(self.V3(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": "네, 해 드릴게요."}))
         out = state.to_guard_response()["output"]
@@ -160,7 +160,7 @@ class SlowLLM(FakeLLM):
 class V4Test(unittest.TestCase):
     """v4는 v3에서 다수결을 빼고 요청 전체의 마감 시간을 둔 것이다."""
 
-    CHECKS = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND}
+    CHECKS = {prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND}
 
     def setUp(self):
         from pipelines.v4.pipeline import Pipeline as V4
@@ -177,13 +177,13 @@ class V4Test(unittest.TestCase):
 
     def test_answer_seeking_beats_academic(self):
         llm = FakeLLM(dict(self.answer_replies(), **{
-            prompts.BLOCK_SYSTEM: '{"category": "academic_dishonesty"}',
+            prompts.BLOCK_SYSTEM_LEGACY: '{"category": "academic_dishonesty"}',
             prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "self_info": false}'}))
         state = asyncio.run(self.V4(SEARCHER, llm).tutor({"messages": QUESTION}))
         self.assertEqual(state.label.value, "answer_seeking")
 
     def test_blocked_candidate_is_unsafe_without_model_call(self):
-        llm = FakeLLM(dict(self.CHECKS, **{prompts.BLOCK_SYSTEM: '{"category": "harmful_request"}'}))
+        llm = FakeLLM(dict(self.CHECKS, **{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "harmful_request"}'}))
         state = asyncio.run(self.V4(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": "네, 해 드릴게요."}))
         out = state.to_guard_response()["output"]
         self.assertEqual((out["safe"], out["grounded"], out["unsupported"]), (False, True, []))
@@ -199,8 +199,8 @@ class V4Test(unittest.TestCase):
         self.assertIn("generate:Deadline", state.errors)
 
     def test_slow_checks_fall_back_to_normal(self):
-        llm = SlowLLM(dict(self.answer_replies(), **{prompts.BLOCK_SYSTEM: '{"category": "harmful_request"}'}),
-                      {prompts.BLOCK_SYSTEM}, 1.0)
+        llm = SlowLLM(dict(self.answer_replies(), **{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "harmful_request"}'}),
+                      {prompts.BLOCK_SYSTEM_LEGACY}, 1.0)
         pipe = self.V4(SEARCHER, llm)
         pipe.prepare_limit, pipe.deadline = 0.2, 5
         state = asyncio.run(pipe.tutor({"messages": QUESTION}))
@@ -234,7 +234,7 @@ class V5Test(unittest.TestCase):
         from pipelines.v5 import prompts as v5_prompts
         from pipelines.v5.pipeline import Pipeline as V5
         hint = "자료에는 하루 이체 한도가 정해져 있다고 나와 있어요. 그 한도와 비교해 보세요."
-        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.MATERIAL_SYSTEM: FOUND,
+        llm = FakeLLM({prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.MATERIAL_SYSTEM: FOUND,
                        prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "self_info": false}',
                        v5_prompts.SCAFFOLD_ANSWER_SEEKING_SYSTEM: hint})
         state = asyncio.run(V5(SEARCHER, llm).tutor({"messages": QUESTION}))
@@ -254,7 +254,7 @@ class V6Test(unittest.TestCase):
         self.V6, self.p = V6, v6_prompts
 
     def test_out_of_material_uses_fixed_sentence_without_model_call(self):
-        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
+        llm = FakeLLM({prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
                        prompts.MATERIAL_SYSTEM: '{"asked": "x", "quote": "", "section": ""}'})
         state = asyncio.run(self.V6(SEARCHER, llm).tutor({"messages": QUESTION}))
         response = parse_tutor(state.to_tutor_response())
@@ -268,7 +268,7 @@ class V6Test(unittest.TestCase):
         self.assertEqual((self.V6.material_timeout, self.V6.prepare_limit, self.V6.deadline), (13, 14.5, 26))
 
     def test_normal_uses_short_answer_prompt(self):
-        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+        llm = FakeLLM({prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
                        self.p.ANSWER_SYSTEM: "하루 이체 한도는 5만 원이에요."})
         state = asyncio.run(self.V6(SEARCHER, llm).tutor({"messages": QUESTION}))
         response = parse_tutor(state.to_tutor_response())
@@ -289,9 +289,9 @@ class V7Test(unittest.TestCase):
     def test_three_subject_prompts_extend_the_common_one(self):
         self.assertEqual(set(self.p.BLOCK_SYSTEMS), {"PY", "PR", "FIN"})
         for system in self.p.BLOCK_SYSTEMS.values():
-            self.assertNotEqual(system, prompts.BLOCK_SYSTEM)
+            self.assertNotEqual(system, prompts.BLOCK_SYSTEM_LEGACY)
             self.assertIn("# 출력", system)
-        self.assertEqual(self.p.block_system("없는 과목"), prompts.BLOCK_SYSTEM)
+        self.assertEqual(self.p.block_system("없는 과목"), prompts.BLOCK_SYSTEM_LEGACY)
 
     def test_block_check_uses_the_subject_prompt(self):
         subject_system = self.p.BLOCK_SYSTEMS[self.subject]
@@ -299,7 +299,7 @@ class V7Test(unittest.TestCase):
                        prompts.MATERIAL_SYSTEM: FOUND})
         state = asyncio.run(self.V7(SEARCHER, llm).tutor({"messages": QUESTION}))
         self.assertIn(subject_system, llm.calls)
-        self.assertNotIn(prompts.BLOCK_SYSTEM, llm.calls)
+        self.assertNotIn(prompts.BLOCK_SYSTEM_LEGACY, llm.calls)
         self.assertEqual(state.to_tutor_response()["action"], "refuse")
         self.assertEqual(len(llm.calls), 3)  # 호출 수는 v6과 같다
 
@@ -317,7 +317,7 @@ class V8Test(unittest.TestCase):
     def test_spans_are_trimmed_and_still_in_candidate(self):
         from pipelines.v8.pipeline import Pipeline as V8
         candidate = "하루 이체 한도는 10만 원이에요. 천천히 확인해 보세요."
-        llm = FakeLLM({prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+        llm = FakeLLM({prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
                        prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["하루 이체 한도는 10만 원이에요"]}'})
         state = asyncio.run(V8(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": candidate}))
         out = state.to_guard_response()["output"]
@@ -336,7 +336,7 @@ class VxTest(unittest.TestCase):
         return type("VxCase", (Vx,), switches)
 
     def base(self, **more):
-        replies = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
+        replies = {prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER, prompts.MATERIAL_SYSTEM: FOUND,
                    prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["하루 이체 한도는 10만 원이에요"]}'}
         replies.update(more)
         return replies
@@ -355,30 +355,30 @@ class VxTest(unittest.TestCase):
         llm = FakeLLM(self.base(**{vx_prompts.BLOCK_KB: NONE_BLOCK}))
         self.guard(self.make(curriculum=True), llm)
         self.assertIn(vx_prompts.BLOCK_KB, llm.calls)
-        self.assertNotIn(prompts.BLOCK_SYSTEM, llm.calls)
+        self.assertNotIn(prompts.BLOCK_SYSTEM_LEGACY, llm.calls)
 
     def test_two_stage_second_call_only_when_gate_blocks(self):
         from pipelines.vx import prompts as vx_prompts
-        gate = vx_prompts.gate_of(prompts.BLOCK_SYSTEM)
+        gate = vx_prompts.gate_of(prompts.BLOCK_SYSTEM_LEGACY)
         llm = FakeLLM(self.base(**{gate: '{"block": false, "confidence": 90}'}))
         state = self.guard(self.make(two_stage=True), llm)
-        self.assertNotIn(prompts.BLOCK_SYSTEM, llm.calls)
+        self.assertNotIn(prompts.BLOCK_SYSTEM_LEGACY, llm.calls)
         self.assertEqual(state.decision.value, "allow")
-        llm = FakeLLM(self.base(**{gate: '{"block": true, "confidence": 90}', prompts.BLOCK_SYSTEM: '{"category": "off_topic"}'}))
+        llm = FakeLLM(self.base(**{gate: '{"block": true, "confidence": 90}', prompts.BLOCK_SYSTEM_LEGACY: '{"category": "off_topic"}'}))
         state = self.guard(self.make(two_stage=True), llm)
         self.assertEqual(state.category.value, "off_topic")
 
     def test_low_confidence_flag_is_dropped(self):
-        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 70}'}))
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "off_topic", "confidence": 70}'}))
         self.assertEqual(self.guard(self.make(min_conf=85), llm).decision.value, "allow")
-        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 90}'}))
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "off_topic", "confidence": 90}'}))
         self.assertEqual(self.guard(self.make(min_conf=85), llm).decision.value, "block")
 
     def test_kept_category_survives_low_confidence(self):
         cls = self.make(min_conf=85, conf_keep=frozenset({"harmful_request"}))
-        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "harmful_request", "confidence": 70}'}))
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "harmful_request", "confidence": 70}'}))
         self.assertEqual(self.guard(cls, llm).decision.value, "block")
-        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM: '{"category": "off_topic", "confidence": 70}'}))
+        llm = FakeLLM(self.base(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "off_topic", "confidence": 70}'}))
         self.assertEqual(self.guard(cls, llm).decision.value, "allow")
 
     def test_material_prompt_without_section(self):
@@ -393,7 +393,7 @@ class VxTest(unittest.TestCase):
     def test_recheck_calls_twice_when_answers_agree(self):
         llm = FakeLLM(self.base())
         self.guard(self.make(input_recheck=True), llm)
-        self.assertEqual(llm.calls.count(prompts.BLOCK_SYSTEM), 2)
+        self.assertEqual(llm.calls.count(prompts.BLOCK_SYSTEM_LEGACY), 2)
         self.assertEqual(llm.calls.count(prompts.OTHER_SYSTEM), 2)
 
     def test_number_hint_and_two_sections(self):
@@ -434,7 +434,7 @@ class V9V10Test(unittest.TestCase):
         self.V9, self.V10, self.material = V9, V10, v9_prompts.MATERIAL_SYSTEM
 
     def replies(self, **more):
-        base = {prompts.BLOCK_SYSTEM: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
+        base = {prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
                 self.material: '{"asked": "한도", "quote": "하루 이체 한도는 5만 원", "confidence": 90}',
                 prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["하루 이체 한도는 10만 원이에요"]}'}
         base.update(more)
@@ -460,22 +460,22 @@ class V9V10Test(unittest.TestCase):
 
     def test_v10_drops_unsure_flags_in_three_categories(self):
         for category in ("jailbreak_injection", "academic_dishonesty"):
-            low = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "%s", "confidence": 80}' % category}))
+            low = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "%s", "confidence": 80}' % category}))
             self.assertEqual(self.guard(self.V10, low).decision.value, "allow", category)
-            high = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "%s", "confidence": 85}' % category}))
+            high = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "%s", "confidence": 85}' % category}))
             self.assertEqual(self.guard(self.V10, high).decision.value, "block", category)
         low = FakeLLM(self.replies(**{prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "confidence": 70, "self_info": false}'}))
         self.assertEqual(self.guard(self.V10, low).category.value, "normal")
 
     def test_v10_keeps_other_categories_even_when_unsure(self):
         for category, decision in (("harmful_request", "block"), ("harmful_speech", "block"), ("off_topic", "block")):
-            llm = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "%s", "confidence": 60}' % category}))
+            llm = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "%s", "confidence": 60}' % category}))
             self.assertEqual(self.guard(self.V10, llm).decision.value, decision, category)
         llm = FakeLLM(self.replies(**{prompts.OTHER_SYSTEM: '{"category": "low_signal_input", "confidence": 60, "self_info": false}'}))
         self.assertEqual(self.guard(self.V10, llm).category.value, "low_signal_input")
 
     def test_v9_does_not_drop_unsure_flags(self):
-        llm = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM: '{"category": "jailbreak_injection", "confidence": 60}'}))
+        llm = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "jailbreak_injection", "confidence": 60}'}))
         self.assertEqual(self.guard(self.V9, llm).decision.value, "block")
 
 

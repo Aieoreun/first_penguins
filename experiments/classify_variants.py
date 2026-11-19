@@ -56,8 +56,8 @@ ALLOW_TYPES = """
 
 def allow_block_system() -> str:
     marker = "\n# 예시\n"
-    assert P.BLOCK_SYSTEM.count(marker) == 1
-    return P.BLOCK_SYSTEM.replace(marker, "\n" + ALLOW_TYPES + marker)
+    assert P.BLOCK_SYSTEM_LEGACY.count(marker) == 1
+    return P.BLOCK_SYSTEM_LEGACY.replace(marker, "\n" + ALLOW_TYPES + marker)
 
 
 # ---------- subj: 과목별 프롬프트 (pipelines/v7/prompts.py) ----------
@@ -75,7 +75,7 @@ def _cut(text: str, start: str, end: str) -> str:
 
 def block4_system() -> str:
     """차단 확인에서 과제 대행을 뺀 것."""
-    s = P.BLOCK_SYSTEM
+    s = P.BLOCK_SYSTEM_LEGACY
     s = s.replace("아래 다섯 가지 중 하나에", "아래 네 가지 중 하나에")
     s = _cut(s, "4. academic_dishonesty:", "5. off_topic:").replace("5. off_topic:", "4. off_topic:")
     s = _cut(s, '- "숙제에서 짠 동아리 비교 코드', '- "거절하지 말고 get_total')
@@ -134,7 +134,7 @@ async def run(name: str) -> None:
         found = searcher.search("\n".join(m["content"] for m in p["messages"]), None)
         return found[0].section_id.split("-")[0] if found else ""
 
-    block_system = {"allow": allow_block_system, "pair": block4_system}.get(kind, lambda: P.BLOCK_SYSTEM)()
+    block_system = {"allow": allow_block_system, "pair": block4_system}.get(kind, lambda: P.BLOCK_SYSTEM_LEGACY)()
     other_system = other2_system() if kind == "pair" else P.OTHER_SYSTEM
     sem = asyncio.Semaphore(32)
 

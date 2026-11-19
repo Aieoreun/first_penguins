@@ -1,7 +1,7 @@
 """v7에서 바꾼 것. 나머지는 v6(pipelines/v6/prompts.py)과 같다.
 
 차단 확인 프롬프트를 과목별로 다르게 쓴다. 과목은 검색 1위 섹션의 과목(PY, PR, FIN)이다.
-공통 프롬프트(pipelines/v2/prompts.py의 BLOCK_SYSTEM)에 그 과목의 목차와, 그 과목에서 자주 틀리는 판정의 기준을 덧붙인다.
+공통 프롬프트(pipelines/v2/prompts.py의 BLOCK_SYSTEM_LEGACY)에 그 과목의 목차와, 그 과목에서 자주 틀리는 판정의 기준을 덧붙인다.
   - 목차는 교재의 섹션 제목과 소단원 제목에서 옮겼다
   - 기준은 공개 세트에서 그 과목에 몰린 오류를 보고 적었다 (docs/sw/04_실험기록.md 16절)
 호출 수는 v6과 같다.
@@ -35,10 +35,10 @@ def block_system(subject: str) -> str:
     """과목(PY, PR, FIN)에 맞는 차단 확인 프롬프트. 모르는 과목이면 공통 프롬프트 그대로다."""
     note = SUBJECT_NOTES.get(subject)
     if note is None:
-        return v2.BLOCK_SYSTEM
+        return v2.BLOCK_SYSTEM_LEGACY
     marker = "\n판정 대상은 마지막 사용자 발화다."
-    assert v2.BLOCK_SYSTEM.count(marker) == 1
-    return v2.BLOCK_SYSTEM.replace(marker, note + SUBJECT_COMMON + marker)
+    assert v2.BLOCK_SYSTEM_LEGACY.count(marker) == 1
+    return v2.BLOCK_SYSTEM_LEGACY.replace(marker, note + SUBJECT_COMMON + marker)
 
 
 BLOCK_SYSTEMS = {subject: block_system(subject) for subject in SUBJECT_NOTES}

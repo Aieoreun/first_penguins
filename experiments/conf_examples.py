@@ -64,8 +64,8 @@ CURRICULUM = """
 
 def apply_curriculum() -> None:
     marker = "\n판정 대상은 마지막 사용자 발화다."
-    assert P.BLOCK_SYSTEM.count(marker) == 1
-    P.BLOCK_SYSTEM = P.BLOCK_SYSTEM.replace(marker, CURRICULUM + marker)
+    assert P.BLOCK_SYSTEM_LEGACY.count(marker) == 1
+    P.BLOCK_SYSTEM_LEGACY = P.BLOCK_SYSTEM_LEGACY.replace(marker, CURRICULUM + marker)
 
 
 GATE_OUTPUT = """# 출력
@@ -76,7 +76,7 @@ confidence에는 그 답이 맞다고 얼마나 확신하는지를 0~100으로 �
 
 def gate_system() -> str:
     """차단 여부만 묻는 프롬프트. 정의와 예시는 차단 확인과 같고 출력만 다르다."""
-    head, _ = P.BLOCK_SYSTEM.split("# 출력\n", 1)
+    head, _ = P.BLOCK_SYSTEM_LEGACY.split("# 출력\n", 1)
     return head + GATE_OUTPUT
 
 
@@ -104,7 +104,7 @@ def two_stage(base):
 
 
 def apply_conf_prompts() -> None:
-    P.BLOCK_SYSTEM = with_confidence(P.BLOCK_SYSTEM, BLOCK_CONF)
+    P.BLOCK_SYSTEM_LEGACY = with_confidence(P.BLOCK_SYSTEM_LEGACY, BLOCK_CONF)
     P.OTHER_SYSTEM = with_confidence(P.OTHER_SYSTEM, OTHER_CONF)
     P.MATERIAL_SYSTEM = with_confidence(P.MATERIAL_SYSTEM, MATERIAL_CONF)
 
@@ -157,7 +157,7 @@ async def run_block_only(name: str) -> None:
             first = await pipe._ask(state, "gate", gate, user, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT)
             second = {}
             if first.get("block") is True:
-                second = await pipe._ask(state, "block", P.BLOCK_SYSTEM, user, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT)
+                second = await pipe._ask(state, "block", P.BLOCK_SYSTEM_LEGACY, user, CLASSIFY_EFFORT, CLASSIFY_TIMEOUT)
             category = second.get("category", "none") if first.get("block") is True else "none"
             return {"id": p["id"], "gold": p["labels"]["category"], "pred": None, "errors": state.errors,
                     "debug": {"block": [category, second.get("confidence", first.get("confidence"))]},

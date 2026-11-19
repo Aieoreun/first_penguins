@@ -1,0 +1,180 @@
+"""Test a confidence-gated scratch classifier against recorded LLM predictions.
+
+Only public classification labels are used. This produces offline diagnostics,
+not model artifacts. Fold vocabularies and models never see their test rows;
+the public set has already been inspected during prompt development.
+"""
+import argparse
+import hashlib
+import json
+import re
+import sys
+import subprocess
+import unicodedata
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.model_selection import StratifiedGroupKFold
+from threadpoolctl import threadpool_limits
+from core.schema import POLICY, parse_label
+from pipelines.kimjaehak.gate_features import FEATURES, vectorizer as build_vectorizer
+
+BLOCKED = {"harmful_content", "academic_dishonesty", "jailbreak_injection", "off_topic"}
+
+
+def run(source=None, exclude_harmful=False, augmentation=None, augmentation_weight=.5,
+        regularizations=(10, 100, 300, 1000), features="char", text_mode="last"):
+    paths = [ROOT / "public" / f"{e}.jsonl" for e in ("tutor", "guard")]
+    rows = [p for path in paths for p in map(json.loads, path.read_text().splitlines())]
+    texts = [next(m["content"] for m in reversed(p["messages"]) if m["role"] == "user") for p in rows]
+    # Keep the original last-user similarity grouping fixed across modes.
+    training_texts = texts if text_mode == "last" else [
+        "\n".join(f"{m['role']}: {m['content']}" for m in row["messages"][-5:]) for row in rows]
+    y = np.array([p["labels"]["category"] for p in rows])
+    augmented, augmentation_meta = {}, None
+    if augmentation:
+        def normalized(text):
+            return re.sub(r"[\W_]+", "", unicodedata.normalize("NFKC",text).casefold())
+        originals = {normalized(text) for text in texts}
+        raw_examples = 0
+        metadata = json.loads((augmentation.parent / "manifest.json").read_text())
+        expected = {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+        if metadata.get("scope") != "provided_llm_public_paraphrases" or metadata["public_hashes"] != expected:
+            raise ValueError("Augmentation provenance does not match bundled public data")
+        categories = {row["id"]:row["labels"]["category"] for row in rows}
+        for row in map(json.loads,augmentation.read_text().splitlines()):
+            if row["source_id"] not in categories or categories[row["source_id"]] != row["category"]:
+                raise ValueError("Augmented source/category mismatch")
+            if row["source_id"] in augmented:
+                raise ValueError("Duplicate augmented source")
+            values = row["paraphrases"] if row["error"] is None else []
+            raw_examples += len(values)
+            # Remove punctuation-only copies of any public original, not just
+            # the source, before defining validation folds.
+            augmented[row["source_id"]] = [text for text in values if normalized(text) not in originals] \
+                if row["category"] != "low_signal_input" else []
+        if set(augmented) != set(metadata["source_ids"]):
+            raise ValueError("Augmentation collection is incomplete")
+        augmentation_meta = {"path":str(augmentation.relative_to(ROOT)),
+            "sha256":hashlib.sha256(augmentation.read_bytes()).hexdigest(),"model":metadata["model"],
+            "examples":sum(map(len,augmented.values())),"raw_examples":raw_examples,"sample_weight":augmentation_weight,
+            "excluded_categories":["low_signal_input"]}
+    size = len(rows)
+    groups = list(range(size))
+    def find(i):
+        while groups[i] != i:
+            groups[i] = groups[groups[i]]
+            i = groups[i]
+        return i
+    near = TfidfVectorizer(analyzer="char", ngram_range=(3, 5)).fit_transform(texts)
+    similarity = (near @ near.T).toarray()
+    for i in range(size):
+        for j in range(i):
+            if similarity[i, j] >= .82:
+                groups[find(i)] = find(j)
+    groups = [find(i) for i in range(size)]
+    folds = list(StratifiedGroupKFold(5, shuffle=True, random_state=20261116).split(texts, y, groups))
+    source = source or ROOT / "experiments/.cache/jh_full_voted_true64/jh_voted_1/responses.jsonl"
+    recorded = {r["id"]: r["response"] for r in map(json.loads, source.read_text().splitlines())}
+    guard = np.array([p["endpoint"] == "guard" for p in rows])
+    baseline = np.array([recorded[p["id"]]["input"]["category"] if p["endpoint"] == "guard" else "" for p in rows])
+    def metrics(pred):
+        tutor_actions = []
+        for i, row in enumerate(rows):
+            if guard[i]:
+                continue
+            label = parse_label(str(pred[i]))
+            action = POLICY[label].action.value if label is not None else recorded[row["id"]]["action"]
+            tutor_actions.append(action == row["labels"]["action"])
+        gold, pred = y[guard], pred[guard]
+        return {"category_accuracy_non_normal": float(accuracy_score(gold[gold != "normal"], pred[gold != "normal"])),
+                "block_f1": float(f1_score([v in BLOCKED for v in gold], [v in BLOCKED for v in pred])),
+                "tutor_action_accuracy": sum(tutor_actions) / len(tutor_actions)}
+    reports = []
+    for c in regularizations:
+        predicted, confidence = np.empty(size, dtype=object), np.zeros(size)
+        def fit(indices):
+            fit_texts = [training_texts[i] for i in indices]
+            fit_labels = [y[i] for i in indices]
+            weights = [1.] * len(indices)
+            # Only descendants of the training indices enter this fold.
+            for i in indices:
+                additions = augmented.get(rows[i]["id"], [])
+                fit_texts.extend(additions)
+                fit_labels.extend([y[i]] * len(additions))
+                weights.extend([augmentation_weight] * len(additions))
+            vectorizer = build_vectorizer(features)
+            x = vectorizer.fit_transform(fit_texts)
+            model = LogisticRegression(C=c, max_iter=500, class_weight="balanced").fit(x, fit_labels, sample_weight=weights)
+            return vectorizer, model
+        for train, test in folds:
+            assert not set(groups[i] for i in train).intersection(groups[i] for i in test)
+            vectorizer, model = fit(train)
+            probability = model.predict_proba(vectorizer.transform([training_texts[i] for i in test]))
+            predicted[test] = model.classes_[probability.argmax(axis=1)]
+            confidence[test] = probability.max(axis=1)
+        vectorizer, model = fit(np.arange(size))
+        train_probability = model.predict_proba(vectorizer.transform(training_texts))
+        train_prediction = model.classes_[train_probability.argmax(axis=1)]
+        report = {"C": c, "out_of_fold_accuracy": float(accuracy_score(y, predicted)),
+                  "training_accuracy": float(accuracy_score(y, train_prediction)), "gates": {}}
+        for threshold in (.9, .95, .98, .995):
+            mask = confidence >= threshold
+            if exclude_harmful:
+                mask &= predicted != "harmful_content"
+            combined = np.where(mask, predicted, baseline)
+            train_mask = train_probability.max(axis=1) >= threshold
+            if exclude_harmful:
+                train_mask &= train_prediction != "harmful_content"
+            report["gates"][str(threshold)] = {
+                "oof_coverage": int(mask.sum()), "oof_selected_accuracy": float(accuracy_score(y[mask], predicted[mask])) if mask.any() else None,
+                "guard_replacements": int((guard & mask & (predicted != baseline)).sum()),
+                "combined_guard_input": metrics(combined), "training_coverage": int(train_mask.sum()),
+                "training_combined": metrics(np.where(train_mask, train_prediction, baseline)),
+                "training_selected_accuracy": float(accuracy_score(y[train_mask], train_prediction[train_mask])) if train_mask.any() else None}
+        reports.append(report)
+        print(json.dumps(report), flush=True)
+    return {"scope": "public_grouped_oof_gate_diagnostic", "groups": len(set(groups)),
+            "analysis_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
+            "exclude_harmful": exclude_harmful, "features": features, "text_mode": text_mode,
+            "augmentation":augmentation_meta,
+            "baseline": metrics(baseline), "source": str(source.relative_to(ROOT)),
+            "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            "public_hashes": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}, "reports": reports}
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path)
+    parser.add_argument("--exclude-harmful", action="store_true")
+    parser.add_argument("--augmentation", type=Path)
+    parser.add_argument("--augmentation-weight", type=float, default=.5)
+    parser.add_argument("--regularizations", type=float, nargs="+", default=[10, 100, 300, 1000])
+    parser.add_argument("--features", choices=FEATURES, default="char")
+    parser.add_argument("--text-mode", choices=("last", "recent_conversation"), default="last")
+    parser.add_argument("--output", type=Path, default=ROOT / "experiments/.cache/jh_gate_cv")
+    args = parser.parse_args()
+    if not 0 < args.augmentation_weight <= 1:
+        parser.error("Augmentation weight must be in (0, 1]")
+    if not all(0 < c <= 1e6 for c in args.regularizations):
+        parser.error("Regularization values must be in (0, 1000000]")
+    source = args.source.resolve() if args.source else None
+    augmentation = args.augmentation.resolve() if args.augmentation else None
+    if augmentation and args.text_mode != "last":
+        parser.error("Paraphrase augmentation is supported only for last-user features")
+    if source and not source.is_relative_to(ROOT / "experiments/.cache"):
+        parser.error("Only local public recordings are supported")
+    if augmentation and not augmentation.is_relative_to(ROOT / "experiments/.cache"):
+        parser.error("Only recorded public augmentations are supported")
+    with threadpool_limits(limits=1):
+        data = run(source, args.exclude_harmful, augmentation, args.augmentation_weight,
+                   args.regularizations, args.features, args.text_mode)
+    dest = args.output
+    dest.mkdir(exist_ok=True)
+    (dest / "result.json").write_text(json.dumps(data, indent=2) + "\n")
