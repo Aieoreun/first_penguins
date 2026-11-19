@@ -1,0 +1,101 @@
+{
+  "scope": "fixed_public_judgment_counterfactual_not_live_not_private",
+  "api_calls": 0,
+  "evaluation_code_unchanged": true,
+  "runs": [
+    {
+      "run": "jh_tutor_mlp_r7_t05",
+      "dataset_sha256": "f91b89fdb419f994b0041f9a86f14f472877c14ab8dfb7d0ef1fcced87230af6",
+      "order": [
+        "cm_char_mlp50",
+        "r7_calc_compact",
+        "r7_numeric_compact",
+        "r7_apply_scoped"
+      ],
+      "identical_judge_payloads_repeated": 219,
+      "repeated_payloads_with_differing_judgments": 5,
+      "candidates": [
+        {
+          "candidate": "cm_char_mlp50",
+          "live_tutor": 94.92,
+          "replayed": {
+            "first_observed": {
+              "tutor": 94.92,
+              "guard": 0.0,
+              "total": 47.46,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 95.7,
+              "guard": 0.0,
+              "total": 47.85,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_calc_compact",
+          "live_tutor": 96.88,
+          "replayed": {
+            "first_observed": {
+              "tutor": 96.09,
+              "guard": 0.0,
+              "total": 48.05,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 97.01,
+              "guard": 0.0,
+              "total": 48.51,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_numeric_compact",
+          "live_tutor": 94.53,
+          "replayed": {
+            "first_observed": {
+              "tutor": 93.88,
+              "guard": 0.0,
+              "total": 46.94,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 94.66,
+              "guard": 0.0,
+              "total": 47.33,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        },
+        {
+          "candidate": "r7_apply_scoped",
+          "live_tutor": 96.22,
+          "replayed": {
+            "first_observed": {
+              "tutor": 95.57,
+              "guard": 0.0,
+              "total": 47.78,
+              "invalid": 0,
+              "judge_errors": 0
+            },
+            "last_observed": {
+              "tutor": 96.22,
+              "guard": 0.0,
+              "total": 48.11,
+              "invalid": 0,
+              "judge_errors": 0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

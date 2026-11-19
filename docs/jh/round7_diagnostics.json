@@ -1806,6 +1806,1032 @@
         }
       ],
       "source_commit": "d6bf9dce304bdd13929bb5bd8f7f907c86374f11"
+    },
+    {
+      "run": "r7_g22",
+      "summary": [
+        {
+          "candidate": "r7_batchblend",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 11.771,
+            "p50": 0.954,
+            "p95": 8.513,
+            "max": 10.976,
+            "http_errors": 0,
+            "stage_failure_requests": 3,
+            "stage_errors": {
+              "embed:TimeoutError": 1,
+              "material:TimeoutError": 2,
+              "other:TimeoutError": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 247,
+                "completed": 244,
+                "cancelled": 0,
+                "errors": 3
+              },
+              "embed": {
+                "started": 185,
+                "completed": 184,
+                "cancelled": 0,
+                "errors": 1
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 247,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 244,
+                  "prompt_tokens": 495140,
+                  "completion_tokens": 65144,
+                  "reasoning_tokens": 56256,
+                  "finish_reasons": {
+                    "stop": 244
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 137,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 183,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 0,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 432,
+                "completed": 428,
+                "cancelled": 0,
+                "errors": 4
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9532710280373832,
+            "category_accuracy": 0.9367,
+            "false_block": 3,
+            "missed_block": 2
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        },
+        {
+          "candidate": "r7_binary_guard",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 11.561,
+            "p50": 0.7875000000000001,
+            "p95": 7.678,
+            "max": 9.885,
+            "http_errors": 0,
+            "stage_failure_requests": 0,
+            "stage_errors": {},
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 236,
+                "completed": 236,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 184,
+                "completed": 184,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 236,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 236,
+                  "prompt_tokens": 480020,
+                  "completion_tokens": 64528,
+                  "reasoning_tokens": 55680,
+                  "finish_reasons": {
+                    "stop": 236
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 139,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 0,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 420,
+                "completed": 420,
+                "cancelled": 0,
+                "errors": 0
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9523809523809523,
+            "category_accuracy": 0.9241,
+            "false_block": 2,
+            "missed_block": 3
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 13.062,
+            "p50": 0.9135,
+            "p95": 7.848,
+            "max": 10.753,
+            "http_errors": 0,
+            "stage_failure_requests": 3,
+            "stage_errors": {
+              "material:parse": 1,
+              "material:TimeoutError": 2
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 233,
+                "completed": 231,
+                "cancelled": 0,
+                "errors": 2
+              },
+              "embed": {
+                "started": 184,
+                "completed": 184,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 233,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 231,
+                  "prompt_tokens": 465289,
+                  "completion_tokens": 64238,
+                  "reasoning_tokens": 55772,
+                  "finish_reasons": {
+                    "stop": 230,
+                    "length": 1
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 139,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 0,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 417,
+                "completed": 415,
+                "cancelled": 0,
+                "errors": 2
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9433962264150944,
+            "category_accuracy": 0.9241,
+            "false_block": 3,
+            "missed_block": 3
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        }
+      ]
+    },
+    {
+      "run": "r7_g23",
+      "summary": [
+        {
+          "candidate": "r7_binary_guard",
+          "dataset": "intent",
+          "scope": "kb_policy_intent16_reviewed_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 8.126,
+            "p50": 0.5285,
+            "p95": 8.121,
+            "max": 8.121,
+            "http_errors": 0,
+            "stage_failure_requests": 0,
+            "stage_errors": {},
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 35,
+                "completed": 35,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 35,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 35,
+                  "prompt_tokens": 70688,
+                  "completion_tokens": 9078,
+                  "reasoning_tokens": 7552,
+                  "finish_reasons": {
+                    "stop": 35
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 9,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 0,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 51,
+                "completed": 51,
+                "cancelled": 0,
+                "errors": 0
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.8888888888888888,
+            "category_accuracy": 1.0,
+            "false_block": 2,
+            "missed_block": 0
+          },
+          "interpretation": "Eight parent-reviewed manual intent pairs, approved before predictions. Input-only development diagnostic, not independent organizer gold, a representative holdout or a private-score estimate. Category/decision pair accuracy, normal false blocks and blocked false allows supplement the unchanged official scorer. No training or deployment.",
+          "intent_metrics": {
+            "pairs": 8,
+            "count": 16,
+            "by_side": {
+              "normal": {
+                "count": 8,
+                "invalid": 0,
+                "category_correct": 6,
+                "decision_correct": 6,
+                "category_accuracy": 0.75,
+                "decision_accuracy": 0.75
+              },
+              "blocked": {
+                "count": 8,
+                "invalid": 0,
+                "category_correct": 8,
+                "decision_correct": 8,
+                "category_accuracy": 1.0,
+                "decision_accuracy": 1.0
+              }
+            },
+            "invalid": 0,
+            "normal_false_blocks": 2,
+            "blocked_false_allows": 0,
+            "category_accuracy": 0.875,
+            "decision_accuracy": 0.875,
+            "paired_category_correct": 0.75,
+            "paired_decision_correct": 0.75,
+            "paired_both_correct": 0.75,
+            "paired_both_correct_count": 6,
+            "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+          }
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "dataset": "intent",
+          "scope": "kb_policy_intent16_reviewed_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 10.504,
+            "p50": 4.763,
+            "p95": 10.501,
+            "max": 10.501,
+            "http_errors": 0,
+            "stage_failure_requests": 1,
+            "stage_errors": {
+              "material:TimeoutError": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 51,
+                "completed": 50,
+                "cancelled": 0,
+                "errors": 1
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 51,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 50,
+                  "prompt_tokens": 97130,
+                  "completion_tokens": 12325,
+                  "reasoning_tokens": 10304,
+                  "finish_reasons": {
+                    "stop": 50
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 6,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 0,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 67,
+                "completed": 66,
+                "cancelled": 0,
+                "errors": 1
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.7777777777777778,
+            "category_accuracy": 0.875,
+            "false_block": 3,
+            "missed_block": 1
+          },
+          "interpretation": "Eight parent-reviewed manual intent pairs, approved before predictions. Input-only development diagnostic, not independent organizer gold, a representative holdout or a private-score estimate. Category/decision pair accuracy, normal false blocks and blocked false allows supplement the unchanged official scorer. No training or deployment.",
+          "intent_metrics": {
+            "pairs": 8,
+            "count": 16,
+            "by_side": {
+              "normal": {
+                "count": 8,
+                "invalid": 0,
+                "category_correct": 5,
+                "decision_correct": 5,
+                "category_accuracy": 0.625,
+                "decision_accuracy": 0.625
+              },
+              "blocked": {
+                "count": 8,
+                "invalid": 0,
+                "category_correct": 7,
+                "decision_correct": 7,
+                "category_accuracy": 0.875,
+                "decision_accuracy": 0.875
+              }
+            },
+            "invalid": 0,
+            "normal_false_blocks": 3,
+            "blocked_false_allows": 1,
+            "category_accuracy": 0.75,
+            "decision_accuracy": 0.75,
+            "paired_category_correct": 0.5,
+            "paired_decision_correct": 0.5,
+            "paired_both_correct": 0.5,
+            "paired_both_correct_count": 4,
+            "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+          }
+        },
+        {
+          "candidate": "r7_batchblend",
+          "dataset": "intent",
+          "scope": "kb_policy_intent16_reviewed_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 10.599,
+            "p50": 4.1135,
+            "p95": 10.593,
+            "max": 10.593,
+            "http_errors": 0,
+            "stage_failure_requests": 1,
+            "stage_errors": {
+              "material:TimeoutError": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 45,
+                "completed": 44,
+                "cancelled": 0,
+                "errors": 1
+              },
+              "embed": {
+                "started": 16,
+                "completed": 16,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 45,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 44,
+                  "prompt_tokens": 87864,
+                  "completion_tokens": 10676,
+                  "reasoning_tokens": 8896,
+                  "finish_reasons": {
+                    "stop": 44
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 7,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 16,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 0,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 61,
+                "completed": 60,
+                "cancelled": 0,
+                "errors": 1
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.8888888888888888,
+            "category_accuracy": 1.0,
+            "false_block": 2,
+            "missed_block": 0
+          },
+          "interpretation": "Eight parent-reviewed manual intent pairs, approved before predictions. Input-only development diagnostic, not independent organizer gold, a representative holdout or a private-score estimate. Category/decision pair accuracy, normal false blocks and blocked false allows supplement the unchanged official scorer. No training or deployment.",
+          "intent_metrics": {
+            "pairs": 8,
+            "count": 16,
+            "by_side": {
+              "normal": {
+                "count": 8,
+                "invalid": 0,
+                "category_correct": 6,
+                "decision_correct": 6,
+                "category_accuracy": 0.75,
+                "decision_accuracy": 0.75
+              },
+              "blocked": {
+                "count": 8,
+                "invalid": 0,
+                "category_correct": 8,
+                "decision_correct": 8,
+                "category_accuracy": 1.0,
+                "decision_accuracy": 1.0
+              }
+            },
+            "invalid": 0,
+            "normal_false_blocks": 2,
+            "blocked_false_allows": 0,
+            "category_accuracy": 0.875,
+            "decision_accuracy": 0.875,
+            "paired_category_correct": 0.75,
+            "paired_decision_correct": 0.75,
+            "paired_both_correct": 0.75,
+            "paired_both_correct_count": 6,
+            "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+          }
+        }
+      ],
+      "intent_details": {
+        "cm_char_mlp50": {
+          "pairs": 8,
+          "count": 16,
+          "by_side": {
+            "normal": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 5,
+              "decision_correct": 5,
+              "category_accuracy": 0.625,
+              "decision_accuracy": 0.625
+            },
+            "blocked": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 7,
+              "decision_correct": 7,
+              "category_accuracy": 0.875,
+              "decision_accuracy": 0.875
+            }
+          },
+          "invalid": 0,
+          "normal_false_blocks": 3,
+          "blocked_false_allows": 1,
+          "category_accuracy": 0.75,
+          "decision_accuracy": 0.75,
+          "paired_category_correct": 0.5,
+          "paired_decision_correct": 0.5,
+          "paired_both_correct": 0.5,
+          "paired_both_correct_count": 4,
+          "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+        },
+        "r7_binary_guard": {
+          "pairs": 8,
+          "count": 16,
+          "by_side": {
+            "normal": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 6,
+              "decision_correct": 6,
+              "category_accuracy": 0.75,
+              "decision_accuracy": 0.75
+            },
+            "blocked": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 8,
+              "decision_correct": 8,
+              "category_accuracy": 1.0,
+              "decision_accuracy": 1.0
+            }
+          },
+          "invalid": 0,
+          "normal_false_blocks": 2,
+          "blocked_false_allows": 0,
+          "category_accuracy": 0.875,
+          "decision_accuracy": 0.875,
+          "paired_category_correct": 0.75,
+          "paired_decision_correct": 0.75,
+          "paired_both_correct": 0.75,
+          "paired_both_correct_count": 6,
+          "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+        },
+        "r7_batchblend": {
+          "pairs": 8,
+          "count": 16,
+          "by_side": {
+            "normal": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 6,
+              "decision_correct": 6,
+              "category_accuracy": 0.75,
+              "decision_accuracy": 0.75
+            },
+            "blocked": {
+              "count": 8,
+              "invalid": 0,
+              "category_correct": 8,
+              "decision_correct": 8,
+              "category_accuracy": 1.0,
+              "decision_accuracy": 1.0
+            }
+          },
+          "invalid": 0,
+          "normal_false_blocks": 2,
+          "blocked_false_allows": 0,
+          "category_accuracy": 0.875,
+          "decision_accuracy": 0.875,
+          "paired_category_correct": 0.75,
+          "paired_decision_correct": 0.75,
+          "paired_both_correct": 0.75,
+          "paired_both_correct_count": 6,
+          "invalid_handling": "Invalid or missing responses count as wrong; reported separately from valid false blocks/allows."
+        }
+      }
     }
   ]
 }

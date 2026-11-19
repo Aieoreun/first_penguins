@@ -1,0 +1,143 @@
+{
+  "scope": "postselected_same_predicted_action_source_excerpt_not_causal_not_holdout",
+  "runs": [
+    {
+      "candidate": "r7_calc_compact",
+      "baseline_eligible": 7,
+      "same_action_source_excerpt_count": 7,
+      "sum_point_delta": -25.0,
+      "wins": 0,
+      "losses": 1,
+      "ties": 6,
+      "points": [
+        {
+          "id": "pub-cf40a8a8-p0",
+          "A": 100.0,
+          "B": 75.0
+        },
+        {
+          "id": "pub-b5e63ce7-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-f0d996d9-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-332c0eee-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-a61fb34e-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-61901227-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-214d91ad-p0",
+          "A": 100.0,
+          "B": 100.0
+        }
+      ]
+    },
+    {
+      "candidate": "r7_numeric_compact",
+      "baseline_eligible": 7,
+      "same_action_source_excerpt_count": 7,
+      "sum_point_delta": -25.0,
+      "wins": 0,
+      "losses": 1,
+      "ties": 6,
+      "points": [
+        {
+          "id": "pub-cf40a8a8-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-b5e63ce7-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-f0d996d9-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-332c0eee-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-a61fb34e-p0",
+          "A": 100.0,
+          "B": 75.0
+        },
+        {
+          "id": "pub-61901227-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-214d91ad-p0",
+          "A": 100.0,
+          "B": 100.0
+        }
+      ]
+    },
+    {
+      "candidate": "r7_apply_scoped",
+      "baseline_eligible": 7,
+      "same_action_source_excerpt_count": 7,
+      "sum_point_delta": -25.0,
+      "wins": 0,
+      "losses": 1,
+      "ties": 6,
+      "points": [
+        {
+          "id": "pub-cf40a8a8-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-b5e63ce7-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-f0d996d9-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-332c0eee-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-a61fb34e-p0",
+          "A": 100.0,
+          "B": 100.0
+        },
+        {
+          "id": "pub-61901227-p0",
+          "A": 100.0,
+          "B": 75.0
+        },
+        {
+          "id": "pub-214d91ad-p0",
+          "A": 100.0,
+          "B": 100.0
+        }
+      ]
+    }
+  ]
+}

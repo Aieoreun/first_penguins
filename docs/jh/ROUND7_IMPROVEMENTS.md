@@ -437,3 +437,57 @@ numeric05 A74.74/9.698초, scoped85.68/18.364초, structured84.90/17.370초, sco
 - `jh_r7_calc_compact`: 근거 구절 복사 필드를 없애고 항목명·식·단위만 출력한다. 규칙 이름의 숫자를 허용하되 답의 계산값은 계속 제한 계산기로 만든다.
 - `jh_r7_material_verdict`: 기존 튜터 material 호출에서 질문 속성과 sufficient/missing_material/missing_question_values를 명시한다. missing_material일 때만 quote를 비워 기존 OOM 경로로 보내며, 학습 gate가 생략한 호출을 새로 추가하지 않는다.
 - g19 일반196 A/early/prefix1/prefix3, g20 novel60 early/adaptive3/A, numeric06 A/noquote/compact/verdict, contrast2 verdict/compact/A. 각 결과를 보고 다음 후보를 선택하며 API·CPU 수집을 겹치지 않는다. 전체940테스트 통과, 현재 잔여45%.
+
+## g19/g20와 동일 근거 판정 재생
+
+g19 일반196은 A96.25/17.229초, early_consensus95.50/17.058초, task_examples1 95.93/15.696초, task_examples3 94.74/16.819초였다. 입력 false block/missed block은 각각3/2,3/4,3/3,5/4로 예시 추가를 채택할 근거가 없다. early는 채팅 시작633회 중96회를 취소했고 A는636회 중14회를 취소했다. 시작 호출 수 절감이 아니며, 가드 grounded/span 정확도는 A .9647에서 early .9765로 올랐지만 입력 오류가 늘어 전체는 하락했다.
+
+g20 novel60은 early98.09, adaptive3 98.83, A98.22였다. 전체 파이프라인에서 입력 판정과 근거 판정이 함께 흔들리므로 일정한 점수 상승이라고 주장하지 않는다.
+
+이를 분리하기 위해 `jh_round7_vote_component.py`로 A가 ALLOW한 공개 요청만 골라 원래 근거 검사5회를 한 번씩 수집하고 집계 방법을 재생했다. 선택에 정답을 쓰지 않았다. 원래 양의 BM25 첫 섹션이 근거 payload인 경우만 검증하여 사용했다. 튜터·입력·안전성 채점은 다시 하지 않았다.
+
+- 일반68개: all5, first2, first3, early3 모두 grounded66/68, ungrounded span F1 .95714. 정답 ALLOW만 보면65/67이다. 초기 종료 수는 각각0/48/40/38이다.
+- novel47개: 모두 grounded46/47. all5/first3/early3의 span F1 .80625, first2는 .80272다. 초기 종료 수0/32/26/30이다.
+- 이 결과는 **동일 판정의 집계 비교**다. 모든 표를 병렬 수집했으므로 단계적 추가 호출의 실제 deadline·지연을 추정할 수 없고, 실제 HTTP 점수나 수집 시간의 대체값도 아니다. 근거 정확도를 유지하는 최적화 가능성은 있지만 점수 향상은 입증하지 못했다. [집계](round7_vote_components.json).
+
+## 숫자06/07: 산술 검증과 의미 검증은 다르다
+
+numeric06 A77.08/11.550초, noquote80.21/17.058초, compact86.46/16.657초, material_verdict84.90/12.836초였다. noquote7/13회, compact11/13회 설명을 붙였다. 당시 compact의 완료된 산술은 맞았지만 실제 세후 금액을 물은13번에 세전 이자를 답했다. material_verdict는 정상12개 answer, 미제공4개 abstain이었다.
+
+그러나 검토된 contrast16 반복에서는 material_verdict82.81, compact90.62, A93.75였다. material_verdict의 A 대비 action 차이는 미제공 질문의 abstain→scaffold 한 개, 정상 질문의 answer→refuse 한 개로, 변경하지 않은 other/block 검사 결과의 변동이었다. 범위 프롬프트만으로 전체 하락을 설명할 수 없으며 광범위한 적용도 보류한다.
+
+numeric07은 범위 판정을 기존 숫자 의도 조건에만 한정했다. A80.21/11.901초, numeric_verdict80.21/10.591초, numeric_compact84.11/18.285초, numeric_direct84.38/13.483초였다. 새 material_status 누락은5/3회 발생했다. numeric_compact는 세후 금액에 abstain했지만, 월 납입 이자에서 연 단위 환산을 빠뜨려6,825원 대신81,900원을 답했고, 다른 문항에서는 학생의 월 납입액 대신 교재 예시의 값을 사용했다. 제한 계산기는 잘못 만든 식도 정확히 계산하므로 **산술 성공을 답의 정확성으로 해석하지 않는다**. direct는 해당 이자6,825원을 맞혔지만 정상 비교 질문 한 개를 abstain했다. 모두 최종 후보로 자동 승격하지 않는다.
+
+다음 t05는 일반192개에서 A/compact/numeric_compact/scoped 직접 설명을 비교한다. 작은 숫자16에만 맞춘 개선인지 확인한다. 숫자07 및 공동 표 수집까지 전체946 unittest를 통과했다. 현재 잔여44%,40%까지 새 가설 검증을 이어간다.
+
+## PCA 추가 수렴과 선형 분류기 대조
+
+PCA MLP의 max_iter를2,000으로 늘려 앞선600회 미수렴을 재검토했다. 32차원/64차원/각 whitening의 상위200 오류는55/41/49/42, 문자75 혼합은28/25/30/28이었다. 수렴 경고는5/2/1/0개 fold로 일부가 남았다. 경고 없이 수렴한64 whitening도 기존 문자75+원래 임베딩25의24개 오류보다 좋지 않았다. [추가 결과](round7_pca_followup.json).
+
+같은 grouped OOF에서 문자 LinearSVC C=.1/1/10 오류46/35/25, ComplementNB .1/1 오류42/60이었다. SVM 신뢰도는 margin softmax로서 보정된 확률이 아니다. C10은 OOF에서 A30개보다 좋았지만, 같은 g07 LLM fallback 재생에서는 직접 판정147개 중3개 오류, A 대비1개 교정/2개 회귀였다. 문자/SVM 혼합도 상위200 오류27~30으로 기존 임베딩 혼합24보다 좋지 않아 운영 모델을 늘리지 않았다. [OOF](round7_linear_cv.json), [고정 fallback 재생](round7_svm_replay.json). 모두 API0, CPU 학습은 HTTP 수집과 겹치지 않았다.
+
+## t05 일반 튜터와 계산 검토 실패
+
+t05 일반192: A94.92/13.642초, compact96.88/15.656초, numeric_compact94.53/16.538초, scoped96.22/16.570초였다. 각 변경 후보의 설명 시도는8회, 완료는7/7/8회다. A와 같은 action·citation·원문 인용을 가진 숫자 질문7개만 보면 **모두0개 개선·1개 하락·6개 동률**이었다. 기준선의 해당7개가 이미100점이어서 원래 자료에는 추가 설명의 이득을 측정할 여지가 작다. 전체 점수 상승은 계산 기능의 인과 효과로 해석하지 않는다. 이는 예측 결과로 고른 조건부 부분집합이며 독립 검증이 아니다. [짝비교](round7_t05_numeric_pairs.json).
+
+같은 judge payload를 첫 관측/마지막 관측으로 통일한 재생에서는 A94.92/95.70, compact96.09/97.01, numeric_compact93.88/94.66, scoped95.57/96.22였다. 중복 payload 중5개에서 judge가 달랐다. 입력·출처 선택 변동도 있으므로 judge만으로 전체 차이를 설명할 수 없다. [재생](round7_t05_judge_replay.json).
+
+`jh_r7_calc_review`는 계산 초안 후 별도 저추론 검토가 단위·학생 값·자료 범위를 다시 확인하는 후보였다. 초안/검토 각각 최대8초, 총26초 deadline에서 남은 시간을 다시 계산하고, 검토 실패·미완료면 원래 답변을 유지한다. 가드와 입력 판정은 A 그대로다. numeric08 A80.21/11.876초, compact85.68/15.970초, review71.09/19.251초, scoped93.49/16.155초. review12회 모두 완료·5회 초안 변경이 있었지만 실제 세금을0원으로 단정했고 정상 질문 한 개는 입력 단계에서 abstain했다. 추가 호출이 정확성을 보증하지 않으므로 **review는 제출 추천에서 제외**한다. scoped의 높은 점수에도 실제 세후 질문에 세전 답을 주는 오류가 남았다.
+
+후속은 호출을 더 늘리지 않고, 선택 교재가 세금 계산 제외를 명시했는데 수치를 포함한 질문이 실제 세후 금액·적용 세율을 요구하는 경우만 abstain하는 별도 규칙이다. 상품명·질문 ID·금액별 정답표를 저장하지 않는다. 질문/교재에 명시적 세율이 있거나 세전 계산이면 기존 모델에 맡긴다. 일반 의미 판정을 대신하지 않는 좁은 한국어/영어 패턴이므로 다른 누락 조건까지 해결한다고 주장하지 않는다. `jh_r7_tax_scope`는 A+규칙, `jh_r7_tax_concrete`는 scoped+규칙이며 기존 후보는 그대로 보존한다.
+
+## 신뢰도 순위와 이진 차단 분류 가설
+
+기존 OOF 확률에서 max 대신 상위 두 범주의 margin·음의 entropy로 판정 우선순위를 바꿨다(API0, 재학습0). 문자 상위200 오류는30/30/32, 문자75+임베딩25는24/27/26이었다. 신뢰도 정의만 바꾸는 가설은 채택하지 않았다. [기록](round7_confidence_ranking.json).
+
+다음 가설은 category와 별개로 block/allow를 학습하여 확률의 두 그룹 간 비중만 조절하는 것이다. 같은 grouped folds, 공개400개, 문자 TF-IDF+MLP32를 사용하며 새로운 데이터·임베딩 API는 없다. 그룹 내 범주 확률의 비율은 보존한다. MLP 이진 head를 전부 반영하면 OOF block F1 .6806→.7380, 상위200 범주 오류30→26이다. 절반 반영은27개, 이진 LR C10은29~30개였다. 이진 MLP5fold 모두 수렴 경고0이었다. [OOF](round7_binary_cv.json).
+
+같은 g07 LLM fallback을 재생하면 A F1 .93694/범주 .92683/오차단4·미차단3, 이진 head F1 .94444/범주 .91463/오차단2·미차단4였다. 직접 판정152개 중3개 오류(A147개 중2개), A 대비2개 교정·2개 회귀다. 완전한 개선이 아니라 차단/범주 간 tradeoff다. [재생](round7_binary_replay.json). OOF 스크립트에서 공통 확률 조정 함수를 runtime 모듈로 옮긴 후, 기존 OOF 확률 파일4개와 bitwise equality를 검증했고 실행 당시 원본 스크립트 해시가 맞는 snapshot을 개발 캐시에 보존했다.
+
+`jh_r7_binary_guard`의 첫 HTTP 비교 g21 일반196은 A93.91/16.634초, binary94.84/16.335초, batchblend95.09/19.544초였다. 출력 grounded/span .9529, safe .9882는 세 후보가 같고, false/missed block은 A5/4→두 후보4/3이었다. 범주 정확도 A .9146/binary .9268/blend .9512. embedding timeout은 각각2/1/8, material timeout0/3/3, blend ground deadline2였다. 새 이진 후보는 범주 모델이 수치적으로 포화해 두 그룹 비중을 계산할 수 없으면 기존 LLM fallback으로 보낸다. 튜터·검색·출력 검사 메서드는 A와 동일하다. 다음은 대체 표현184개와 intent16에서 입력 판정을 확인한다.
+
+g22 대체184 입력 전용: batchblend F1 .95327/범주 .9367/오차단3·미차단2/11.771초, binary .95238/.9241/2·3/11.561초, A .94340/.9241/3·3/13.062초. g23 intent8쌍은 binary와 blend 모두6쌍 정답(정상 오차단2·위험 미차단0), A4쌍(3·1)이었다. 남은 두 정상 오차단은 사칭 문자의 인증번호 제공을 피하고 확인하는 예방 학습, 금융 구매 기준을 광고 형식으로 복습하는 요청이다. 원본 라벨은 바꾸지 않았다. 두 후보 모두 다음 반복/혼합 부하 시험 대상으로 남기고 실제 제출 우위는 미확정이다. 이 두 자료는 candidate answer 없는 **입력 전용 진단**이므로 합성 가드 총점으로 제시하지 않는다. [기록](round7_diagnostics.json).
+
+더 넓은 차단 재검토는 R1 `jh_blockreview_adaptive64_1`에서 오차단10→3 대신 미차단2→14로 악화된 기록이 있다. 현재 A MRO에는 그 reconsider가 없지만, 이를 새 아이디어라고 재도입하지 않는다. 우선 이진 모델의 판정 신뢰도/일반 반복을 검증한다.
+
+숫자16의 개발 편향을 확인하기 위해 숫자·기간·표현·짧은 앞 대화를 바꾼32개(정상24/미제공8)를 **예측 전에 동결**했다. `jh_r7_numeric_expanded_design/proposal.json`, SHA256 `577e51a96efe8a0cc84a3f3989b2baa7258123b17960dc5ab924693d59b03f70`. Fraction/Decimal 비교, 납입별 기간 합과 삼각합 비교, 목표 도달 최소 개월 조건을 검사했다. 기존 실패 분석 후 같은 패턴을 확장한 수작업 개발 자료이며 독립 검토·홀드아웃이 아니다. 훈련·런타임·제출에 포함하지 않는다.
