@@ -14,7 +14,8 @@ from pipelines.kimjaehak.classifier_matrix import CharMLP50
 from pipelines.kimjaehak.neural_peace_guard import CheckBudgets, _guard_deadline
 from pipelines.kimjaehak.reasoning_ablation import (
     EffortClient, GuardInputMedium, GuardGroundMedium, GuardSafetyMedium,
-    TutorInputMedium, TutorSourceMedium, TutorAnswerMedium)
+    TutorInputMedium, TutorSourceMedium, TutorAnswerMedium,
+    GuardInputMediumBudget, GuardGroundMediumBudget)
 from pipelines.v1.pipeline import Pipeline as V1
 
 
@@ -131,6 +132,36 @@ class ReasoningTests(unittest.IsolatedAsyncioTestCase):
         client.embed.assert_awaited_once_with(['text'],timeout=3)
         with self.assertRaises(asyncio.CancelledError):await proxy.chat('s','u',effort='low',timeout=2)
         self.assertEqual(client.chat.await_args.kwargs,{'effort':'medium','timeout':2})
+
+    async def test_budget_rescues_only_change_target_token_cap(self):
+        for cls, base in ((GuardInputMediumBudget, GuardInputMedium),
+                          (GuardGroundMediumBudget, GuardGroundMedium)):
+            for guard in (True, False):
+                p, q = self.pipeline(cls), self.pipeline(base)
+                client = p.llm
+                token = _guard_deadline.set(time.monotonic()+28 if guard else None)
+                try:
+                    if cls is GuardInputMediumBudget:
+                        for obj in (p,q):
+                            await obj._ask(self.state(obj,guard),'block','s','u','low',7)
+                    else:
+                        for obj in (p,q): await obj._ground_response({'identical':'payload'})
+                finally: _guard_deadline.reset(token)
+                call, ref = client.chat.await_args, q.llm.chat.await_args
+                self.assertEqual(call.args,ref.args)
+                self.assertEqual(call.kwargs,{**ref.kwargs,'max_tokens':4000} if guard else ref.kwargs)
+                self.assertIs(p.llm,client)
+                await p._fusion_safety(self.state(p,True))
+                self.assertEqual(client.chat.await_args.kwargs['effort'],'low')
+                self.assertEqual(client.chat.await_args.kwargs['max_tokens'],1800)
+
+    async def test_budget_rescue_still_respects_remaining_request_time(self):
+        p = self.pipeline(GuardGroundMediumBudget)
+        token = _guard_deadline.set(time.monotonic()+.3)
+        try: await p._ground_response({})
+        finally: _guard_deadline.reset(token)
+        self.assertLessEqual(p.llm.chat.await_args.kwargs['timeout'],.3)
+        self.assertEqual(p.llm.chat.await_args.kwargs['max_tokens'],4000)
 
     def test_existing_a_c_names_classes_and_limits_preserved(self):
         self.assertIs(load('jh_cm_char_mlp50'),CharMLP50)

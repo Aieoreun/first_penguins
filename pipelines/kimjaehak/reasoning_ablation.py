@@ -1,8 +1,8 @@
 """Stage-local reasoning ablations; existing A/C classes remain untouched.
 
 Shallow request-local copies share the original client and request semaphore.
-The client adapter changes only reasoning effort, preserving prompts, token
-limits, timeouts, embedding calls and cancellation behavior.
+The client adapter changes reasoning effort and, only for explicit budget
+rescues, the token cap. Prompts, timeouts, embeddings and cancellation stay intact.
 """
 from copy import copy
 
@@ -11,15 +11,19 @@ from .neural_peace_guard import CheckBudgets, _guard_deadline
 
 
 class EffortClient:
-    def __init__(self, client, effort):
+    def __init__(self, client, effort, token_floor=None):
         self.client = client
         self.effort = effort
+        self.token_floor = token_floor
 
     def __getattr__(self, name):
         return getattr(self.client, name)
 
     async def chat(self, *args, **kwargs):
-        return await self.client.chat(*args, **{**kwargs, 'effort': self.effort})
+        kwargs = {**kwargs, 'effort': self.effort}
+        if self.token_floor is not None:
+            kwargs['max_tokens'] = max(kwargs.get('max_tokens', 0), self.token_floor)
+        return await self.client.chat(*args, **kwargs)
 
 
 class StageEffort:
@@ -28,22 +32,27 @@ class StageEffort:
     reasoning_guard_safety = None
     reasoning_tutor_input = None
     reasoning_tutor_source = None
+    reasoning_guard_input_tokens = None
+    reasoning_guard_ground_tokens = None
 
-    def _reasoning_copy(self, effort):
+    def _reasoning_copy(self, effort, token_floor=None):
         result = copy(self)
-        result.llm = EffortClient(self.llm, effort)
+        result.llm = EffortClient(self.llm, effort, token_floor)
         return result
 
     async def _ask(self, state, name, system, user, effort, timeout):
         guard = getattr(state, '_material_budget_guard', None)
         target = self.reasoning_guard_input if guard is True else (
             self.reasoning_tutor_input if guard is False else None)
+        if guard is True and self.reasoning_guard_input_tokens is not None:
+            selected = self._reasoning_copy(target or effort, self.reasoning_guard_input_tokens)
+            return await super(StageEffort, selected)._ask(state, name, system, user, target or effort, timeout)
         return await super()._ask(state, name, system, user, target or effort, timeout)
 
     async def _ground_response(self, payload):
         # C's guard context starts before queue/search. Never change tutor calls.
         if self.reasoning_guard_ground and _guard_deadline.get() is not None:
-            selected = self._reasoning_copy(self.reasoning_guard_ground)
+            selected = self._reasoning_copy(self.reasoning_guard_ground, self.reasoning_guard_ground_tokens)
             return await super(StageEffort, selected)._ground_response(payload)
         return await super()._ground_response(payload)
 
@@ -70,6 +79,14 @@ class GuardGroundMedium(StageEffort, CheckBudgets):
 
 class GuardSafetyMedium(StageEffort, CheckBudgets):
     reasoning_guard_safety = 'medium'
+
+
+class GuardInputMediumBudget(GuardInputMedium):
+    reasoning_guard_input_tokens = 4000
+
+
+class GuardGroundMediumBudget(GuardGroundMedium):
+    reasoning_guard_ground_tokens = 4000
 
 
 class TutorInputMedium(StageEffort, CharMLP50):

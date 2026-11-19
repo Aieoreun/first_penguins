@@ -27,6 +27,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    're_c_input4k': ('jh_re_c_input4k', 'pipelines.kimjaehak.reasoning_ablation.GuardInputMediumBudget'),
+    're_c_ground4k': ('jh_re_c_ground4k', 'pipelines.kimjaehak.reasoning_ablation.GuardGroundMediumBudget'),
     're_c_input': ('jh_re_c_input', 'pipelines.kimjaehak.reasoning_ablation.GuardInputMedium'),
     're_c_ground': ('jh_re_c_ground', 'pipelines.kimjaehak.reasoning_ablation.GuardGroundMedium'),
     're_c_safety': ('jh_re_c_safety', 'pipelines.kimjaehak.reasoning_ablation.GuardSafetyMedium'),
@@ -215,7 +217,8 @@ try:
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            for key in ('reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
+            for key in ('reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
+                        'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',
                         'tutor_mlp_threshold','tutor_mlp_single_turn','tutor_mlp_fallback',
                         'classifier_kind','classifier_threshold','classifier_seed',
