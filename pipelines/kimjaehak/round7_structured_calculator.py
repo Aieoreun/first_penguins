@@ -27,6 +27,17 @@ class StructuredCalculator(CalculatorApply):
     tutor_calculator_schema='label_expression_unit'
     tutor_apply_system=SYSTEM
 
+    def _validate_label_unit(self,label,unit):
+        if (not isinstance(label,str) or not 1<=len(label.strip())<=30
+                or not isinstance(unit,str) or len(unit)>8
+                or re.search(r'[0-9{}\n]',label+unit)):
+            raise CalculationSchemaError('Invalid label or unit')
+
+    def _validate_evidence(self,evidence,material):
+        quote=''.join(evidence.split()) if isinstance(evidence,str) else ''
+        if len(quote)<4 or quote not in material:
+            raise CalculationEvidenceError('Rule is not in material')
+
     def _attach_explanation(self,state,obj):
         if obj.get('supported') is not True:
             # Reuse the same reason-specific abstention; no missing-condition
@@ -39,13 +50,8 @@ class StructuredCalculator(CalculatorApply):
         for row in rows:
             if not isinstance(row,dict):raise CalculationSchemaError('Invalid row')
             label,unit,evidence=(row.get(k) for k in ('label','unit','evidence'))
-            if (not isinstance(label,str) or not 1<=len(label.strip())<=30
-                    or not isinstance(unit,str) or len(unit)>8
-                    or re.search(r'[0-9{}\n]',label+unit)):
-                raise CalculationSchemaError('Invalid label or unit')
-            quote=''.join(evidence.split()) if isinstance(evidence,str) else ''
-            if len(quote)<4 or quote not in material:
-                raise CalculationEvidenceError('Rule is not in material')
+            self._validate_label_unit(label,unit)
+            self._validate_evidence(evidence,material)
             try:value=calculate(row.get('expression'))
             except Exception as exc:raise CalculationExpressionError('Invalid arithmetic') from exc
             parts.append(f'{label.strip()}: {value}{unit.strip()}.')

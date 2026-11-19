@@ -86,3 +86,7 @@ VARIANTS += ("jh_r7_blend_adaptive", "jh_r7_cancel_guard", "jh_r7_cancel_tutor",
 VARIANTS += ("jh_r7_calculator", "jh_r7_material_calculator", "jh_r7_minimal_span", "jh_r7_adaptive_span")
 
 VARIANTS += ("jh_r7_adaptive3", "jh_r7_structured_calc", "jh_r7_scope_structured", "jh_r7_examples1", "jh_r7_examples3")
+
+VARIANTS += ("jh_r7_early_consensus", "jh_r7_task_examples1", "jh_r7_task_examples3")
+
+VARIANTS += ("jh_r7_calc_noquote", "jh_r7_calc_compact", "jh_r7_material_verdict")

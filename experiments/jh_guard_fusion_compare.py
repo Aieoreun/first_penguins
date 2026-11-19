@@ -27,6 +27,12 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_material_verdict': ('jh_r7_material_verdict', 'pipelines.kimjaehak.round7_material_verdict.MaterialVerdict'),
+    'r7_calc_noquote': ('jh_r7_calc_noquote', 'pipelines.kimjaehak.round7_compact_calculator.NoQuoteCalculator'),
+    'r7_calc_compact': ('jh_r7_calc_compact', 'pipelines.kimjaehak.round7_compact_calculator.CompactCalculator'),
+    'r7_early_consensus': ('jh_r7_early_consensus', 'pipelines.kimjaehak.round7_early_consensus.EarlyConsensus'),
+    'r7_task_examples1': ('jh_r7_task_examples1', 'pipelines.kimjaehak.round7_task_examples.TaskExampleOne'),
+    'r7_task_examples3': ('jh_r7_task_examples3', 'pipelines.kimjaehak.round7_task_examples.TaskExamples'),
     'r7_adaptive3': ('jh_r7_adaptive3', 'pipelines.kimjaehak.round7_adaptive_ground.AdaptiveThree'),
     'r7_structured_calc': ('jh_r7_structured_calc', 'pipelines.kimjaehak.round7_structured_calculator.StructuredCalculator'),
     'r7_scope_structured': ('jh_r7_scope_structured', 'pipelines.kimjaehak.round7_structured_calculator.ScopedStructuredCalculator'),
@@ -249,7 +255,7 @@ try:
                 instance.guard = observed_guard
             original_tutor = getattr(instance, 'tutor', None)
             if callable(original_tutor):
-                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0, 'r7_material_cancelled':0, 'r7_material_scope_used':0, 'r7_apply_abstained':0, 'r7_calculator_completed':0}
+                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0, 'r7_material_cancelled':0, 'r7_material_scope_used':0, 'r7_apply_abstained':0, 'r7_calculator_completed':0, 'r7_material_verdict_used':0, 'r7_material_verdict_missing':0}
                 async def observed_tutor(body):
                     result = await original_tutor(body)
                     debug = getattr(result, 'debug', {})

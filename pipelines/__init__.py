@@ -21,6 +21,16 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == 'jh_r7_material_verdict':
+            return importlib.import_module('pipelines.kimjaehak.round7_material_verdict').MaterialVerdict
+        if name in {'jh_r7_calc_noquote', 'jh_r7_calc_compact'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_compact_calculator')
+            return module.NoQuoteCalculator if name == 'jh_r7_calc_noquote' else module.CompactCalculator
+        if name == 'jh_r7_early_consensus':
+            return importlib.import_module('pipelines.kimjaehak.round7_early_consensus').EarlyConsensus
+        if name in {'jh_r7_task_examples1', 'jh_r7_task_examples3'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_task_examples')
+            return module.TaskExampleOne if name == 'jh_r7_task_examples1' else module.TaskExamples
         if name == 'jh_r7_adaptive3':
             return importlib.import_module('pipelines.kimjaehak.round7_adaptive_ground').AdaptiveThree
         if name in {'jh_r7_structured_calc', 'jh_r7_scope_structured'}:
