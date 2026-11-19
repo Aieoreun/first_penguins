@@ -96,3 +96,5 @@ VARIANTS += ("jh_r7_numeric_verdict", "jh_r7_numeric_compact", "jh_r7_numeric_di
 VARIANTS += ("jh_r7_calc_review",)
 
 VARIANTS += ("jh_r7_binary_guard",)
+
+VARIANTS += ("jh_r7_tax_scope", "jh_r7_tax_concrete")
