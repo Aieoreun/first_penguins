@@ -24,6 +24,28 @@
       "internal_errors_verified": false,
       "internal_errors": null,
       "notes": null
+    },
+    {
+      "run": "C1",
+      "sequence": 2,
+      "candidate": "C",
+      "variant": "jh_np_timeouts",
+      "submitted_at_reported": "2026-11-19T18:12:59",
+      "submitted_timezone_reported": "Asia/Seoul",
+      "execution_commit": null,
+      "execution_commit_verified": false,
+      "total": 83.61,
+      "tutor": 80.33,
+      "guard": 86.89,
+      "duration_seconds": 69.968,
+      "seed": "6923053a3a59dc4ab3e0ebbd614e13cf",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors_verified": false,
+      "internal_errors": null,
+      "notes": null
     }
   ]
 }
