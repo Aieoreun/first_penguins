@@ -21,6 +21,12 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r7_calculator', 'jh_r7_material_calculator'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_calculator')
+            return module.CalculatorApply if name == 'jh_r7_calculator' else module.MaterialCalculator
+        if name in {'jh_r7_minimal_span', 'jh_r7_adaptive_span'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_span_prompt')
+            return module.MinimalClause if name == 'jh_r7_minimal_span' else module.AdaptiveMinimal
         if name == 'jh_r7_blend_adaptive':
             return importlib.import_module('pipelines.kimjaehak.round7_combined').BlendedAdaptive
         if name in {'jh_r7_cancel_guard', 'jh_r7_cancel_tutor', 'jh_r7_cancel_both'}:

@@ -27,6 +27,10 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_material_calculator': ('jh_r7_material_calculator', 'pipelines.kimjaehak.round7_calculator.MaterialCalculator'),
+    'r7_calculator': ('jh_r7_calculator', 'pipelines.kimjaehak.round7_calculator.CalculatorApply'),
+    'r7_minimal_span': ('jh_r7_minimal_span', 'pipelines.kimjaehak.round7_span_prompt.MinimalClause'),
+    'r7_adaptive_span': ('jh_r7_adaptive_span', 'pipelines.kimjaehak.round7_span_prompt.AdaptiveMinimal'),
     'r7_apply_numeric': ('jh_r7_apply_numeric', 'pipelines.kimjaehak.round7_answer.NumericApply'),
     'r7_apply_all': ('jh_r7_apply_all', 'pipelines.kimjaehak.round7_answer.AllApply'),
     'r7_ground_input': ('jh_r7_ground_input', 'pipelines.kimjaehak.round7_ground_source.InputGroundSource'),
@@ -240,7 +244,7 @@ try:
                 instance.guard = observed_guard
             original_tutor = getattr(instance, 'tutor', None)
             if callable(original_tutor):
-                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0, 'r7_material_cancelled':0, 'r7_material_scope_used':0, 'r7_apply_abstained':0}
+                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0, 'r7_material_cancelled':0, 'r7_material_scope_used':0, 'r7_apply_abstained':0, 'r7_calculator_completed':0}
                 async def observed_tutor(body):
                     result = await original_tutor(body)
                     debug = getattr(result, 'debug', {})
