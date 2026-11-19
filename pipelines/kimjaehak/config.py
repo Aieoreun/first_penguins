@@ -68,4 +68,5 @@ def configure():
     os.environ.update(BASELINE_ENV)
 
 VARIANTS += ("jh_cm_char_lr50", "jh_cm_dense_lr50", "jh_cm_char_mlp50", "jh_cm_dense_mlp50")
+VARIANTS += ("jh_r7_concat", "jh_r7_blend", "jh_r7_fastblend")
 VARIANTS += ("jh_tm_selective", "jh_tm_replace")

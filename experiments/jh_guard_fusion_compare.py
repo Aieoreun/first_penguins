@@ -27,6 +27,9 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_concat': ('jh_r7_concat', 'pipelines.kimjaehak.round7_hybrid.ConcatGate'),
+    'r7_blend': ('jh_r7_blend', 'pipelines.kimjaehak.round7_hybrid.BlendGate'),
+    'r7_fastblend': ('jh_r7_fastblend', 'pipelines.kimjaehak.round7_hybrid.FastBlendGate'),
     'r7_boundary': ('jh_r7_boundary', 'pipelines.kimjaehak.round7_guard.BoundaryGate'),
     'r7_verdict': ('jh_r7_verdict', 'pipelines.kimjaehak.round7_guard.VerdictFirst'),
 
@@ -209,7 +212,7 @@ try:
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
                     'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
-                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span')}
+                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})
@@ -242,7 +245,7 @@ try:
                         counts['r7_guard_aggregation']['requests'] += 1
                         counts['r7_guard_aggregation']['changed'] += state.debug.get('r7_verdict_changed') is True
                 instance._fusion_ground = observed_ground
-            for key in ('classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
+            for key in ('classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
                         'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',
