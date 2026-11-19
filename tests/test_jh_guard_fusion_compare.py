@@ -216,6 +216,8 @@ def run(app, **kwargs):
         with (self.root / 'server.py').open('a') as out:
             out.write('''
 from types import SimpleNamespace as NS
+import sys
+sys.modules['pipelines.kimjaehak.round7_policy'] = NS(OTHER_BOUNDARY='public-other-rule')
 class LLM:
  def __init__(self):
   async def create(**kwargs):
@@ -232,7 +234,7 @@ import asyncio,server
 def run(app,**kwargs):
  async def work():
   async with app.router.lifespan_context(app):
-   assert await server.LLM().chat('private-system','private-user',effort='medium')=='private-answer'
+   assert await server.LLM().chat('private-systempublic-other-rule','private-user',effort='medium')=='private-answer'
  asyncio.run(work())
 ''')
         result=self.run_fake_bootstrap()
@@ -241,6 +243,7 @@ def run(app,**kwargs):
         self.assertNotIn('private',encoded)
         counts=json.loads(encoded)
         self.assertEqual(counts['chat_efforts']['medium'],1)
+        self.assertEqual(counts['r7_policy_calls'],{'product':0,'other':1,'scaffold':0})
         self.assertEqual(counts['completion_metadata']['medium'],{'responses':1,'prompt_tokens':12,
             'completion_tokens':20,'reasoning_tokens':18,'finish_reasons':{'length':1}})
 

@@ -27,6 +27,9 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_boundary': ('jh_r7_boundary', 'pipelines.kimjaehak.round7_guard.BoundaryGate'),
+    'r7_verdict': ('jh_r7_verdict', 'pipelines.kimjaehak.round7_guard.VerdictFirst'),
+
     'r7_product': ('jh_r7_product', 'pipelines.kimjaehak.round7_policy.ProductContext'),
     'r7_other': ('jh_r7_other', 'pipelines.kimjaehak.round7_policy.OtherBoundary'),
     'r7_scaffold': ('jh_r7_scaffold', 'pipelines.kimjaehak.round7_policy.ScaffoldGuide'),
@@ -121,6 +124,8 @@ try:
     counts = {'instrumented': False, 'scope': 'server_lifespan_llm_method_invocations',
               'chat': {key: 0 for key in ('started', 'completed', 'cancelled', 'errors')},
               'embed': {key: 0 for key in ('started', 'completed', 'cancelled', 'errors')}}
+    counts['r7_policy_calls'] = {'product':0,'other':0,'scaffold':0}
+    counts['r7_guard_aggregation'] = {'requests':0,'changed':0}
     counts['chat_efforts'] = {key: 0 for key in ('minimal','low','medium','high','other')}
     llm_class = getattr(server, 'LLM', None)
     def counted_method(method, counters):
@@ -128,6 +133,12 @@ try:
         async def wrapped(self, *args, **kwargs):
             counters['started'] += 1
             if counters is counts['chat']:
+                policy = sys.modules.get('pipelines.kimjaehak.round7_policy')
+                system = args[0] if args else kwargs.get('system','')
+                for key, attr in (('product','PRODUCT_CONTEXT_RULE'),('other','OTHER_BOUNDARY'),('scaffold','SCAFFOLD_RULE')):
+                    marker = getattr(policy,attr,None)
+                    if marker and isinstance(system,str) and system.endswith(marker):
+                        counts['r7_policy_calls'][key] += 1
                 effort = kwargs.get('effort')
                 counts['chat_efforts'][effort if effort in ('minimal','low','medium','high') else 'other'] += 1
             try:
@@ -222,7 +233,16 @@ try:
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            for key in ('r7_product_context','r7_other_boundary','r7_scaffold_guide',
+            if getattr(instance,'guard_verdict_first',False):
+                original_ground = instance._fusion_ground
+                async def observed_ground(state):
+                    try:
+                        return await original_ground(state)
+                    finally:
+                        counts['r7_guard_aggregation']['requests'] += 1
+                        counts['r7_guard_aggregation']['changed'] += state.debug.get('r7_verdict_changed') is True
+                instance._fusion_ground = observed_ground
+            for key in ('classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
                         'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',

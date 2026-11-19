@@ -17,8 +17,9 @@ def main():
     ap.add_argument('--tutor-runs',nargs='*',default=[])
     ap.add_argument('--mixed-runs',nargs='*',default=[])
     ap.add_argument('--output',required=True)
+    ap.add_argument('--scope',default='public_derived_reasoning_development_not_private_submission')
     args=ap.parse_args()
-    report={'scope':'public_derived_reasoning_development_not_private_submission','runs':[]}
+    report={'scope':args.scope,'runs':[]}
     for kind,names in (('guard',args.guard_runs),('tutor',args.tutor_runs),('mixed',args.mixed_runs)):
         for name in names:
             prefix='jh_guard_fusion_' if kind=='guard' else 'jh_tutor_mlp_'
