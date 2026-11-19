@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r7_numeric_verdict', 'jh_r7_numeric_compact', 'jh_r7_numeric_direct'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_numeric_combined')
+            return {'jh_r7_numeric_verdict': module.NumericMaterialVerdict, 'jh_r7_numeric_compact': module.NumericVerdictCompact, 'jh_r7_numeric_direct': module.NumericVerdictDirect}[name]
         if name == 'jh_r7_material_verdict':
             return importlib.import_module('pipelines.kimjaehak.round7_material_verdict').MaterialVerdict
         if name in {'jh_r7_calc_noquote', 'jh_r7_calc_compact'}:

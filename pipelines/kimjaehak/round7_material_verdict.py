@@ -19,8 +19,11 @@ VERDICT_RULE="""
 class MaterialVerdict(CharMLP50):
     tutor_material_explicit_status=True
 
+    def _scope_needed(self,state):return True
+
     async def _ask(self,state,name,system,user,effort,timeout):
-        enabled=name=='material' and getattr(state,'_material_budget_guard',None) is False
+        enabled=(name=='material' and getattr(state,'_material_budget_guard',None) is False
+                 and self._scope_needed(state))
         if enabled:
             system+=MATERIAL_SCOPE_RULE+VERDICT_RULE
             state._r7_material_verdict_used=True

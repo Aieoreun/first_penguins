@@ -27,6 +27,9 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_numeric_verdict': ('jh_r7_numeric_verdict', 'pipelines.kimjaehak.round7_numeric_combined.NumericMaterialVerdict'),
+    'r7_numeric_compact': ('jh_r7_numeric_compact', 'pipelines.kimjaehak.round7_numeric_combined.NumericVerdictCompact'),
+    'r7_numeric_direct': ('jh_r7_numeric_direct', 'pipelines.kimjaehak.round7_numeric_combined.NumericVerdictDirect'),
     'r7_material_verdict': ('jh_r7_material_verdict', 'pipelines.kimjaehak.round7_material_verdict.MaterialVerdict'),
     'r7_calc_noquote': ('jh_r7_calc_noquote', 'pipelines.kimjaehak.round7_compact_calculator.NoQuoteCalculator'),
     'r7_calc_compact': ('jh_r7_calc_compact', 'pipelines.kimjaehak.round7_compact_calculator.CompactCalculator'),
