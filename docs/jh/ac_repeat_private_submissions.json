@@ -1,0 +1,29 @@
+{
+  "source": "user_reported_private_submissions",
+  "scope": "alternating_A_C_five_each",
+  "prior_single_runs_included": false,
+  "runs": [
+    {
+      "run": "A1",
+      "sequence": 1,
+      "candidate": "A",
+      "variant": "jh_cm_char_mlp50",
+      "submitted_at_reported": "2026-11-19T18:09:54",
+      "submitted_timezone_reported": "Asia/Seoul",
+      "execution_commit": null,
+      "execution_commit_verified": false,
+      "total": 85.16,
+      "tutor": 81.08,
+      "guard": 89.25,
+      "duration_seconds": 70.345,
+      "seed": "8cfec5e7470c359aeaeb904db16a545a",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors_verified": false,
+      "internal_errors": null,
+      "notes": null
+    }
+  ]
+}
