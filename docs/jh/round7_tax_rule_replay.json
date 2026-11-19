@@ -1,0 +1,115 @@
+{
+  "scope": "deterministic_transform_of_recorded_A_answers_not_full_pipeline_not_holdout",
+  "api_calls": 0,
+  "repeated_datasets_not_independent_samples": true,
+  "runs": [
+    {
+      "run": "jh_tutor_mlp_r7_t01",
+      "count": 192,
+      "changed": [],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_tutor_mlp_r7_t02",
+      "count": 181,
+      "changed": [],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_tutor_mlp_r7_t03",
+      "count": 192,
+      "changed": [],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_tutor_mlp_r7_t04",
+      "count": 181,
+      "changed": [],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_tutor_mlp_r7_t05",
+      "count": 192,
+      "changed": [],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric01",
+      "count": 16,
+      "changed": [
+        {
+          "id": "r7-numeric-13",
+          "gold_action": "abstain"
+        }
+      ],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric02",
+      "count": 16,
+      "changed": [],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric03",
+      "count": 16,
+      "changed": [
+        {
+          "id": "r7-numeric-13",
+          "gold_action": "abstain"
+        }
+      ],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric04",
+      "count": 16,
+      "changed": [],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric05",
+      "count": 16,
+      "changed": [
+        {
+          "id": "r7-numeric-13",
+          "gold_action": "abstain"
+        }
+      ],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric06",
+      "count": 16,
+      "changed": [
+        {
+          "id": "r7-numeric-13",
+          "gold_action": "abstain"
+        }
+      ],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric07",
+      "count": 16,
+      "changed": [
+        {
+          "id": "r7-numeric-13",
+          "gold_action": "abstain"
+        }
+      ],
+      "changed_to_wrong_abstain": 0
+    },
+    {
+      "run": "jh_manual_tutor_r7_numeric08",
+      "count": 16,
+      "changed": [
+        {
+          "id": "r7-numeric-13",
+          "gold_action": "abstain"
+        }
+      ],
+      "changed_to_wrong_abstain": 0
+    }
+  ]
+}

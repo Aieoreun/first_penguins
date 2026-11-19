@@ -1,0 +1,33 @@
+{
+  "scope": "completed_repeated_public_development_HTTP_runs_not_unique_questions_not_private",
+  "groups": [
+    {
+      "group": "main_public_guard_tutor_mixed",
+      "candidate_runs": 91,
+      "responses": 19069
+    },
+    {
+      "group": "input_diagnostics",
+      "candidate_runs": 19,
+      "responses": 1648
+    },
+    {
+      "group": "numeric16",
+      "candidate_runs": 35,
+      "responses": 560
+    },
+    {
+      "group": "numeric32",
+      "candidate_runs": 4,
+      "responses": 128
+    },
+    {
+      "group": "reviewed_contrast16",
+      "candidate_runs": 6,
+      "responses": 96
+    }
+  ],
+  "candidate_runs": 155,
+  "responses": 21501,
+  "component_replays_and_CPU_CV_excluded": true
+}

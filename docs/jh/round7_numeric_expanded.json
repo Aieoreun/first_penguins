@@ -1,0 +1,548 @@
+{
+  "scope": "manual_public_kb_parameter_perturbation32_not_independent_not_private",
+  "proposal_sha256": "577e51a96efe8a0cc84a3f3989b2baa7258123b17960dc5ab924693d59b03f70",
+  "runs": [
+    {
+      "run": "numeric32a",
+      "results": [
+        {
+          "candidate": "cm_char_mlp50",
+          "tutor": 79.17,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 17.815,
+            "p50": 8.608,
+            "p95": 16.725,
+            "max": 17.812,
+            "http_errors": 0,
+            "stage_failure_requests": 6,
+            "stage_errors": {
+              "source_extract:TimeoutError": 5,
+              "other:TimeoutError": 1,
+              "material:parse": 2
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 114,
+                "completed": 108,
+                "cancelled": 0,
+                "errors": 6
+              },
+              "embed": {
+                "started": 32,
+                "completed": 32,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 114,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 108,
+                  "prompt_tokens": 306152,
+                  "completion_tokens": 34141,
+                  "reasoning_tokens": 28984,
+                  "finish_reasons": {
+                    "stop": 106,
+                    "length": 2
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 0,
+                "r7_apply_completed": 0,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 0,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 146,
+                "completed": 140,
+                "cancelled": 0,
+                "errors": 6
+              }
+            }
+          }
+        },
+        {
+          "candidate": "r7_apply_scoped",
+          "tutor": 93.49,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 23.852,
+            "p50": 11.8815,
+            "p95": 21.938,
+            "max": 23.848,
+            "http_errors": 0,
+            "stage_failure_requests": 9,
+            "stage_errors": {
+              "r7_apply:TimeoutError": 7,
+              "material:parse": 3
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 138,
+                "completed": 131,
+                "cancelled": 7,
+                "errors": 0
+              },
+              "embed": {
+                "started": 32,
+                "completed": 32,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 138,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 131,
+                  "prompt_tokens": 373583,
+                  "completion_tokens": 45612,
+                  "reasoning_tokens": 38420,
+                  "finish_reasons": {
+                    "stop": 128,
+                    "length": 3
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 26,
+                "r7_apply_completed": 17,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 2,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 170,
+                "completed": 163,
+                "cancelled": 7,
+                "errors": 0
+              }
+            }
+          }
+        },
+        {
+          "candidate": "r7_tax_concrete",
+          "tutor": 90.36,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 25.55,
+            "p50": 12.5925,
+            "p95": 25.544,
+            "max": 25.546,
+            "http_errors": 0,
+            "stage_failure_requests": 13,
+            "stage_errors": {
+              "r7_apply:TimeoutError": 6,
+              "source_extract:TimeoutError": 4,
+              "material:parse": 2,
+              "r7_apply:ValueError": 1,
+              "material:TimeoutError": 5
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 138,
+                "completed": 123,
+                "cancelled": 6,
+                "errors": 9
+              },
+              "embed": {
+                "started": 32,
+                "completed": 32,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 138,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 123,
+                  "prompt_tokens": 334826,
+                  "completion_tokens": 40875,
+                  "reasoning_tokens": 34296,
+                  "finish_reasons": {
+                    "stop": 121,
+                    "length": 2
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 25,
+                "r7_apply_completed": 17,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 1,
+                "r7_calculator_completed": 0,
+                "r7_explicit_tax_scope": 2,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 170,
+                "completed": 155,
+                "cancelled": 6,
+                "errors": 9
+              }
+            }
+          }
+        },
+        {
+          "candidate": "r7_calc_compact",
+          "tutor": 83.98,
+          "invalid": 0,
+          "judge_errors": 0,
+          "runtime": {
+            "collect_seconds": 26.059,
+            "p50": 14.654499999999999,
+            "p95": 23.385,
+            "max": 26.035,
+            "http_errors": 0,
+            "stage_failure_requests": 16,
+            "stage_errors": {
+              "r7_apply:CalculationExpressionError": 2,
+              "r7_apply:TimeoutError": 8,
+              "source_extract:TimeoutError": 4,
+              "material:parse": 2,
+              "material:TimeoutError": 3,
+              "other:TimeoutError": 1,
+              "request:Deadline": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 139,
+                "completed": 122,
+                "cancelled": 9,
+                "errors": 8
+              },
+              "embed": {
+                "started": 32,
+                "completed": 32,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "r7_adaptive_ground": {
+                "requests": 0,
+                "early": 0,
+                "completed_votes": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 139,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 122,
+                  "prompt_tokens": 329338,
+                  "completion_tokens": 42317,
+                  "reasoning_tokens": 36408,
+                  "finish_reasons": {
+                    "stop": 120,
+                    "length": 2
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 0,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0,
+                "r7_ground_early": 0,
+                "r7_material_cancelled": 0,
+                "r7_examples_used": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0,
+                "r7_apply_attempted": 26,
+                "r7_apply_completed": 14,
+                "r7_joint_apply_started": 0,
+                "r7_joint_apply_completed": 0,
+                "r7_material_cancelled": 0,
+                "r7_material_scope_used": 0,
+                "r7_apply_abstained": 2,
+                "r7_calculator_completed": 14,
+                "r7_explicit_tax_scope": 0,
+                "r7_calc_review_started": 0,
+                "r7_calc_review_completed": 0,
+                "r7_calc_review_changed": 0,
+                "r7_material_verdict_used": 0,
+                "r7_material_verdict_missing": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 171,
+                "completed": 154,
+                "cancelled": 9,
+                "errors": 8
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
