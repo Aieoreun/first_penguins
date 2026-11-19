@@ -21,10 +21,11 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
-        if name in {"jh_np_parallel", "jh_np_timeouts", "jh_np_peace_block", "jh_np_unlearned"}:
+        if name in {"jh_np_parallel", "jh_np_timeouts", "jh_np_peace_block", "jh_np_unlearned", "jh_np_input_budgets", "jh_np_block_only"}:
             module = importlib.import_module("pipelines.kimjaehak.neural_peace_guard")
             return {"jh_np_parallel": module.ParallelSafety, "jh_np_timeouts": module.CheckBudgets,
-                    "jh_np_peace_block": module.PeaceBlock, "jh_np_unlearned": module.UnlearnedInput}[name]
+                    "jh_np_peace_block": module.PeaceBlock, "jh_np_unlearned": module.UnlearnedInput,
+                    "jh_np_input_budgets": module.InputBudgets, "jh_np_block_only": module.BlockOnly}[name]
         if name in {"jh_tm_selective", "jh_tm_replace"}:
             module = importlib.import_module("pipelines.kimjaehak.tutor_mlp")
             return module.Selective if name == "jh_tm_selective" else module.Replace

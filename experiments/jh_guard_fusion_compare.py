@@ -27,6 +27,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'np_input_budgets': ('jh_np_input_budgets', 'pipelines.kimjaehak.neural_peace_guard.InputBudgets'),
+    'np_block_only': ('jh_np_block_only', 'pipelines.kimjaehak.neural_peace_guard.BlockOnly'),
     'np_parallel': ('jh_np_parallel', 'pipelines.kimjaehak.neural_peace_guard.ParallelSafety'),
     'np_timeouts': ('jh_np_timeouts', 'pipelines.kimjaehak.neural_peace_guard.CheckBudgets'),
     'np_peace_block': ('jh_np_peace_block', 'pipelines.kimjaehak.neural_peace_guard.PeaceBlock'),

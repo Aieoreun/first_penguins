@@ -11,13 +11,14 @@ from experiments.jh_environment import load_environment
 from experiments import jh_guard_fusion_compare as runner
 
 SOURCE = ROOT / 'experiments/.cache/jh_augment_public2_1/paraphrases.jsonl'
-CHOICES = ('cm_char_mlp50', 'tm_selective', 'tm_replace')
+DEFAULT_CHOICES = ('cm_char_mlp50', 'tm_selective', 'tm_replace')
+CHOICES = DEFAULT_CHOICES + ('np_parallel','np_timeouts','np_peace_block','np_unlearned','np_input_budgets','np_block_only')
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--name', required=True)
-    ap.add_argument('--order', nargs='+', choices=CHOICES, default=list(CHOICES))
+    ap.add_argument('--order', nargs='+', choices=CHOICES, default=list(DEFAULT_CHOICES))
     ap.add_argument('--alternative', action='store_true')
     ap.add_argument('--mixed', action='store_true')
     ap.add_argument('--resume', action='store_true')

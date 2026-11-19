@@ -11,7 +11,7 @@ from core.search import Searcher
 from core.state import Chunk
 from pipelines.kimjaehak.classifier_matrix import CharMLP50, MatrixGate
 from pipelines.kimjaehak.neural_peace_guard import (
-    ParallelSafety, CheckBudgets, PeaceBlock, UnlearnedInput, _guard_deadline)
+    ParallelSafety, CheckBudgets, PeaceBlock, UnlearnedInput, InputBudgets, BlockOnly, _guard_deadline)
 from pipelines.kimjaehak.peace_guard_fusion import Pipeline as Fusion
 from pipelines.kimjaehak.peace_guard_prompt import PEACE_BLOCK_SYSTEM, SAFETY_SYSTEM
 from pipelines.kimjaehak.voted import Pipeline as Voted
@@ -120,12 +120,6 @@ class GuardTests(unittest.IsolatedAsyncioTestCase):
     async def test_tie_budget_not_reset_and_tutor_group_unchanged(self):
         p = self.pipeline(CheckBudgets)
         seen=[]
-        async def ask(state,name,system,check,effort,timeout):
-            seen.append(timeout)
-            if len(seen) <= 2:
-                await asyncio.sleep(.01)
-                return {'category':'none' if len(seen)==1 else 'off_topic'}
-            return {'category':'none'}
         # Explicit disagreement independent of coroutine completion order.
         async def first(state,name,system,check,effort,timeout):
             idx=len(seen); seen.append(timeout)
@@ -191,8 +185,26 @@ class GuardTests(unittest.IsolatedAsyncioTestCase):
             original.assert_awaited_once_with(tutor)
         self.assertIs(UnlearnedInput._fusion_ground,CharMLP50._fusion_ground)
 
+    async def test_isolated_variants_restore_a_safety_route(self):
+        for cls in (InputBudgets, BlockOnly):
+            p=self.pipeline(cls)
+            state=p._new_state(self.body(),True)
+            state.label=Label.NORMAL
+            await p._fusion_safety(state)
+            self.assertTrue(state.safe)
+            p.llm.chat.assert_not_awaited()
+            self.assertTrue(p.guard_safety_after_input)
+            self.assertFalse(p.guard_safety_launch_early)
+            self.assertEqual(p.guard_safety_timeout,8)
+        p=self.pipeline(InputBudgets)
+        state=p._new_state(self.body(),True)
+        self.assertEqual(p._block_system(state), CharMLP50._block_system(p,state))
+        p=self.pipeline(BlockOnly)
+        self.assertEqual(p.guard_ground_timeout,13)
+        self.assertEqual(p._block_system(p._new_state(self.body(),True)),PEACE_BLOCK_SYSTEM)
+
     def test_tutor_generation_search_and_public_baseline_preserved(self):
-        for cls in (ParallelSafety,CheckBudgets,PeaceBlock,UnlearnedInput):
+        for cls in (ParallelSafety,CheckBudgets,PeaceBlock,UnlearnedInput,InputBudgets,BlockOnly):
             for name in ('tutor','_generate','_search','_prepare_within','_check_output','_fusion_ground'):
                 self.assertIs(getattr(cls,name),getattr(CharMLP50,name))
         self.assertTrue(CharMLP50.guard_safety_after_input)

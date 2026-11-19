@@ -111,3 +111,27 @@ class UnlearnedInput(PeaceBlock):
             state.debug['guard_unlearned_input'] = True
             return
         await super()._classify(state)
+
+
+class InputBudgets(CheckBudgets):
+    """F: isolate expanded input/ground budgets on A; keep A's routed safety."""
+    guard_safety_after_input = True
+    guard_safety_launch_early = False
+    guard_independent_safety = False
+    guard_routed_safety = True
+    guard_safety_timeout = CharMLP50.guard_safety_timeout
+    guard_safety_system = CharMLP50.guard_safety_system
+
+    async def _fusion_safety(self, state):
+        await CharMLP50._fusion_safety(self, state)
+
+
+class BlockOnly(CharMLP50):
+    """G: isolate the Peace BLOCK rubric on A without scheduling changes."""
+    guard_requested_action = True
+    guard_block_system = PEACE_BLOCK_SYSTEM
+
+    def _block_system(self, state):
+        if getattr(state, '_material_budget_guard', False) is True:
+            return self.guard_block_system
+        return super()._block_system(state)
