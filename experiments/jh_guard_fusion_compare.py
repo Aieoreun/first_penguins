@@ -27,6 +27,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_apply_numeric': ('jh_r7_apply_numeric', 'pipelines.kimjaehak.round7_answer.NumericApply'),
+    'r7_apply_all': ('jh_r7_apply_all', 'pipelines.kimjaehak.round7_answer.AllApply'),
     'r7_llm_input': ('jh_r7_llm_input', 'pipelines.kimjaehak.round7_hybrid.CommonFallback'),
     'r7_batchconcat': ('jh_r7_batchconcat', 'pipelines.kimjaehak.round7_batch.BatchedConcat'),
     'r7_batchblend': ('jh_r7_batchblend', 'pipelines.kimjaehak.round7_batch.BatchedBlend'),
@@ -225,7 +227,7 @@ try:
                 instance.guard = observed_guard
             original_tutor = getattr(instance, 'tutor', None)
             if callable(original_tutor):
-                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0}
+                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0}
                 async def observed_tutor(body):
                     result = await original_tutor(body)
                     debug = getattr(result, 'debug', {})
@@ -248,7 +250,7 @@ try:
                         counts['r7_guard_aggregation']['requests'] += 1
                         counts['r7_guard_aggregation']['changed'] += state.debug.get('r7_verdict_changed') is True
                 instance._fusion_ground = observed_ground
-            for key in ('classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
+            for key in ('tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
                         'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',

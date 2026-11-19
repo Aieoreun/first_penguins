@@ -12,7 +12,7 @@ from experiments import jh_guard_fusion_compare as runner
 
 SOURCE = ROOT / 'experiments/.cache/jh_augment_public2_1/paraphrases.jsonl'
 DEFAULT_CHOICES = ('cm_char_mlp50', 'tm_selective', 'tm_replace')
-CHOICES = DEFAULT_CHOICES + ('r7_batchconcat', 'r7_batchblend', 'r7_concat', 'r7_blend', 'r7_fastblend', 'r7_boundary', 'r7_verdict', 'r7_product', 'r7_other', 'r7_scaffold', 're_c_groundlow2k', 're_c_input2k', 're_c_ground2k', 're_c_input', 're_c_ground', 're_c_safety', 're_a_input', 're_a_source', 're_a_answer', 'np_parallel','np_timeouts','np_peace_block','np_unlearned','np_input_budgets','np_block_only')
+CHOICES = DEFAULT_CHOICES + ('r7_apply_numeric', 'r7_apply_all', 'r7_batchconcat', 'r7_batchblend', 'r7_concat', 'r7_blend', 'r7_fastblend', 'r7_boundary', 'r7_verdict', 'r7_product', 'r7_other', 'r7_scaffold', 're_c_groundlow2k', 're_c_input2k', 're_c_ground2k', 're_c_input', 're_c_ground', 're_c_safety', 're_a_input', 're_a_source', 're_a_answer', 'np_parallel','np_timeouts','np_peace_block','np_unlearned','np_input_budgets','np_block_only')
 
 
 def main():

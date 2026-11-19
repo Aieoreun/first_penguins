@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r7_apply_numeric', 'jh_r7_apply_all'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_answer')
+            return module.NumericApply if name == 'jh_r7_apply_numeric' else module.AllApply
         if name in {'jh_r7_batchconcat', 'jh_r7_batchblend'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_batch')
             return module.BatchedConcat if name == 'jh_r7_batchconcat' else module.BatchedBlend
