@@ -1,0 +1,279 @@
+{
+  "scope": "public_grouped_oof_feature_screen_not_private_score",
+  "api_calls": 0,
+  "group_count": 375,
+  "same_ids_and_folds_as_cm02": true,
+  "new_source_sha256": "bad2fac164a16c36082f83840c57638d4b3c7ce98874eecf72d327a763bd2273",
+  "baseline": [
+    {
+      "kind": "char_mlp",
+      "seed": 20261118,
+      "metrics": {
+        "accuracy": 0.7375,
+        "macro_f1": 0.6848804966380868,
+        "block_f1": 0.680628272251309,
+        "category_non_normal": 0.6436170212765957,
+        "false_block": 26,
+        "missed_block": 35
+      },
+      "matched_coverage": {
+        "0.1": {
+          "count": 40,
+          "category_errors": 1,
+          "accuracy": 0.975,
+          "min_confidence": 0.9913416352967005
+        },
+        "0.25": {
+          "count": 100,
+          "category_errors": 6,
+          "accuracy": 0.94,
+          "min_confidence": 0.9641535987031538
+        },
+        "0.5": {
+          "count": 200,
+          "category_errors": 30,
+          "accuracy": 0.85,
+          "min_confidence": 0.8556677733093049
+        },
+        "0.75": {
+          "count": 300,
+          "category_errors": 59,
+          "accuracy": 0.8033333333333333,
+          "min_confidence": 0.6300370026277016
+        }
+      },
+      "fold_diagnostics": [
+        {
+          "fit_seconds": 3.936476083999878,
+          "feature_count": 14094,
+          "convergence_warnings": 0,
+          "iterations": 228,
+          "parameters": 451370
+        },
+        {
+          "fit_seconds": 3.365892625000015,
+          "feature_count": 13925,
+          "convergence_warnings": 0,
+          "iterations": 200,
+          "parameters": 445962
+        },
+        {
+          "fit_seconds": 2.999145292000094,
+          "feature_count": 13877,
+          "convergence_warnings": 0,
+          "iterations": 179,
+          "parameters": 444426
+        },
+        {
+          "fit_seconds": 2.9792284580000796,
+          "feature_count": 13203,
+          "convergence_warnings": 0,
+          "iterations": 186,
+          "parameters": 422858
+        },
+        {
+          "fit_seconds": 3.7469446669999797,
+          "feature_count": 12657,
+          "convergence_warnings": 0,
+          "iterations": 242,
+          "parameters": 405386
+        }
+      ]
+    }
+  ],
+  "new_models": [
+    {
+      "kind": "boundary_mlp",
+      "metrics": {
+        "accuracy": 0.7425,
+        "macro_f1": 0.695213863076799,
+        "block_f1": 0.6974358974358974,
+        "category_non_normal": 0.6382978723404256,
+        "false_block": 27,
+        "missed_block": 32
+      },
+      "matched_coverage": {
+        "0.1": {
+          "count": 40,
+          "category_errors": 1,
+          "accuracy": 0.975,
+          "min_confidence": 0.9909423734932157
+        },
+        "0.25": {
+          "count": 100,
+          "category_errors": 7,
+          "accuracy": 0.93,
+          "min_confidence": 0.96471458530471
+        },
+        "0.5": {
+          "count": 200,
+          "category_errors": 28,
+          "accuracy": 0.86,
+          "min_confidence": 0.8720184128780901
+        },
+        "0.75": {
+          "count": 300,
+          "category_errors": 59,
+          "accuracy": 0.8033333333333333,
+          "min_confidence": 0.6149156958366793
+        }
+      },
+      "fits": [
+        {
+          "fold": 0,
+          "seconds": 1.7499705829977756,
+          "features": 7868
+        },
+        {
+          "fold": 1,
+          "seconds": 1.9999478749959962,
+          "features": 7855
+        },
+        {
+          "fold": 2,
+          "seconds": 1.5299176249973243,
+          "features": 7615
+        },
+        {
+          "fold": 3,
+          "seconds": 1.822523499999079,
+          "features": 7579
+        },
+        {
+          "fold": 4,
+          "seconds": 1.6556456669932231,
+          "features": 7449
+        }
+      ]
+    },
+    {
+      "kind": "wordchar_lr",
+      "metrics": {
+        "accuracy": 0.72,
+        "macro_f1": 0.666324929976165,
+        "block_f1": 0.6270270270270271,
+        "category_non_normal": 0.5957446808510638,
+        "false_block": 27,
+        "missed_block": 42
+      },
+      "matched_coverage": {
+        "0.1": {
+          "count": 40,
+          "category_errors": 1,
+          "accuracy": 0.975,
+          "min_confidence": 0.9768911290557891
+        },
+        "0.25": {
+          "count": 100,
+          "category_errors": 6,
+          "accuracy": 0.94,
+          "min_confidence": 0.9305030130952835
+        },
+        "0.5": {
+          "count": 200,
+          "category_errors": 31,
+          "accuracy": 0.845,
+          "min_confidence": 0.8048123017313098
+        },
+        "0.75": {
+          "count": 300,
+          "category_errors": 64,
+          "accuracy": 0.7866666666666666,
+          "min_confidence": 0.5761627393445168
+        }
+      },
+      "fits": [
+        {
+          "fold": 0,
+          "seconds": 0.2581619580014376,
+          "features": 16072
+        },
+        {
+          "fold": 1,
+          "seconds": 0.25969624999561347,
+          "features": 15874
+        },
+        {
+          "fold": 2,
+          "seconds": 0.25206070800777525,
+          "features": 15833
+        },
+        {
+          "fold": 3,
+          "seconds": 0.21581999999762047,
+          "features": 15021
+        },
+        {
+          "fold": 4,
+          "seconds": 0.24046345800161362,
+          "features": 14372
+        }
+      ]
+    },
+    {
+      "kind": "wordchar_mlp",
+      "metrics": {
+        "accuracy": 0.7325,
+        "macro_f1": 0.6813741098542868,
+        "block_f1": 0.6594594594594595,
+        "category_non_normal": 0.6223404255319149,
+        "false_block": 24,
+        "missed_block": 39
+      },
+      "matched_coverage": {
+        "0.1": {
+          "count": 40,
+          "category_errors": 2,
+          "accuracy": 0.95,
+          "min_confidence": 0.994485593414216
+        },
+        "0.25": {
+          "count": 100,
+          "category_errors": 7,
+          "accuracy": 0.93,
+          "min_confidence": 0.9702133849552755
+        },
+        "0.5": {
+          "count": 200,
+          "category_errors": 30,
+          "accuracy": 0.85,
+          "min_confidence": 0.8849881524861553
+        },
+        "0.75": {
+          "count": 300,
+          "category_errors": 67,
+          "accuracy": 0.7766666666666666,
+          "min_confidence": 0.6211472178672204
+        }
+      },
+      "fits": [
+        {
+          "fold": 0,
+          "seconds": 3.226543500000844,
+          "features": 16072
+        },
+        {
+          "fold": 1,
+          "seconds": 3.6440280840033665,
+          "features": 15874
+        },
+        {
+          "fold": 2,
+          "seconds": 2.883158957993146,
+          "features": 15833
+        },
+        {
+          "fold": 3,
+          "seconds": 2.5254645840032026,
+          "features": 15021
+        },
+        {
+          "fold": 4,
+          "seconds": 2.805693500005873,
+          "features": 14372
+        }
+      ]
+    }
+  ],
+  "interpretation": "OOF screen on public data; thresholds derived from these folds are descriptive operating points, not independently calibrated."
+}
