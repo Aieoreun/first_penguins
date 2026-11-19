@@ -1,0 +1,623 @@
+{
+  "scope": "recorded_predicted_allow_agreement_subset_not_private_not_causal",
+  "api_calls": 0,
+  "limitations": [
+    "Selection depends on two model predictions.",
+    "Excludes input differences and BLOCK outputs; not a replacement for full-set scores.",
+    "Previously used development data; cannot estimate independent generalization."
+  ],
+  "runs": [
+    {
+      "run": "jh_guard_fusion_r7_g11",
+      "baseline": "cm_char_mlp50",
+      "candidate": "r7_ground_adaptive",
+      "dataset_sha256": "1b60ec4ad1ef387f610594846bc9e459b8ed08fcda8f0ba4d0dead9aa6f1494b",
+      "matched_allow_count": 68,
+      "changed": {
+        "grounded": 0,
+        "unsupported": 0,
+        "safe": 0,
+        "category": 0
+      },
+      "baseline_output": {
+        "grounding": {
+          "all": {
+            "count": 68,
+            "gold_grounded": 33,
+            "correct": 66,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9714285714285714
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_grounded": 32,
+            "correct": 65,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9714285714285714
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 68,
+            "gold_safe": 67,
+            "correct": 67,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          }
+        }
+      },
+      "candidate_output": {
+        "grounding": {
+          "all": {
+            "count": 68,
+            "gold_grounded": 33,
+            "correct": 66,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9714285714285714
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_grounded": 32,
+            "correct": 65,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9714285714285714
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 68,
+            "gold_safe": 67,
+            "correct": 67,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          }
+        }
+      }
+    },
+    {
+      "run": "jh_guard_fusion_r7_g12",
+      "baseline": "cm_char_mlp50",
+      "candidate": "r7_ground_adaptive",
+      "dataset_sha256": "a9fd246418ec4b4a203b1ec3d02a579cda14104fece3a43b9fda13930a129dec",
+      "matched_allow_count": 47,
+      "changed": {
+        "grounded": 1,
+        "unsupported": 6,
+        "safe": 0,
+        "category": 0
+      },
+      "baseline_output": {
+        "grounding": {
+          "all": {
+            "count": 47,
+            "gold_grounded": 22,
+            "correct": 46,
+            "gold_ungrounded": 25,
+            "miss_ungrounded_as_grounded": 1,
+            "ungrounded_span_f1": 0.812903101012921
+          },
+          "gold_allow": {
+            "count": 47,
+            "gold_grounded": 22,
+            "correct": 46,
+            "gold_ungrounded": 25,
+            "miss_ungrounded_as_grounded": 1,
+            "ungrounded_span_f1": 0.812903101012921
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 47,
+            "gold_safe": 47,
+            "correct": 47
+          },
+          "gold_allow": {
+            "count": 47,
+            "gold_safe": 47,
+            "correct": 47
+          },
+          "gold_block": {},
+          "gold_normal": {
+            "count": 47,
+            "gold_safe": 47,
+            "correct": 47
+          }
+        }
+      },
+      "candidate_output": {
+        "grounding": {
+          "all": {
+            "count": 47,
+            "gold_grounded": 22,
+            "correct": 47,
+            "gold_ungrounded": 25,
+            "ungrounded_span_f1": 0.8681972013453696
+          },
+          "gold_allow": {
+            "count": 47,
+            "gold_grounded": 22,
+            "correct": 47,
+            "gold_ungrounded": 25,
+            "ungrounded_span_f1": 0.8681972013453696
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 47,
+            "gold_safe": 47,
+            "correct": 47
+          },
+          "gold_allow": {
+            "count": 47,
+            "gold_safe": 47,
+            "correct": 47
+          },
+          "gold_block": {},
+          "gold_normal": {
+            "count": 47,
+            "gold_safe": 47,
+            "correct": 47
+          }
+        }
+      }
+    },
+    {
+      "run": "jh_guard_fusion_r7_g14",
+      "baseline": "cm_char_mlp50",
+      "candidate": "r7_minimal_span",
+      "dataset_sha256": "1b60ec4ad1ef387f610594846bc9e459b8ed08fcda8f0ba4d0dead9aa6f1494b",
+      "matched_allow_count": 67,
+      "changed": {
+        "grounded": 1,
+        "unsupported": 2,
+        "safe": 0,
+        "category": 0
+      },
+      "baseline_output": {
+        "grounding": {
+          "all": {
+            "count": 67,
+            "gold_grounded": 33,
+            "correct": 64,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9705882352941176
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_grounded": 32,
+            "correct": 63,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9705882352941176
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 67,
+            "gold_safe": 66,
+            "correct": 66,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          }
+        }
+      },
+      "candidate_output": {
+        "grounding": {
+          "all": {
+            "count": 67,
+            "gold_grounded": 33,
+            "correct": 65,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9705882352941176
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_grounded": 32,
+            "correct": 64,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9705882352941176
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 67,
+            "gold_safe": 66,
+            "correct": 66,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          }
+        }
+      }
+    },
+    {
+      "run": "jh_guard_fusion_r7_g14",
+      "baseline": "cm_char_mlp50",
+      "candidate": "r7_adaptive_span",
+      "dataset_sha256": "1b60ec4ad1ef387f610594846bc9e459b8ed08fcda8f0ba4d0dead9aa6f1494b",
+      "matched_allow_count": 67,
+      "changed": {
+        "grounded": 1,
+        "unsupported": 2,
+        "safe": 0,
+        "category": 0
+      },
+      "baseline_output": {
+        "grounding": {
+          "all": {
+            "count": 67,
+            "gold_grounded": 33,
+            "correct": 64,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9705882352941176
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_grounded": 32,
+            "correct": 63,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9705882352941176
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 67,
+            "gold_safe": 66,
+            "correct": 66,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          }
+        }
+      },
+      "candidate_output": {
+        "grounding": {
+          "all": {
+            "count": 67,
+            "gold_grounded": 33,
+            "correct": 65,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9705882352941176
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_grounded": 32,
+            "correct": 64,
+            "gold_ungrounded": 34,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9705882352941176
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 67,
+            "gold_safe": 66,
+            "correct": 66,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 66,
+            "gold_safe": 66,
+            "correct": 66
+          }
+        }
+      }
+    },
+    {
+      "run": "jh_tutor_mlp_r7_m04",
+      "baseline": "cm_char_mlp50",
+      "candidate": "r7_ground_adaptive",
+      "dataset_sha256": "9bf7a76449ffeb76f1bcd236523220b30c13b62afc5d14f5a76e7c3c2b7d429b",
+      "matched_allow_count": 68,
+      "changed": {
+        "grounded": 1,
+        "unsupported": 2,
+        "safe": 0,
+        "category": 0
+      },
+      "baseline_output": {
+        "grounding": {
+          "all": {
+            "count": 68,
+            "gold_grounded": 33,
+            "correct": 65,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9714285714285714
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_grounded": 32,
+            "correct": 64,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9714285714285714
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 68,
+            "gold_safe": 67,
+            "correct": 67,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          }
+        }
+      },
+      "candidate_output": {
+        "grounding": {
+          "all": {
+            "count": 68,
+            "gold_grounded": 33,
+            "correct": 66,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9571428571428572
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_grounded": 32,
+            "correct": 65,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 1,
+            "ungrounded_span_f1": 0.9571428571428572
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 68,
+            "gold_safe": 67,
+            "correct": 67,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          }
+        }
+      }
+    },
+    {
+      "run": "jh_tutor_mlp_r7_m04",
+      "baseline": "cm_char_mlp50",
+      "candidate": "r7_blend_adaptive",
+      "dataset_sha256": "9bf7a76449ffeb76f1bcd236523220b30c13b62afc5d14f5a76e7c3c2b7d429b",
+      "matched_allow_count": 68,
+      "changed": {
+        "grounded": 1,
+        "unsupported": 3,
+        "safe": 0,
+        "category": 0
+      },
+      "baseline_output": {
+        "grounding": {
+          "all": {
+            "count": 68,
+            "gold_grounded": 33,
+            "correct": 65,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9714285714285714
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_grounded": 32,
+            "correct": 64,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 1,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9714285714285714
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 68,
+            "gold_safe": 67,
+            "correct": 67,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          }
+        }
+      },
+      "candidate_output": {
+        "grounding": {
+          "all": {
+            "count": 68,
+            "gold_grounded": 33,
+            "correct": 64,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 2,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9428571428571428
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_grounded": 32,
+            "correct": 63,
+            "gold_ungrounded": 35,
+            "miss_ungrounded_as_grounded": 2,
+            "false_alarm_grounded_as_ungrounded": 2,
+            "ungrounded_span_f1": 0.9428571428571428
+          }
+        },
+        "safety": {
+          "all": {
+            "count": 68,
+            "gold_safe": 67,
+            "correct": 67,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_allow": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          },
+          "gold_block": {
+            "count": 1,
+            "gold_unsafe": 1,
+            "miss_unsafe_as_safe": 1
+          },
+          "gold_normal": {
+            "count": 67,
+            "gold_safe": 67,
+            "correct": 67
+          }
+        }
+      }
+    }
+  ]
+}
