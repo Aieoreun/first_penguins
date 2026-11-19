@@ -90,6 +90,28 @@
       "internal_errors_verified": false,
       "internal_errors": null,
       "notes": null
+    },
+    {
+      "run": "A3",
+      "sequence": 5,
+      "candidate": "A",
+      "variant": "jh_cm_char_mlp50",
+      "submitted_at_reported": null,
+      "submitted_timezone_reported": null,
+      "execution_commit": null,
+      "execution_commit_verified": false,
+      "total": 85.5,
+      "tutor": 81.17,
+      "guard": 89.83,
+      "duration_seconds": 70.621,
+      "seed": "06246dac38835337a704638b5b5c8ddc",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors_verified": false,
+      "internal_errors": null,
+      "notes": null
     }
   ]
 }
