@@ -27,6 +27,7 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    're_c_groundlow2k': ('jh_re_c_groundlow2k', 'pipelines.kimjaehak.reasoning_ablation.GuardGroundLowBudget'),
     're_c_input2k': ('jh_re_c_input2k', 'pipelines.kimjaehak.reasoning_ablation.GuardInputMediumBudget'),
     're_c_ground2k': ('jh_re_c_ground2k', 'pipelines.kimjaehak.reasoning_ablation.GuardGroundMediumBudget'),
     're_c_input': ('jh_re_c_input', 'pipelines.kimjaehak.reasoning_ablation.GuardInputMedium'),

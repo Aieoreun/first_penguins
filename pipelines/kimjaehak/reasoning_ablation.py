@@ -89,6 +89,11 @@ class GuardGroundMediumBudget(GuardGroundMedium):
     reasoning_guard_ground_tokens = 2000
 
 
+class GuardGroundLowBudget(GuardGroundMediumBudget):
+    """Token-only control: separate extra output room from extra reasoning."""
+    reasoning_guard_ground = 'low'
+
+
 class TutorInputMedium(StageEffort, CharMLP50):
     reasoning_tutor_input = 'medium'
 

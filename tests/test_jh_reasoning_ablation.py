@@ -15,7 +15,7 @@ from pipelines.kimjaehak.neural_peace_guard import CheckBudgets, _guard_deadline
 from pipelines.kimjaehak.reasoning_ablation import (
     EffortClient, GuardInputMedium, GuardGroundMedium, GuardSafetyMedium,
     TutorInputMedium, TutorSourceMedium, TutorAnswerMedium,
-    GuardInputMediumBudget, GuardGroundMediumBudget)
+    GuardInputMediumBudget, GuardGroundMediumBudget, GuardGroundLowBudget)
 from pipelines.v1.pipeline import Pipeline as V1
 
 
@@ -135,7 +135,8 @@ class ReasoningTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_budget_rescues_only_change_target_token_cap(self):
         for cls, base in ((GuardInputMediumBudget, GuardInputMedium),
-                          (GuardGroundMediumBudget, GuardGroundMedium)):
+                          (GuardGroundMediumBudget, GuardGroundMedium),
+                          (GuardGroundLowBudget, CheckBudgets)):
             for guard in (True, False):
                 p, q = self.pipeline(cls), self.pipeline(base)
                 client = p.llm
