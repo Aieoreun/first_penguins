@@ -21,9 +21,15 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r7_ground3', 'jh_r7_ground_adaptive'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_adaptive_ground')
+            return module.GroundThree if name == 'jh_r7_ground3' else module.AdaptiveGround
         if name in {'jh_r7_ground_input', 'jh_r7_ground_union'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_ground_source')
             return module.InputGroundSource if name == 'jh_r7_ground_input' else module.UnionGroundSource
+        if name in {'jh_r7_apply_concrete', 'jh_r7_apply_joint'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_answer')
+            return module.ConcreteApply if name == 'jh_r7_apply_concrete' else module.JointConcreteApply
         if name in {'jh_r7_apply_numeric', 'jh_r7_apply_all'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_answer')
             return module.NumericApply if name == 'jh_r7_apply_numeric' else module.AllApply

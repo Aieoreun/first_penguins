@@ -280,7 +280,7 @@ def run(app, **kwargs):
         self.assertEqual(counts, {'span_review_triggered': 2, 'span_review_attempted': 2,
             'span_review_completed': 2, 'span_review_success': 2, 'span_review_changed': 0,
             'fusion_ground_skipped_fast_block': 0, 'fusion_ground_cancelled_block': 0, 'matrix_gate': 2,
-            'guard_unlearned_input': 0, 'learned_span': 0, 'r7_hybrid_fast': 0, 'r7_embedding_reused': 0})
+            'guard_unlearned_input': 0, 'learned_span': 0, 'r7_hybrid_fast': 0, 'r7_embedding_reused': 0, 'r7_ground_early': 0})
 
     def test_counts_flush_on_sigterm_after_original_shutdown(self):
         self.fake_server_tree()
