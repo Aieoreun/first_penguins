@@ -30,6 +30,20 @@
       "official_invalid_or_no_response": 0,
       "official_judgement_errors": 0,
       "internal_timeout_count": null
+    },
+    {
+      "candidate": "D",
+      "variant": "jh_np_peace_block",
+      "total": 84.09,
+      "tutor": 78.67,
+      "guard": 89.52,
+      "duration_seconds": 62.816,
+      "seed": "506a8f347aacd00cd76c1d5070a0c2b5",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_timeout_count": null
     }
   ]
 }
