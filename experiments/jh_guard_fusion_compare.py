@@ -27,6 +27,9 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r7_tax_budget12': ('jh_r7_tax_budget12', 'pipelines.kimjaehak.round7_tax_scope.TaxBudget12'),
+    'r7_binary_tutor': ('jh_r7_binary_tutor', 'pipelines.kimjaehak.round7_binary_tutor.BinaryTutor'),
+    'r7_binary_tutor12': ('jh_r7_binary_tutor12', 'pipelines.kimjaehak.round7_binary_tutor.BinaryTutor12'),
     'r7_tax_scope': ('jh_r7_tax_scope', 'pipelines.kimjaehak.round7_tax_scope.ExplicitTaxScope'),
     'r7_tax_concrete': ('jh_r7_tax_concrete', 'pipelines.kimjaehak.round7_tax_scope.TaxScopedConcrete'),
     'r7_binary_guard75': ('jh_r7_binary_guard75', 'pipelines.kimjaehak.round7_binary_guard.BinaryGuard75'),

@@ -32,6 +32,9 @@ def apply_scope(pipeline,state):
             or not state.section
             or not state.answer.startswith('관련 교재 내용을 인용할게요.\n\n')):
         return False
+    # A rate supplied earlier in the conversation is also a valid assumption.
+    if any(RATE.search(m.get('content','')) for m in state.messages):
+        return False
     if not excluded_tax_request(state.last_user,pipeline.searcher.section_text(state.section)):
         return False
     state.label=Label.OUT_OF_MATERIAL
@@ -54,3 +57,8 @@ class TaxScopedConcrete(ScopedConcrete):
     async def _explain(self,state):
         if apply_scope(self,state):return
         await super()._explain(state)
+
+
+class TaxBudget12(TaxScopedConcrete):
+    # NumericApply still clamps this to the original 26-second request deadline.
+    tutor_apply_timeout=12.0

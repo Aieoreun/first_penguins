@@ -21,6 +21,11 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == 'jh_r7_tax_budget12':
+            return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12
+        if name in {'jh_r7_binary_tutor', 'jh_r7_binary_tutor12'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_binary_tutor')
+            return module.BinaryTutor if name == 'jh_r7_binary_tutor' else module.BinaryTutor12
         if name in {'jh_r7_tax_scope', 'jh_r7_tax_concrete'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_tax_scope')
             return module.ExplicitTaxScope if name == 'jh_r7_tax_scope' else module.TaxScopedConcrete

@@ -100,3 +100,5 @@ VARIANTS += ("jh_r7_binary_guard",)
 VARIANTS += ("jh_r7_tax_scope", "jh_r7_tax_concrete")
 
 VARIANTS += ("jh_r7_binary_guard75",)
+
+VARIANTS += ("jh_r7_tax_budget12", "jh_r7_binary_tutor", "jh_r7_binary_tutor12")

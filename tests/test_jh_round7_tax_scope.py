@@ -35,6 +35,13 @@ class TaxScopeTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(ScopedConcrete,'_explain',new_callable=AsyncMock) as base:await p._explain(s)
         base.assert_not_awaited();self.assertTrue(s.debug['r7_explicit_tax_scope'])
 
+    async def test_rate_in_earlier_turn_preserves_original_generation(self):
+        p,s=self.ready(TaxScopedConcrete)
+        s.messages.insert(0,{'role':'user','content':'세율을 10%로 가정해서 계산할게요.'})
+        with patch.object(ScopedConcrete,'_explain',new_callable=AsyncMock) as base:await p._explain(s)
+        base.assert_awaited_once_with(s)
+        self.assertNotIn('r7_explicit_tax_scope',s.debug)
+
     async def test_ordinary_query_and_guard_preserved(self):
         p,s=self.ready(TaxScopedConcrete);s.messages=[{'role':'user','content':'200원의 세전 이자를 계산해줘'}]
         with patch.object(ScopedConcrete,'_explain',new_callable=AsyncMock) as base:await p._explain(s)
