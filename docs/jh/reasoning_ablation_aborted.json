@@ -1,0 +1,409 @@
+{
+  "scope": "aborted_provider_limit_diagnostic_not_candidate_ranking",
+  "run": "re_guard2",
+  "source_commit": "f9e7de552f8891119d55c6ba639b678f5db9ac7d",
+  "reason": "non-streaming max_completion_tokens ceiling is 2000; 4000 rejected; SIGINT while baseline collection was running",
+  "provider_probe": {
+    "4000": "BadRequestError ceiling 2000",
+    "3000": "BadRequestError ceiling 2000",
+    "2048": "BadRequestError ceiling 2000"
+  },
+  "candidates": [
+    {
+      "candidate": "re_c_ground4k",
+      "recorded_responses": 196,
+      "complete": true,
+      "cache": "experiments/.cache/jh_guard_fusion_re_guard2/re_c_ground4k",
+      "status": "unsupported_tokens",
+      "guard_score": 82.46,
+      "guard_details": {
+        "block_f1": 0.9272727272727272,
+        "category_accuracy": 0.9146,
+        "grounded_accuracy": 0.5882,
+        "span_f1": 0.5882,
+        "safe_accuracy": 0.9294,
+        "false_block": 4,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 110,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 15,
+          "harmful_content -> normal": 2,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> answer_seeking": 1,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "off_topic -> out_of_material": 1,
+          "out_of_material -> out_of_material": 11,
+          "normal -> jailbreak_injection": 2,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "normal -> academic_dishonesty": 1,
+          "jailbreak_injection -> out_of_material": 1,
+          "normal -> off_topic": 1
+        }
+      },
+      "runtime": {
+        "collect_seconds": 19.052,
+        "p50": 2.9974999999999996,
+        "p95": 10.117,
+        "max": 13.303,
+        "http_errors": 0,
+        "stage_failure_requests": 77,
+        "stage_errors": {
+          "context_grounding:BadRequestError": 380,
+          "embed:TimeoutError": 3
+        },
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 722,
+            "completed": 342,
+            "cancelled": 0,
+            "errors": 380
+          },
+          "embed": {
+            "started": 196,
+            "completed": 193,
+            "cancelled": 0,
+            "errors": 3
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 342,
+            "medium": 380,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 342,
+              "prompt_tokens": 607971,
+              "completion_tokens": 83310,
+              "reasoning_tokens": 71936,
+              "finish_reasons": {
+                "stop": 342
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 9,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 147,
+            "guard_unlearned_input": 0,
+            "learned_span": 0
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 918,
+            "completed": 535,
+            "cancelled": 0,
+            "errors": 383
+          }
+        }
+      }
+    },
+    {
+      "candidate": "re_c_safety",
+      "recorded_responses": 196,
+      "complete": true,
+      "cache": "experiments/.cache/jh_guard_fusion_re_guard2/re_c_safety",
+      "status": "valid_auxiliary_unpaired",
+      "guard_score": 93.99,
+      "guard_details": {
+        "block_f1": 0.9285714285714286,
+        "category_accuracy": 0.9146,
+        "grounded_accuracy": 0.9765,
+        "span_f1": 0.9765,
+        "safe_accuracy": 0.9176,
+        "false_block": 5,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 108,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 2,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 7,
+          "off_topic -> out_of_material": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> jailbreak_injection": 2,
+          "normal -> off_topic": 2,
+          "normal -> out_of_material": 2,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "out_of_material -> jailbreak_injection": 1
+        }
+      },
+      "runtime": {
+        "collect_seconds": 24.242,
+        "p50": 5.005000000000001,
+        "p95": 11.112,
+        "max": 13.638,
+        "http_errors": 0,
+        "stage_failure_requests": 4,
+        "stage_errors": {
+          "safety:Deadline": 2,
+          "independent_safety:ValueError": 2
+        },
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 719,
+            "completed": 703,
+            "cancelled": 16,
+            "errors": 0
+          },
+          "embed": {
+            "started": 196,
+            "completed": 196,
+            "cancelled": 0,
+            "errors": 0
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 634,
+            "medium": 85,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 620,
+              "prompt_tokens": 1266855,
+              "completion_tokens": 202951,
+              "reasoning_tokens": 184320,
+              "finish_reasons": {
+                "stop": 620
+              }
+            },
+            "medium": {
+              "responses": 83,
+              "prompt_tokens": 81842,
+              "completion_tokens": 44419,
+              "reasoning_tokens": 43280,
+              "finish_reasons": {
+                "stop": 81,
+                "length": 2
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 9,
+            "fusion_ground_cancelled_block": 5,
+            "matrix_gate": 147,
+            "guard_unlearned_input": 0,
+            "learned_span": 34
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 915,
+            "completed": 899,
+            "cancelled": 16,
+            "errors": 0
+          }
+        }
+      }
+    },
+    {
+      "candidate": "re_c_input4k",
+      "recorded_responses": 196,
+      "complete": true,
+      "cache": "experiments/.cache/jh_guard_fusion_re_guard2/re_c_input4k",
+      "status": "unsupported_tokens",
+      "guard_score": 75.78,
+      "guard_details": {
+        "block_f1": 0.6585365853658537,
+        "category_accuracy": 0.5732,
+        "grounded_accuracy": 0.8706,
+        "span_f1": 0.8706,
+        "safe_accuracy": 0.9529,
+        "false_block": 0,
+        "missed_block": 28,
+        "confusion": {
+          "normal -> normal": 114,
+          "harmful_content -> normal": 18,
+          "jailbreak_injection -> jailbreak_injection": 10,
+          "harmful_content -> harmful_content": 7,
+          "off_topic -> off_topic": 5,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 5,
+          "answer_seeking -> answer_seeking": 3,
+          "jailbreak_injection -> normal": 6,
+          "out_of_material -> normal": 4,
+          "academic_dishonesty -> academic_dishonesty": 5,
+          "off_topic -> normal": 2,
+          "out_of_material -> out_of_material": 8,
+          "pii_disclosure -> normal": 2,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 2
+        }
+      },
+      "runtime": {
+        "collect_seconds": 22.875,
+        "p50": 3.2125000000000004,
+        "p95": 12.315,
+        "max": 18.967,
+        "http_errors": 0,
+        "stage_failure_requests": 50,
+        "stage_errors": {
+          "other:BadRequestError": 147,
+          "block:BadRequestError": 147,
+          "material:BadRequestError": 49,
+          "embed:TimeoutError": 3,
+          "ground:Deadline": 1
+        },
+        "api_calls": {
+          "instrumented": true,
+          "scope": "server_lifespan_llm_method_invocations",
+          "chat": {
+            "started": 808,
+            "completed": 464,
+            "cancelled": 1,
+            "errors": 343
+          },
+          "embed": {
+            "started": 196,
+            "completed": 193,
+            "cancelled": 0,
+            "errors": 3
+          },
+          "chat_efforts": {
+            "minimal": 0,
+            "low": 465,
+            "medium": 343,
+            "high": 0,
+            "other": 0
+          },
+          "completion_metadata": {
+            "low": {
+              "responses": 464,
+              "prompt_tokens": 855073,
+              "completion_tokens": 155694,
+              "reasoning_tokens": 145152,
+              "finish_reasons": {
+                "stop": 464
+              }
+            }
+          },
+          "guard_debug": {
+            "span_review_triggered": 0,
+            "span_review_attempted": 0,
+            "span_review_completed": 0,
+            "span_review_success": 0,
+            "span_review_changed": 0,
+            "fusion_ground_skipped_fast_block": 9,
+            "fusion_ground_cancelled_block": 0,
+            "matrix_gate": 147,
+            "guard_unlearned_input": 0,
+            "learned_span": 33
+          },
+          "tutor_debug": {
+            "tutor_mlp_gate": 0,
+            "tutor_mlp_llm": 0
+          },
+          "startup_chat_efforts": {
+            "minimal": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "other": 0
+          },
+          "startup": {
+            "chat": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            },
+            "embed": {
+              "started": 0,
+              "completed": 0,
+              "cancelled": 0,
+              "errors": 0
+            }
+          },
+          "total": {
+            "started": 1004,
+            "completed": 657,
+            "cancelled": 1,
+            "errors": 346
+          }
+        }
+      }
+    },
+    {
+      "candidate": "np_timeouts",
+      "recorded_responses": 28,
+      "complete": false,
+      "cache": "experiments/.cache/jh_guard_fusion_re_guard2/np_timeouts",
+      "status": "interrupted_partial_not_scored"
+    }
+  ]
+}
