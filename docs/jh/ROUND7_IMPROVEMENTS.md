@@ -400,3 +400,40 @@ numeric04 숫자16: A84.11/16.297초, scoped91.41/22.313초, calculator84.11/17.
 - `jh_r7_examples1` / `jh_r7_examples3`: 공개 예시를 이용하는 아이디어 자체는 R2의 `input_examples.py`에도 있다. 실제 A의 MRO에는 그 클래스가 없음을 확인했다. 이번에는 A의 문자 어휘 TF-IDF를 재사용하고, 전체 공개 대화·유형별 최대1개·전체4500자 상한으로 가드 fallback에만 적용한다. R2는 BM25/dense·예시4개·일부 이력 절단·서로 다른 gate 경로였다. 같은 변경을 중복 상속한 것은 아니다. 새 버전은 공개 원문과 정확히 같은 질문도 예시에서 제외하지 않으므로 공개/파생 성적은 더더욱 독립 일반화 증거가 아니다.
 - g16 일반196: A/adaptive2/adaptive3/examples1/examples3. g17 novel60: adaptive3/adaptive2/A. g18 검토된 intent16: examples3/examples1/A. numeric05: A/scoped/structured/scope_structured. contrast scope1: 원래 검토·동결된16문항의 A/material_scope/scope_structured. 새 질문을 만들어 정답을 유리하게 바꾸지 않는다.
 - 전체930 unittest 통과. 내용 없는 예시 사용 boolean 집계가 새로 추가됐고 privacy 검증도 통과했다. 새 runtime 비교 중 코드는 고정한다. 사용량 현재 잔여46%,40% 중단 기준 유지.
+
+## g16/g17: 시간 변동에서 적응형2회 회귀
+
+|일반196 g16 후보|가드|false block/missed block|ground deadline|수집 초|
+|---|---:|---:|---:|---:|
+|A|95.55|4/3|2|21.028|
+|adaptive2|94.04|4/4|7|23.057|
+|adaptive3|95.46|3/3|6|20.647|
+|examples1|95.41|3/4|0|19.885|
+|examples3|92.41|8/4|3|17.998|
+
+이번에는 adaptive2가1.51 낮았다. 같은 요청 전체 예산에서 첫 검사 완료 후 다음 묶음을 시작하는 비용이 커질 수 있다는 가설과 부합하지만 외부 API 변동을 분리하지는 못했다. A도 material timeout7/embedding timeout2였고 examples3은 embedding timeout7이었다. g17 novel60은 adaptive3 99.01/14.054초, adaptive2 98.59/13.942초, A98.03/13.435초로 다른 방향이었다. adaptive2의 앞선 좋은 회차만 선택해 추천하지 않는다.
+
+예시1은 A 대비 입력 범주2개를 교정하고3개를 악화했다. 예시3은2개 교정/7개 악화였다. 새 근거 출력 로직이 없으므로 그 후보의 grounded/span 변동까지 예시 판정의 직접 효과로 설명하지 않는다. g18 검토된 intent8쌍은 A/예시1 모두5쌍 정답(정상 오차단2/위험 미차단1), 예시3은6쌍(2/0)이었다. 작은 경계 진단 상승보다 일반196 오차단 회귀를 우선해 예시3은 보류한다. g18은 입력 전용 지표로만 기록한다.
+
+## 숫자·자료 범위 반복 결과
+
+numeric05 A74.74/9.698초, scoped85.68/18.364초, structured84.90/17.370초, scope_structured82.55/19.395초. 구조화 계산은 각각3/5회 성공했으며 evidence 검증 실패5/4, schema 실패2/1, 설명 timeout 각각3회였다. 확인한 성공 답변의 기간은 올바르게5개월/7개월로 표시됐으나 scope 결합은 실제 세후 금액 질문에 여전히 세전 계산을 답했다. 산술 정확성·단위·근거 부족의 구별이 모두 필요하다.
+
+검토된 기존 KB contrast16에서는 A93.75/material_scope93.75/scope_structured90.62. 정상8개는 모두 answer였고 미제공8개는 각각6/6/5개만 abstain이었다. 현재 scope 프롬프트를 광범위하게 채택할 근거가 없다. [별도 결과](round7_contrast_results.json).
+
+## 오프라인 규제·차원 축소: 운영 모델 유지
+
+동일400 grouped OOF 상위200 비유해 판정 오류: A30, alpha1 34, alpha10 111, min_df1 38, char3–6그램37. 변경하지 않는다. [규제 실험](round7_regularization_cv.json).
+
+제공 임베딩을 fold 학습 데이터로만 PCA32/64차원 축소한 MLP는 오류40~53, char75 혼합은27~30으로 기존 char75+dense25의24개보다 좋지 않았다. 단, PCA MLP20개 fit 모두600 iteration 상한에 도달해 **수렴하지 않은 스크리닝**이다. PCA 자체가 효과 없다고 확정하지 않으며 이 설정을 운영 후보로 올리지 않는다. [PCA 결과](round7_pca_cv.json). 모든 CPU 작업은 API 수집이 끝난 뒤 단일 스레드로 실행했고 API 호출0이다.
+
+기존 OOF 확률만 섞은 char/boundary25·50·75의 상위200 오류는30/30/27, char50+boundary25+dense25는25였다. 학습·API 추가 없이 확인했으며 기존 두 표현 결합보다 좋아지지 않아 모델 수를 늘리지 않는다.
+
+## 후속 비교 (499ea82)
+
+- `jh_r7_early_consensus`:5회 모두 병렬 시작, 먼저 끝난3개 이상의 정상 결과가 모두 동일한 문자 구간이면 나머지를 취소한다. 불일치·오류가 있으면 기다리며 원래13초 한도, 완료 결과·입력BLOCK 취소·safety 유지 규칙은 그대로다. 요청 시작 수는5회이므로 호출 수 절감이라고 주장하지 않는다. 단계적 추가 호출의 지연을 피하는 가설이다.
+- `jh_r7_task_examples1/3`: 같은 공개 예시 검색을 유지하고 예시를 실제 질문 앞에 둔다. block에는 block 판정 필드만, other에는 other/self_info만 보인다. 기존 묶음 예시를 중복 삽입하지 않는다. 이는 R2의 검사별 프롬프트 형태를 현재 가드에 맞춘 후속이다.
+- `jh_r7_calc_noquote`: 기존 구조화 프롬프트는 그대로 두고 글자 단위 근거 복사 검증만 생략한다. 산술 검증은 유지하며 의미적 근거는 여전히 모델의 판단이다.
+- `jh_r7_calc_compact`: 근거 구절 복사 필드를 없애고 항목명·식·단위만 출력한다. 규칙 이름의 숫자를 허용하되 답의 계산값은 계속 제한 계산기로 만든다.
+- `jh_r7_material_verdict`: 기존 튜터 material 호출에서 질문 속성과 sufficient/missing_material/missing_question_values를 명시한다. missing_material일 때만 quote를 비워 기존 OOM 경로로 보내며, 학습 gate가 생략한 호출을 새로 추가하지 않는다.
+- g19 일반196 A/early/prefix1/prefix3, g20 novel60 early/adaptive3/A, numeric06 A/noquote/compact/verdict, contrast2 verdict/compact/A. 각 결과를 보고 다음 후보를 선택하며 API·CPU 수집을 겹치지 않는다. 전체940테스트 통과, 현재 잔여45%.
