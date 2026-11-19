@@ -68,6 +68,28 @@
       "internal_errors_verified": false,
       "internal_errors": null,
       "notes": null
+    },
+    {
+      "run": "C2",
+      "sequence": 4,
+      "candidate": "C",
+      "variant": "jh_np_timeouts",
+      "submitted_at_reported": null,
+      "submitted_timezone_reported": null,
+      "execution_commit": null,
+      "execution_commit_verified": false,
+      "total": 82.74,
+      "tutor": 79.67,
+      "guard": 85.81,
+      "duration_seconds": 70.578,
+      "seed": "66049cb7664709edaaaf47d7fe370708",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors_verified": false,
+      "internal_errors": null,
+      "notes": null
     }
   ]
 }
