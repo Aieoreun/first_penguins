@@ -247,6 +247,34 @@ def run(app,**kwargs):
         self.assertEqual(counts['completion_metadata']['medium'],{'responses':1,'prompt_tokens':12,
             'completion_tokens':20,'reasoning_tokens':18,'finish_reasons':{'length':1}})
 
+    def test_adaptive_counters_read_ground_state_before_parent_drops_debug(self):
+        self.fake_server_tree()
+        with (self.root/'pipelines/fake.py').open('a') as stream:
+            stream.write('''
+ guard_adaptive_ground=True
+ async def _fusion_ground(self,state):
+  state.debug={'r7_ground_early':True,'fusion_completed_ground_votes':2,'private':'not exported'}
+ async def guard(self,body):
+  ground=SimpleNamespace(debug={})
+  await self._fusion_ground(ground)
+  return SimpleNamespace(debug={})
+''')
+        (self.root/'uvicorn.py').write_text('''
+import asyncio,server
+def run(app,**kwargs):
+ async def work():
+  async with app.router.lifespan_context(app):
+   await server.state['pipeline'].guard({'candidate_answer':'private'})
+ asyncio.run(work())
+''')
+        result=self.run_fake_bootstrap()
+        self.assertEqual(result.returncode,0,result.stdout)
+        raw=(self.root/'api_counts.json').read_text()
+        self.assertNotIn('private',raw)
+        counts=json.loads(raw)
+        self.assertEqual(counts['r7_adaptive_ground'],{'requests':1,'early':1,'completed_votes':2})
+        self.assertEqual(counts['guard_debug']['r7_ground_early'],0)
+
     def test_guard_diagnostics_count_only_booleans_without_recording_text(self):
         self.fake_server_tree()
         with (self.root / 'pipelines/fake.py').open('a') as stream:
@@ -280,7 +308,7 @@ def run(app, **kwargs):
         self.assertEqual(counts, {'span_review_triggered': 2, 'span_review_attempted': 2,
             'span_review_completed': 2, 'span_review_success': 2, 'span_review_changed': 0,
             'fusion_ground_skipped_fast_block': 0, 'fusion_ground_cancelled_block': 0, 'matrix_gate': 2,
-            'guard_unlearned_input': 0, 'learned_span': 0, 'r7_hybrid_fast': 0, 'r7_embedding_reused': 0, 'r7_ground_early': 0})
+            'guard_unlearned_input': 0, 'learned_span': 0, 'r7_hybrid_fast': 0, 'r7_embedding_reused': 0, 'r7_ground_early': 0, 'r7_material_cancelled': 0})
 
     def test_counts_flush_on_sigterm_after_original_shutdown(self):
         self.fake_server_tree()

@@ -35,6 +35,12 @@ CANDIDATES = {
     'r7_apply_joint': ('jh_r7_apply_joint', 'pipelines.kimjaehak.round7_answer.JointConcreteApply'),
     'r7_ground3': ('jh_r7_ground3', 'pipelines.kimjaehak.round7_adaptive_ground.GroundThree'),
     'r7_ground_adaptive': ('jh_r7_ground_adaptive', 'pipelines.kimjaehak.round7_adaptive_ground.AdaptiveGround'),
+    'r7_blend_adaptive': ('jh_r7_blend_adaptive', 'pipelines.kimjaehak.round7_combined.BlendedAdaptive'),
+    'r7_cancel_guard': ('jh_r7_cancel_guard', 'pipelines.kimjaehak.round7_material_cancel.CancelGuardMaterial'),
+    'r7_cancel_tutor': ('jh_r7_cancel_tutor', 'pipelines.kimjaehak.round7_material_cancel.CancelTutorMaterial'),
+    'r7_cancel_both': ('jh_r7_cancel_both', 'pipelines.kimjaehak.round7_material_cancel.CancelBothMaterial'),
+    'r7_material_scope': ('jh_r7_material_scope', 'pipelines.kimjaehak.round7_material_scope.MaterialScope'),
+    'r7_apply_scoped': ('jh_r7_apply_scoped', 'pipelines.kimjaehak.round7_material_scope.ScopedConcrete'),
     'r7_llm_input': ('jh_r7_llm_input', 'pipelines.kimjaehak.round7_hybrid.CommonFallback'),
     'r7_batchconcat': ('jh_r7_batchconcat', 'pipelines.kimjaehak.round7_batch.BatchedConcat'),
     'r7_batchblend': ('jh_r7_batchblend', 'pipelines.kimjaehak.round7_batch.BatchedBlend'),
@@ -140,6 +146,7 @@ try:
               'embed': {key: 0 for key in ('started', 'completed', 'cancelled', 'errors')}}
     counts['r7_policy_calls'] = {'product':0,'other':0,'scaffold':0}
     counts['r7_guard_aggregation'] = {'requests':0,'changed':0}
+    counts['r7_adaptive_ground'] = {'requests':0,'early':0,'completed_votes':0}
     counts['chat_efforts'] = {key: 0 for key in ('minimal','low','medium','high','other')}
     llm_class = getattr(server, 'LLM', None)
     def counted_method(method, counters):
@@ -223,7 +230,7 @@ try:
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
                     'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
-                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early')}
+                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early', 'r7_material_cancelled')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})
@@ -233,7 +240,7 @@ try:
                 instance.guard = observed_guard
             original_tutor = getattr(instance, 'tutor', None)
             if callable(original_tutor):
-                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0}
+                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0, 'r7_material_cancelled':0, 'r7_material_scope_used':0, 'r7_apply_abstained':0}
                 async def observed_tutor(body):
                     result = await original_tutor(body)
                     debug = getattr(result, 'debug', {})
@@ -247,16 +254,23 @@ try:
                     'class': actual.__module__ + '.' + actual.__name__, 'request_slots': 64,
                     'source_root': str(root), 'embedding_index_loaded': instance.searcher.has_embeddings,
                     'learned_models_enabled': getattr(instance, 'learned_models_enabled', None)}
-            if getattr(instance,'guard_verdict_first',False):
+            if getattr(instance,'guard_verdict_first',False) or getattr(instance,'guard_adaptive_ground',False):
                 original_ground = instance._fusion_ground
                 async def observed_ground(state):
                     try:
                         return await original_ground(state)
                     finally:
-                        counts['r7_guard_aggregation']['requests'] += 1
-                        counts['r7_guard_aggregation']['changed'] += state.debug.get('r7_verdict_changed') is True
+                        if getattr(instance,'guard_verdict_first',False):
+                            counts['r7_guard_aggregation']['requests'] += 1
+                            counts['r7_guard_aggregation']['changed'] += state.debug.get('r7_verdict_changed') is True
+                        if getattr(instance,'guard_adaptive_ground',False):
+                            counts['r7_adaptive_ground']['requests'] += 1
+                            counts['r7_adaptive_ground']['early'] += state.debug.get('r7_ground_early') is True
+                            votes = state.debug.get('fusion_completed_ground_votes',0)
+                            if isinstance(votes,int) and not isinstance(votes,bool) and 0<=votes<=5:
+                                counts['r7_adaptive_ground']['completed_votes'] += votes
                 instance._fusion_ground = observed_ground
-            for key in ('guard_adaptive_ground','tutor_apply_joint_source','tutor_apply_concrete','tutor_apply_max_chars','guard_ground_context','tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
+            for key in ('material_cancel_scope','tutor_material_scope','tutor_apply_missing_material_abstain','guard_adaptive_ground','tutor_apply_joint_source','tutor_apply_concrete','tutor_apply_max_chars','guard_ground_context','tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
                         'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',

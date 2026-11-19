@@ -21,6 +21,14 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == 'jh_r7_blend_adaptive':
+            return importlib.import_module('pipelines.kimjaehak.round7_combined').BlendedAdaptive
+        if name in {'jh_r7_cancel_guard', 'jh_r7_cancel_tutor', 'jh_r7_cancel_both'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_material_cancel')
+            return {'jh_r7_cancel_guard':module.CancelGuardMaterial, 'jh_r7_cancel_tutor':module.CancelTutorMaterial, 'jh_r7_cancel_both':module.CancelBothMaterial}[name]
+        if name in {'jh_r7_material_scope', 'jh_r7_apply_scoped'}:
+            module = importlib.import_module('pipelines.kimjaehak.round7_material_scope')
+            return module.MaterialScope if name == 'jh_r7_material_scope' else module.ScopedConcrete
         if name in {'jh_r7_ground3', 'jh_r7_ground_adaptive'}:
             module = importlib.import_module('pipelines.kimjaehak.round7_adaptive_ground')
             return module.GroundThree if name == 'jh_r7_ground3' else module.AdaptiveGround

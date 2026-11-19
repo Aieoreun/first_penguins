@@ -80,3 +80,5 @@ VARIANTS += ("jh_r7_ground_input", "jh_r7_ground_union")
 VARIANTS += ("jh_r7_apply_concrete", "jh_r7_apply_joint")
 
 VARIANTS += ("jh_r7_ground3", "jh_r7_ground_adaptive")
+
+VARIANTS += ("jh_r7_blend_adaptive", "jh_r7_cancel_guard", "jh_r7_cancel_tutor", "jh_r7_cancel_both", "jh_r7_material_scope", "jh_r7_apply_scoped")
