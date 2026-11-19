@@ -43,7 +43,9 @@ def main():
                     'scope':manifest.get('scope'), 'score_scope':manifest['score_scope'],
                     'scores':scores,'runtime':runtime,
                     'endpoint_runtime':endpoint_runtime(rows,(path/'server.log').read_text()),
-                    'effective_config':manifest['effective_config'],
+                    # The private cache retains the verified absolute root.
+                    # Published aggregates need configuration, not host paths.
+                    'effective_config':{**manifest['effective_config'], 'source_root':'.'},
                     'source_commit':plan.get('current_commit',plan.get('commit')),
                     'cache':str(path.relative_to(ROOT)),
                     'medium_calls':runtime['api_calls'].get('chat_efforts',{}).get('medium',0)}
