@@ -1,0 +1,587 @@
+{
+  "scope": "input_only_development_not_guard_total",
+  "runs": [
+    {
+      "run": "r7_g02",
+      "summary": [
+        {
+          "candidate": "r7_boundary",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 12.434,
+            "p50": 0.907,
+            "p95": 9.324,
+            "max": 10.83,
+            "http_errors": 0,
+            "stage_failure_requests": 5,
+            "stage_errors": {
+              "material:TimeoutError": 5
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 229,
+                "completed": 224,
+                "cancelled": 0,
+                "errors": 5
+              },
+              "embed": {
+                "started": 184,
+                "completed": 184,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 229,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 224,
+                  "prompt_tokens": 432761,
+                  "completion_tokens": 58069,
+                  "reasoning_tokens": 49792,
+                  "finish_reasons": {
+                    "stop": 224
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 140,
+                "guard_unlearned_input": 0,
+                "learned_span": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 413,
+                "completed": 408,
+                "cancelled": 0,
+                "errors": 5
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9433962264150944,
+            "category_accuracy": 0.9367,
+            "false_block": 3,
+            "missed_block": 3
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 12.819,
+            "p50": 0.8095000000000001,
+            "p95": 9.157,
+            "max": 10.98,
+            "http_errors": 0,
+            "stage_failure_requests": 7,
+            "stage_errors": {
+              "other:TimeoutError": 2,
+              "material:TimeoutError": 5
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 234,
+                "completed": 227,
+                "cancelled": 0,
+                "errors": 7
+              },
+              "embed": {
+                "started": 184,
+                "completed": 184,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 234,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 227,
+                  "prompt_tokens": 443745,
+                  "completion_tokens": 59260,
+                  "reasoning_tokens": 51072,
+                  "finish_reasons": {
+                    "stop": 227
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 139,
+                "guard_unlearned_input": 0,
+                "learned_span": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 418,
+                "completed": 411,
+                "cancelled": 0,
+                "errors": 7
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9514563106796117,
+            "category_accuracy": 0.9241,
+            "false_block": 1,
+            "missed_block": 4
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        }
+      ],
+      "source_commit": "c4e3a0163f770d1a383be0f7b7ced1e5224cd71d"
+    },
+    {
+      "run": "r7_g06",
+      "summary": [
+        {
+          "candidate": "r7_fastblend",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 11.955,
+            "p50": 0.952,
+            "p95": 7.277,
+            "max": 10.358,
+            "http_errors": 0,
+            "stage_failure_requests": 0,
+            "stage_errors": {},
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 240,
+                "completed": 240,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 285,
+                "completed": 285,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 240,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 240,
+                  "prompt_tokens": 493476,
+                  "completion_tokens": 66070,
+                  "reasoning_tokens": 57024,
+                  "finish_reasons": {
+                    "stop": 240
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 138,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 83,
+                "r7_embedding_reused": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 525,
+                "completed": 525,
+                "cancelled": 0,
+                "errors": 0
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9514563106796117,
+            "category_accuracy": 0.9241,
+            "false_block": 1,
+            "missed_block": 4
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        },
+        {
+          "candidate": "r7_blend",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 11.318,
+            "p50": 1.0225,
+            "p95": 7.089,
+            "max": 9.522,
+            "http_errors": 0,
+            "stage_failure_requests": 1,
+            "stage_errors": {
+              "embed:TimeoutError": 1
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 245,
+                "completed": 245,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "embed": {
+                "started": 368,
+                "completed": 367,
+                "cancelled": 0,
+                "errors": 1
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 245,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 245,
+                  "prompt_tokens": 500494,
+                  "completion_tokens": 65564,
+                  "reasoning_tokens": 56320,
+                  "finish_reasons": {
+                    "stop": 245
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 137,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 613,
+                "completed": 612,
+                "cancelled": 0,
+                "errors": 1
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9333333333333333,
+            "category_accuracy": 0.9114,
+            "false_block": 3,
+            "missed_block": 4
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        },
+        {
+          "candidate": "cm_char_mlp50",
+          "dataset": "alternative",
+          "scope": "public_guard_alternative184_input_only_development",
+          "primary_metric": "input_only",
+          "runtime": {
+            "collect_seconds": 12.652,
+            "p50": 0.794,
+            "p95": 8.256,
+            "max": 10.582,
+            "http_errors": 0,
+            "stage_failure_requests": 2,
+            "stage_errors": {
+              "material:TimeoutError": 2
+            },
+            "api_calls": {
+              "instrumented": true,
+              "scope": "server_lifespan_llm_method_invocations",
+              "chat": {
+                "started": 238,
+                "completed": 236,
+                "cancelled": 0,
+                "errors": 2
+              },
+              "embed": {
+                "started": 184,
+                "completed": 184,
+                "cancelled": 0,
+                "errors": 0
+              },
+              "r7_policy_calls": {
+                "product": 0,
+                "other": 0,
+                "scaffold": 0
+              },
+              "r7_guard_aggregation": {
+                "requests": 0,
+                "changed": 0
+              },
+              "chat_efforts": {
+                "minimal": 0,
+                "low": 238,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "completion_metadata": {
+                "low": {
+                  "responses": 236,
+                  "prompt_tokens": 470287,
+                  "completion_tokens": 65440,
+                  "reasoning_tokens": 56832,
+                  "finish_reasons": {
+                    "stop": 236
+                  }
+                }
+              },
+              "guard_debug": {
+                "span_review_triggered": 0,
+                "span_review_attempted": 0,
+                "span_review_completed": 0,
+                "span_review_success": 0,
+                "span_review_changed": 0,
+                "fusion_ground_skipped_fast_block": 0,
+                "fusion_ground_cancelled_block": 0,
+                "matrix_gate": 139,
+                "guard_unlearned_input": 0,
+                "learned_span": 0,
+                "r7_hybrid_fast": 0,
+                "r7_embedding_reused": 0
+              },
+              "tutor_debug": {
+                "tutor_mlp_gate": 0,
+                "tutor_mlp_llm": 0,
+                "r7_product_check": 0,
+                "r7_other_check": 0,
+                "r7_scaffold_generated": 0
+              },
+              "startup_chat_efforts": {
+                "minimal": 0,
+                "low": 0,
+                "medium": 0,
+                "high": 0,
+                "other": 0
+              },
+              "startup": {
+                "chat": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                },
+                "embed": {
+                  "started": 0,
+                  "completed": 0,
+                  "cancelled": 0,
+                  "errors": 0
+                }
+              },
+              "total": {
+                "started": 422,
+                "completed": 420,
+                "cancelled": 0,
+                "errors": 2
+              }
+            }
+          },
+          "input_metrics": {
+            "block_f1": 0.9514563106796117,
+            "category_accuracy": 0.9114,
+            "false_block": 1,
+            "missed_block": 4
+          },
+          "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+        }
+      ],
+      "source_commit": "193c4bfa040d455acdc400af918e38a7d5387297"
+    }
+  ]
+}
