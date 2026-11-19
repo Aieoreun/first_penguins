@@ -1,0 +1,35 @@
+{
+  "source": "user_reported_private_submissions",
+  "execution_commit_verified": false,
+  "instructed_commit": "b776679",
+  "runs": [
+    {
+      "candidate": "F",
+      "variant": "jh_np_input_budgets",
+      "total": 85.0,
+      "tutor": 82.08,
+      "guard": 87.92,
+      "duration_seconds": 63.95,
+      "seed": "40b3e3fc68928d56d68577ad5287b279",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_timeout_count": null
+    },
+    {
+      "candidate": "C",
+      "variant": "jh_np_timeouts",
+      "total": 84.65,
+      "tutor": 79.42,
+      "guard": 89.88,
+      "duration_seconds": 72.324,
+      "seed": "407eb81b076a27eceb48d78d28887597",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_timeout_count": null
+    }
+  ]
+}
