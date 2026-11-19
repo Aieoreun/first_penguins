@@ -1,0 +1,7361 @@
+{
+  "scope": "public_grouped_and_prior_kb_development_retrieval_not_tutor_score",
+  "api_calls": 0,
+  "embedding_model": "text-embedding-3-small",
+  "source_sha256": "626c206818debc295e90a8a22eff33230783fb3b24f9fd9a96965b857dd527ac",
+  "kb55_used_for_training": false,
+  "results": [
+    {
+      "representation": "lexical",
+      "model": "lr0.01",
+      "features": 24,
+      "public_grouped": {
+        "count": 119,
+        "top1": 108,
+        "top3": 114,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 116,
+            "correct": 107
+          },
+          "0.05": {
+            "count": 111,
+            "correct": 103
+          },
+          "0.1": {
+            "count": 104,
+            "correct": 98
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PR-01-04",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 43,
+        "top3": 50,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 50,
+            "correct": 40
+          },
+          "0.05": {
+            "count": 46,
+            "correct": 37
+          },
+          "0.1": {
+            "count": 41,
+            "correct": 34
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "representation": "lexical",
+      "model": "lr0.1",
+      "features": 24,
+      "public_grouped": {
+        "count": 119,
+        "top1": 108,
+        "top3": 115,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 113,
+            "correct": 105
+          },
+          "0.05": {
+            "count": 110,
+            "correct": 102
+          },
+          "0.1": {
+            "count": 103,
+            "correct": 98
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-01",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PY-04-03",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 43,
+        "top3": 52,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 48,
+            "correct": 37
+          },
+          "0.05": {
+            "count": 44,
+            "correct": 34
+          },
+          "0.1": {
+            "count": 36,
+            "correct": 29
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "representation": "lexical",
+      "model": "lr1",
+      "features": 24,
+      "public_grouped": {
+        "count": 119,
+        "top1": 108,
+        "top3": 115,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 111,
+            "correct": 101
+          },
+          "0.05": {
+            "count": 107,
+            "correct": 98
+          },
+          "0.1": {
+            "count": 102,
+            "correct": 96
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-01",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PY-04-03",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 43,
+        "top3": 52,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 44,
+            "correct": 34
+          },
+          "0.05": {
+            "count": 41,
+            "correct": 32
+          },
+          "0.1": {
+            "count": 33,
+            "correct": 25
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "representation": "lexical",
+      "model": "trees5",
+      "features": 24,
+      "public_grouped": {
+        "count": 119,
+        "top1": 105,
+        "top3": 113,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 116,
+            "correct": 104
+          },
+          "0.05": {
+            "count": 116,
+            "correct": 104
+          },
+          "0.1": {
+            "count": 114,
+            "correct": 103
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-02-03",
+            "correct": false
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-03-01",
+            "correct": false
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PR-01-04",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 42,
+        "top3": 50,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 55,
+            "correct": 42
+          },
+          "0.05": {
+            "count": 53,
+            "correct": 41
+          },
+          "0.1": {
+            "count": 49,
+            "correct": 40
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "representation": "lexical_dense",
+      "model": "lr0.01",
+      "features": 38,
+      "public_grouped": {
+        "count": 119,
+        "top1": 104,
+        "top3": 114,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 111,
+            "correct": 100
+          },
+          "0.05": {
+            "count": 103,
+            "correct": 96
+          },
+          "0.1": {
+            "count": 94,
+            "correct": 90
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-01",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-03-01",
+            "correct": false
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PR-01-04",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 45,
+        "top3": 51,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 51,
+            "correct": 43
+          },
+          "0.05": {
+            "count": 46,
+            "correct": 39
+          },
+          "0.1": {
+            "count": 33,
+            "correct": 29
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "representation": "lexical_dense",
+      "model": "lr0.1",
+      "features": 38,
+      "public_grouped": {
+        "count": 119,
+        "top1": 107,
+        "top3": 115,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 106,
+            "correct": 98
+          },
+          "0.05": {
+            "count": 104,
+            "correct": 96
+          },
+          "0.1": {
+            "count": 96,
+            "correct": 90
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-01",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PR-01-04",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 44,
+        "top3": 51,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 49,
+            "correct": 40
+          },
+          "0.05": {
+            "count": 39,
+            "correct": 32
+          },
+          "0.1": {
+            "count": 35,
+            "correct": 30
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "representation": "lexical_dense",
+      "model": "lr1",
+      "features": 38,
+      "public_grouped": {
+        "count": 119,
+        "top1": 103,
+        "top3": 114,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 104,
+            "correct": 94
+          },
+          "0.05": {
+            "count": 100,
+            "correct": 92
+          },
+          "0.1": {
+            "count": 91,
+            "correct": 83
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PY-04-02",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 44,
+        "top3": 50,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 46,
+            "correct": 37
+          },
+          "0.05": {
+            "count": 37,
+            "correct": 31
+          },
+          "0.1": {
+            "count": 33,
+            "correct": 27
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "representation": "lexical_dense",
+      "model": "trees5",
+      "features": 38,
+      "public_grouped": {
+        "count": 119,
+        "top1": 106,
+        "top3": 113,
+        "baseline_top1": 108,
+        "margin_precision": {
+          "0.02": {
+            "count": 115,
+            "correct": 104
+          },
+          "0.05": {
+            "count": 114,
+            "correct": 104
+          },
+          "0.1": {
+            "count": 112,
+            "correct": 103
+          }
+        },
+        "predictions": [
+          {
+            "id": "pub-62e10a10",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1861f7bc",
+            "section": "PY-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-3978922e",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9a52012c",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "pub-cf9dcd29",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3285ac60",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-86434306",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-fb443334",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-0bf5e259",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-8a23eeee",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f0d996d9",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-bd7cc5d8",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-a69b3bc4",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-82517253",
+            "section": "PY-02-03",
+            "correct": false
+          },
+          {
+            "id": "pub-00325f00",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-866ab9af",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-98ab43b9",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-61901227",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-62dc8ca4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8e6d54a4",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-d2e7daca",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-dff98f19",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-066a66d7",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-9cc15f3e",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-caa1c88f",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-6b92d2bd",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-08802034",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-7473715a",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-c9fa6a93",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-eb48331d",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-64355444",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-8586a085",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f31d1e89",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4fb342cf",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-940978f1",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-9c17e734",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-a4aed143",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5e2db1f3",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-be1be3b4",
+            "section": "PY-03-04",
+            "correct": false
+          },
+          {
+            "id": "pub-e257f1f8",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-967a2a67",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-9e97bace",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-332c0eee",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-45d19c94",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "pub-a6e8a006",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-059aadf2",
+            "section": "PY-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-61baaf39",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-46ffe41e",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-672f494c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-7123a1a9",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-1db21040",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e39ef81a",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-397d0dd9",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-bdaa9270",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-383f4d7f",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f0289e65",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-f66581cf",
+            "section": "PY-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f957d8a9",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-4171da81",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-2dea05c0",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-b5e63ce7",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-232773ad",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-89de5733",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-7b775c88",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-b03e3532",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-29b80d9c",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-b182b03f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-e8cfa3e1",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-5f8e8e2f",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-f9b9b485",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-05c8def7",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b12362b",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-ef89ca04",
+            "section": "PY-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e3e302d6",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-8aa6c59d",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-a61fb34e",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-66e363c6",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-088faa97",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-270efbcc",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-32764a6a",
+            "section": "FIN-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab076ed",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bfb7eca0",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-455f70bc",
+            "section": "FIN-02-01",
+            "correct": false
+          },
+          {
+            "id": "pub-75a4d2c9",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-3ab67270",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-fbf02527",
+            "section": "PR-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-22e54ae5",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-bc25ec1c",
+            "section": "FIN-04-03",
+            "correct": true
+          },
+          {
+            "id": "pub-54267a7c",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-51440180",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5b43f828",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-55b96e68",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "pub-ebe434b7",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-058d6a7b",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-3cd2dd24",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-4be25e36",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "pub-9db39d3b",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-226fb2b8",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-37d679e6",
+            "section": "PY-02-03",
+            "correct": true
+          },
+          {
+            "id": "pub-92f0a463",
+            "section": "PY-03-01",
+            "correct": true
+          },
+          {
+            "id": "pub-f7b8d792",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-e177d061",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-938a2c96",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-ce634827",
+            "section": "PR-04-01",
+            "correct": true
+          },
+          {
+            "id": "pub-e81c26e7",
+            "section": "FIN-01-02",
+            "correct": true
+          },
+          {
+            "id": "pub-5797a6a0",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "pub-e949688d",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-281c46be",
+            "section": "PR-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-4c866505",
+            "section": "FIN-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-5a4ba2e0",
+            "section": "PY-03-03",
+            "correct": true
+          },
+          {
+            "id": "pub-793cdc2b",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "pub-106e37f1",
+            "section": "PY-01-04",
+            "correct": true
+          },
+          {
+            "id": "pub-77522b54",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "pub-548740d0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "pub-47266933",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "pub-cf40a8a8",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "pub-81ef633a",
+            "section": "FIN-01-01",
+            "correct": true
+          },
+          {
+            "id": "pub-214d91ad",
+            "section": "PR-01-04",
+            "correct": false
+          },
+          {
+            "id": "pub-d5d7644f",
+            "section": "PR-04-03",
+            "correct": true
+          }
+        ]
+      },
+      "kb55": {
+        "count": 55,
+        "top1": 42,
+        "top3": 49,
+        "baseline_top1": 41,
+        "margin_precision": {
+          "0.02": {
+            "count": 55,
+            "correct": 42
+          },
+          "0.05": {
+            "count": 54,
+            "correct": 42
+          },
+          "0.1": {
+            "count": 52,
+            "correct": 41
+          }
+        },
+        "predictions": [
+          {
+            "id": "kbprobe-FIN-01-02-1",
+            "section": "FIN-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-01-03-0",
+            "section": "FIN-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-01-03-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-01-0",
+            "section": "FIN-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-01-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-02-0",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-02-1",
+            "section": "FIN-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-0",
+            "section": "FIN-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-03-1",
+            "section": "FIN-02-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-02-04-0",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-02-04-1",
+            "section": "FIN-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-0",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-03-1",
+            "section": "FIN-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-0",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-03-04-1",
+            "section": "FIN-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-01-1",
+            "section": "FIN-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-0",
+            "section": "FIN-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-FIN-04-02-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-FIN-04-04-1",
+            "section": "FIN-01-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-01-1",
+            "section": "PR-03-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-01-03-0",
+            "section": "PR-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-01-1",
+            "section": "PR-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-0",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-02-1",
+            "section": "PR-02-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-0",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-03-1",
+            "section": "PR-02-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-02-04-1",
+            "section": "PR-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-0",
+            "section": "PR-03-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-01-1",
+            "section": "PR-01-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PR-03-02-0",
+            "section": "PR-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-03-0",
+            "section": "PR-03-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-0",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-03-04-1",
+            "section": "PR-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-03-0",
+            "section": "PR-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-0",
+            "section": "PR-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PR-04-04-1",
+            "section": "PR-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-01-0",
+            "section": "PY-01-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-02-1",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-03-1",
+            "section": "PY-01-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-01-04-0",
+            "section": "PY-04-04",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-01-04-1",
+            "section": "PY-01-02",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-01-0",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-01-1",
+            "section": "PY-02-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-02-03-0",
+            "section": "PY-04-01",
+            "correct": false
+          },
+          {
+            "id": "kbprobe-PY-02-04-0",
+            "section": "PY-02-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-02-1",
+            "section": "PY-03-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-0",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-03-04-1",
+            "section": "PY-03-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-0",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-01-1",
+            "section": "PY-04-01",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-02-0",
+            "section": "PY-04-02",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-0",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-03-1",
+            "section": "PY-04-03",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-0",
+            "section": "PY-04-04",
+            "correct": true
+          },
+          {
+            "id": "kbprobe-PY-04-04-1",
+            "section": "PY-04-04",
+            "correct": true
+          }
+        ]
+      }
+    }
+  ]
+}

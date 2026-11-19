@@ -1,0 +1,60 @@
+{
+  "scope": "same_public_grouped_oof_tutor_rescue_screen_not_live_score",
+  "api_calls": 0,
+  "tutor_count": 200,
+  "policy": "only uncertain original normal/pii/out-of-material; rescue normal/pii only",
+  "results": [
+    {
+      "model": "concat100",
+      "eligible": 73,
+      "new_direct": 18,
+      "new_direct_errors": 5,
+      "ids": [
+        "pub-8a23eeee",
+        "pub-a430bf58",
+        "pub-00325f00",
+        "pub-75242eaa",
+        "pub-6b92d2bd",
+        "pub-4fb342cf",
+        "pub-78bb8fe2",
+        "pub-e39ef81a",
+        "pub-2dea05c0",
+        "pub-5b12362b",
+        "pub-088faa97",
+        "pub-455f70bc",
+        "pub-4be25e36",
+        "pub-37d679e6",
+        "pub-92f0a463",
+        "pub-bb7dd589",
+        "pub-e949688d",
+        "pub-77522b54"
+      ]
+    },
+    {
+      "model": "blend_dense0.25",
+      "eligible": 73,
+      "new_direct": 18,
+      "new_direct_errors": 5,
+      "ids": [
+        "pub-8a23eeee",
+        "pub-00325f00",
+        "pub-75242eaa",
+        "pub-a25b4c51",
+        "pub-4fb342cf",
+        "pub-78bb8fe2",
+        "pub-e257f1f8",
+        "pub-967a2a67",
+        "pub-8b53e25c",
+        "pub-e8cfa3e1",
+        "pub-088faa97",
+        "pub-455f70bc",
+        "pub-5b43f828",
+        "pub-e81c26e7",
+        "pub-e949688d",
+        "pub-5a4ba2e0",
+        "pub-77522b54",
+        "pub-548740d0"
+      ]
+    }
+  ]
+}
