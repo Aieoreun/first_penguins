@@ -120,3 +120,9 @@ VARIANTS += ('jh_r8_calls96', 'jh_r8_calls128')
 VARIANTS += ('jh_r8_risk_preserve',)
 
 VARIANTS += ('jh_r8_tutor_failure',)
+
+VARIANTS += ('jh_r8_failure_ground_deadline', 'jh_r8_failure_deadline_both')
+
+VARIANTS += ('jh_r8_resilient_guard', 'jh_r8_resilient_both')
+
+VARIANTS += ('jh_r8_binary_ground3', 'jh_r8_binary_adaptive', 'jh_r8_other_minimal')

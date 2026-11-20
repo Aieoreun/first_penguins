@@ -25,7 +25,7 @@ from core.state import Chunk
 from core.schema import Decision, Label, parse_label
 from pipelines import load
 load('jh_r7_binary_guard')
-from pipelines.kimjaehak.round8_failure_fallback import FailureInput, FailureBlock
+from pipelines.kimjaehak.round8_failure_fallback import FailureInput, FailureBlock, ResilientGuard
 from pipelines.kimjaehak.round7_binary_model import BLOCKED
 
 
@@ -85,8 +85,8 @@ def partial_block_fallback(p, state, threshold):
 
 async def replay(base, item, recorded, failed, policy):
     p = copy(base)
-    if policy in ('complete', 'block_runtime'):
-        cls = FailureInput if policy == 'complete' else FailureBlock
+    if policy in ('complete', 'block_runtime', 'combined_runtime'):
+        cls = FailureInput if policy == 'complete' else FailureBlock if policy == 'block_runtime' else ResilientGuard
         p = cls.__new__(cls)
         p.__dict__.update(base.__dict__)
     state = p._new_state(item, True)
@@ -154,7 +154,7 @@ async def run(args, dest, items, provenance):
             failed = {'block', 'other', 'material'} if failure == 'all' else {failure}
             baseline = None
             reference_partial = None
-            for policy in ('baseline', 'complete', 'partial:0.5', 'partial:0.7', 'partial:0.9', 'block_runtime'):
+            for policy in ('baseline', 'complete', 'partial:0.5', 'partial:0.7', 'partial:0.9', 'block_runtime', 'combined_runtime'):
                 outputs = [await replay(base, i, c, failed, policy) for i, c in zip(items, captured)]
                 pred = [x[0] for x in outputs]
                 if policy == 'baseline':

@@ -27,6 +27,13 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r8_binary_ground3': ('jh_r8_binary_ground3', 'pipelines.kimjaehak.round8_efficient_guard.BinaryGroundThree'),
+    'r8_binary_adaptive': ('jh_r8_binary_adaptive', 'pipelines.kimjaehak.round8_efficient_guard.BinaryAdaptiveGround'),
+    'r8_other_minimal': ('jh_r8_other_minimal', 'pipelines.kimjaehak.round8_efficient_guard.BinaryOtherMinimal'),
+    'r8_resilient_guard': ('jh_r8_resilient_guard', 'pipelines.kimjaehak.round8_failure_fallback.ResilientGuard'),
+    'r8_resilient_both': ('jh_r8_resilient_both', 'pipelines.kimjaehak.round8_failure_fallback.ResilientBoth'),
+    'r8_failure_ground_deadline': ('jh_r8_failure_ground_deadline', 'pipelines.kimjaehak.round8_failure_fallback.FailureGroundDeadline'),
+    'r8_failure_deadline_both': ('jh_r8_failure_deadline_both', 'pipelines.kimjaehak.round8_failure_fallback.FailureDeadlineBoth'),
     'r8_tutor_failure': ('jh_r8_tutor_failure', 'pipelines.kimjaehak.round8_failure_fallback.TutorFailureInput'),
     'r8_risk_preserve': ('jh_r8_risk_preserve', 'pipelines.kimjaehak.round8_risk_safety.PreservingRiskSafety'),
     'r8_calls96': ('jh_r8_calls96', 'pipelines.kimjaehak.round8_call_limit.GuardCalls96'),

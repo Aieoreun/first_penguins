@@ -7,7 +7,7 @@ from core.schema import Label
 from pipelines import load
 load('jh_r7_binary_guard')
 from pipelines.kimjaehak.round7_binary_guard import BinaryGuard
-from pipelines.kimjaehak.round8_failure_fallback import FailureInput,FailureGround,FailureBoth,FailureBlock,TutorFailureInput,input_checks_failed
+from pipelines.kimjaehak.round8_failure_fallback import FailureInput,FailureGround,FailureBoth,FailureBlock,TutorFailureInput,FailureGroundDeadline,FailureDeadlineBoth,ResilientGuard,ResilientBoth,input_checks_failed
 from core.state import State
 
 class FailureTests(unittest.IsolatedAsyncioTestCase):
@@ -87,5 +87,40 @@ class FailureTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
         p.matrix_model.probabilities.assert_not_called()
         self.assertIs(load('jh_r8_tutor_failure'),TutorFailureInput)
+
+    async def test_ground_deadline_recovers_only_when_no_vote_survived(self):
+        p=FailureGroundDeadline.__new__(FailureGroundDeadline)
+        p.span_tagger=SimpleNamespace(predict=Mock(return_value=(['없는 문장'],.99)))
+        for votes in [0,1]:
+            s=self.state()
+            async def slow():
+                try:await asyncio.Future()
+                finally:s.debug['fusion_completed_ground_votes']=votes
+            self.assertFalse(await p._fusion_stage(slow(),.01,s,'ground'))
+            self.assertEqual(s.unsupported,['없는 문장'] if votes==0 else [])
+            self.assertIn('ground:Deadline',s.errors)
+        p.span_tagger.predict.reset_mock();s=self.state();started=asyncio.Event()
+        async def slow_cancel():started.set();await asyncio.Future()
+        task=asyncio.create_task(p._fusion_stage(slow_cancel(),1,s,'ground'))
+        await started.wait();task.cancel()
+        with self.assertRaises(asyncio.CancelledError):await task
+        p.span_tagger.predict.assert_not_called()
+        self.assertIs(load('jh_r8_failure_deadline_both'),FailureDeadlineBoth)
+        self.assertEqual(FailureDeadlineBoth.guard_deadline,28)
+
+    async def test_combined_failure_paths_and_healthy_noop(self):
+        for cls,guard,expected in [(ResilientGuard,True,True),(ResilientGuard,False,False),(ResilientBoth,True,True),(ResilientBoth,False,True)]:
+            p=cls.__new__(cls)
+            p.matrix_model=SimpleNamespace(classes=np.array(['normal','jailbreak_injection']),probabilities=Mock(return_value=[[.3,.7]]))
+            s=State(messages=[{'role':'user','content':'검사 질문'}],label=Label.NORMAL)
+            s._material_budget_guard=guard;s.debug={'valid_block_votes':0,'valid_other_votes':0,'self_info_votes':[],'out_of_material':False}
+            s.errors=['block:TimeoutError','other:TimeoutError','material:TimeoutError']
+            with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+            self.assertEqual(s.label,Label.JAILBREAK_INJECTION if expected else Label.NORMAL)
+            s.label=Label.NORMAL;s.errors=[];s.debug={'valid_block_votes':2,'valid_other_votes':2};p.matrix_model.probabilities.reset_mock()
+            with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+            p.matrix_model.probabilities.assert_not_called()
+        self.assertIs(load('jh_r8_resilient_guard'),ResilientGuard)
+        self.assertIs(load('jh_r8_resilient_both'),ResilientBoth)
 
 if __name__=='__main__':unittest.main()

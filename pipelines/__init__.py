@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r8_binary_ground3', 'jh_r8_binary_adaptive', 'jh_r8_other_minimal'}:
+            module = importlib.import_module('pipelines.kimjaehak.round8_efficient_guard')
+            return getattr(module, {'jh_r8_binary_ground3': 'BinaryGroundThree', 'jh_r8_binary_adaptive': 'BinaryAdaptiveGround', 'jh_r8_other_minimal': 'BinaryOtherMinimal'}[name])
         if name in {'jh_r8_calls96', 'jh_r8_calls128'}:
             module = importlib.import_module('pipelines.kimjaehak.round8_call_limit')
             return getattr(module, 'GuardCalls96' if name.endswith('96') else 'GuardCalls128')
@@ -41,9 +44,9 @@ def load(name: str = ""):
             module = importlib.import_module('pipelines.kimjaehak.round8_risk_safety')
             classes = {'jh_r8_risk10': 'RiskSafety', 'jh_r8_risk50': 'RiskSafety50', 'jh_r8_risk_compact': 'CompactRiskSafety', 'jh_r8_risk_preserve': 'PreservingRiskSafety'}
             return getattr(module, classes[name])
-        if name in {'jh_r8_failure_both', 'jh_r8_failure_input', 'jh_r8_failure_ground', 'jh_r8_failure_block', 'jh_r8_tutor_failure'}:
+        if name in {'jh_r8_failure_both', 'jh_r8_failure_input', 'jh_r8_failure_ground', 'jh_r8_failure_block', 'jh_r8_tutor_failure', 'jh_r8_failure_ground_deadline', 'jh_r8_failure_deadline_both', 'jh_r8_resilient_guard', 'jh_r8_resilient_both'}:
             module = importlib.import_module('pipelines.kimjaehak.round8_failure_fallback')
-            classes = {'jh_r8_failure_input': 'FailureInput', 'jh_r8_failure_ground': 'FailureGround', 'jh_r8_failure_both': 'FailureBoth', 'jh_r8_failure_block': 'FailureBlock', 'jh_r8_tutor_failure': 'TutorFailureInput'}
+            classes = {'jh_r8_failure_input': 'FailureInput', 'jh_r8_failure_ground': 'FailureGround', 'jh_r8_failure_both': 'FailureBoth', 'jh_r8_failure_block': 'FailureBlock', 'jh_r8_tutor_failure': 'TutorFailureInput', 'jh_r8_failure_ground_deadline': 'FailureGroundDeadline', 'jh_r8_failure_deadline_both': 'FailureDeadlineBoth', 'jh_r8_resilient_guard': 'ResilientGuard', 'jh_r8_resilient_both': 'ResilientBoth'}
             return getattr(module, classes[name])
         if name == 'jh_r7_tax_budget12':
             return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12

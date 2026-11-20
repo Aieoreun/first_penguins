@@ -50,6 +50,9 @@ class FailureGround(BinaryGuard):
 
     async def _fusion_ground(self,state):
         await super()._fusion_ground(state)
+        self._recover_ground(state)
+
+    def _recover_ground(self,state):
         if (state.debug.get('fusion_completed_ground_votes')!=0 or not state.errors
                 or not state.candidate_answer or len(state.candidate_answer)>self.guard_failure_span_max_chars):return
         try:
@@ -63,6 +66,22 @@ class FailureGround(BinaryGuard):
 
 
 class FailureBoth(FailureInput,FailureGround):
+    pass
+
+
+class FailureGroundDeadline(FailureGround):
+    guard_failure_after_deadline=True
+
+    async def _fusion_stage(self,coroutine,seconds,state,name):
+        completed=await super()._fusion_stage(coroutine,seconds,state,name)
+        # Parent's wait_for has finished cancellation cleanup and preserved
+        # completed votes. External or intentional cancellation still raises.
+        if name=='ground' and not completed:
+            self._recover_ground(state)
+        return completed
+
+
+class FailureDeadlineBoth(FailureInput,FailureGroundDeadline):
     pass
 
 
@@ -123,3 +142,13 @@ class TutorFailureInput(BinaryGuard):
             state.label=label;state.debug['r8_tutor_failure_input']=True
         except Exception as exc:
             state.errors.append('tutor_failure_input:'+type(exc).__name__)
+
+
+class ResilientGuard(FailureBlock,FailureInput,FailureGroundDeadline):
+    """Complete/partial input failure plus missing ground-vote recovery."""
+    pass
+
+
+class ResilientBoth(ResilientGuard,TutorFailureInput):
+    """Same guard recovery with the separately tested tutor failure path."""
+    pass

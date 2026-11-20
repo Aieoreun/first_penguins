@@ -13,7 +13,10 @@ from experiments.jh_compare import score_rows
 class FailedLLM:
     can_embed=False
     embedding_model=''
-    async def chat(self,*args,**kwargs):raise TimeoutError('Injected offline fault')
+    def __init__(self,timed=False):self.timed=timed
+    async def chat(self,*args,**kwargs):
+        if self.timed:await asyncio.sleep(kwargs['timeout'])
+        raise TimeoutError('Injected offline fault')
     async def embed(self,*args,**kwargs):raise TimeoutError('Injected offline fault')
 
 async def collect(pipeline,items):
@@ -27,13 +30,16 @@ async def collect(pipeline,items):
     rows=await asyncio.gather(*(one(i) for i in items));return rows,errors,rescues
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--name',required=True);ap.add_argument('--dataset',choices=['paraphrase','novel','alternative'],required=True);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--name',required=True);ap.add_argument('--dataset',choices=['paraphrase','novel','alternative'],required=True)
+    ap.add_argument('--timed',action='store_true')
+    ap.add_argument('--order',nargs='+',choices=['r7_binary_guard','r8_failure_input','r8_failure_ground','r8_failure_both','r8_failure_block','r8_failure_ground_deadline','r8_failure_deadline_both'],default=['r7_binary_guard','r8_failure_input','r8_failure_ground','r8_failure_both'])
+    args=ap.parse_args()
     if not args.name.replace('_','').isalnum():ap.error('Simple name required')
     dest=ROOT/'experiments/.cache'/('jh_r8_fault_'+args.name);dest.mkdir()
     items,provenance=load_dataset(args.dataset,ROOT);results=[]
-    for name in ['r7_binary_guard','r8_failure_input','r8_failure_ground','r8_failure_both']:
-        p=load('jh_'+name)(Searcher(load_chunks(ROOT/'kb')),FailedLLM());rows,errors,rescues=asyncio.run(collect(p,items));result=score_rows(items,rows,1,no_judge=True)
+    for name in args.order:
+        p=load('jh_'+name)(Searcher(load_chunks(ROOT/'kb')),FailedLLM(args.timed));started=time.monotonic();rows,errors,rescues=asyncio.run(collect(p,items));elapsed=time.monotonic()-started;result=score_rows(items,rows,1,no_judge=True)
         (dest/(name+'_responses.jsonl')).write_text(''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in rows))
-        report={'candidate':name,'guard':result['guard'],'invalid':result['invalid'],'details':result['guard_details'],'errors':dict(errors),'rescues':dict(rescues)};results.append(report);print(json.dumps(report),flush=True)
-    (dest/'results.json').write_text(json.dumps({'scope':'injected_immediate_timeout_public_development_not_live_http_not_private','api_calls':0,'dataset':provenance,'results':results},indent=2)+'\n');(dest/'COMPLETE').write_text('Fault simulation complete.\n')
+        report={'candidate':name,'guard':result['guard'],'invalid':result['invalid'],'details':result['guard_details'],'errors':dict(errors),'rescues':dict(rescues),'collection_seconds':elapsed,'max_request_seconds':max(r['seconds'] for r in rows)};results.append(report);print(json.dumps(report),flush=True)
+    (dest/'results.json').write_text(json.dumps({'scope':'injected_timeout_public_development_not_live_http_not_private','timed_waits':args.timed,'api_calls':0,'dataset':provenance,'results':results},indent=2)+'\n');(dest/'COMPLETE').write_text('Fault simulation complete.\n')
 if __name__=='__main__':main()
