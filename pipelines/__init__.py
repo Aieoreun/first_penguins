@@ -34,13 +34,13 @@ def load(name: str = ""):
             module = importlib.import_module('pipelines.kimjaehak.round8_category')
             classes = {'jh_r8_binary_boundary': 'BinaryBoundary', 'jh_r8_binary_boundary_budgets': 'BinaryBoundaryBudgets', 'jh_r8_binary_dense': 'BinaryDense'}
             return getattr(module, classes[name])
-        if name in {'jh_r8_risk10', 'jh_r8_risk50'}:
+        if name in {'jh_r8_risk10', 'jh_r8_risk50', 'jh_r8_risk_compact'}:
             module = importlib.import_module('pipelines.kimjaehak.round8_risk_safety')
-            classes = {'jh_r8_risk10': 'RiskSafety', 'jh_r8_risk50': 'RiskSafety50'}
+            classes = {'jh_r8_risk10': 'RiskSafety', 'jh_r8_risk50': 'RiskSafety50', 'jh_r8_risk_compact': 'CompactRiskSafety'}
             return getattr(module, classes[name])
-        if name in {'jh_r8_failure_both', 'jh_r8_failure_input', 'jh_r8_failure_ground'}:
+        if name in {'jh_r8_failure_both', 'jh_r8_failure_input', 'jh_r8_failure_ground', 'jh_r8_failure_block'}:
             module = importlib.import_module('pipelines.kimjaehak.round8_failure_fallback')
-            classes = {'jh_r8_failure_input': 'FailureInput', 'jh_r8_failure_ground': 'FailureGround', 'jh_r8_failure_both': 'FailureBoth'}
+            classes = {'jh_r8_failure_input': 'FailureInput', 'jh_r8_failure_ground': 'FailureGround', 'jh_r8_failure_both': 'FailureBoth', 'jh_r8_failure_block': 'FailureBlock'}
             return getattr(module, classes[name])
         if name == 'jh_r7_tax_budget12':
             return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12

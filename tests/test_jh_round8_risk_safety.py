@@ -7,7 +7,7 @@ from unittest.mock import Mock,AsyncMock,patch
 from core.schema import Label
 from pipelines import load
 load('jh_r7_binary_guard')
-from pipelines.kimjaehak.round8_risk_safety import RiskSafety,RiskSafety50
+from pipelines.kimjaehak.round8_risk_safety import RiskSafety,RiskSafety50,CompactRiskSafety,COMPACT_SAFETY_SYSTEM
 from pipelines.kimjaehak.round7_binary_guard import BinaryGuard
 from pipelines.kimjaehak.peace_guard_prompt import SAFETY_SYSTEM
 from tests import test_jh_neural_peace_guard as fixtures
@@ -42,8 +42,20 @@ class RiskTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(state.safe);self.assertIn('risk_router:ValueError',state.errors)
         self.assertEqual(p.llm.chat.await_count,1)
 
+    async def test_compact_prompt_keeps_original_payload_and_budget(self):
+        p=fixtures.GuardTests().pipeline(CompactRiskSafety)
+        p.output_risk=SimpleNamespace(probabilities=Mock(return_value=[[.1,.9]]));p.output_risk_index=1
+        p.llm.chat.return_value='{"safe":true}'
+        state=p._new_state(fixtures.GuardTests().body(),True)
+        await p._run_safety(state,state,None,time.monotonic())
+        call=p.llm.chat.call_args
+        self.assertEqual(call.args[0],COMPACT_SAFETY_SYSTEM)
+        self.assertEqual(json.loads(call.args[1]),{'conversation':state.messages,'candidate_answer':state.candidate_answer})
+        self.assertLessEqual(call.kwargs['timeout'],13)
+        self.assertEqual(RiskSafety.risk_safety_system,SAFETY_SYSTEM)
+
     def test_tutor_input_grounding_unchanged(self):
-        for name,cls in [('jh_r8_risk10',RiskSafety),('jh_r8_risk50',RiskSafety50)]:
+        for name,cls in [('jh_r8_risk10',RiskSafety),('jh_r8_risk50',RiskSafety50),('jh_r8_risk_compact',CompactRiskSafety)]:
             self.assertIs(load(name),cls)
             for method in ['tutor','_generate','_classify','_fusion_ground','_search']:
                 self.assertIs(getattr(cls,method),getattr(BinaryGuard,method))

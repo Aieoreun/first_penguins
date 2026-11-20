@@ -6,6 +6,7 @@ is an opt-in failure-mode experiment, not a lower threshold during healthy use.
 import numpy as np
 from core.schema import Decision,Label,parse_label
 from .round7_binary_guard import BinaryGuard
+from .round7_binary_model import BLOCKED
 
 
 def input_checks_failed(state):
@@ -63,3 +64,35 @@ class FailureGround(BinaryGuard):
 
 class FailureBoth(FailureInput,FailureGround):
     pass
+
+
+class FailureBlock(BinaryGuard):
+    """Use local blocked mass only when the entire remote BLOCK ballot failed.
+
+Valid remote BLOCK ballots (including none) and existing BLOCK decisions win.
+Unlike FailureInput, this may supersede an OTHER/material ALLOW label: BLOCK
+categories have priority, but only when the missing BLOCK check is evidenced.
+"""
+    guard_failure_block_threshold=.7
+
+    async def _classify(self,state):
+        await super()._classify(state)
+        if (getattr(state,'_material_budget_guard',False) is not True
+                or state.decision is Decision.BLOCK
+                or state.debug.get('valid_block_votes')!=0
+                or not any(e.startswith('block:') for e in state.errors)):
+            return
+        try:
+            p=np.asarray(self.matrix_model.probabilities([state.last_user])[0],dtype=float)
+            classes=self.matrix_model.classes
+            if (p.shape!=(len(classes),) or not np.isfinite(p).all()
+                    or np.any(p<0) or not np.isclose(p.sum(),1)):
+                raise ValueError('Invalid local block distribution')
+            indexes=[i for i,c in enumerate(classes) if c in BLOCKED]
+            if not indexes or sum(p[i] for i in indexes)<self.guard_failure_block_threshold:return
+            category=str(classes[max(indexes,key=lambda i:p[i])])
+            label=Label.HARMFUL_REQUEST if category=='harmful_content' else parse_label(category)
+            if label is None:return
+            state.label=label;state.debug['r8_failure_block']=True
+        except Exception as exc:
+            state.errors.append('failure_block:'+type(exc).__name__)

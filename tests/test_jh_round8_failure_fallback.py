@@ -7,7 +7,8 @@ from core.schema import Label
 from pipelines import load
 load('jh_r7_binary_guard')
 from pipelines.kimjaehak.round7_binary_guard import BinaryGuard
-from pipelines.kimjaehak.round8_failure_fallback import FailureInput,FailureGround,FailureBoth,input_checks_failed
+from pipelines.kimjaehak.round8_failure_fallback import FailureInput,FailureGround,FailureBoth,FailureBlock,input_checks_failed
+from core.state import State
 
 class FailureTests(unittest.IsolatedAsyncioTestCase):
     def state(self):
@@ -46,5 +47,27 @@ class FailureTests(unittest.IsolatedAsyncioTestCase):
         self.assertIs(FailureBoth._fusion_ground,FailureGround._fusion_ground)
         self.assertIs(FailureBoth.tutor,BinaryGuard.tutor)
         self.assertEqual(FailureBoth.guard_deadline,28)
+
+    async def test_partial_block_failure_preserves_votes_and_tutor(self):
+        for mode in ('failed','valid_none','blocked','healthy','tutor','invalid'):
+            p=FailureBlock.__new__(FailureBlock)
+            p.matrix_model=SimpleNamespace(classes=np.array(['normal','jailbreak_injection','off_topic']),
+                probabilities=Mock(return_value=[[.2,.5,.3]]))
+            s=State(messages=[{'role':'user','content':'검사 질문'}],label=Label.OUT_OF_MATERIAL)
+            s._material_budget_guard=True;s.debug={'valid_block_votes':0,'valid_other_votes':2}
+            s.errors=['block:TimeoutError']
+            if mode=='valid_none':s.debug['valid_block_votes']=1
+            if mode=='blocked':s.label=Label.OFF_TOPIC
+            if mode=='healthy':s.errors=[]
+            if mode=='tutor':s._material_budget_guard=False
+            if mode=='invalid':p.matrix_model.probabilities.return_value=[[float('nan'),.5,.3]]
+            before=s.label
+            with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+            self.assertEqual(s.label,Label.JAILBREAK_INJECTION if mode=='failed' else before)
+            self.assertEqual(bool(s.debug.get('r8_failure_block')),mode=='failed')
+        with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock,side_effect=asyncio.CancelledError):
+            with self.assertRaises(asyncio.CancelledError):await p._classify(s)
+        self.assertIs(load('jh_r8_failure_block'),FailureBlock)
+        self.assertIs(FailureBlock.tutor,BinaryGuard.tutor)
 
 if __name__=='__main__':unittest.main()
