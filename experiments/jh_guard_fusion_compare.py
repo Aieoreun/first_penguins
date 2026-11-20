@@ -27,6 +27,13 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r8_failure_input': ('jh_r8_failure_input', 'pipelines.kimjaehak.round8_failure_fallback.FailureInput'),
+    'r8_failure_ground': ('jh_r8_failure_ground', 'pipelines.kimjaehak.round8_failure_fallback.FailureGround'),
+    'r8_failure_both': ('jh_r8_failure_both', 'pipelines.kimjaehak.round8_failure_fallback.FailureBoth'),
+
+    'r8_risk10': ('jh_r8_risk10', 'pipelines.kimjaehak.round8_risk_safety.RiskSafety'),
+    'r8_risk50': ('jh_r8_risk50', 'pipelines.kimjaehak.round8_risk_safety.RiskSafety50'),
+
     'r8_binary_boundary': ('jh_r8_binary_boundary', 'pipelines.kimjaehak.round8_category.BinaryBoundary'),
     'r8_binary_boundary_budgets': ('jh_r8_binary_boundary_budgets', 'pipelines.kimjaehak.round8_category.BinaryBoundaryBudgets'),
     'r8_binary_dense': ('jh_r8_binary_dense', 'pipelines.kimjaehak.round8_category.BinaryDense'),
@@ -269,7 +276,7 @@ try:
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
                     'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
-                    'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early', 'r7_material_cancelled', 'r7_examples_used')}
+                    'r8_failure_input', 'r8_failure_ground', 'r8_risk_safety', 'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early', 'r7_material_cancelled', 'r7_examples_used')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})

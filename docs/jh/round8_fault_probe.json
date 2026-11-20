@@ -1,0 +1,196 @@
+{
+  "scope": "injected_immediate_timeout_public_development_not_live_http_not_private",
+  "api_calls": 0,
+  "dataset": {
+    "dataset": "paraphrase",
+    "scope": "public_guard_question_paraphrase196_full_pipeline_development",
+    "source": "experiments/.cache/jh_transfer_full_adaptive1/derived_inputs.jsonl",
+    "source_sha256": "9bf7a76449ffeb76f1bcd236523220b30c13b62afc5d14f5a76e7c3c2b7d429b",
+    "source_files": {
+      "public/guard.jsonl": "4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426",
+      "public/tutor.jsonl": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+      "experiments/.cache/jh_transfer_full_adaptive1/derived_inputs.jsonl": "9bf7a76449ffeb76f1bcd236523220b30c13b62afc5d14f5a76e7c3c2b7d429b",
+      "experiments/.cache/jh_transfer_full_adaptive1/derivation.json": "000c5e37299595a807dbc449e15f7593fd9d3953590665efb3e565808d5f4510",
+      "experiments/.cache/jh_augment_public2_1/paraphrases.jsonl": "5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2",
+      "experiments/.cache/jh_augment_public2_1/manifest.json": "49a497875888638982a0da2cc40a82d8614d594f2bedd6262a4a2752ae52a8a6"
+    },
+    "raw_count": 388,
+    "count": 196,
+    "candidate_count": 85,
+    "primary_metric": "guard",
+    "independent_source_holdout": false,
+    "input_predictions_fixed": false,
+    "historical_component_input_predictions_fixed": false,
+    "interpretation": "Full own input/output routing on public-derived development data; not a private score estimate."
+  },
+  "results": [
+    {
+      "candidate": "r7_binary_guard",
+      "guard": 67.33,
+      "invalid": 0,
+      "details": {
+        "block_f1": 0.6746987951807228,
+        "category_accuracy": 0.5732,
+        "grounded_accuracy": 0.5882,
+        "span_f1": 0.5882,
+        "safe_accuracy": 0.9059,
+        "false_block": 0,
+        "missed_block": 27,
+        "confusion": {
+          "normal -> normal": 114,
+          "harmful_content -> normal": 18,
+          "jailbreak_injection -> normal": 4,
+          "harmful_content -> harmful_content": 7,
+          "off_topic -> off_topic": 4,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 5,
+          "answer_seeking -> answer_seeking": 3,
+          "jailbreak_injection -> jailbreak_injection": 12,
+          "out_of_material -> normal": 5,
+          "off_topic -> normal": 3,
+          "academic_dishonesty -> academic_dishonesty": 5,
+          "out_of_material -> out_of_material": 7,
+          "pii_disclosure -> normal": 2,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 2
+        }
+      },
+      "errors": {
+        "material:TimeoutError": 44,
+        "block:TimeoutError": 132,
+        "other:TimeoutError": 132,
+        "context_grounding:TimeoutError": 375
+      },
+      "rescues": {
+        "r8_failure_input": 0,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "candidate": "r8_failure_input",
+      "guard": 81.97,
+      "invalid": 0,
+      "details": {
+        "block_f1": 0.912621359223301,
+        "category_accuracy": 0.878,
+        "grounded_accuracy": 0.5882,
+        "span_f1": 0.5882,
+        "safe_accuracy": 0.9647,
+        "false_block": 1,
+        "missed_block": 8,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 15,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1,
+          "jailbreak_injection -> normal": 1
+        }
+      },
+      "errors": {
+        "material:TimeoutError": 44,
+        "block:TimeoutError": 132,
+        "other:TimeoutError": 132,
+        "context_grounding:TimeoutError": 375
+      },
+      "rescues": {
+        "r8_failure_input": 41,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "candidate": "r8_failure_ground",
+      "guard": 79.68,
+      "invalid": 0,
+      "details": {
+        "block_f1": 0.6746987951807228,
+        "category_accuracy": 0.5732,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9059,
+        "false_block": 0,
+        "missed_block": 27,
+        "confusion": {
+          "normal -> normal": 114,
+          "harmful_content -> normal": 18,
+          "jailbreak_injection -> normal": 4,
+          "harmful_content -> harmful_content": 7,
+          "off_topic -> off_topic": 4,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 5,
+          "answer_seeking -> answer_seeking": 3,
+          "jailbreak_injection -> jailbreak_injection": 12,
+          "out_of_material -> normal": 5,
+          "off_topic -> normal": 3,
+          "academic_dishonesty -> academic_dishonesty": 5,
+          "out_of_material -> out_of_material": 7,
+          "pii_disclosure -> normal": 2,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 2
+        }
+      },
+      "errors": {
+        "material:TimeoutError": 44,
+        "block:TimeoutError": 132,
+        "other:TimeoutError": 132,
+        "context_grounding:TimeoutError": 375
+      },
+      "rescues": {
+        "r8_failure_input": 0,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "candidate": "r8_failure_both",
+      "guard": 94.32,
+      "invalid": 0,
+      "details": {
+        "block_f1": 0.912621359223301,
+        "category_accuracy": 0.878,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9647,
+        "false_block": 1,
+        "missed_block": 8,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 15,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1,
+          "jailbreak_injection -> normal": 1
+        }
+      },
+      "errors": {
+        "material:TimeoutError": 44,
+        "block:TimeoutError": 132,
+        "other:TimeoutError": 132,
+        "context_grounding:TimeoutError": 375
+      },
+      "rescues": {
+        "r8_failure_input": 41,
+        "r8_failure_ground": 0
+      }
+    }
+  ]
+}

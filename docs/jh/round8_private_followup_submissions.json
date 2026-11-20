@@ -1,0 +1,23 @@
+{
+  "scope": "user_reported_post_selection_submission_not_R8_local_experiment",
+  "runs": [
+    {
+      "run": "followup1",
+      "variant": null,
+      "variant_status": "awaiting_confirmation_B_or_A",
+      "total": 82.3,
+      "tutor": 78.0,
+      "guard": 86.6,
+      "duration_seconds": 81.979,
+      "seed": "96f7fd8140cbdf57aa58fbb304843336",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "submitted_at_reported": null,
+      "execution_commit": null,
+      "internal_errors": null,
+      "context": "User separately observed block:TimeoutError on Runbox; not confirmed for this exact submission. Local API probes returned 502 twice and then succeeded. Shared cause is unproven."
+    }
+  ]
+}

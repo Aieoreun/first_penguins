@@ -108,3 +108,7 @@ VARIANTS += ('jh_r8_value_prompt', 'jh_r8_value_anchored', 'jh_r8_binary_value_p
 VARIANTS += ('jh_r8_binary_parallel', 'jh_r8_binary_timeouts', 'jh_r8_binary_inputbudgets')
 
 VARIANTS += ('jh_r8_binary_boundary', 'jh_r8_binary_boundary_budgets', 'jh_r8_binary_dense')
+
+VARIANTS += ('jh_r8_risk10', 'jh_r8_risk50')
+
+VARIANTS += ('jh_r8_failure_input', 'jh_r8_failure_ground', 'jh_r8_failure_both')

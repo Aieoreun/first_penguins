@@ -1,0 +1,50 @@
+import asyncio
+import unittest
+from types import SimpleNamespace
+from unittest.mock import AsyncMock,Mock,patch
+import numpy as np
+from core.schema import Label
+from pipelines import load
+load('jh_r7_binary_guard')
+from pipelines.kimjaehak.round7_binary_guard import BinaryGuard
+from pipelines.kimjaehak.round8_failure_fallback import FailureInput,FailureGround,FailureBoth,input_checks_failed
+
+class FailureTests(unittest.IsolatedAsyncioTestCase):
+    def state(self):
+        return SimpleNamespace(_material_budget_guard=True,label=Label.NORMAL,debug={'valid_block_votes':0,'valid_other_votes':0,'self_info_votes':[],'out_of_material':False},errors=['block:TimeoutError','other:TimeoutError','material:TimeoutError'],last_user='학습 질문',candidate_answer='근거 없는 문장',grounded=True,unsupported=[])
+
+    async def test_complete_failure_uses_local_decision_without_another_call(self):
+        p=FailureInput.__new__(FailureInput);p.matrix_model=SimpleNamespace(classes=np.array(['normal','jailbreak_injection']),probabilities=Mock(return_value=[[.3,.7]]));s=self.state()
+        with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+        self.assertEqual(s.label,Label.JAILBREAK_INJECTION);self.assertTrue(s.debug['r8_failure_input'])
+        self.assertEqual(len(s.errors),3)
+
+    async def test_partial_success_tutor_and_external_cancellation_preserved(self):
+        for mode in ['block_vote','other_vote','material','tutor','label']:
+            p=FailureInput.__new__(FailureInput);p.matrix_model=Mock();s=self.state()
+            if mode=='block_vote':s.debug['valid_block_votes']=1
+            if mode=='other_vote':s.debug['valid_other_votes']=1
+            if mode=='material':s.errors.remove('material:TimeoutError')
+            if mode=='tutor':s._material_budget_guard=False
+            if mode=='label':s.label=Label.OUT_OF_MATERIAL
+            with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+            p.matrix_model.probabilities.assert_not_called()
+        with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock,side_effect=asyncio.CancelledError):
+            with self.assertRaises(asyncio.CancelledError):await p._classify(self.state())
+
+    async def test_ground_fallback_never_replaces_completed_vote_or_cancellation(self):
+        for count,expected in [(0,True),(1,False)]:
+            p=FailureGround.__new__(FailureGround);p.span_tagger=SimpleNamespace(predict=Mock(return_value=(['없는 문장'],.99)));s=self.state();s.debug['fusion_completed_ground_votes']=count
+            with patch.object(BinaryGuard,'_fusion_ground',new_callable=AsyncMock):await p._fusion_ground(s)
+            self.assertEqual(s.debug.get('r8_failure_ground',False),expected)
+            self.assertEqual(s.unsupported,['없는 문장'] if expected else [])
+        with patch.object(BinaryGuard,'_fusion_ground',new_callable=AsyncMock,side_effect=asyncio.CancelledError):
+            with self.assertRaises(asyncio.CancelledError):await p._fusion_ground(self.state())
+
+    def test_combined_paths(self):
+        self.assertIs(FailureBoth._classify,FailureInput._classify)
+        self.assertIs(FailureBoth._fusion_ground,FailureGround._fusion_ground)
+        self.assertIs(FailureBoth.tutor,BinaryGuard.tutor)
+        self.assertEqual(FailureBoth.guard_deadline,28)
+
+if __name__=='__main__':unittest.main()

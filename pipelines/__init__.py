@@ -34,6 +34,14 @@ def load(name: str = ""):
             module = importlib.import_module('pipelines.kimjaehak.round8_category')
             classes = {'jh_r8_binary_boundary': 'BinaryBoundary', 'jh_r8_binary_boundary_budgets': 'BinaryBoundaryBudgets', 'jh_r8_binary_dense': 'BinaryDense'}
             return getattr(module, classes[name])
+        if name in {'jh_r8_risk10', 'jh_r8_risk50'}:
+            module = importlib.import_module('pipelines.kimjaehak.round8_risk_safety')
+            classes = {'jh_r8_risk10': 'RiskSafety', 'jh_r8_risk50': 'RiskSafety50'}
+            return getattr(module, classes[name])
+        if name in {'jh_r8_failure_both', 'jh_r8_failure_input', 'jh_r8_failure_ground'}:
+            module = importlib.import_module('pipelines.kimjaehak.round8_failure_fallback')
+            classes = {'jh_r8_failure_input': 'FailureInput', 'jh_r8_failure_ground': 'FailureGround', 'jh_r8_failure_both': 'FailureBoth'}
+            return getattr(module, classes[name])
         if name == 'jh_r7_tax_budget12':
             return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12
         if name in {'jh_r7_binary_tutor', 'jh_r7_binary_tutor12'}:
