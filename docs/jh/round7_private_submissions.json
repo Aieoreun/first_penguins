@@ -1,0 +1,67 @@
+{
+  "source": "user_reported_private_submission_aggregates",
+  "runs": [
+    {
+      "run": "R7B1",
+      "variant": "jh_r7_binary_guard",
+      "variant_attribution": "conversation_context_following_execution_instructions",
+      "execution_commit": null,
+      "instructed_commit": "b537de3",
+      "execution_commit_verified": false,
+      "submitted_at_reported": null,
+      "total": 84.07,
+      "tutor": 79.08,
+      "guard": 89.07,
+      "duration_seconds": 64.071,
+      "seed": "73966aa972446124ecac3bd784e9f15b",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors": null
+    },
+    {
+      "run": "R7B2",
+      "variant": "jh_r7_binary_guard",
+      "variant_attribution": "conversation_context_following_execution_instructions",
+      "execution_commit": null,
+      "instructed_commit": "b537de3",
+      "execution_commit_verified": false,
+      "submitted_at_reported": null,
+      "total": 84.97,
+      "tutor": 81.33,
+      "guard": 88.6,
+      "duration_seconds": 60.778,
+      "seed": "aac9244e3e86818ba5e23309c1bfa492",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors": null
+    }
+  ],
+  "means": {
+    "total": 84.52,
+    "tutor": 80.205,
+    "guard": 88.835,
+    "duration_seconds": 62.424499999999995
+  },
+  "historical_A_means": {
+    "total": 84.64,
+    "tutor": 80.832,
+    "guard": 88.446,
+    "duration_seconds": 70.2886
+  },
+  "difference_vs_historical_A": {
+    "total": -0.12000000000000455,
+    "tutor": -0.6269999999999953,
+    "guard": 0.3889999999999958,
+    "duration_seconds": -7.864100000000008
+  },
+  "limitations": [
+    "Two new runs vs five historical runs; different seeds and times; not a matched comparison.",
+    "A5 attribution remains inferred from alternating order.",
+    "Execution environment and internal errors are unverified.",
+    "Tutor implementation unchanged; observed tutor differences cannot be assigned to a tutor code change."
+  ]
+}

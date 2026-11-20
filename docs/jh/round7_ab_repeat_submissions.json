@@ -1,0 +1,163 @@
+{
+  "source": "user_reported_private_submission_aggregates",
+  "scope": "new_A_binary_guard_alternating_comparison",
+  "prior_two_binary_runs_included": false,
+  "runs": [
+    {
+      "run": "B1",
+      "candidate": "B",
+      "variant": "jh_r7_binary_guard",
+      "variant_attribution": "user_explicit_B",
+      "received_sequence": 1,
+      "actual_submission_sequence_verified": false,
+      "submitted_at_reported": null,
+      "execution_commit": null,
+      "instructed_commit": "b537de3",
+      "execution_commit_verified": false,
+      "total": 85.96,
+      "tutor": 80.33,
+      "guard": 91.59,
+      "duration_seconds": 69.82,
+      "seed": "27c920575e72551689571217b22b7137",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors": null,
+      "notes": "First received result in new comparison; no A result received yet. Do not infer an unreported A run."
+    },
+    {
+      "run": "A1",
+      "candidate": "A",
+      "variant": "jh_cm_char_mlp50",
+      "variant_attribution": "user_explicit_A",
+      "received_sequence": 2,
+      "actual_submission_sequence_verified": false,
+      "submitted_at_reported": null,
+      "execution_commit": null,
+      "instructed_commit": "b537de3",
+      "execution_commit_verified": false,
+      "total": 84.44,
+      "tutor": 80.58,
+      "guard": 88.31,
+      "duration_seconds": 61.277,
+      "seed": "5548877b3e1e122bc58c775da45c5257",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors": null
+    },
+    {
+      "run": "B2",
+      "candidate": "B",
+      "variant": "jh_r7_binary_guard",
+      "variant_attribution": "inferred_from_previous_B2_instruction_not_explicit_user_label",
+      "received_sequence": 3,
+      "actual_submission_sequence_verified": false,
+      "submitted_at_reported": null,
+      "execution_commit": null,
+      "instructed_commit": "b537de3",
+      "execution_commit_verified": false,
+      "total": 83.64,
+      "tutor": 78.08,
+      "guard": 89.2,
+      "duration_seconds": 51.92,
+      "seed": "6179af5c44ed684832399268d33ab907",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors": null,
+      "notes": "Provisional B2 attribution; reclassify if user corrects candidate."
+    },
+    {
+      "run": "A2",
+      "candidate": "A",
+      "variant": "jh_cm_char_mlp50",
+      "variant_attribution": "inferred_from_previous_A2_instruction_not_explicit_user_label",
+      "received_sequence": 4,
+      "actual_submission_sequence_verified": false,
+      "submitted_at_reported": null,
+      "execution_commit": null,
+      "instructed_commit": "b537de3",
+      "execution_commit_verified": false,
+      "total": 83.84,
+      "tutor": 79.83,
+      "guard": 87.86,
+      "duration_seconds": 60.365,
+      "seed": "4104e3b69c61ca32a695b32c99ef53f2",
+      "requests": 600,
+      "official_timeouts": 0,
+      "official_invalid_or_no_response": 0,
+      "official_judgement_errors": 0,
+      "internal_errors": null,
+      "notes": "Provisional A2 attribution; reclassify if user corrects candidate."
+    }
+  ],
+  "adjacent_comparisons": [
+    {
+      "runs": [
+        "B1",
+        "A1"
+      ],
+      "difference_B_minus_A": {
+        "total": 1.52,
+        "tutor": -0.25,
+        "guard": 3.28,
+        "duration_seconds": 8.543
+      },
+      "same_seed": false,
+      "interpretation": "Adjacent submissions, not matched questions or causal evidence."
+    },
+    {
+      "runs": [
+        "B2",
+        "A2"
+      ],
+      "difference_B_minus_A": {
+        "total": -0.2,
+        "tutor": -1.75,
+        "guard": 1.34,
+        "duration_seconds": -8.445
+      },
+      "same_seed": false,
+      "interpretation": "Adjacent submissions, not matched questions or causal evidence."
+    }
+  ],
+  "summary": {
+    "A": {
+      "count": 2,
+      "means": {
+        "total": 84.14,
+        "tutor": 80.205,
+        "guard": 88.085,
+        "duration_seconds": 60.821
+      }
+    },
+    "B": {
+      "count": 2,
+      "means": {
+        "total": 84.8,
+        "tutor": 79.205,
+        "guard": 90.395,
+        "duration_seconds": 60.87
+      }
+    }
+  },
+  "summary_note": "Closed at user request, two runs each, different seeds; B2/A2 attribution inferred. Earlier two B submissions excluded. B selected as primary submission candidate; A preserved.",
+  "difference_of_means_B_minus_A": {
+    "total": 0.66,
+    "tutor": -1.0,
+    "guard": 2.31,
+    "duration_seconds": 0.049
+  },
+  "status": "closed_by_user_after_two_runs_each",
+  "selection": {
+    "primary_variant": "jh_r7_binary_guard",
+    "backup_variant": "jh_cm_char_mlp50",
+    "basis": "User selected B after two alternating runs each: mean total +0.66, guard +2.31, duration +0.049 seconds. Operational selection, not statistically established superiority.",
+    "additional_repeats_planned": false,
+    "runtime_default_changed": false
+  }
+}
