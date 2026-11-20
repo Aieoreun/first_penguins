@@ -27,6 +27,7 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r8_risk_preserve': ('jh_r8_risk_preserve', 'pipelines.kimjaehak.round8_risk_safety.PreservingRiskSafety'),
     'r8_calls96': ('jh_r8_calls96', 'pipelines.kimjaehak.round8_call_limit.GuardCalls96'),
     'r8_calls128': ('jh_r8_calls128', 'pipelines.kimjaehak.round8_call_limit.GuardCalls128'),
     'r8_failure_input': ('jh_r8_failure_input', 'pipelines.kimjaehak.round8_failure_fallback.FailureInput'),

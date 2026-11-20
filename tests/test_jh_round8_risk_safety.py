@@ -7,7 +7,7 @@ from unittest.mock import Mock,AsyncMock,patch
 from core.schema import Label
 from pipelines import load
 load('jh_r7_binary_guard')
-from pipelines.kimjaehak.round8_risk_safety import RiskSafety,RiskSafety50,CompactRiskSafety,COMPACT_SAFETY_SYSTEM
+from pipelines.kimjaehak.round8_risk_safety import RiskSafety,RiskSafety50,CompactRiskSafety,PreservingRiskSafety,COMPACT_SAFETY_SYSTEM
 from pipelines.kimjaehak.round7_binary_guard import BinaryGuard
 from pipelines.kimjaehak.peace_guard_prompt import SAFETY_SYSTEM
 from tests import test_jh_neural_peace_guard as fixtures
@@ -54,8 +54,25 @@ class RiskTests(unittest.IsolatedAsyncioTestCase):
         self.assertLessEqual(call.kwargs['timeout'],13)
         self.assertEqual(RiskSafety.risk_safety_system,SAFETY_SYSTEM)
 
+    async def test_preserving_path_runs_both_and_keeps_either_unsafe_verdict(self):
+        for existing_safe,independent_safe in [(True,True),(True,False),(False,True)]:
+            p=fixtures.GuardTests().pipeline(PreservingRiskSafety)
+            p.output_risk=SimpleNamespace(probabilities=Mock(return_value=[[.1,.9]]));p.output_risk_index=1
+            state=p._new_state(fixtures.GuardTests().body(),True)
+            started=asyncio.Event()
+            async def existing(s,*args):
+                await started.wait();s.safe=existing_safe;s.errors.append('old:Marker')
+            async def independent(s,*args):
+                started.set();s.safe=independent_safe;s.errors.append('new:Marker')
+            p._independent_safety=independent
+            async def existing_method(_self,s,*args):await existing(s,*args)
+            with patch.object(BinaryGuard,'_run_safety',new=existing_method):
+                await asyncio.wait_for(p._run_safety(state,state,None,time.monotonic()),1)
+            self.assertEqual(state.safe,existing_safe and independent_safe)
+            self.assertEqual(state.errors,['old:Marker','new:Marker'])
+
     def test_tutor_input_grounding_unchanged(self):
-        for name,cls in [('jh_r8_risk10',RiskSafety),('jh_r8_risk50',RiskSafety50),('jh_r8_risk_compact',CompactRiskSafety)]:
+        for name,cls in [('jh_r8_risk10',RiskSafety),('jh_r8_risk50',RiskSafety50),('jh_r8_risk_compact',CompactRiskSafety),('jh_r8_risk_preserve',PreservingRiskSafety)]:
             self.assertIs(load(name),cls)
             for method in ['tutor','_generate','_classify','_fusion_ground','_search']:
                 self.assertIs(getattr(cls,method),getattr(BinaryGuard,method))
