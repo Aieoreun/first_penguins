@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r8_calls96', 'jh_r8_calls128'}:
+            module = importlib.import_module('pipelines.kimjaehak.round8_call_limit')
+            return getattr(module, 'GuardCalls96' if name.endswith('96') else 'GuardCalls128')
         if name in {'jh_r8_binary_value_prompt', 'jh_r8_value_prompt', 'jh_r8_binary_value_anchored', 'jh_r8_value_anchored'}:
             module = importlib.import_module('pipelines.kimjaehak.round8_numeric')
             classes = {'jh_r8_value_prompt': 'ValuePrompt', 'jh_r8_value_anchored': 'ValueAnchored',

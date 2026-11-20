@@ -114,3 +114,5 @@ VARIANTS += ('jh_r8_risk10', 'jh_r8_risk50', 'jh_r8_risk_compact')
 VARIANTS += ('jh_r8_failure_input', 'jh_r8_failure_ground', 'jh_r8_failure_both')
 
 VARIANTS += ('jh_r8_failure_block',)
+
+VARIANTS += ('jh_r8_calls96', 'jh_r8_calls128')
