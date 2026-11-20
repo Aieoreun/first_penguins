@@ -21,6 +21,11 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {'jh_r8_binary_value_prompt', 'jh_r8_value_prompt', 'jh_r8_binary_value_anchored', 'jh_r8_value_anchored'}:
+            module = importlib.import_module('pipelines.kimjaehak.round8_numeric')
+            classes = {'jh_r8_value_prompt': 'ValuePrompt', 'jh_r8_value_anchored': 'ValueAnchored',
+                       'jh_r8_binary_value_prompt': 'BinaryValuePrompt', 'jh_r8_binary_value_anchored': 'BinaryValueAnchored'}
+            return getattr(module, classes[name])
         if name == 'jh_r7_tax_budget12':
             return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12
         if name in {'jh_r7_binary_tutor', 'jh_r7_binary_tutor12'}:

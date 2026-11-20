@@ -60,7 +60,7 @@ def main():
     from core.llm import LLM
     from pipelines import load
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--name',required=True)
-    ap.add_argument('--source-run',required=True);ap.add_argument('--order',nargs='+',required=True,choices=['r7_tax_concrete','r7_tax_budget12','r7_apply_scoped']);args=ap.parse_args()
+    ap.add_argument('--source-run',required=True);ap.add_argument('--order',nargs='+',required=True,choices=['r8_value_prompt','r8_value_anchored','r7_tax_concrete','r7_tax_budget12','r7_apply_scoped']);args=ap.parse_args()
     if any(not s.replace('_','').isalnum() for s in [args.name,args.source_run]) or len(set(args.order))!=len(args.order):ap.error('Unique candidates/simple names required')
     source=ROOT/'experiments/.cache'/('jh_manual_tutor_'+args.source_run)
     if not (source/'COMPLETE').exists():raise ValueError('Only completed manual public runs')
