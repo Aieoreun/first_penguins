@@ -26,6 +26,10 @@ def load(name: str = ""):
             classes = {'jh_r8_value_prompt': 'ValuePrompt', 'jh_r8_value_anchored': 'ValueAnchored',
                        'jh_r8_binary_value_prompt': 'BinaryValuePrompt', 'jh_r8_binary_value_anchored': 'BinaryValueAnchored'}
             return getattr(module, classes[name])
+        if name in {'jh_r8_binary_inputbudgets', 'jh_r8_binary_timeouts', 'jh_r8_binary_parallel'}:
+            module = importlib.import_module('pipelines.kimjaehak.round8_guard')
+            classes = {'jh_r8_binary_parallel': 'BinaryParallelSafety', 'jh_r8_binary_timeouts': 'BinaryCheckBudgets', 'jh_r8_binary_inputbudgets': 'BinaryInputBudgets'}
+            return getattr(module, classes[name])
         if name == 'jh_r7_tax_budget12':
             return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12
         if name in {'jh_r7_binary_tutor', 'jh_r7_binary_tutor12'}:

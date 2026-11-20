@@ -104,3 +104,5 @@ VARIANTS += ("jh_r7_binary_guard75",)
 VARIANTS += ("jh_r7_tax_budget12", "jh_r7_binary_tutor", "jh_r7_binary_tutor12")
 
 VARIANTS += ('jh_r8_value_prompt', 'jh_r8_value_anchored', 'jh_r8_binary_value_prompt', 'jh_r8_binary_value_anchored')
+
+VARIANTS += ('jh_r8_binary_parallel', 'jh_r8_binary_timeouts', 'jh_r8_binary_inputbudgets')
