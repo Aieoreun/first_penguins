@@ -1,0 +1,93 @@
+{
+  "scope": "same_public_grouped_OOF_threshold_screen_not_holdout",
+  "api_calls": 0,
+  "count": 400,
+  "source_sha256": "e12731fa806fbb873cc73d447c26b63e48be3ce845836139662339ef7d8d90bf",
+  "results": [
+    {
+      "block_slots": 0,
+      "allow_slots": 200,
+      "block_threshold": 1.000001,
+      "allow_threshold": 0.836802191065258,
+      "category_errors": 27,
+      "decision_errors": 11,
+      "non_normal_category_errors": 24,
+      "metrics": {
+        "accuracy": 0.865,
+        "macro_f1": 0.5022135543637251,
+        "block_f1": 0.0,
+        "category_non_normal": 0.625,
+        "false_block": 0,
+        "missed_block": 11
+      }
+    },
+    {
+      "block_slots": 10,
+      "allow_slots": 190,
+      "block_threshold": 0.9905676576466506,
+      "allow_threshold": 0.8511094511785269,
+      "category_errors": 27,
+      "decision_errors": 11,
+      "non_normal_category_errors": 23,
+      "metrics": {
+        "accuracy": 0.865,
+        "macro_f1": 0.6441040932502032,
+        "block_f1": 0.6206896551724138,
+        "category_non_normal": 0.6714285714285714,
+        "false_block": 1,
+        "missed_block": 10
+      }
+    },
+    {
+      "block_slots": 20,
+      "allow_slots": 180,
+      "block_threshold": 0.8980870249460092,
+      "allow_threshold": 0.8733253031425342,
+      "category_errors": 28,
+      "decision_errors": 13,
+      "non_normal_category_errors": 21,
+      "metrics": {
+        "accuracy": 0.86,
+        "macro_f1": 0.6816165413533835,
+        "block_f1": 0.7111111111111111,
+        "category_non_normal": 0.7162162162162162,
+        "false_block": 4,
+        "missed_block": 9
+      }
+    },
+    {
+      "block_slots": 30,
+      "allow_slots": 170,
+      "block_threshold": 0.7770367616414765,
+      "allow_threshold": 0.8840697128841621,
+      "category_errors": 27,
+      "decision_errors": 14,
+      "non_normal_category_errors": 18,
+      "metrics": {
+        "accuracy": 0.865,
+        "macro_f1": 0.6980655919955531,
+        "block_f1": 0.7741935483870968,
+        "category_non_normal": 0.7631578947368421,
+        "false_block": 6,
+        "missed_block": 8
+      }
+    },
+    {
+      "block_slots": 40,
+      "allow_slots": 160,
+      "block_threshold": 0.6240839207982054,
+      "allow_threshold": 0.9029414466520145,
+      "category_errors": 28,
+      "decision_errors": 15,
+      "non_normal_category_errors": 17,
+      "metrics": {
+        "accuracy": 0.86,
+        "macro_f1": 0.7029331306990881,
+        "block_f1": 0.810126582278481,
+        "category_non_normal": 0.7951807228915663,
+        "false_block": 8,
+        "missed_block": 7
+      }
+    }
+  ]
+}

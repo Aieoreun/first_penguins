@@ -30,6 +30,10 @@ def load(name: str = ""):
             module = importlib.import_module('pipelines.kimjaehak.round8_guard')
             classes = {'jh_r8_binary_parallel': 'BinaryParallelSafety', 'jh_r8_binary_timeouts': 'BinaryCheckBudgets', 'jh_r8_binary_inputbudgets': 'BinaryInputBudgets'}
             return getattr(module, classes[name])
+        if name in {'jh_r8_binary_boundary_budgets', 'jh_r8_binary_dense', 'jh_r8_binary_boundary'}:
+            module = importlib.import_module('pipelines.kimjaehak.round8_category')
+            classes = {'jh_r8_binary_boundary': 'BinaryBoundary', 'jh_r8_binary_boundary_budgets': 'BinaryBoundaryBudgets', 'jh_r8_binary_dense': 'BinaryDense'}
+            return getattr(module, classes[name])
         if name == 'jh_r7_tax_budget12':
             return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12
         if name in {'jh_r7_binary_tutor', 'jh_r7_binary_tutor12'}:

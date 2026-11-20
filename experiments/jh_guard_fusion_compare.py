@@ -27,6 +27,10 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r8_binary_boundary': ('jh_r8_binary_boundary', 'pipelines.kimjaehak.round8_category.BinaryBoundary'),
+    'r8_binary_boundary_budgets': ('jh_r8_binary_boundary_budgets', 'pipelines.kimjaehak.round8_category.BinaryBoundaryBudgets'),
+    'r8_binary_dense': ('jh_r8_binary_dense', 'pipelines.kimjaehak.round8_category.BinaryDense'),
+
     'r8_binary_parallel': ('jh_r8_binary_parallel', 'pipelines.kimjaehak.round8_guard.BinaryParallelSafety'),
     'r8_binary_timeouts': ('jh_r8_binary_timeouts', 'pipelines.kimjaehak.round8_guard.BinaryCheckBudgets'),
     'r8_binary_inputbudgets': ('jh_r8_binary_inputbudgets', 'pipelines.kimjaehak.round8_guard.BinaryInputBudgets'),
