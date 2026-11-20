@@ -1,0 +1,39 @@
+{
+  "scope": "immediate_failure_public_tutor_behavior_not_judged_score_not_network_latency",
+  "api_calls": 0,
+  "alternative": true,
+  "dataset_sha256": "91a887c1fe89976872803195c89d444c64b9fc76c20bedff3e298f6aeedc89ec",
+  "script_sha256": "2498fe668a948e2acd36b0af43d585118cc7a35370a13523bcdf3bacc0e4b66e",
+  "results": [
+    {
+      "candidate": "r7_binary_guard",
+      "count": 181,
+      "action_correct": 157,
+      "category_correct": 153,
+      "fallback_count": 0,
+      "errors": {
+        "source_extract:TimeoutError": 36,
+        "material:TimeoutError": 46,
+        "block:TimeoutError": 138,
+        "other:TimeoutError": 138,
+        "generate:TimeoutError": 12,
+        "context_policy:TimeoutError": 10
+      }
+    },
+    {
+      "candidate": "r8_tutor_failure",
+      "count": 181,
+      "action_correct": 174,
+      "category_correct": 173,
+      "fallback_count": 42,
+      "errors": {
+        "source_extract:TimeoutError": 26,
+        "material:TimeoutError": 46,
+        "block:TimeoutError": 138,
+        "other:TimeoutError": 138,
+        "generate:TimeoutError": 14,
+        "context_policy:TimeoutError": 14
+      }
+    }
+  ]
+}

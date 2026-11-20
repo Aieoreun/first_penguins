@@ -9,8 +9,8 @@ from .round7_binary_guard import BinaryGuard
 from .round7_binary_model import BLOCKED
 
 
-def input_checks_failed(state):
-    return (getattr(state,'_material_budget_guard',False) is True
+def input_checks_failed(state,guard=True):
+    return (getattr(state,'_material_budget_guard',None) is guard
         and state.label is Label.NORMAL
         and state.debug.get('valid_block_votes')==0
         and state.debug.get('valid_other_votes')==0
@@ -96,3 +96,30 @@ categories have priority, but only when the missing BLOCK check is evidenced.
             state.label=label;state.debug['r8_failure_block']=True
         except Exception as exc:
             state.errors.append('failure_block:'+type(exc).__name__)
+
+
+class TutorFailureInput(BinaryGuard):
+    """Tutor-only input recovery after complete remote input-check failure."""
+    tutor_failure_input_threshold=.5
+
+    async def _classify(self,state):
+        await super()._classify(state)
+        if not input_checks_failed(state,guard=False):return
+        try:
+            p=np.asarray(self.matrix_model.probabilities([state.last_user])[0],dtype=float)
+            if (p.shape!=(len(self.matrix_model.classes),) or not np.isfinite(p).all()
+                    or np.any(p<0) or not np.isclose(p.sum(),1)):
+                raise ValueError('Invalid tutor fallback distribution')
+            if p.max()<self.tutor_failure_input_threshold:return
+            category=str(self.matrix_model.classes[p.argmax()])
+            label=parse_label(category)
+            if category=='harmful_content':
+                # Tutor actions distinguish harmful speech from harmful requests.
+                sub=self.harmful_classifier.predict_proba(self.harmful_vectorizer.transform([state.last_user]))[0]
+                if not np.isfinite(sub).all() or sub.max()<self.learned_harmful_threshold:return
+                action=str(self.harmful_classifier.classes_[sub.argmax()])
+                label=Label.HARMFUL_REQUEST if action=='refuse' else Label.HARMFUL_SPEECH if action=='redirect' else None
+            if label is None:return
+            state.label=label;state.debug['r8_tutor_failure_input']=True
+        except Exception as exc:
+            state.errors.append('tutor_failure_input:'+type(exc).__name__)

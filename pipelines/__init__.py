@@ -41,9 +41,9 @@ def load(name: str = ""):
             module = importlib.import_module('pipelines.kimjaehak.round8_risk_safety')
             classes = {'jh_r8_risk10': 'RiskSafety', 'jh_r8_risk50': 'RiskSafety50', 'jh_r8_risk_compact': 'CompactRiskSafety', 'jh_r8_risk_preserve': 'PreservingRiskSafety'}
             return getattr(module, classes[name])
-        if name in {'jh_r8_failure_both', 'jh_r8_failure_input', 'jh_r8_failure_ground', 'jh_r8_failure_block'}:
+        if name in {'jh_r8_failure_both', 'jh_r8_failure_input', 'jh_r8_failure_ground', 'jh_r8_failure_block', 'jh_r8_tutor_failure'}:
             module = importlib.import_module('pipelines.kimjaehak.round8_failure_fallback')
-            classes = {'jh_r8_failure_input': 'FailureInput', 'jh_r8_failure_ground': 'FailureGround', 'jh_r8_failure_both': 'FailureBoth', 'jh_r8_failure_block': 'FailureBlock'}
+            classes = {'jh_r8_failure_input': 'FailureInput', 'jh_r8_failure_ground': 'FailureGround', 'jh_r8_failure_both': 'FailureBoth', 'jh_r8_failure_block': 'FailureBlock', 'jh_r8_tutor_failure': 'TutorFailureInput'}
             return getattr(module, classes[name])
         if name == 'jh_r7_tax_budget12':
             return importlib.import_module('pipelines.kimjaehak.round7_tax_scope').TaxBudget12

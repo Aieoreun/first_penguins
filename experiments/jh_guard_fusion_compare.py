@@ -27,6 +27,7 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    'r8_tutor_failure': ('jh_r8_tutor_failure', 'pipelines.kimjaehak.round8_failure_fallback.TutorFailureInput'),
     'r8_risk_preserve': ('jh_r8_risk_preserve', 'pipelines.kimjaehak.round8_risk_safety.PreservingRiskSafety'),
     'r8_calls96': ('jh_r8_calls96', 'pipelines.kimjaehak.round8_call_limit.GuardCalls96'),
     'r8_calls128': ('jh_r8_calls128', 'pipelines.kimjaehak.round8_call_limit.GuardCalls128'),
@@ -291,7 +292,7 @@ try:
                 instance.guard = observed_guard
             original_tutor = getattr(instance, 'tutor', None)
             if callable(original_tutor):
-                counts['tutor_debug'] = {'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0, 'r7_material_cancelled':0, 'r7_material_scope_used':0, 'r7_apply_abstained':0, 'r7_calculator_completed':0, 'r7_explicit_tax_scope':0, 'r7_calc_review_started':0, 'r7_calc_review_completed':0, 'r7_calc_review_changed':0, 'r7_material_verdict_used':0, 'r7_material_verdict_missing':0}
+                counts['tutor_debug'] = {'r8_tutor_failure_input': 0, 'tutor_mlp_gate': 0, 'tutor_mlp_llm': 0, 'r7_product_check':0, 'r7_other_check':0, 'r7_scaffold_generated':0, 'r7_apply_attempted':0, 'r7_apply_completed':0, 'r7_joint_apply_started':0, 'r7_joint_apply_completed':0, 'r7_material_cancelled':0, 'r7_material_scope_used':0, 'r7_apply_abstained':0, 'r7_calculator_completed':0, 'r7_explicit_tax_scope':0, 'r7_calc_review_started':0, 'r7_calc_review_completed':0, 'r7_calc_review_changed':0, 'r7_material_verdict_used':0, 'r7_material_verdict_missing':0}
                 async def observed_tutor(body):
                     result = await original_tutor(body)
                     debug = getattr(result, 'debug', {})

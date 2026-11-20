@@ -7,7 +7,7 @@ from core.schema import Label
 from pipelines import load
 load('jh_r7_binary_guard')
 from pipelines.kimjaehak.round7_binary_guard import BinaryGuard
-from pipelines.kimjaehak.round8_failure_fallback import FailureInput,FailureGround,FailureBoth,FailureBlock,input_checks_failed
+from pipelines.kimjaehak.round8_failure_fallback import FailureInput,FailureGround,FailureBoth,FailureBlock,TutorFailureInput,input_checks_failed
 from core.state import State
 
 class FailureTests(unittest.IsolatedAsyncioTestCase):
@@ -69,5 +69,23 @@ class FailureTests(unittest.IsolatedAsyncioTestCase):
             with self.assertRaises(asyncio.CancelledError):await p._classify(s)
         self.assertIs(load('jh_r8_failure_block'),FailureBlock)
         self.assertIs(FailureBlock.tutor,BinaryGuard.tutor)
+
+    async def test_tutor_failure_preserves_guard_and_harmful_subtype(self):
+        p=TutorFailureInput.__new__(TutorFailureInput)
+        p.matrix_model=SimpleNamespace(classes=np.array(['normal','harmful_content']),probabilities=Mock(return_value=[[.1,.9]]))
+        p.harmful_vectorizer=SimpleNamespace(transform=Mock(return_value=[[1]]))
+        p.harmful_classifier=SimpleNamespace(classes_=np.array(['redirect','refuse']),predict_proba=Mock(return_value=[np.array([.99,.01])]))
+        p.learned_harmful_threshold=.9
+        s=self.state()
+        with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+        p.matrix_model.probabilities.assert_not_called()
+        s._material_budget_guard=False
+        with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+        self.assertEqual(s.label,Label.HARMFUL_SPEECH)
+        self.assertTrue(s.debug['r8_tutor_failure_input'])
+        s.label=Label.NORMAL;s.debug['valid_other_votes']=1;p.matrix_model.probabilities.reset_mock()
+        with patch.object(BinaryGuard,'_classify',new_callable=AsyncMock):await p._classify(s)
+        p.matrix_model.probabilities.assert_not_called()
+        self.assertIs(load('jh_r8_tutor_failure'),TutorFailureInput)
 
 if __name__=='__main__':unittest.main()
