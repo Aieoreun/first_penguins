@@ -3,8 +3,8 @@
   "runs": [
     {
       "run": "followup1",
-      "variant": null,
-      "variant_status": "awaiting_confirmation_B_or_A",
+      "variant": "jh_r7_binary_guard",
+      "variant_status": "user_confirmed",
       "total": 82.3,
       "tutor": 78.0,
       "guard": 86.6,
@@ -17,7 +17,8 @@
       "submitted_at_reported": null,
       "execution_commit": null,
       "internal_errors": null,
-      "context": "User separately observed block:TimeoutError on Runbox; not confirmed for this exact submission. Local API probes returned 502 twice and then succeeded. Shared cause is unproven."
+      "context": "User separately observed block:TimeoutError on Runbox; not confirmed for this exact submission. Local API probes returned 502 twice and then succeeded. Shared cause is unproven.",
+      "submission_complete": true
     }
   ]
 }
