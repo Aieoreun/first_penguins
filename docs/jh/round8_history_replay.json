@@ -1,0 +1,93 @@
+{
+  "scope": "public_frozen_fallback_history_abstention_not_live_or_holdout",
+  "api_calls": 0,
+  "dataset_sha256": "1b60ec4ad1ef387f610594846bc9e459b8ed08fcda8f0ba4d0dead9aa6f1494b",
+  "fallback_sha256": "708bd2dc31f2cd34ad258f48126e9096a1817f012dea11f2ca3a8dc352ea29de",
+  "script_sha256": "47e70e56e2f406cbb65c32fd2d163c38826fa3aa28e81c9ddb151538637b7a1e",
+  "results": [
+    {
+      "mode": "baseline",
+      "metrics": {
+        "accuracy": 0.9387755102040817,
+        "macro_f1": 0.9119885662704683,
+        "block_f1": 0.9444444444444444,
+        "category_non_normal": 0.9146341463414634,
+        "false_block": 2,
+        "missed_block": 4
+      },
+      "extra_GPT_input_requests": 0,
+      "corrected": 0,
+      "regressed": 0,
+      "changed_ids": []
+    },
+    {
+      "mode": "any_history",
+      "metrics": {
+        "accuracy": 0.9081632653061225,
+        "macro_f1": 0.8763840480507148,
+        "block_f1": 0.9272727272727272,
+        "category_non_normal": 0.9024390243902439,
+        "false_block": 4,
+        "missed_block": 4
+      },
+      "extra_GPT_input_requests": 38,
+      "corrected": 0,
+      "regressed": 6,
+      "changed_ids": [
+        "pub-a98032a2-p0",
+        "pub-d8f6d2f5-p0",
+        "pub-67283727-p1",
+        "pub-4eb4ef12-p1",
+        "pub-4f679946-p0",
+        "pub-93bcd46e-p0"
+      ]
+    },
+    {
+      "mode": "short_reference",
+      "metrics": {
+        "accuracy": 0.9336734693877551,
+        "macro_f1": 0.9082444358760148,
+        "block_f1": 0.9444444444444444,
+        "category_non_normal": 0.9146341463414634,
+        "false_block": 2,
+        "missed_block": 4
+      },
+      "extra_GPT_input_requests": 9,
+      "corrected": 0,
+      "regressed": 1,
+      "changed_ids": [
+        "pub-4f679946-p0"
+      ]
+    },
+    {
+      "mode": "group_disagreement",
+      "metrics": {
+        "accuracy": 0.9387755102040817,
+        "macro_f1": 0.9119885662704683,
+        "block_f1": 0.9444444444444444,
+        "category_non_normal": 0.9146341463414634,
+        "false_block": 2,
+        "missed_block": 4
+      },
+      "extra_GPT_input_requests": 1,
+      "corrected": 0,
+      "regressed": 0,
+      "changed_ids": []
+    },
+    {
+      "mode": "category_disagreement",
+      "metrics": {
+        "accuracy": 0.9387755102040817,
+        "macro_f1": 0.9119885662704683,
+        "block_f1": 0.9444444444444444,
+        "category_non_normal": 0.9146341463414634,
+        "false_block": 2,
+        "missed_block": 4
+      },
+      "extra_GPT_input_requests": 1,
+      "corrected": 0,
+      "regressed": 0,
+      "changed_ids": []
+    }
+  ]
+}

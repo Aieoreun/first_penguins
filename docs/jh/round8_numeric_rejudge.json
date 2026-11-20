@@ -1,0 +1,43 @@
+{
+  "scope": "rejudged_outage_collected_responses_not_healthy_candidate_comparison",
+  "manifest": {
+    "scope": "rejudged_frozen_public_manual_responses_not_new_collection",
+    "source_run": "r8_numeric01",
+    "source_commit": "bec11536457e4ba8cd2750228b513b62c5501a21",
+    "dataset_sha256": "96e8caf44f474cf5d67bb48b64122fa0227e99ece66f8ee9286b9366cf92e2e8",
+    "proposal_sha256": "577e51a96efe8a0cc84a3f3989b2baa7258123b17960dc5ab924693d59b03f70",
+    "judge_workers": 4,
+    "evaluator_hashes": {
+      "grader/judge.py": "7a02fc223bfa2e862ed9c8bd582bcc0f42c25de0887282b668a62ec40d5ddabe",
+      "grader/scoring.py": "961d9dd8b5c16ea61292422fc8b3692b78da415baf6c3f39244f983fec64b6b4",
+      "harness/score_local.py": "613c439dbcb054ced41ef00e1adcea34568f7cec66760131a649c20726f2d6a6"
+    },
+    "judge_reuse": "common identical public payload within this new pass; original failure results untouched",
+    "response_hashes": {
+      "r7_binary_guard": "f015564b743049672e7dd010b4fc9ec7fc67f9bb4fcad46db784c0db6a2afc62",
+      "r7_binary_tutor": "2e6b34593ba57bf2db1a1697eef874a22c6f81b4af5d192f1fa0460612e1bcc4",
+      "r8_binary_value_prompt": "6b7e190790941b419b9a6b26dcbe193d9f7ab4f1286c4ec1083e4e4dce4ff686"
+    },
+    "script_sha256": "e94f9b2dc0cdb9a2eaaf6ef7f1307fed73bd3abed33eed6f524241bae2187fcc"
+  },
+  "summary": [
+    {
+      "tutor": 79.17,
+      "invalid": 0,
+      "judge_errors": 0,
+      "candidate": "r7_binary_guard"
+    },
+    {
+      "tutor": 79.17,
+      "invalid": 0,
+      "judge_errors": 0,
+      "candidate": "r7_binary_tutor"
+    },
+    {
+      "tutor": 76.04,
+      "invalid": 0,
+      "judge_errors": 0,
+      "candidate": "r8_binary_value_prompt"
+    }
+  ]
+}

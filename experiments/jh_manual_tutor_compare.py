@@ -65,6 +65,7 @@ def main():
     ap.add_argument('--name',required=True)
     ap.add_argument('--order',nargs='+',choices=sorted(runner.CANDIDATES),required=True)
     ap.add_argument('--resume',action='store_true')
+    ap.add_argument("--judge-workers", type=int, choices=(1,4,8,16,32), default=32)
     args = ap.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.name) or len(set(args.order))!=len(args.order):
         ap.error('Use a simple name and unique candidate order')
@@ -73,12 +74,12 @@ def main():
     load_environment()
     current = {**provenance, 'dataset_sha256':runner.digest(encoded.encode()),
         'protected':runner.protected_hashes(ROOT), 'pipelines':runner.pipeline_hashes(ROOT),
-        'bootstrap_sha256':runner.digest(runner.BOOTSTRAP.encode()), 'order':args.order,
+        'bootstrap_sha256':runner.digest(runner.BOOTSTRAP.encode()), 'order':args.order, 'judge_workers':args.judge_workers,
         'chat_model':os.environ['OPENAI_MODEL'], 'embedding_model':os.environ.get('EMBEDDING_MODEL')}
     dest = ROOT/'experiments/.cache'/('jh_manual_tutor_'+args.name)
     if args.resume:
         recorded=json.loads((dest/'plan.json').read_text())
-        if any(recorded.get(k)!=v for k,v in current.items()):
+        if any(recorded.get(k,32 if k=='judge_workers' else None)!=v for k,v in current.items()):
             raise ValueError('Cannot resume with changed data, code or conditions')
     else:
         dest.mkdir()
@@ -90,14 +91,14 @@ def main():
         run=dest/label
         if not (run/'runtime.json').exists():
             if run.exists():raise ValueError('Preserve partial collection and use a fresh run name')
-            runner.collect_candidate(label,ROOT,items,run,env,32,'env',current)
+            runner.collect_candidate(label,ROOT,items,run,env,args.judge_workers,'env',current)
         print('COLLECTED '+label,flush=True)
     summaries=[]
     for label in args.order:
         run=dest/label
         if not (run/'result.json').exists():
             rows=[json.loads(s) for s in (run/'responses.jsonl').read_text().splitlines()]
-            runner.write_json(run/'result.json',score_rows(items,rows,32,journal=run/'judge.jsonl'))
+            runner.write_json(run/'result.json',score_rows(items,rows,args.judge_workers,journal=run/'judge.jsonl'))
         result=json.loads((run/'result.json').read_text())
         summary={'candidate':label, 'tutor':result['tutor'], 'invalid':result['invalid'],
                  'judge_errors':result['judge_errors'], 'runtime':json.loads((run/'runtime.json').read_text())}
