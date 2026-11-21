@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 
@@ -22,6 +23,7 @@ def main():
     ap.add_argument('--alternative', action='store_true')
     ap.add_argument('--mixed', action='store_true')
     ap.add_argument('--resume', action='store_true')
+    ap.add_argument("--shared-judge-cache", action="store_true", help="Reuse only identical official judge payloads within this run")
     ap.add_argument("--judge-workers", type=int, choices=(1,4,8,16,32), default=32)
     args = ap.parse_args()
     if not args.name.replace('_','').replace('-','').isalnum() or len(set(args.order)) != len(args.order):
@@ -37,13 +39,13 @@ def main():
     current = {'scope':'public_derived_tutor_mlp_development_not_independent_holdout',
         'source_sha256':runner.digest(SOURCE.read_bytes()), 'dataset_sha256':runner.digest(encoded.encode()),
         'protected':runner.protected_hashes(ROOT), 'pipelines':runner.pipeline_hashes(ROOT),
-        'bootstrap_sha256':runner.digest(runner.BOOTSTRAP.encode()), 'order':args.order, 'judge_workers':args.judge_workers,
+        'bootstrap_sha256':runner.digest(runner.BOOTSTRAP.encode()), 'order':args.order, 'judge_workers':args.judge_workers, 'shared_judge_cache':args.shared_judge_cache,
         'mixed':args.mixed, 'alternative':args.alternative,
         'chat_model':os.environ['OPENAI_MODEL'], 'embedding_model':os.environ.get('EMBEDDING_MODEL'),
         'inherited_labels':True, 'count':len(items)}
     if args.resume:
         recorded = json.loads((dest/'plan.json').read_text())
-        if any(recorded.get(k,32 if k=='judge_workers' else None)!=v for k,v in current.items()):
+        if any(recorded.get(k,32 if k=='judge_workers' else False if k=='shared_judge_cache' else None)!=v for k,v in current.items()):
             raise ValueError('Dataset, code or experiment configuration changed')
     else:
         dest.mkdir()
@@ -63,7 +65,10 @@ def main():
         run = dest/label
         if not (run/'result.json').exists():
             rows=[json.loads(s) for s in (run/'responses.jsonl').read_text().splitlines()]
-            result=score_rows(items,rows,args.judge_workers,journal=run/'judge.jsonl')
+            journal=dest/'common_judge.jsonl' if args.shared_judge_cache else run/'judge.jsonl'
+            result=score_rows(items,rows,args.judge_workers,journal=journal)
+            if args.shared_judge_cache:
+                shutil.copyfile(journal,run/'judge.jsonl')
             runner.write_json(run/'result.json',result)
         result=json.loads((run/'result.json').read_text())
         runtime=json.loads((run/'runtime.json').read_text())
