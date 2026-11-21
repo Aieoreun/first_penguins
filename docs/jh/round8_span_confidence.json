@@ -1,0 +1,210 @@
+{
+  "scope": "public86_grouped_span_confidence_and_frozen_B_replay_not_holdout",
+  "api_calls": 0,
+  "results": [
+    {
+      "confidence": "minimum",
+      "grouped_oof": [
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "detected": 0,
+          "missed": 35
+        },
+        {
+          "threshold": 0.95,
+          "false_alarm": 0,
+          "detected": 0,
+          "missed": 35
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "run": "g06",
+          "threshold": 0.9,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "g06",
+          "threshold": 0.95,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.95,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        }
+      ]
+    },
+    {
+      "confidence": "quantile05",
+      "grouped_oof": [
+        {
+          "threshold": 0.9,
+          "false_alarm": 2,
+          "detected": 0,
+          "missed": 35
+        },
+        {
+          "threshold": 0.95,
+          "false_alarm": 0,
+          "detected": 0,
+          "missed": 35
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "run": "g06",
+          "threshold": 0.9,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "g06",
+          "threshold": 0.95,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.95,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        }
+      ]
+    },
+    {
+      "confidence": "quantile10",
+      "grouped_oof": [
+        {
+          "threshold": 0.9,
+          "false_alarm": 4,
+          "detected": 2,
+          "missed": 33
+        },
+        {
+          "threshold": 0.95,
+          "false_alarm": 0,
+          "detected": 0,
+          "missed": 35
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "run": "g06",
+          "threshold": 0.9,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "g06",
+          "threshold": 0.95,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.95,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        }
+      ]
+    },
+    {
+      "confidence": "positive_mean",
+      "grouped_oof": [
+        {
+          "threshold": 0.9,
+          "false_alarm": 1,
+          "detected": 0,
+          "missed": 35
+        },
+        {
+          "threshold": 0.95,
+          "false_alarm": 1,
+          "detected": 0,
+          "missed": 35
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "run": "g06",
+          "threshold": 0.9,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "g06",
+          "threshold": 0.95,
+          "corrected": 2,
+          "regressed": 0,
+          "guard": 94.99,
+          "span_f1": 0.9765
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.95,
+          "corrected": 0,
+          "regressed": 0,
+          "guard": 98.67,
+          "span_f1": 0.928
+        }
+      ]
+    }
+  ]
+}

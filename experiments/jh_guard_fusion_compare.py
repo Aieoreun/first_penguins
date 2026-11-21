@@ -27,6 +27,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    "r8_local3": ("jh_r8_local3", "pipelines.kimjaehak.round8_combined.LocalThree"),
+    "r8_local3_quantity": ("jh_r8_local3_quantity", "pipelines.kimjaehak.round8_combined.LocalThreeQuantity"),
     "r8_quantity": ("jh_r8_quantity", "pipelines.kimjaehak.round8_quantity.QuantityValuePrompt"),
     "r8_span_veto": ("jh_r8_span_veto", "pipelines.kimjaehak.round8_span_veto.SpanVeto"),
     "r8_output_veto": ("jh_r8_output_veto", "pipelines.kimjaehak.round8_output_veto.OutputVeto"),

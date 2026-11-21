@@ -11,6 +11,18 @@ from pipelines.kimjaehak.round8_span_veto import SpanVeto
 
 
 class QuantityTests(unittest.TestCase):
+    def test_combination_scope(self):
+        plain=load("jh_r8_local3");quantity=load("jh_r8_local3_quantity")
+        self.assertEqual(plain.output_votes,3)
+        self.assertEqual(quantity.output_votes,3)
+        self.assertIs(plain._classify,BinaryGuard._classify)
+        self.assertIs(quantity._classify,BinaryGuard._classify)
+        self.assertIs(plain.tutor,BinaryGuard.tutor)
+        self.assertIs(quantity._numeric_request,QuantityValuePrompt._numeric_request)
+        self.assertIs(plain._fusion_post_checks,SpanVeto._fusion_post_checks)
+        self.assertEqual(plain.guard_deadline,28)
+        self.assertEqual(quantity.guard_deadline,28)
+
     def test_quantity_route(self):
         p=QuantityValuePrompt.__new__(QuantityValuePrompt)
         for text in ['3학년이에요. 기본 이자율이 얼마인가요?', '1학년인데 포인트 환불 규칙은?']:

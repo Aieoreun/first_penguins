@@ -1,0 +1,43 @@
+{
+  "scope": "frozen_B_plus_grouped_OOF_output_probability_not_new_live_or_independent_gold",
+  "note": "Each output classifier prediction excludes its candidate near-duplicate training group. B remains a public-trained baseline; inherited public labels and old fallback remain reused.",
+  "api_calls": 0,
+  "results": [
+    {
+      "run": "g06",
+      "threshold": 0.5,
+      "corrected": 0,
+      "regressed": 0
+    },
+    {
+      "run": "g06",
+      "threshold": 0.7,
+      "corrected": 0,
+      "regressed": 0
+    },
+    {
+      "run": "g06",
+      "threshold": 0.9,
+      "corrected": 0,
+      "regressed": 0
+    },
+    {
+      "run": "safety01",
+      "threshold": 0.5,
+      "corrected": 6,
+      "regressed": 0
+    },
+    {
+      "run": "safety01",
+      "threshold": 0.7,
+      "corrected": 4,
+      "regressed": 0
+    },
+    {
+      "run": "safety01",
+      "threshold": 0.9,
+      "corrected": 3,
+      "regressed": 0
+    }
+  ]
+}
