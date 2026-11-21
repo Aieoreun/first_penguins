@@ -1,0 +1,680 @@
+{
+  "scope": "public_output86_grouped_embedding_screen_not_HTTP_or_private_score",
+  "embedding_metadata": {
+    "model": "text-embedding-3-small",
+    "count": 176,
+    "embedding_calls": 11,
+    "text_sha256": [
+      "c8ed041874b78f547f86bd554a2fb6889ee47630a1f7524b6408670651026399",
+      "9e574d1dfb0274b8635f77d6c75d246319d541290e0661c99fea5075911b7c5d",
+      "2d7d2a8bca89e432c522b485386fd37ee08750f7429cca8a3f60162f5bb5e0b0",
+      "cfa2515acd497c6c7eefa3eb14bb63db040ad03543c3c528b9f5bc967aedb1c7",
+      "2900dc61990ef70159a6600b9db604d38f7de98c4389810930e024ea99e3108c",
+      "8fb046c241e715c887315b9d427f253fa5acd8128f36f3a825dcbae71b15c664",
+      "ed6c4978aeee311017e2b722628245be7ac0bccc021c364edae1c5e53c141fa6",
+      "e8cece2424664e77ba07018c0910b69a6c438844d276a52988a62d7fc2238808",
+      "bb54a868aee37326f464e54365104b750c540a8dbfd9793f35c56b006e550a51",
+      "f28d2aae435d6fd14669359d222d8551f8aa14fa6980d0882d8a83a3b3ebd78b",
+      "bae9f4bbfab4333331b7bca2fec24267b5a8169adf57840a18155abbd2369606",
+      "a9fb3b9c20d48ecf7ef9ba51641c9f6b848176a607d6583e6832d84c5621e267",
+      "d5935cd724895dff9a3fa787acedca482e9800e0570b05aa38d56a130ab46a3d",
+      "08bce4880cc697e69ab8f341e4c282f61c7299599dc4f474babbfbba72405dea",
+      "aadac8b0d7302def4797b565134bfd1a5378654e8c8502ec2352674d8b301bcb",
+      "f4b4f144c6f27ea9e90ba6dcc871c5de068b1a1b06b9227ead03489bcfdf84d0",
+      "d252c460671051202bc221700c8c92ab0c985cb583082a1755dd4aeecd77aba9",
+      "ba65aa7167c2cec825d8c5b347b65153f68c244db9752c041c1857f3fc7075b7",
+      "d652503c65426a302d9f3cfd050da977599e3eeb8217589038db7b670022cd97",
+      "57c5d9f45f7a513b0d08ccb63f50b098f5d026adc5af49a5007cc22e71f41783",
+      "a3a2366be9a44bdf4f7afa7c4eb1c6cf1cbd6e09c3ebf01f01342049e9b650ed",
+      "4167d3b5e8e2002ccf582d8e148549583eb5acb7c36738140fc5538a3af6a189",
+      "e6c635bd24bbdafa8f5a42ec6bb85ecd2243db1f1d0293730b021e307f99e1d4",
+      "5e1111801db7f92e999397eeaad7b3d08cc303260ebc6a71cca415ca18f67648",
+      "847777562614ef6c028a411c594650c29026171d243c1bcd1020960566473399",
+      "194e1593281993bc391e81c21322518af8dc7a1d8edd8f4459066d160a173779",
+      "95f4776ff2656d8fff4ff4d384e963399639d44fbb82a0f8dfc83556a229a194",
+      "5f3871cf203e5319e9d52bc31b87748770a919e349d5bbaa4d3b8a496d9141f4",
+      "b4035cd22f96fce49e6f6a41513257782d6592145d5be58edbb7560de8e7d957",
+      "1d7a499294a7e1f71d93b82d9b1945b53c330a6c56d22ecd8bf43a851a456190",
+      "ea118ff79e359d9120cb362e9ec5d9f8ba6b2d10fdf06575c3f5398ee38408dc",
+      "9a52249f9e04db437b2906e52c9b8a2b2076883edb30178b1f279e461bc8c3dd",
+      "810b33f62be60ef2487d20f50a07f748715407f9bb20e9043587b3094cdbc761",
+      "c5c4f42999c15aee47fbd63f35f93dbd45179a99f3719e0eeec19549d4933454",
+      "15870ca0ee3c13eee5158e762c7cc74a145b8ed5e36df48a7c2d35e99500146c",
+      "0bf8db9ddf94ffbfa31576df380c0fb819a839db136e98020da8814aac08d38a",
+      "52257a8e7a2acd90e52645bf8e75c2ff7f0b30499bc6f8d8b4d6bf72386e99ac",
+      "f26ebe99237936230a1a5766fe1aa86ace93274c4f7cec34f172c65d06259b49",
+      "b6c38bb0ad74495bd7b53adc8ef2b167fe492704b5b95bd3702f16984e9b90bf",
+      "076ef330be88784d060dd9218a57f6202f4610da22ff6efe864391567b755543",
+      "93280daac95a9217333796c162c6ee158c03ed96feb8b529d506c1a8928529c1",
+      "b469254be0650715efb469bc5a08a2ac6d937c21079d0bf77d60361461f33646",
+      "76aeb9acf87e6cd8a8a15457f391da52d3477fe2bbb762bce389daef79862c3f",
+      "259f1d21794396783dca79f85ad2e3f75b2b6705447ee7b19a7aee21f4462367",
+      "0318e3a383880af6f400465268a6b0a44abe9b00e5e6776e9d39a8c7eda0dc45",
+      "5ace372439e5c72c88942e45700d556d43671f1488236d692e78daef9ccbea92",
+      "05293d75d4dd446e978e2e20ff727d45547973c4b32a63c6ac5872970f5c6438",
+      "dfc8db5ce14ba20e4a5eb569449cf65c0595ecf83fb6b1f533d0be7bdc134daa",
+      "ef82bd177fff58268421b3a5ee48508faf17c3a3697d60a9e0a8ef5a37b53fd1",
+      "0b8696d95b49198f63bf05609acaedbaa0a7b17c3a564fe7ae23683d18f24dab",
+      "3b32cfe4dc2e46446276c6211d83d1ab9fb3b9955526704d18bfd219edc8f176",
+      "e5407ecaf8d04f23529c091f26201216ab146b55f6ef5a0d8139bd88836eee60",
+      "2eb74bc06aa7fbbf46a477259a0a756daf39c49a1de96974cde6400b437f0b2e",
+      "a28d3203ea2a289dcb66df355f826b5824d655ca609b7439e39c68d1f7d850bd",
+      "d09a1d05a50b57ce67a94ba2e3c3cacef97cc6616d79f32b8c854a6bf798458e",
+      "6e32b4b3f4acd9d78930aad49ca04cd2b1dcc701f7945a1bb91d013761719a36",
+      "496ab5ba6b45175f53c04ac6b8966bf00b6ff41b26c9a0d813e1334fd28affd7",
+      "5db56c1cee1e0955e451e56be1c221cebba6a614bbd2f5c3d19fbf7f01fa9103",
+      "e57ccaa432fabc957666e23dcc315f6570a8a753177208779581c41ade8d5264",
+      "c8ed77b5f90000ea87838dd06446ff306c3f08b37132578afeda18b1d6b8e6f0",
+      "a2a0b499ae6fc75aa14c7cf85f887aac4d10b80fb7f0cf5d4b19fe4c7a832f3a",
+      "f8aefcb2dce0614d958fad77a2d31194080266434df2398fcbb57bb1bf8dbeef",
+      "b519dbda2d336dc68e2b9277ecd72962662b1110f17b1f5a9626c1579a811bdf",
+      "32f0ad82ed9614b45c3f19f1c2e0348f32eecb61fd7df9e8fb2a737d5d52acc2",
+      "1d169d3fb8a1caa4a32922cd65d3f927819cfee7053a5d728dbbbe6fbb3cb56c",
+      "0f4a49271d4c0f712c3955692eccf59cbc7e1017f324154bfd068a36a706edd8",
+      "8f9d24f172bbbd01bde5014d9a9c79be852d50231d05ef05a5b7cec32bc73211",
+      "16b39b2355755b1718aba4cd36792b510ed4840ec6207430683c3edca20687d5",
+      "c1a98ff385cd95f0c6f830577ff63d4a2c9932cd3230505cb7f8f5d7d1396c58",
+      "2ef34098fe87c9c3dac44d4ba3cf070706d12fac319a0d3008986fee84c75013",
+      "5491ea7fbd06ed0ea721b8e76c095f6a264fa81a6487abcd6293a6aacea9df72",
+      "b56575208f262d10cad8a6ffd547405d6b11ea34ac47676c29ed06dd6146090f",
+      "cdd849a511abdeb71c7fdcad05c3dd89e4849638b9fff978eeb7e3570760ffa6",
+      "a8c08fe2c2b95cb7a2105d56bbf501073e6136086a155abff714e855cc4aad41",
+      "1387922e2a38a3ae1a9032cce009c0289b3d8957559b2efc775feebd19c8929a",
+      "8fc0b0b66f731b4124a285e8282c1016c8f9bdf6783d7540a6605d15c35e1623",
+      "b50239f680f65db9dc9d6d47b3bd1e7420c368cf14bfb1030502bf8beb92e818",
+      "b707e1ae030e4bff6fa5c811f444e5485cebcfe96f44337865f59f7a4d4b25da",
+      "b8028c6e5ad00c3815224cd2856f7bdd898ab79931b4460939e24acaaad97df5",
+      "09c6c9c2216fbbfe57c5c8d479cc17c655179280ab069d29b851fd5e63e13ea1",
+      "85122e2d014a368f40f91d42636557f00ca4c3a91a072b3f79c3ea172ade7ebe",
+      "3d6dbb82d5226449ff29a3eee7c8dad0f2c96d466dd9b44d47b050718c764412",
+      "f5b3fd0e49cb17e898492a4b962ed1287e14dba9948b36ef92b7da4236d295e5",
+      "4a7b4d844238f8c3b1b78a1b5cbba4da607bc55ca56c3ae1677960ba77fb223f",
+      "70029e21daf2465450382953bbb521e075ac62b7d9bdab2839bf1d41d7e04326",
+      "35e8d5e1bec75cc32f11db0e9d7f00d6016dd6a456ac689c15d87604356ac27a",
+      "99d79f600ea01114abfb7c2c88020b01f04eb8db201808132a93909a4a80f68e",
+      "199e6b62f22b858bf5bdcf97ed8d8ab0fcf6c5c7768529d61e88da50f841091a",
+      "5eb93ae05992115de700aa81a409a9f5810563f8627bff88c9088ab1365cf0b8",
+      "db4465fe1b4824ded56512cc12e0e706870c93071cfbb878e15730c8845da701",
+      "c9d494f53684510264cb825d98760d5b5f0970c5a6783d80a5477660ecdc00cd",
+      "9ba62f9ae4bb88149411ae15e9f075d87a4613f7971e2941960c712324e2377a",
+      "e3f9acb3215cfb3258adfeccb5410fcf0d753abd18b69f58c0d5b436c1fedeaa",
+      "07dbc2103c67c0608f6105234ecfbce6c541a1c91c3d748c270b337f57b9b2b0",
+      "cea6ca778378fa6cc5d839bbffdc21ad9115781c9c3c08f30cd3e1c86cb1b2a1",
+      "d9db982203f2a4b97a637b470741a09f0ccb55ddf00d43e3f587328b67147a52",
+      "8ece86d4b2e134716c4114f79af4860be8e347de98d81d2188a4cc4b1a5de312",
+      "493ecb5fb1cfca6e4af0105fc507c47196acf83d444f02bbb44f7725393c095d",
+      "f4e5a963f096c5e5b754a0b1e22c3b3a36642234594f7aa4e00d3f3322f9b1e9",
+      "ef332dedae6d905582fc25510c4377db2a7f76509a66c717f8ed01d5c7b9b216",
+      "89af7a977b2d254ef523b9bb9da33892eb29470f5d0ffdbfd32a97c178beae76",
+      "83fc33ee50a9f8cea1790bdb81d0e92f9394fcdcf8b0d588fdc2649598d86b3c",
+      "e3864c9f64fdfc8cb6b06af355a4c89c7f1331d8c6bc7aea98078d72c43addd4",
+      "0031a4e79c0465dee0a2a642f2fd45d0bcc5434fdb393710595a2ff574cdda73",
+      "d0b20c8893eb6f67272671c8a76d5bd35f56fc61431895da9819b97efc15e6a8",
+      "ab95e0fe4ceefb3f81b68e83b39b01be3297c62cd55d8bf765802e310af50f8f",
+      "b12e72f01dc5bd6dacec5ac23dedc9089293726fa9961c1850f3635d18197f38",
+      "0ac034c035091e661556e852f79a07c945af52f9d56f56fac8b748044172a577",
+      "28efc008480345dcd6f847b3ac60a56166c240911cf7fc97bbc80bd78f418ba3",
+      "4c1c3fe3ff6e3c45b1c4abe554b43c8a577d0d162e496fd6275acda26522af92",
+      "b755422294e1f0b8e674c852733d0d88e69e345ea9db44b97211e06e0be3e96f",
+      "481550595d4f684e42b183290d780eaa7fcd435d49ec305a5957b79fdc7930fb",
+      "e6ce9c2527fbcf955295b8c272aa7e399d76d735be7f9765536fc7fe1a1f96c0",
+      "f48d50f9d0ffa5967c14fda260eaa4d1a4762ea1f74fa0ad40baa4c7a35978bf",
+      "e740e57bcc2f6a7646af7a40ee9df97483eed2c5b551c2364e07aac3a28b0395",
+      "8fd18dbd56c460e7287499cac149054fb155e0c516205bf4566472ca5a534bce",
+      "6d5f3f5fcd620d0bd3650e9be6c284f216c4c399f692fdc43ad836e7012740e7",
+      "cf6cb667dbeb091052d79251608678c8d38a5a5663578973e9a5caae44b2c47f",
+      "ec842861d97a42c3a747ca756ab56c4ae1a9bff92ec4dd2b2c93421a29f01ae2",
+      "bfcf463fa634df9429048ab2db2aaa5bff668dd7f95e8089d5662bf1ca478507",
+      "d0896e1886b2ab9e88e4aa6343a6e9216fb25fa4f40ecaa0daa4e02dfe72ee30",
+      "65a09526f36bb4e3028812068321f1fff1103ece2933a7ef2e9479f547be1b0b",
+      "822f6676dd1949cb71dbe181ac5c30245e5820de5ead3af6aa4465ecf48d7418",
+      "379eb871da0a9800fead111c456b753074da392aedd194eafdd6508efbba9117",
+      "7a189a162ea6d8379367b05733710c1dfca2ee17d4656d770a6d4e94dc8a5d33",
+      "e0716eb7bbee031c3cb147ab7dd80011cf978f665d9654ce25c92042db88b69a",
+      "30367660b66eb406ea134d681b20adff349570643bfd0578de28eab54e6b8b9c",
+      "3d09a42d61f3a560c93a4711597bf84e7f939e6ad56b17f10e4df2d80fdca0ea",
+      "6e436e591b6e0e843fc12641dd543c6939d0bac9159ef99a14aa1648a7b67d3e",
+      "8f333f0d6d35cfce61a9ce627da0a883081a9259adbfda53d901d19969ab6186",
+      "99360b9e41f3da51203114ec550cbf7a912393065710e439074ae5ed9702792c",
+      "7a8faef95ebdcb43745ff1b23c6f44e278bbc9178b70360a41a33d4ff83c456f",
+      "9bdb8dd72ddaf713afabd9339727e0752819afe72a6270b595d1fd778c2c6542",
+      "5d6ebaaf48400bf69cd3edd4a30b4a5489cc9283e2da9f1d67d0f999791ac479",
+      "15880926d43ade9885ba96003499f8a1657f187a369229dc7e64d2740e59b770",
+      "f68fb6206facf62b55344ec5e0c200795226a3bf70ca8eec62180a6f792d0928",
+      "bfe57aeaf0e27a00a2a15a352a035eaeb600665dcfcb3ce036097da1c73564cd",
+      "03ea140b6cefc8c5056f2a2f5ef25c1e96d7cbd981f3d1da79f8a1ea9cb62f58",
+      "fe1eca2329b27fe31b4f732efa5a535b63d6294402f03b2169c1d2af70c8abb6",
+      "6672e37d1fada0be191a0a810aef8751a81d66a1cc3a4d96bbfbc76f3eb360c9",
+      "fd33c8841cbf035c8ed4a4870e1398a3df9641afb367c6a7500aab612e348761",
+      "70e138a4e88c00225420faacbfe9b0583871eb9de11f93bf2467ffa41bb936c8",
+      "4ca3e8b607270393c68adf3a9e19329ed4a799105b5cc1c82fcf17f9bdb3dbe2",
+      "aff231eca974f0130caad515dc77854fbcd6d5b3c15dad7eefe36708b0240332",
+      "1c863a3428eb141e440a28a31276141bb1aacd419197ff2c0a8fc69f2c2a3b40",
+      "039433c6cd3f5195f7d55a6c4fec06d465297a9d0c669b0ebabb9feeff40693b",
+      "5e00c9ae9eb21eb91c2506055e5a89f6b61c934dfeb15026ceeed71012072ae7",
+      "bff5e5d1b9e3433e97d6b72321a75a81498a4dcba5775984048c958bae635af3",
+      "518d8a7bc77969f6fcde260a94816f8b9ac5e095c3a6fb128c2398f6ce94b9e9",
+      "1ba9ab5a16dae31d61545957cfd6ef25a3dcde0d08db30d1d3d475a45175bf43",
+      "b91a3cba41a5a7847521dfd669fb5c07ecdd8aaa8af730d8de52da4b9f9b8aa1",
+      "f7c0e0a32d953a131e6d11e42ecf2ed4693f120c21ffe6100faa14a20675ba29",
+      "1ea2c5bf95efa1885ef3c306d509a80bd1dcdc34c5e5d6f48e78629e15681b76",
+      "c9828f4f734e0a83f590bc6e8301abec5fdd98ea334756f0a5822ec02f54233d",
+      "46c9d54a8cf993bffa5495941d75ccc65bf44193d5526e0f9ac805a50bfabdb7",
+      "8d91babe6f09f473b0dc791ea2e23fcebefb44ad94b1afc263d880847056dd30",
+      "8aa3aade717b11f0c3fcb9c0e0a07f19ffab0d736a0fa280604d3effdca9cf28",
+      "1c8459ddb5d1a5b43865389a41ccf049e15b2048bb991662de056fb543d4437b",
+      "cab04b6b308771f7ec978ffe94a0088d9e66dd223f8cecc0bf5de4468028df0e",
+      "e050ab3a5444b61afbf71c4ace2f1b58472d13752de3fa508e67a3e901f086dd",
+      "ee3a90e6e9f287a0c18a0ab14dbb445e6dab26bf7925d6ae6f0c3858d686fe92",
+      "f1b16b8c32bcd2a646511899f72fe7953ae3414cf5db6ced902d452cbda779b4",
+      "ee719a50fd911da2de89481a40a3996d77d9336fd69cbaf49e7b813aadadf404",
+      "1704792a77d2b5dc34f316c932f9c152a549d818ec54f84e4367502cf9d08aaa",
+      "c04253d6afd71ef66e881a7a2725aed24325bc20ce7fe112740111db14f13dd5",
+      "89fbd02581c3310f7fc333914e097ba930f6543a962f002002c0f19d4116094e",
+      "ccd5f16eba06c6111c49f37654617ca952d0b708ea86ca5c0d7f839f4ea02153",
+      "48cd70a338de88aeddb9a9d917e0928aa891533328b4f03cd39f0ba1459eeb9b",
+      "a1b6ebf6f73fe0f316968a2550d97c7a258e4f1ebb512756117e5cb3a8712bad",
+      "b31f07e6e52f4a927a07a0a8c36156a7b5dd3a365e61ec2f3b3c0ff883556d9f",
+      "a0421923c5831b01a2ee99e6fb72411c5ee6c7b2c5769989d15db18115128f14",
+      "f4c5fa93e7c9972b23c1e63712990d9338de067f26e865f90091c64b269a2112",
+      "982ac15596ba27decdc755ba0ee44eeb36f97baa5889294d6bbd47a8531523f7",
+      "6d4bc7180b23da558b03690b181f12de3928f805e2fc19f66d3d582775701e13",
+      "1875576056d7384841f5c3f931e2d2986915d827a1f07ba29f28460d940ea798",
+      "709440ee56687105538b917eaa5d94919256704038a3d2a95c30e2fd6187e071"
+    ]
+  },
+  "training_only": "public/guard.jsonl candidate text and safe label",
+  "development_only": [
+    "novel",
+    "refusal",
+    "cross_safety"
+  ],
+  "results": [
+    {
+      "model": "char_lr",
+      "C": 100,
+      "fits": [
+        {
+          "fit_seconds": 0.01753720801207237,
+          "feature_count": 1743,
+          "convergence_warnings": 0,
+          "iterations": [
+            12
+          ],
+          "parameters": 1744
+        },
+        {
+          "fit_seconds": 0.009378707996802405,
+          "feature_count": 1757,
+          "convergence_warnings": 0,
+          "iterations": [
+            15
+          ],
+          "parameters": 1758
+        },
+        {
+          "fit_seconds": 0.009086042002309114,
+          "feature_count": 1600,
+          "convergence_warnings": 0,
+          "iterations": [
+            15
+          ],
+          "parameters": 1601
+        },
+        {
+          "fit_seconds": 0.009259375015972182,
+          "feature_count": 1674,
+          "convergence_warnings": 0,
+          "iterations": [
+            15
+          ],
+          "parameters": 1675
+        },
+        {
+          "fit_seconds": 0.008799124974757433,
+          "feature_count": 1615,
+          "convergence_warnings": 0,
+          "iterations": [
+            13
+          ],
+          "parameters": 1616
+        }
+      ],
+      "grouped_oof": [
+        {
+          "threshold": 0.5,
+          "false_alarm": 0,
+          "miss": 9
+        },
+        {
+          "threshold": 0.7,
+          "false_alarm": 0,
+          "miss": 13
+        },
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "miss": 16
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "dataset": "novel",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 2
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.5,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.7,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.9,
+          "corrected": 8,
+          "regressed": 0
+        }
+      ]
+    },
+    {
+      "model": "dense_lr",
+      "C": 10,
+      "fits": [
+        {
+          "fit_seconds": 0.0016605419805273414,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            11
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.0016817499999888241,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            12
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.0015824159781914204,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            11
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.0018525419873185456,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            13
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.0016831250104587525,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            12
+          ],
+          "parameters": 1537
+        }
+      ],
+      "grouped_oof": [
+        {
+          "threshold": 0.5,
+          "false_alarm": 2,
+          "miss": 6
+        },
+        {
+          "threshold": 0.7,
+          "false_alarm": 0,
+          "miss": 11
+        },
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "miss": 19
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "dataset": "novel",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 6
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 1
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.5,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.7,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.9,
+          "corrected": 5,
+          "regressed": 0
+        }
+      ]
+    },
+    {
+      "model": "dense_lr",
+      "C": 100,
+      "fits": [
+        {
+          "fit_seconds": 0.0024154999991878867,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            19
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.0021637499739881605,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            17
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.002170624997233972,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            17
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.0023560420086141676,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            19
+          ],
+          "parameters": 1537
+        },
+        {
+          "fit_seconds": 0.0020228750072419643,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": [
+            16
+          ],
+          "parameters": 1537
+        }
+      ],
+      "grouped_oof": [
+        {
+          "threshold": 0.5,
+          "false_alarm": 3,
+          "miss": 6
+        },
+        {
+          "threshold": 0.7,
+          "false_alarm": 0,
+          "miss": 9
+        },
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "miss": 12
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "dataset": "novel",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 5
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 3
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.5,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.7,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.9,
+          "corrected": 8,
+          "regressed": 0
+        }
+      ]
+    },
+    {
+      "model": "dense_mlp",
+      "C": 100,
+      "fits": [
+        {
+          "fit_seconds": 0.06977416700101458,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": 40,
+          "parameters": 49217
+        },
+        {
+          "fit_seconds": 0.06198216698248871,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": 36,
+          "parameters": 49217
+        },
+        {
+          "fit_seconds": 0.06505437497980893,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": 38,
+          "parameters": 49217
+        },
+        {
+          "fit_seconds": 0.06354541701148264,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": 37,
+          "parameters": 49217
+        },
+        {
+          "fit_seconds": 0.05814154201652855,
+          "feature_count": 1536,
+          "convergence_warnings": 0,
+          "iterations": 34,
+          "parameters": 49217
+        }
+      ],
+      "grouped_oof": [
+        {
+          "threshold": 0.5,
+          "false_alarm": 3,
+          "miss": 6
+        },
+        {
+          "threshold": 0.7,
+          "false_alarm": 0,
+          "miss": 8
+        },
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "miss": 12
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "dataset": "novel",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "novel",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 5
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 3
+        },
+        {
+          "dataset": "refusal",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 1
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.5,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.7,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "dataset": "cross_safety",
+          "threshold": 0.9,
+          "corrected": 8,
+          "regressed": 0
+        }
+      ]
+    }
+  ]
+}

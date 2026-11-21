@@ -1,0 +1,126 @@
+{
+  "scope": "public_trained_span_veto_frozen_B_or_control_diagnostic_not_holdout",
+  "api_calls": 0,
+  "results": [
+    {
+      "dataset": "paraphrase",
+      "threshold": 0.8,
+      "changed": 2,
+      "corrected": 2,
+      "regressed": 0,
+      "guard": 94.99,
+      "details": {
+        "grounded_accuracy": 0.9765,
+        "span_f1": 0.9765
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "threshold": 0.9,
+      "changed": 2,
+      "corrected": 2,
+      "regressed": 0,
+      "guard": 94.99,
+      "details": {
+        "grounded_accuracy": 0.9765,
+        "span_f1": 0.9765
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "threshold": 0.95,
+      "changed": 2,
+      "corrected": 2,
+      "regressed": 0,
+      "guard": 94.99,
+      "details": {
+        "grounded_accuracy": 0.9765,
+        "span_f1": 0.9765
+      }
+    },
+    {
+      "dataset": "novel",
+      "threshold": 0.8,
+      "changed": 0,
+      "corrected": 0,
+      "regressed": 0,
+      "guard": 98.67,
+      "details": {
+        "grounded_accuracy": 0.9833,
+        "span_f1": 0.928
+      }
+    },
+    {
+      "dataset": "novel",
+      "threshold": 0.9,
+      "changed": 0,
+      "corrected": 0,
+      "regressed": 0,
+      "guard": 98.67,
+      "details": {
+        "grounded_accuracy": 0.9833,
+        "span_f1": 0.928
+      }
+    },
+    {
+      "dataset": "novel",
+      "threshold": 0.95,
+      "changed": 0,
+      "corrected": 0,
+      "regressed": 0,
+      "guard": 98.67,
+      "details": {
+        "grounded_accuracy": 0.9833,
+        "span_f1": 0.928
+      }
+    },
+    {
+      "dataset": "counterfactual",
+      "threshold": 0.8,
+      "standalone_flagged": 0,
+      "flagged_supported": 0,
+      "flagged_unsupported": 0,
+      "guard": null
+    },
+    {
+      "dataset": "counterfactual",
+      "threshold": 0.9,
+      "standalone_flagged": 0,
+      "flagged_supported": 0,
+      "flagged_unsupported": 0,
+      "guard": null
+    },
+    {
+      "dataset": "counterfactual",
+      "threshold": 0.95,
+      "standalone_flagged": 0,
+      "flagged_supported": 0,
+      "flagged_unsupported": 0,
+      "guard": null
+    },
+    {
+      "dataset": "relational",
+      "threshold": 0.8,
+      "standalone_flagged": 0,
+      "flagged_supported": 0,
+      "flagged_unsupported": 0,
+      "guard": null
+    },
+    {
+      "dataset": "relational",
+      "threshold": 0.9,
+      "standalone_flagged": 0,
+      "flagged_supported": 0,
+      "flagged_unsupported": 0,
+      "guard": null
+    },
+    {
+      "dataset": "relational",
+      "threshold": 0.95,
+      "standalone_flagged": 0,
+      "flagged_supported": 0,
+      "flagged_unsupported": 0,
+      "guard": null
+    }
+  ]
+}

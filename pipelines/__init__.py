@@ -21,6 +21,10 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name == "jh_r8_quantity":
+            return importlib.import_module("pipelines.kimjaehak.round8_quantity").QuantityValuePrompt
+        if name == "jh_r8_span_veto":
+            return importlib.import_module("pipelines.kimjaehak.round8_span_veto").SpanVeto
         if name == "jh_r8_output_veto":
             return importlib.import_module("pipelines.kimjaehak.round8_output_veto").OutputVeto
         if name in {'jh_r8_binary_ground3', 'jh_r8_binary_adaptive', 'jh_r8_other_minimal'}:

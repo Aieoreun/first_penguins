@@ -27,6 +27,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    "r8_quantity": ("jh_r8_quantity", "pipelines.kimjaehak.round8_quantity.QuantityValuePrompt"),
+    "r8_span_veto": ("jh_r8_span_veto", "pipelines.kimjaehak.round8_span_veto.SpanVeto"),
     "r8_output_veto": ("jh_r8_output_veto", "pipelines.kimjaehak.round8_output_veto.OutputVeto"),
     'r8_binary_ground3': ('jh_r8_binary_ground3', 'pipelines.kimjaehak.round8_efficient_guard.BinaryGroundThree'),
     'r8_binary_adaptive': ('jh_r8_binary_adaptive', 'pipelines.kimjaehak.round8_efficient_guard.BinaryAdaptiveGround'),
@@ -290,7 +292,7 @@ try:
                 counts['guard_debug'] = {key: 0 for key in (
                     'span_review_triggered', 'span_review_attempted', 'span_review_completed',
                     'span_review_success', 'span_review_changed', 'fusion_ground_skipped_fast_block',
-                    'r8_output_veto', 'r8_failure_input', 'r8_failure_ground', 'r8_failure_block', 'r8_risk_safety', 'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early', 'r7_material_cancelled', 'r7_examples_used')}
+                    'r8_span_veto', 'r8_output_veto', 'r8_failure_input', 'r8_failure_ground', 'r8_failure_block', 'r8_risk_safety', 'fusion_ground_cancelled_block', 'matrix_gate', 'guard_unlearned_input', 'learned_span', 'r7_hybrid_fast', 'r7_embedding_reused', 'r7_ground_early', 'r7_material_cancelled', 'r7_examples_used')}
                 async def observed_guard(body):
                     result = await original_guard(body)
                     debug = getattr(result, 'debug', {})
@@ -330,7 +332,7 @@ try:
                             if isinstance(votes,int) and not isinstance(votes,bool) and 0<=votes<=5:
                                 counts['r7_adaptive_ground']['completed_votes'] += votes
                 instance._fusion_ground = observed_ground
-            for key in ('guard_output_veto_threshold','guard_output_risk_threshold','guard_output_risk_c','guard_output_risk_prompt','guard_other_effort','guard_chat_slots','guard_failure_input_threshold','guard_failure_block_threshold','guard_failure_span_threshold','guard_failure_after_deadline','tutor_failure_input_threshold','material_cancel_scope','tutor_material_scope','tutor_apply_missing_material_abstain','guard_adaptive_ground','tutor_apply_joint_source','tutor_apply_concrete','tutor_apply_max_chars','guard_ground_context','tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
+            for key in ('guard_span_veto_threshold','guard_span_veto_max_chars','tutor_apply_quantity_only','guard_output_veto_threshold','guard_output_risk_threshold','guard_output_risk_c','guard_output_risk_prompt','guard_other_effort','guard_chat_slots','guard_failure_input_threshold','guard_failure_block_threshold','guard_failure_span_threshold','guard_failure_after_deadline','tutor_failure_input_threshold','material_cancel_scope','tutor_material_scope','tutor_apply_missing_material_abstain','guard_adaptive_ground','tutor_apply_joint_source','tutor_apply_concrete','tutor_apply_max_chars','guard_ground_context','tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
                         'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',
