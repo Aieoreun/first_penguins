@@ -1,0 +1,24 @@
+{
+  "status": "stopped_by_user",
+  "time_utc": "2026-11-21T05:54:40.571847+00:00",
+  "remaining_percent_observed": 28,
+  "previous_budget_stop_remaining_percent": 25,
+  "reason": "User explicitly requested wrapping up now; no new experiments.",
+  "selected_candidate": "jh_r7_binary_guard",
+  "backup": "jh_cm_char_mlp50",
+  "new_candidates_promoted": false,
+  "running_api_experiments": 0,
+  "process_check": "pgrep for experiment compare/probe/component and uvicorn returned no matches",
+  "tests": {
+    "passed": 1003,
+    "seconds": 6.221
+  },
+  "completed_standard_candidate_runs": 61,
+  "standard_response_count": 10858,
+  "outages_not_healthy_rankings": [
+    "r8_g02",
+    "r8_g05",
+    "r8_numeric01"
+  ],
+  "push_requested": false
+}

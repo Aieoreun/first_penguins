@@ -27,6 +27,8 @@ from experiments import jh_guard_fusion_datasets as datasets
 
 PEACE_COMMIT = '3c64079eb1af14170b3bee4578ac6f916bec433e'
 CANDIDATES = {
+    "r8_fixed_harmful": ("jh_r8_fixed_harmful", "pipelines.kimjaehak.round8_stable_policy.FixedHarmful"),
+    "r8_brief_harmful": ("jh_r8_brief_harmful", "pipelines.kimjaehak.round8_stable_policy.BriefHarmful"),
     "r8_local3": ("jh_r8_local3", "pipelines.kimjaehak.round8_combined.LocalThree"),
     "r8_local3_quantity": ("jh_r8_local3_quantity", "pipelines.kimjaehak.round8_combined.LocalThreeQuantity"),
     "r8_quantity": ("jh_r8_quantity", "pipelines.kimjaehak.round8_quantity.QuantityValuePrompt"),
@@ -334,7 +336,7 @@ try:
                             if isinstance(votes,int) and not isinstance(votes,bool) and 0<=votes<=5:
                                 counts['r7_adaptive_ground']['completed_votes'] += votes
                 instance._fusion_ground = observed_ground
-            for key in ('guard_span_veto_threshold','guard_span_veto_max_chars','tutor_apply_quantity_only','guard_output_veto_threshold','guard_output_risk_threshold','guard_output_risk_c','guard_output_risk_prompt','guard_other_effort','guard_chat_slots','guard_failure_input_threshold','guard_failure_block_threshold','guard_failure_span_threshold','guard_failure_after_deadline','tutor_failure_input_threshold','material_cancel_scope','tutor_material_scope','tutor_apply_missing_material_abstain','guard_adaptive_ground','tutor_apply_joint_source','tutor_apply_concrete','tutor_apply_max_chars','guard_ground_context','tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
+            for key in ('tutor_harmful_policy','guard_span_veto_threshold','guard_span_veto_max_chars','tutor_apply_quantity_only','guard_output_veto_threshold','guard_output_risk_threshold','guard_output_risk_c','guard_output_risk_prompt','guard_other_effort','guard_chat_slots','guard_failure_input_threshold','guard_failure_block_threshold','guard_failure_span_threshold','guard_failure_after_deadline','tutor_failure_input_threshold','material_cancel_scope','tutor_material_scope','tutor_apply_missing_material_abstain','guard_adaptive_ground','tutor_apply_joint_source','tutor_apply_concrete','tutor_apply_max_chars','guard_ground_context','tutor_apply_numeric','tutor_apply_all','tutor_apply_timeout','classifier_embedding_batched','classifier_hybrid_dense_weight','classifier_hybrid_fast_threshold','classifier_representation','guard_verdict_first','r7_product_context','r7_other_boundary','r7_scaffold_guide',
                         'reasoning_guard_input_tokens','reasoning_guard_ground_tokens',
                         'reasoning_guard_input','reasoning_guard_ground','reasoning_guard_safety',
                         'reasoning_tutor_input','reasoning_tutor_source','answer_effort',

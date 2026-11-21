@@ -21,6 +21,9 @@ def load(name: str = ""):
         if name not in VARIANTS:
             raise ValueError(f"Unknown experiment pipeline: {name}")
         configure()
+        if name in {"jh_r8_fixed_harmful", "jh_r8_brief_harmful"}:
+            module = importlib.import_module("pipelines.kimjaehak.round8_stable_policy")
+            return module.FixedHarmful if name == "jh_r8_fixed_harmful" else module.BriefHarmful
         if name in {"jh_r8_local3", "jh_r8_local3_quantity"}:
             module = importlib.import_module("pipelines.kimjaehak.round8_combined")
             return module.LocalThree if name == "jh_r8_local3" else module.LocalThreeQuantity
