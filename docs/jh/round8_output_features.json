@@ -1,0 +1,298 @@
+{
+  "scope": "public86_grouped_development_feature_screen_not_holdout",
+  "api_calls": 0,
+  "groups": 86,
+  "results": [
+    {
+      "features": "char",
+      "grouped_oof": [
+        {
+          "threshold": 0.5,
+          "false_alarm": 0,
+          "miss": 9,
+          "correct_unsafe": 10
+        },
+        {
+          "threshold": 0.7,
+          "false_alarm": 0,
+          "miss": 13,
+          "correct_unsafe": 6
+        },
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "miss": 16,
+          "correct_unsafe": 3
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "run": "g06",
+          "threshold": 0.5,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "g06",
+          "threshold": 0.7,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "g06",
+          "threshold": 0.9,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 2
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.5,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.7,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.9,
+          "corrected": 8,
+          "regressed": 0
+        }
+      ]
+    },
+    {
+      "features": "char_word",
+      "grouped_oof": [
+        {
+          "threshold": 0.5,
+          "false_alarm": 0,
+          "miss": 11,
+          "correct_unsafe": 8
+        },
+        {
+          "threshold": 0.7,
+          "false_alarm": 0,
+          "miss": 15,
+          "correct_unsafe": 4
+        },
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "miss": 15,
+          "correct_unsafe": 4
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "run": "g06",
+          "threshold": 0.5,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "g06",
+          "threshold": 0.7,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "g06",
+          "threshold": 0.9,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.5,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.7,
+          "corrected": 8,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.9,
+          "corrected": 8,
+          "regressed": 0
+        }
+      ]
+    },
+    {
+      "features": "char_word_context",
+      "grouped_oof": [
+        {
+          "threshold": 0.5,
+          "false_alarm": 0,
+          "miss": 13,
+          "correct_unsafe": 6
+        },
+        {
+          "threshold": 0.7,
+          "false_alarm": 0,
+          "miss": 15,
+          "correct_unsafe": 4
+        },
+        {
+          "threshold": 0.9,
+          "false_alarm": 0,
+          "miss": 18,
+          "correct_unsafe": 1
+        }
+      ],
+      "frozen_B_replay": [
+        {
+          "run": "g06",
+          "threshold": 0.5,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "g06",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "g06",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "novel01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.5,
+          "corrected": 0,
+          "regressed": 11
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.7,
+          "corrected": 0,
+          "regressed": 11
+        },
+        {
+          "run": "refusal01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 6
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.5,
+          "corrected": 2,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.7,
+          "corrected": 1,
+          "regressed": 0
+        },
+        {
+          "run": "safety01",
+          "threshold": 0.9,
+          "corrected": 0,
+          "regressed": 0
+        }
+      ]
+    }
+  ]
+}
