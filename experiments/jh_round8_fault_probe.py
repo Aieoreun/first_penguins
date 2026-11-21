@@ -32,7 +32,7 @@ async def collect(pipeline,items):
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--name',required=True);ap.add_argument('--dataset',choices=['paraphrase','novel','alternative'],required=True)
     ap.add_argument('--timed',action='store_true')
-    ap.add_argument('--order',nargs='+',choices=['r7_binary_guard','r8_failure_input','r8_failure_ground','r8_failure_both','r8_failure_block','r8_failure_ground_deadline','r8_failure_deadline_both'],default=['r7_binary_guard','r8_failure_input','r8_failure_ground','r8_failure_both'])
+    ap.add_argument('--order',nargs='+',choices=['r7_binary_guard','r8_failure_input','r8_failure_ground','r8_failure_both','r8_failure_block','r8_failure_ground_deadline','r8_failure_deadline_both','r8_resilient_guard','r8_resilient_both'],default=['r7_binary_guard','r8_failure_input','r8_failure_ground','r8_failure_both'])
     args=ap.parse_args()
     if not args.name.replace('_','').isalnum():ap.error('Simple name required')
     dest=ROOT/'experiments/.cache'/('jh_r8_fault_'+args.name);dest.mkdir()

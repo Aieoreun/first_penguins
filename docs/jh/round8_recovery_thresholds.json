@@ -1,0 +1,948 @@
+{
+  "scope": "posthoc_public_recovery_threshold_screen_all_calls_fail_not_healthy_or_holdout",
+  "api_calls": 0,
+  "selection_warning": "Do not promote from the highest single dataset score; thresholds affect only cases with missing remote verdicts.",
+  "results": [
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 95.73,
+      "details": {
+        "block_f1": 0.9333333333333333,
+        "category_accuracy": 0.8902,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9882,
+        "false_block": 1,
+        "missed_block": 6,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 44,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 95.73,
+      "details": {
+        "block_f1": 0.9333333333333333,
+        "category_accuracy": 0.8902,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9882,
+        "false_block": 1,
+        "missed_block": 6,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 44,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 95.73,
+      "details": {
+        "block_f1": 0.9333333333333333,
+        "category_accuracy": 0.8902,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9882,
+        "false_block": 1,
+        "missed_block": 6,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 44,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 95.09,
+      "details": {
+        "block_f1": 0.9230769230769231,
+        "category_accuracy": 0.8902,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9765,
+        "false_block": 1,
+        "missed_block": 7,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 41,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 94.32,
+      "details": {
+        "block_f1": 0.912621359223301,
+        "category_accuracy": 0.878,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9647,
+        "false_block": 1,
+        "missed_block": 8,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 15,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1,
+          "jailbreak_injection -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 41,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 94.32,
+      "details": {
+        "block_f1": 0.912621359223301,
+        "category_accuracy": 0.878,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9647,
+        "false_block": 1,
+        "missed_block": 8,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 15,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 1,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1,
+          "jailbreak_injection -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 41,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 94.97,
+      "details": {
+        "block_f1": 0.9230769230769231,
+        "category_accuracy": 0.878,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9765,
+        "false_block": 1,
+        "missed_block": 7,
+        "confusion": {
+          "normal -> normal": 113,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 16,
+          "harmful_content -> normal": 5,
+          "normal -> jailbreak_injection": 1,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 5,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 2,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 32,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 94.0,
+      "details": {
+        "block_f1": 0.9108910891089109,
+        "category_accuracy": 0.8537,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9647,
+        "false_block": 0,
+        "missed_block": 9,
+        "confusion": {
+          "normal -> normal": 114,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 15,
+          "harmful_content -> normal": 5,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 5,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 5,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 2,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 2,
+          "jailbreak_injection -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 32,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "paraphrase",
+      "primary_metric": "guard",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 94.0,
+      "details": {
+        "block_f1": 0.9108910891089109,
+        "category_accuracy": 0.8537,
+        "grounded_accuracy": 1.0,
+        "span_f1": 1.0,
+        "safe_accuracy": 0.9647,
+        "false_block": 0,
+        "missed_block": 9,
+        "confusion": {
+          "normal -> normal": 114,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 15,
+          "harmful_content -> normal": 5,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 5,
+          "answer_seeking -> answer_seeking": 3,
+          "out_of_material -> out_of_material": 12,
+          "academic_dishonesty -> academic_dishonesty": 5,
+          "off_topic -> normal": 1,
+          "pii_disclosure -> normal": 2,
+          "answer_seeking -> normal": 1,
+          "academic_dishonesty -> normal": 2,
+          "jailbreak_injection -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 32,
+        "r8_failure_ground": 74
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 96.24,
+      "details": {
+        "block_f1": 0.970873786407767,
+        "category_accuracy": 0.9241,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 102,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 14,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 2,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> out_of_material": 3,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 45,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 96.24,
+      "details": {
+        "block_f1": 0.970873786407767,
+        "category_accuracy": 0.9241,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 102,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 14,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 2,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> out_of_material": 3,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 45,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 96.24,
+      "details": {
+        "block_f1": 0.970873786407767,
+        "category_accuracy": 0.9241,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 3,
+        "confusion": {
+          "normal -> normal": 102,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 14,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 2,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> out_of_material": 3,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 45,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 95.18,
+      "details": {
+        "block_f1": 0.9607843137254902,
+        "category_accuracy": 0.9114,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 102,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 13,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 3,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> out_of_material": 3,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 43,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 95.18,
+      "details": {
+        "block_f1": 0.9607843137254902,
+        "category_accuracy": 0.9114,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 102,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 13,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 3,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> out_of_material": 3,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 43,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 95.18,
+      "details": {
+        "block_f1": 0.9607843137254902,
+        "category_accuracy": 0.9114,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 102,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 13,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 3,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> out_of_material": 3,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 43,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 94.49,
+      "details": {
+        "block_f1": 0.9607843137254902,
+        "category_accuracy": 0.8734,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 104,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 13,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 3,
+          "out_of_material -> normal": 4,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 7,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1,
+          "normal -> out_of_material": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 27,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 87.79,
+      "details": {
+        "block_f1": 0.8958333333333334,
+        "category_accuracy": 0.7975,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 10,
+        "confusion": {
+          "normal -> normal": 104,
+          "harmful_content -> harmful_content": 20,
+          "jailbreak_injection -> jailbreak_injection": 11,
+          "harmful_content -> normal": 4,
+          "off_topic -> off_topic": 5,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 5,
+          "out_of_material -> normal": 4,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 7,
+          "pii_disclosure -> normal": 1,
+          "normal -> out_of_material": 1,
+          "off_topic -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 27,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "alternative",
+      "primary_metric": "input_only",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 84.42,
+      "details": {
+        "block_f1": 0.8602150537634409,
+        "category_accuracy": 0.7722,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 13,
+        "confusion": {
+          "normal -> normal": 104,
+          "harmful_content -> harmful_content": 19,
+          "jailbreak_injection -> jailbreak_injection": 11,
+          "harmful_content -> normal": 5,
+          "off_topic -> off_topic": 5,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 5,
+          "out_of_material -> normal": 4,
+          "academic_dishonesty -> academic_dishonesty": 5,
+          "off_topic -> normal": 2,
+          "out_of_material -> out_of_material": 7,
+          "pii_disclosure -> normal": 1,
+          "normal -> out_of_material": 1,
+          "academic_dishonesty -> normal": 1
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 27,
+        "r8_failure_ground": 0
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.3,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.5,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.5,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.7,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    },
+    {
+      "dataset": "novel",
+      "primary_metric": "guard",
+      "complete_threshold": 0.7,
+      "block_threshold": 0.9,
+      "guard_or_input_only_score": 90.5,
+      "details": {
+        "block_f1": 1.0,
+        "category_accuracy": 1.0,
+        "grounded_accuracy": 0.6833,
+        "span_f1": 0.6833,
+        "safe_accuracy": 1.0,
+        "false_block": 0,
+        "missed_block": 0,
+        "confusion": {
+          "jailbreak_injection -> jailbreak_injection": 2,
+          "normal -> normal": 47,
+          "harmful_content -> harmful_content": 6,
+          "academic_dishonesty -> academic_dishonesty": 2,
+          "off_topic -> off_topic": 3
+        }
+      },
+      "invalid": 0,
+      "fallback_counts": {
+        "r8_failure_input": 5,
+        "r8_failure_ground": 19
+      }
+    }
+  ],
+  "counter_note": "fallback_counts records input and ground recovery only; partial BLOCK counter was not collected in this grid."
+}

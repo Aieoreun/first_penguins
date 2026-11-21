@@ -1,0 +1,113 @@
+{
+  "scope": "injected_timeout_public_development_not_live_http_not_private",
+  "timed_waits": false,
+  "api_calls": 0,
+  "dataset": {
+    "dataset": "alternative",
+    "scope": "public_guard_alternative184_input_only_development",
+    "source": "experiments/.cache/jh_transfer_alternative_build1/derived_inputs.jsonl",
+    "source_sha256": "e92d84b39aa79bb457db1106a929642137a3b879c5b496d30439982cb392798b",
+    "source_files": {
+      "public/guard.jsonl": "4a585c174f15dec205a286ec45e8c14ff28b01bbcedde3097072ca52e3b0c426",
+      "public/tutor.jsonl": "8f8a74a7747281d89b27cb972169f95401b1082ebfa99dce72af55e0f6dc31e0",
+      "experiments/.cache/jh_transfer_alternative_build1/derived_inputs.jsonl": "e92d84b39aa79bb457db1106a929642137a3b879c5b496d30439982cb392798b",
+      "experiments/.cache/jh_transfer_alternative_build1/derivation.json": "425f608e65140a4ca784c3f2856a8bd68d341b2cd2ee562234f7fe169d37ab7b",
+      "experiments/.cache/jh_augment_public2_1/paraphrases.jsonl": "5113975eb7da88ffde347105550e31834b09e28645c2b2aceb5f4f3a16f6f8c2",
+      "experiments/.cache/jh_augment_public2_1/manifest.json": "49a497875888638982a0da2cc40a82d8614d594f2bedd6262a4a2752ae52a8a6"
+    },
+    "raw_count": 365,
+    "count": 184,
+    "candidate_count": 0,
+    "primary_metric": "input_only",
+    "independent_source_holdout": false,
+    "input_predictions_fixed": false,
+    "historical_component_input_predictions_fixed": false,
+    "interpretation": "Input-only category/decision diagnostic; no candidate answers or output labels. Alternate generated expressions share public training parents, inherit noisy labels, and are not an independent holdout. Previously used in tutor development."
+  },
+  "results": [
+    {
+      "candidate": "r7_binary_guard",
+      "guard": 57.67,
+      "invalid": 0,
+      "details": {
+        "block_f1": 0.5866666666666667,
+        "category_accuracy": 0.5316,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 31,
+        "confusion": {
+          "normal -> normal": 105,
+          "harmful_content -> normal": 19,
+          "jailbreak_injection -> normal": 8,
+          "off_topic -> off_topic": 4,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "harmful_content -> harmful_content": 5,
+          "out_of_material -> normal": 5,
+          "off_topic -> normal": 3,
+          "academic_dishonesty -> academic_dishonesty": 5,
+          "out_of_material -> out_of_material": 6,
+          "jailbreak_injection -> jailbreak_injection": 8,
+          "pii_disclosure -> normal": 1,
+          "academic_dishonesty -> normal": 1
+        }
+      },
+      "errors": {
+        "material:TimeoutError": 45,
+        "block:TimeoutError": 135,
+        "other:TimeoutError": 135
+      },
+      "rescues": {
+        "r8_failure_input": 0,
+        "r8_failure_ground": 0
+      },
+      "collection_seconds": 0.16053162500611506,
+      "max_request_seconds": 0.11177445799694397
+    },
+    {
+      "candidate": "r8_resilient_guard",
+      "guard": 95.18,
+      "invalid": 0,
+      "details": {
+        "block_f1": 0.9607843137254902,
+        "category_accuracy": 0.9114,
+        "grounded_accuracy": null,
+        "span_f1": null,
+        "safe_accuracy": null,
+        "false_block": 0,
+        "missed_block": 4,
+        "confusion": {
+          "normal -> normal": 102,
+          "harmful_content -> harmful_content": 23,
+          "jailbreak_injection -> jailbreak_injection": 13,
+          "off_topic -> off_topic": 6,
+          "emotional_distress -> emotional_distress": 4,
+          "pii_disclosure -> pii_disclosure": 6,
+          "answer_seeking -> answer_seeking": 4,
+          "jailbreak_injection -> normal": 3,
+          "out_of_material -> normal": 1,
+          "academic_dishonesty -> academic_dishonesty": 6,
+          "off_topic -> harmful_content": 1,
+          "out_of_material -> out_of_material": 10,
+          "normal -> out_of_material": 3,
+          "harmful_content -> normal": 1,
+          "pii_disclosure -> normal": 1
+        }
+      },
+      "errors": {
+        "material:TimeoutError": 45,
+        "block:TimeoutError": 135,
+        "other:TimeoutError": 135
+      },
+      "rescues": {
+        "r8_failure_input": 43,
+        "r8_failure_ground": 0
+      },
+      "collection_seconds": 0.19327799999155104,
+      "max_request_seconds": 0.12607512500835583
+    }
+  ]
+}

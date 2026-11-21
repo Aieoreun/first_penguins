@@ -7,7 +7,8 @@ from experiments.jh_neural_peace_report import safety_metrics,grounding_metrics,
 from experiments.jh_compare import evaluator_hashes
 
 DECLARED_OUTAGES = {
-    'jh_guard_fusion_r8_g02': 'Timeouts/502 escalated during candidate sequence; subsequent single-call probes also failed. Preserve scores as degraded-service observations, not a healthy ranking.'
+    'jh_guard_fusion_r8_g02': 'Timeouts/502 escalated during candidate sequence; subsequent single-call probes also failed. Preserve scores as degraded-service observations, not a healthy ranking.',
+    'jh_guard_fusion_r8_g05': 'Stopped during the third candidate after severe timeouts. Complete candidate observations are separately recorded in round8_g05_outage.json; partial responses are not scored.'
 }
 
 def main():

@@ -93,11 +93,12 @@ class FailureTests(unittest.IsolatedAsyncioTestCase):
         p.span_tagger=SimpleNamespace(predict=Mock(return_value=(['없는 문장'],.99)))
         for votes in [0,1]:
             s=self.state()
+            if votes:s.unsupported=['근거 없는 문장']
             async def slow():
                 try:await asyncio.Future()
                 finally:s.debug['fusion_completed_ground_votes']=votes
             self.assertFalse(await p._fusion_stage(slow(),.01,s,'ground'))
-            self.assertEqual(s.unsupported,['없는 문장'] if votes==0 else [])
+            self.assertEqual(s.unsupported,['없는 문장'] if votes==0 else ['근거 없는 문장'])
             self.assertIn('ground:Deadline',s.errors)
         p.span_tagger.predict.reset_mock();s=self.state();started=asyncio.Event()
         async def slow_cancel():started.set();await asyncio.Future()
