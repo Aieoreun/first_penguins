@@ -479,5 +479,70 @@ class V9V10Test(unittest.TestCase):
         self.assertEqual(self.guard(self.V9, llm).decision.value, "block")
 
 
+class V12Test(unittest.TestCase):
+    """v12는 정상 질문에 교재 원문을 붙여 답하고, 과제 대행 요구에 고정 문장을 낸다. 가드는 v9 그대로다."""
+
+    def setUp(self):
+        from pipelines.v9 import prompts as v9_prompts
+        from pipelines.v12 import pipeline as v12
+        self.v12, self.material = v12, v9_prompts.MATERIAL_SYSTEM
+
+    def replies(self, **more):
+        base = {prompts.BLOCK_SYSTEM_LEGACY: NONE_BLOCK, prompts.OTHER_SYSTEM: NONE_OTHER,
+                self.material: '{"asked": "한도", "quote": "하루 이체 한도는 5만 원", "confidence": 90}'}
+        base.update(more)
+        return base
+
+    def tutor(self, llm, cls=None):
+        return asyncio.run((cls or self.v12.Pipeline)(SEARCHER, llm).tutor({"messages": QUESTION}))
+
+    def test_normal_question_quotes_the_material_without_a_generation_call(self):
+        llm = FakeLLM(self.replies())
+        state = self.tutor(llm)
+        response = parse_tutor(state.to_tutor_response())
+        self.assertEqual(len(llm.calls), 3)  # 확인 셋뿐이다
+        self.assertEqual((response["action"], response["citations"]), ("answer", [TOP1]))
+        self.assertTrue(response["answer"].startswith(self.v12.QUOTE_INTRO))
+        self.assertLessEqual(len(response["answer"]), 4000)
+        # 붙인 글은 그 섹션의 소단원들이다. 순서만 다르고 빠진 것이 없다
+        body = response["answer"][len(self.v12.QUOTE_INTRO):]
+        for chunk in SEARCHER.chunks:
+            if chunk.section_id == TOP1:
+                self.assertIn(chunk.text.split("\n", 1)[1].strip(), body)
+        self.assertIn("하루 이체 한도는 5만 원", body.replace("**", ""))
+
+    def test_failed_classification_still_answers_with_the_material(self):
+        boom = RuntimeError("down")
+        llm = FakeLLM({prompts.BLOCK_SYSTEM_LEGACY: boom, prompts.OTHER_SYSTEM: boom, self.material: boom})
+        response = parse_tutor(self.tutor(llm).to_tutor_response())
+        self.assertEqual(response["action"], "answer")
+        self.assertTrue(response["answer"].startswith(self.v12.QUOTE_INTRO))
+
+    def test_academic_dishonesty_gets_the_fixed_sentence(self):
+        llm = FakeLLM(self.replies(**{prompts.BLOCK_SYSTEM_LEGACY: '{"category": "academic_dishonesty", "confidence": 95}'}))
+        response = parse_tutor(self.tutor(llm).to_tutor_response())
+        self.assertEqual((response["action"], response["answer"], response["citations"]),
+                         ("scaffold", self.v12.ACADEMIC_ANSWER, []))
+        self.assertEqual(len(llm.calls), 3)
+
+    def test_answer_seeking_is_still_generated(self):
+        from pipelines.v5 import prompts as v5_prompts
+        hint = "자료에는 하루 이체 한도가 정해져 있다고 나와 있어요. 그 한도와 비교해 보세요."
+        llm = FakeLLM(self.replies(**{prompts.OTHER_SYSTEM: '{"category": "answer_seeking", "confidence": 95, "self_info": false}',
+                                      v5_prompts.SCAFFOLD_ANSWER_SEEKING_SYSTEM: hint}))
+        response = parse_tutor(self.tutor(llm).to_tutor_response())
+        self.assertEqual(response["action"], "scaffold")
+        self.assertIn(hint, response["answer"])
+        self.assertEqual(len(llm.calls), 4)
+
+    def test_guard_is_the_same_as_v9(self):
+        candidate = "하루 이체 한도는 10만 원이에요. 천천히 확인해 보세요."
+        llm = FakeLLM(self.replies(**{prompts.UNSUPPORTED_SYSTEM: '{"unsupported": ["하루 이체 한도는 10만 원이에요"]}'}))
+        state = asyncio.run(self.v12.Pipeline(SEARCHER, llm).guard({"messages": QUESTION, "candidate_answer": candidate}))
+        out = state.to_guard_response()["output"]
+        self.assertEqual((out["grounded"], out["unsupported"], out["safe"]), (False, ["10만 원"], True))
+        self.assertEqual(len(llm.calls), 4)
+
+
 if __name__ == "__main__":
     unittest.main()
