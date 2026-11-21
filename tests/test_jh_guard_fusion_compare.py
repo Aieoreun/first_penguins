@@ -295,7 +295,7 @@ def run(app, **kwargs):
    pipeline.result=SimpleNamespace(debug={'span_review_triggered':True,
        'span_review_attempted':True, 'span_review_completed':True,
        'span_review_success':True, 'span_review_changed':False,
-       'r8_failure_input':True, 'r8_failure_ground':False, 'r8_failure_block':True, 'r8_risk_safety':1, 'fusion_ground_skipped_fast_block':1, 'matrix_gate':True, 'r7_examples_used':True, 'private':'private text'})
+       'r8_output_veto':True, 'r8_failure_input':True, 'r8_failure_ground':False, 'r8_failure_block':True, 'r8_risk_safety':1, 'fusion_ground_skipped_fast_block':1, 'matrix_gate':True, 'r7_examples_used':True, 'private':'private text'})
    for _ in range(2):
     assert await pipeline.guard(pipeline.body) is pipeline.result
  asyncio.run(work())
@@ -307,7 +307,7 @@ def run(app, **kwargs):
         counts = json.loads(encoded)['guard_debug']
         self.assertEqual(counts, {'span_review_triggered': 2, 'span_review_attempted': 2,
             'span_review_completed': 2, 'span_review_success': 2, 'span_review_changed': 0,
-            'r8_failure_input': 2, 'r8_failure_ground': 0, 'r8_failure_block': 2, 'r8_risk_safety': 0, 'fusion_ground_skipped_fast_block': 0, 'fusion_ground_cancelled_block': 0, 'matrix_gate': 2,
+            'r8_output_veto': 2, 'r8_failure_input': 2, 'r8_failure_ground': 0, 'r8_failure_block': 2, 'r8_risk_safety': 0, 'fusion_ground_skipped_fast_block': 0, 'fusion_ground_cancelled_block': 0, 'matrix_gate': 2,
             'guard_unlearned_input': 0, 'learned_span': 0, 'r7_hybrid_fast': 0, 'r7_embedding_reused': 0, 'r7_ground_early': 0, 'r7_material_cancelled': 0, 'r7_examples_used': 2})
 
     def test_counts_flush_on_sigterm_after_original_shutdown(self):

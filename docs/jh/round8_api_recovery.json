@@ -1,0 +1,97 @@
+{
+  "scope": "small_recovery_probe_not_full_load_health_guarantee",
+  "first_single": {
+    "ok": true,
+    "seconds": 2.369
+  },
+  "followup": [
+    {
+      "ok": true,
+      "seconds": 2.422,
+      "response_chars": 69,
+      "stage": "serial",
+      "index": 0,
+      "time_utc": "2026-11-21T04:01:09.410093+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 2.32,
+      "response_chars": 56,
+      "stage": "serial",
+      "index": 1,
+      "time_utc": "2026-11-21T04:01:11.729886+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 1.748,
+      "response_chars": 46,
+      "stage": "serial",
+      "index": 2,
+      "time_utc": "2026-11-21T04:01:13.477697+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 1.731,
+      "response_chars": 45,
+      "stage": "parallel8",
+      "index": 5,
+      "time_utc": "2026-11-21T04:01:15.217018+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 1.901,
+      "response_chars": 71,
+      "stage": "parallel8",
+      "index": 4,
+      "time_utc": "2026-11-21T04:01:15.386060+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 1.901,
+      "response_chars": 49,
+      "stage": "parallel8",
+      "index": 6,
+      "time_utc": "2026-11-21T04:01:15.388322+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 1.938,
+      "response_chars": 66,
+      "stage": "parallel8",
+      "index": 7,
+      "time_utc": "2026-11-21T04:01:15.426158+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 1.954,
+      "response_chars": 65,
+      "stage": "parallel8",
+      "index": 3,
+      "time_utc": "2026-11-21T04:01:15.436940+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 2.088,
+      "response_chars": 64,
+      "stage": "parallel8",
+      "index": 0,
+      "time_utc": "2026-11-21T04:01:15.566188+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 2.314,
+      "response_chars": 70,
+      "stage": "parallel8",
+      "index": 2,
+      "time_utc": "2026-11-21T04:01:15.795865+00:00"
+    },
+    {
+      "ok": true,
+      "seconds": 2.412,
+      "response_chars": 62,
+      "stage": "parallel8",
+      "index": 1,
+      "time_utc": "2026-11-21T04:01:15.892598+00:00"
+    }
+  ]
+}
